@@ -1,0 +1,4 @@
+suites:
+    main:
+        namespace: Webgriffe\SyliusAkeneoPlugin
+        psr4_prefix: Webgriffe\SyliusAkeneoPlugin
