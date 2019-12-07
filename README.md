@@ -4,9 +4,13 @@
     </a>
 </p>
 
-<h1 align="center">Plugin Skeleton</h1>
+<h1 align="center">Akeneo Plugin</h1>
+<p align="center">Plugin allowing to import products data from Akeneo PIM to your Sylius store.</p>
 
-<p align="center">Skeleton for starting Sylius plugins.</p>
+
+# This plugin is WORK IN PROGRESS!
+
+Do not use or test it.
 
 ## Installation
 
@@ -48,7 +52,7 @@ To be able to setup a plugin's database, remember to configure you database cred
     ```
 
   - Behat (JS scenarios)
- 
+
     1. Download [Chromedriver](https://sites.google.com/a/chromium.org/chromedriver/)
     
     2. Download [Selenium Standalone Server](https://www.seleniumhq.org/download/).
