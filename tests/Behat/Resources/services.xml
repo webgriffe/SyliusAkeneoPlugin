@@ -3,7 +3,11 @@
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <defaults public="true" />
-        <!-- Put your Behat services here -->
 
+        <service id="webgriffe_sylius_akeneo.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext" />
+
+        <service id="webgriffe_sylius_akeneo.context.cli.spool_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\SpoolCommandContext" />
+
+        <service id="webgriffe_sylius_akeneo.context.db.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ProductContext" />
     </services>
 </container>

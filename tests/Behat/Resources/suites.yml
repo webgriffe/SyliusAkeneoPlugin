@@ -2,3 +2,16 @@
 
 default:
     suites:
+        importing_products:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.setup.channel
+                - webgriffe_sylius_akeneo.context.setup.queue
+
+                - webgriffe_sylius_akeneo.context.cli.spool_command
+
+                - webgriffe_sylius_akeneo.context.db.product
+
+            filters:
+                tags: "@importing_products"
