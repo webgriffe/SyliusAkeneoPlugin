@@ -26,27 +26,26 @@ final class Importer implements ImporterInterface
      */
     private $categoriesHandler;
     /**
-     * @var ValueHandlersRegistryInterface
-     */
-    private $valueHandlersRegistry;
-    /**
      * @var FamilyVariantHandlerInterface
      */
     private $familyVariantHandler;
+    /**
+     * @var ValueHandlersRegistryInterface
+     */
+    private $valueHandlersRegistry;
 
     public function __construct(
         ProductRepositoryInterface $productRepository,
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
-        ValueHandlersRegistryInterface $valueHandlersRegistry,
-        FamilyVariantHandlerInterface $familyVariantHandler
+        FamilyVariantHandlerInterface $familyVariantHandler,
+        ValueHandlersRegistryInterface $valueHandlersRegistry
     ) {
         $this->productRepository = $productRepository;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
-        $this->valueHandlersRegistry = $valueHandlersRegistry;
         $this->familyVariantHandler = $familyVariantHandler;
-        $this->valueHandlersRegistry->add(new NameValueHandler(new \Sylius\Component\Resource\Factory\Factory(ProductTranslation::class)), 0);
+        $this->valueHandlersRegistry = $valueHandlersRegistry;
     }
 
     public function import(string $identifier): void

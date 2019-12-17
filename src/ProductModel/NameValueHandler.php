@@ -9,7 +9,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 
-class NameValueHandler implements ValueHandlerInterface
+final class NameValueHandler implements ValueHandlerInterface
 {
     /**
      * @var FactoryInterface
