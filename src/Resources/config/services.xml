@@ -4,6 +4,7 @@
     <services>
         <!-- General -->
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
+            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.importer" />
             <tag name="console.command" />
         </service>
