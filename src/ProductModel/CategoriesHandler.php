@@ -40,7 +40,7 @@ final class CategoriesHandler implements CategoriesHandlerInterface
     public function handle(ProductInterface $product, array $categories)
     {
         foreach ($categories as $category) {
-            /** @var TaxonInterface $taxon */
+            /** @var TaxonInterface|null $taxon */
             $taxon = $this->taxonRepository->findOneBy(['code' => $category]);
             if ($taxon) {
                 $productTaxon = $this->productTaxonRepository->findOneByProductCodeAndTaxonCode(

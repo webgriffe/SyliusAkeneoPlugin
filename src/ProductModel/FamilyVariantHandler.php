@@ -10,6 +10,7 @@ use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webmozart\Assert\Assert;
 
 final class FamilyVariantHandler implements FamilyVariantHandlerInterface
 {
@@ -42,10 +43,11 @@ final class FamilyVariantHandler implements FamilyVariantHandlerInterface
             if ($this->optionExists($product, $attributeCode)) {
                 continue;
             }
-            /** @var ProductOptionInterface $productOption */
+            /** @var ProductOptionInterface|null $productOption */
             $productOption = $this->productOptionRepository->findOneBy(['code' => $attributeCode]);
             if (!$productOption) {
                 $productOption = $this->productOptionFactory->createNew();
+                Assert::isInstanceOf($productOption, ProductOptionInterface::class);
                 $productOption->setCode($attributeCode);
                 $productOption->setPosition($position);
                 $attributeResponse = $this->apiClient->findAttribute($attributeCode);
