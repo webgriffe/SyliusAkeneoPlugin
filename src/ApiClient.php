@@ -6,8 +6,18 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 final class ApiClient implements ApiClientInterface
 {
-    public function findProductModelByIdentifier(string $identifier): ?array
+    public function findProductModel(string $code): ?array
     {
         // TODO: Implement findProductModelByIdentifier() method.
+    }
+
+    public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array
+    {
+        // TODO: Implement findFamilyVariant() method.
+    }
+
+    public function findAttribute(string $code): ?array
+    {
+        // TODO: Implement findAttribute() method.
     }
 }

@@ -9,6 +9,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 
 final class FamilyVariantHandler implements FamilyVariantHandlerInterface
 {
@@ -20,29 +21,34 @@ final class FamilyVariantHandler implements FamilyVariantHandlerInterface
      * @var ProductOptionRepositoryInterface
      */
     private $productOptionRepository;
+    /**
+     * @var ApiClientInterface
+     */
+    private $apiClient;
 
     public function __construct(
         FactoryInterface $productOptionFactory,
-        ProductOptionRepositoryInterface $productOptionRepository
+        ProductOptionRepositoryInterface $productOptionRepository,
+        ApiClientInterface $apiClient
     ) {
         $this->productOptionFactory = $productOptionFactory;
         $this->productOptionRepository = $productOptionRepository;
+        $this->apiClient = $apiClient;
     }
 
     public function handle(ProductInterface $product, array $familyVariant)
     {
-        foreach ($familyVariant['variant_attribute_sets'][0]['axes'] as $position => $axe) {
-            if ($this->optionExists($product, $axe)) {
+        foreach ($familyVariant['variant_attribute_sets'][0]['axes'] as $position => $attributeCode) {
+            if ($this->optionExists($product, $attributeCode)) {
                 continue;
             }
             /** @var ProductOptionInterface $productOption */
-            $productOption = $this->productOptionRepository->findOneBy(['code' => $axe]);
+            $productOption = $this->productOptionRepository->findOneBy(['code' => $attributeCode]);
             if (!$productOption) {
                 $productOption = $this->productOptionFactory->createNew();
-                $productOption->setCode($axe);
+                $productOption->setCode($attributeCode);
                 $productOption->setPosition($position);
-                // TODO load attribute by $axe from API
-                $attributeResponse = json_decode(file_get_contents(__DIR__ . '/../../attribute.json'), true);
+                $attributeResponse = $this->apiClient->findAttribute($attributeCode);
                 foreach ($attributeResponse['labels'] as $locale => $label) {
                     $productOption->getTranslation($locale)->setName($label);
                 }

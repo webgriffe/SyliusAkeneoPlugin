@@ -7,5 +7,9 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 interface ApiClientInterface
 {
-    public function findProductModelByIdentifier(string $identifier): ?array;
+    public function findProductModel(string $code): ?array;
+
+    public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array;
+
+    public function findAttribute(string $code): ?array;
 }

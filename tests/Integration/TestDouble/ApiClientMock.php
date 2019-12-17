@@ -8,9 +8,29 @@ use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 
 final class ApiClientMock implements ApiClientInterface
 {
-    public function findProductModelByIdentifier(string $identifier): ?array
+    public function findProductModel(string $code): ?array
     {
-        $filename = __DIR__ . '/../DataFixtures/ApiClientMock/ProductModel/' . $identifier . '.json';
+        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/ProductModel/' . $code . '.json');
+    }
+
+    public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array
+    {
+        return $this->jsonDecodeOrNull(
+            __DIR__ . '/../DataFixtures/ApiClientMock/FamilyVariant/' . $familyCode . '/' . $familyVariantCode . '.json'
+        );
+    }
+
+    public function findAttribute(string $code): ?array
+    {
+        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/' . $code . '.json');
+    }
+
+    /**
+     * @param string $filename
+     * @return mixed|null
+     */
+    private function jsonDecodeOrNull(string $filename)
+    {
         if (file_exists($filename)) {
             return json_decode(file_get_contents($filename), true);
         }

@@ -33,6 +33,7 @@
         <service id="webgriffe_sylius_akeneo.product_model.family_variant_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\FamilyVariantHandler">
             <argument type="service" id="sylius.factory.product_option" />
             <argument type="service" id="sylius.repository.product_option" />
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client"/>
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\FamilyVariantHandlerInterface" alias="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
 

@@ -57,9 +57,8 @@ final class Importer implements ImporterInterface
 
     public function import(string $identifier): void
     {
-        // TODO API call to get product model by $identifier
         /** @var array $productModelResponse */
-        $productModelResponse = $this->apiClient->findProductModelByIdentifier($identifier);
+        $productModelResponse = $this->apiClient->findProductModel($identifier);
         $code = $productModelResponse['code'];
         $product = $this->productRepository->findOneByCode($code);
         if (!$product) {
@@ -80,10 +79,9 @@ final class Importer implements ImporterInterface
             // TODO no value handler for this attribute. Throw? Log?
         }
 
-        $family = $productModelResponse['family'];
-        $familyVariant = $productModelResponse['family_variant'];
-        // TODO API call to get family variant by $family and $familyVariant
-        $familyVariantResponse = json_decode(file_get_contents(__DIR__ . '/../../family-variant.json'), true);
+        $familyCode = $productModelResponse['family'];
+        $familyVariantCode = $productModelResponse['family_variant'];
+        $familyVariantResponse = $this->apiClient->findFamilyVariant($familyCode, $familyVariantCode);
 
         $this->familyVariantHandler->handle($product, $familyVariantResponse);
 

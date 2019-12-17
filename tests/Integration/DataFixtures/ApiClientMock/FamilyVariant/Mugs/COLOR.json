@@ -1,0 +1,19 @@
+{
+  "code": "COLOR",
+  "labels": {
+    "it_IT": "Colore"
+  },
+  "variant_attribute_sets": [
+    {
+      "level": 1,
+      "axes": [
+        "COLOR"
+      ],
+      "attributes": [
+        "sku",
+        "base_image",
+        "COLOR"
+      ]
+    }
+  ]
+}
