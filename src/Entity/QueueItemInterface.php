@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Entity;
 
-interface ImportQueueItemInterface
+interface QueueItemInterface
 {
     public function getIdentifier(): string;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Entity;
 
-final class ImportQueueItem implements ImportQueueItemInterface
+final class QueueItem implements QueueItemInterface
 {
     /**
      * @var string
