@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\DependencyInjection;
 
+use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-final class WebgriffeSyliusAkeneoExtension extends Extension
+final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension
 {
     /**
      * {@inheritdoc}
@@ -18,6 +18,8 @@ final class WebgriffeSyliusAkeneoExtension extends Extension
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+
+        $this->registerResources('webgriffe_sylius_akeneo_plugin', 'doctrine/orm', $config['resources'], $container);
 
         $loader->load('services.xml');
     }

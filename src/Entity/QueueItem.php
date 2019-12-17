@@ -7,14 +7,17 @@ namespace Webgriffe\SyliusAkeneoPlugin\Entity;
 final class QueueItem implements QueueItemInterface
 {
     /**
-     * @var string
+     * @var mixed
      */
-    private $identifier;
-
+    private $id;
     /**
      * @var string
      */
-    private $entity;
+    private $akeneoEntity;
+    /**
+     * @var string
+     */
+    private $akeneoIdentifier;
     /**
      * @var \DateTimeInterface
      */
@@ -24,15 +27,19 @@ final class QueueItem implements QueueItemInterface
      */
     private $importedAt;
 
-
-    public function getIdentifier(): string
+    public function getId()
     {
-        return $this->identifier;
+        return $this->id;
     }
 
-    public function getEntity(): string
+    public function getAkeneoEntity(): string
     {
-        return $this->entity;
+        return $this->akeneoEntity;
+    }
+
+    public function getAkeneoIdentifier(): string
+    {
+        return $this->akeneoIdentifier;
     }
 
     public function getCreatedAt(): \DateTimeInterface
@@ -46,19 +53,19 @@ final class QueueItem implements QueueItemInterface
     }
 
     /**
-     * @param string $identifier
+     * @param string $akeneoIdentifier
      */
-    public function setIdentifier(string $identifier): void
+    public function setAkeneoIdentifier(string $akeneoIdentifier): void
     {
-        $this->identifier = $identifier;
+        $this->akeneoIdentifier = $akeneoIdentifier;
     }
 
     /**
-     * @param string $entity
+     * @param string $akeneoEntity
      */
-    public function setEntity(string $entity): void
+    public function setAkeneoEntity(string $akeneoEntity): void
     {
-        $this->entity = $entity;
+        $this->akeneoEntity = $akeneoEntity;
     }
 
     /**
