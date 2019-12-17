@@ -8,6 +8,7 @@ use Sylius\Component\Core\Model\ProductTranslation;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
+use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webmozart\Assert\Assert;
 
@@ -33,26 +34,32 @@ final class Importer implements ImporterInterface
      * @var ValueHandlersRegistryInterface
      */
     private $valueHandlersRegistry;
+    /**
+     * @var ApiClientInterface
+     */
+    private $apiClient;
 
     public function __construct(
         ProductRepositoryInterface $productRepository,
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
         FamilyVariantHandlerInterface $familyVariantHandler,
-        ValueHandlersRegistryInterface $valueHandlersRegistry
+        ValueHandlersRegistryInterface $valueHandlersRegistry,
+        ApiClientInterface $apiClient
     ) {
         $this->productRepository = $productRepository;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
         $this->familyVariantHandler = $familyVariantHandler;
         $this->valueHandlersRegistry = $valueHandlersRegistry;
+        $this->apiClient = $apiClient;
     }
 
     public function import(string $identifier): void
     {
         // TODO API call to get product model by $identifier
         /** @var array $productModelResponse */
-        $productModelResponse = json_decode(file_get_contents(__DIR__ . '/../../product-model.json'), true);
+        $productModelResponse = $this->apiClient->findProductModelByIdentifier($identifier);
         $code = $productModelResponse['code'];
         $product = $this->productRepository->findOneByCode($code);
         if (!$product) {

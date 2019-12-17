@@ -1,0 +1,73 @@
+{
+  "code": "MUG_SW",
+  "family_variant": "COLOR",
+  "family": "Mugs",
+  "parent": null,
+  "categories": [],
+  "values": {
+    "name": [
+      {
+        "locale": "en_US",
+        "scope": null,
+        "data": "New Star Wars mug name"
+      }
+    ],
+    "slug": [
+      {
+        "locale": null,
+        "scope": null,
+        "data": "star-wars-mug"
+      }
+    ],
+    "price": [
+      {
+        "locale": null,
+        "scope": null,
+        "data": [
+          {
+            "amount": "19.00",
+            "currency": "USD"
+          }
+        ]
+      }
+    ],
+    "description": [
+      {
+        "locale": "en_US",
+        "scope": null,
+        "data": "<p>A beautiful Star Wars mug. Lorem ipsum dolor sit amet.<\/p>"
+      }
+    ],
+    "short_description": [
+      {
+        "locale": "en_US",
+        "scope": null,
+        "data": "A beautiful Star Wars mug."
+      }
+    ]
+  },
+  "created": "2019-12-03T15:42:33+01:00",
+  "updated": "2019-12-03T17:22:58+01:00",
+  "associations": {
+    "PACK": {
+      "groups": [],
+      "products": [],
+      "product_models": []
+    },
+    "SUBSTITUTION": {
+      "groups": [],
+      "products": [],
+      "product_models": []
+    },
+    "UPSELL": {
+      "groups": [],
+      "products": [],
+      "product_models": []
+    },
+    "X_SELL": {
+      "groups": [],
+      "products": [],
+      "product_models": []
+    }
+  }
+}

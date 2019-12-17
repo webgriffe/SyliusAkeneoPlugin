@@ -10,6 +10,7 @@
         "sylius/sylius": "^1.6"
     },
     "require-dev": {
+        "ext-json": "*",
         "behat/behat": "^3.4",
         "behat/mink": "^1.7@dev",
         "behat/mink-browserkit-driver": "^1.3",
@@ -32,7 +33,8 @@
         "symfony/dotenv": "^4.3",
         "symfony/intl": "^3.4|^4.3",
         "symfony/web-profiler-bundle": "^3.4|^4.3",
-        "symfony/web-server-bundle": "^3.4|^4.3"
+        "symfony/web-server-bundle": "^3.4|^4.3",
+        "theofidry/alice-data-fixtures": "^1.1"
     },
     "prefer-stable": true,
     "autoload": {

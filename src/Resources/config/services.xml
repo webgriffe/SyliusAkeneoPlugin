@@ -8,6 +8,9 @@
             <tag name="console.command" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
+
         <!-- Product Model -->
         <service id="webgriffe_sylius_akeneo.product_model.value_handlers_registry" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlersRegistry">
             <call method="add">
@@ -39,6 +42,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.categories_handler" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.value_handlers_registry" />
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
     </services>
 </container>
