@@ -59,4 +59,17 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
 
         $propertyAccessor->setValue($existingProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
+
+    function it_sets_value_on_a_not_existent_product_translation(
+        FactoryInterface $productTranslationFactory,
+        ProductTranslationInterface $newProductTranslation,
+        PropertyAccessorInterface $propertyAccessor
+    ) {
+        $productTranslationFactory->createNew()->willReturn($newProductTranslation);
+        $product = new Product();
+
+        $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
+
+        $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
+    }
 }
