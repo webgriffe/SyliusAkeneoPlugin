@@ -13,10 +13,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 {
     /**
-     * @var FactoryInterface
-     */
-    private $productTranslationFactory;
-    /**
      * @var PropertyAccessorInterface
      */
     private $propertyAccessor;
@@ -30,12 +26,10 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     private $translationPropertyPath;
 
     public function __construct(
-        FactoryInterface $productTranslationFactory,
         PropertyAccessorInterface $propertyAccessor,
         string $akeneoAttributeCode,
         string $translationPropertyPath
     ) {
-        $this->productTranslationFactory = $productTranslationFactory;
         $this->propertyAccessor = $propertyAccessor;
         $this->akeneoAttributeCode = $akeneoAttributeCode;
         $this->translationPropertyPath = $translationPropertyPath;
@@ -52,11 +46,9 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
             throw new \InvalidArgumentException('Cannot handle');
         }
         foreach ($value as $item) {
-            /** @var ProductTranslationInterface $newTranslation */
-            $newTranslation = $this->productTranslationFactory->createNew();
-            $newTranslation->setLocale($item['locale']);
-            if (!$product->hasTranslation($newTranslation)) {
-                $product->addTranslation($newTranslation);
+            if (!$item['locale']) {
+                $translation = $this->setValueOnAllTranslations($product, $item);
+                continue;
             }
             $translation = $product->getTranslation($item['locale']);
             $this->propertyAccessor->setValue(
@@ -65,5 +57,17 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 $item['data']
             );
         }
+    }
+
+    private function setValueOnAllTranslations(ProductInterface $product, array $value)
+    {
+        foreach ($product->getTranslations() as $translation) {
+            $this->propertyAccessor->setValue(
+                $translation,
+                $this->translationPropertyPath,
+                $value['data']
+            );
+        }
+        return $translation;
     }
 }

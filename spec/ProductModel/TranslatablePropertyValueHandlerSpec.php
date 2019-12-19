@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ProductModel;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\Product;
@@ -20,9 +21,9 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
     private const AKENEO_ATTRIBUTE_CODE = 'akeneo_attribute_code';
     private const TRANSLATION_PROPERTY_PATH = 'translation_property_path';
 
-    function let(FactoryInterface $productTranslationFactory, PropertyAccessorInterface $propertyAccessor)
+    function let(PropertyAccessorInterface $propertyAccessor)
     {
-        $this->beConstructedWith($productTranslationFactory, $propertyAccessor, self::AKENEO_ATTRIBUTE_CODE, self::TRANSLATION_PROPERTY_PATH);
+        $this->beConstructedWith($propertyAccessor, self::AKENEO_ATTRIBUTE_CODE, self::TRANSLATION_PROPERTY_PATH);
     }
 
     function it_implements_value_handler_interface()
@@ -45,31 +46,29 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $this->shouldThrow(new \InvalidArgumentException('Cannot handle'))->during('handle', [new Product(), 'not_supported_attribute', []]);
     }
 
-    function it_sets_value_on_an_already_existent_product_translation(
-        FactoryInterface $productTranslationFactory,
-        ProductTranslationInterface $existingProductTranslation,
-        ProductTranslationInterface $newProductTranslation,
+    function it_sets_value_on_product_translation(
+        ProductInterface $product,
+        ProductTranslationInterface $productTranslation,
         PropertyAccessorInterface $propertyAccessor
     ) {
-        $productTranslationFactory->createNew()->willReturn($newProductTranslation);
-        $product = new Product();
-        $product->addTranslation($existingProductTranslation->getWrappedObject());
+        $product->getTranslation('en_US')->shouldBeCalled()->willReturn($productTranslation);
 
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
 
-        $propertyAccessor->setValue($existingProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
-    function it_sets_value_on_a_not_existent_product_translation(
-        FactoryInterface $productTranslationFactory,
-        ProductTranslationInterface $newProductTranslation,
+    function it_sets_value_on_all_product_translations_when_locale_not_specified(
+        ProductInterface $product,
+        ProductTranslationInterface $productTranslation1,
+        ProductTranslationInterface $productTranslation2,
         PropertyAccessorInterface $propertyAccessor
     ) {
-        $productTranslationFactory->createNew()->willReturn($newProductTranslation);
-        $product = new Product();
+        $product->getTranslations()->willReturn(new ArrayCollection([$productTranslation1, $productTranslation2]));
 
-        $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
+        $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => 'New value']]);
 
-        $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($productTranslation1, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($productTranslation2, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 }
