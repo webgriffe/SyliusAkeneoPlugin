@@ -31,9 +31,9 @@ final class Importer implements ImporterInterface
      */
     private $familyVariantHandler;
     /**
-     * @var ValueHandlersRegistryInterface
+     * @var ValueHandlerResolverInterface
      */
-    private $valueHandlersRegistry;
+    private $valueHandlerResolver;
     /**
      * @var ApiClientInterface
      */
@@ -44,14 +44,14 @@ final class Importer implements ImporterInterface
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
         FamilyVariantHandlerInterface $familyVariantHandler,
-        ValueHandlersRegistryInterface $valueHandlersRegistry,
+        ValueHandlerResolverInterface $valueHandlerResolver,
         ApiClientInterface $apiClient
     ) {
         $this->productRepository = $productRepository;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
         $this->familyVariantHandler = $familyVariantHandler;
-        $this->valueHandlersRegistry = $valueHandlersRegistry;
+        $this->valueHandlerResolver = $valueHandlerResolver;
         $this->apiClient = $apiClient;
     }
 
@@ -69,14 +69,13 @@ final class Importer implements ImporterInterface
         $this->categoriesHandler->handle($product, $productModelResponse['categories']);
 
         foreach ($productModelResponse['values'] as $attribute => $value) {
-            foreach ($this->valueHandlersRegistry->all() as $valueHandler) {
-                if (!$valueHandler->supports($product, $attribute, $value)) {
-                    continue;
-                }
-                $valueHandler->handle($product, $attribute, $value);
-                continue 2;
+            $valueHandler = $this->valueHandlerResolver->resolve($product, $attribute, $value);
+            if ($valueHandler === null) {
+                // TODO no value handler for this attribute. Throw? Log?
+                // throw new \RuntimeException(sprintf('No ValueHandler found for attribute "%s"', $attribute));
+                continue;
             }
-            // TODO no value handler for this attribute. Throw? Log?
+            $valueHandler->handle($product, $attribute, $value);
         }
 
         $familyCode = $productModelResponse['family'];

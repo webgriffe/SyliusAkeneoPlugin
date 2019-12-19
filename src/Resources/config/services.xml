@@ -13,12 +13,12 @@
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
 
         <!-- Product Model -->
-        <service id="webgriffe_sylius_akeneo.product_model.value_handlers_registry" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlersRegistry">
+        <service id="webgriffe_sylius_akeneo.product_model.value_handler_resolver" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\PriorityValueHandlerResolver">
             <call method="add">
                 <argument type="service" id="webgriffe_sylius_akeneo.product_model.name_value_handler" />
             </call>
         </service>
-        <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlersRegistryInterface" alias="webgriffe_sylius_akeneo.product_model.value_handlers_registry" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerResolverInterface" alias="webgriffe_sylius_akeneo.product_model.value_handler_resolver" />
 
         <service id="webgriffe_sylius_akeneo.product_model.name_value_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\NameValueHandler">
             <argument type="service" id="sylius.factory.product_translation" />
@@ -43,7 +43,7 @@
             <argument type="service" id="sylius.factory.product" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.categories_handler" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product_model.value_handlers_registry" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product_model.value_handler_resolver" />
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
     </services>
