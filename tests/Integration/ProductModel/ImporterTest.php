@@ -43,6 +43,8 @@ final class ImporterTest extends KernelTestCase
         $this->importer->import('MUG_SW');
         $products = $this->productRepository->findAll();
         $this->assertCount(1, $products);
-        $this->assertEquals('New Star Wars mug name', $products[0]->getName());
+        $this->assertEquals('New Star Wars mug name', $products[0]->getTranslation('en_US')->getName());
+        $this->assertEquals('Nuovo nome tazza Star Wars', $products[0]->getTranslation('it_IT')->getName());
+        $this->assertEquals('new-star-wars-mug', $products[0]->getSlug());
     }
 }

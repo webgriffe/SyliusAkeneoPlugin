@@ -17,6 +17,10 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
      */
     private $propertyAccessor;
     /**
+     * @var FactoryInterface
+     */
+    private $productTranslationFactory;
+    /**
      * @var string
      */
     private $akeneoAttributeCode;
@@ -27,10 +31,12 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 
     public function __construct(
         PropertyAccessorInterface $propertyAccessor,
+        FactoryInterface $productTranslationFactory,
         string $akeneoAttributeCode,
         string $translationPropertyPath
     ) {
         $this->propertyAccessor = $propertyAccessor;
+        $this->productTranslationFactory = $productTranslationFactory;
         $this->akeneoAttributeCode = $akeneoAttributeCode;
         $this->translationPropertyPath = $translationPropertyPath;
     }
@@ -51,6 +57,12 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
             $translation = $product->getTranslation($item['locale']);
+            if ($translation->getLocale() !== $item['locale']) {
+                /** @var ProductTranslationInterface $translation */
+                $translation = $this->productTranslationFactory->createNew();
+                $translation->setLocale($item['locale']);
+                $product->addTranslation($translation);
+            }
             $this->propertyAccessor->setValue(
                 $translation,
                 $this->translationPropertyPath,

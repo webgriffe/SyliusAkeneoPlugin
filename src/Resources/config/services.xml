@@ -3,6 +3,7 @@
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="webgriffe_sylius_akeneo.product_model.name_value_handler.akeneo_attribute_code" type="string">name</parameter>
+        <parameter key="webgriffe_sylius_akeneo.product_model.slug_value_handler.akeneo_attribute_code" type="string">slug</parameter>
     </parameters>
 
     <services>
@@ -21,13 +22,24 @@
             <call method="add">
                 <argument type="service" id="webgriffe_sylius_akeneo.product_model.name_value_handler" />
             </call>
+            <call method="add">
+                <argument type="service" id="webgriffe_sylius_akeneo.product_model.slug_value_handler" />
+            </call>
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerResolverInterface" alias="webgriffe_sylius_akeneo.product_model.value_handler_resolver" />
 
         <service id="webgriffe_sylius_akeneo.product_model.name_value_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\TranslatablePropertyValueHandler">
             <argument type="service" id="property_accessor" />
-            <argument type="string">%webgriffe_sylius_akeneo.product_model.name_value_handler.akeneo_attribute_code%</argument> <!-- TODO Make akeneoAttributeCode for product_model.name_value_handler configurable -->
+            <argument type="service" id="sylius.factory.product_translation" />
+            <argument type="string">%webgriffe_sylius_akeneo.product_model.name_value_handler.akeneo_attribute_code%</argument>
             <argument type="string">name</argument>
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.product_model.slug_value_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\TranslatablePropertyValueHandler">
+            <argument type="service" id="property_accessor" />
+            <argument type="service" id="sylius.factory.product_translation" />
+            <argument type="string">%webgriffe_sylius_akeneo.product_model.slug_value_handler.akeneo_attribute_code%</argument>
+            <argument type="string">slug</argument>
         </service>
 
         <service id="webgriffe_sylius_akeneo.product_model.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\CategoriesHandler">

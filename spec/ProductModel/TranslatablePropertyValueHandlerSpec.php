@@ -21,9 +21,9 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
     private const AKENEO_ATTRIBUTE_CODE = 'akeneo_attribute_code';
     private const TRANSLATION_PROPERTY_PATH = 'translation_property_path';
 
-    function let(PropertyAccessorInterface $propertyAccessor)
+    function let(PropertyAccessorInterface $propertyAccessor, FactoryInterface $productTranslationFactory)
     {
-        $this->beConstructedWith($propertyAccessor, self::AKENEO_ATTRIBUTE_CODE, self::TRANSLATION_PROPERTY_PATH);
+        $this->beConstructedWith($propertyAccessor, $productTranslationFactory, self::AKENEO_ATTRIBUTE_CODE, self::TRANSLATION_PROPERTY_PATH);
     }
 
     function it_implements_value_handler_interface()
@@ -51,12 +51,31 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         ProductTranslationInterface $productTranslation,
         PropertyAccessorInterface $propertyAccessor
     ) {
+        $productTranslation->getLocale()->willReturn('en_US');
         $product->getTranslation('en_US')->shouldBeCalled()->willReturn($productTranslation);
 
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
 
         $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
+
+    function it_creates_product_translation_if_it_not_exists(
+        ProductInterface $product,
+        ProductTranslationInterface $fallbackProductTranslation,
+        PropertyAccessorInterface $propertyAccessor,
+        FactoryInterface $productTranslationFactory,
+        ProductTranslationInterface $newProductTranslation
+    ) {
+        $fallbackProductTranslation->getLocale()->willReturn('en_US');
+        $product->getTranslation('it_IT')->shouldBeCalled()->willReturn($fallbackProductTranslation);
+        $productTranslationFactory->createNew()->shouldBeCalled()->willReturn($newProductTranslation);
+        $product->addTranslation($newProductTranslation)->shouldBeCalled();
+
+        $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'it_IT', 'scope' => null, 'data' => 'New value']]);
+
+        $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
+    }
+
 
     function it_sets_value_on_all_product_translations_when_locale_not_specified(
         ProductInterface $product,

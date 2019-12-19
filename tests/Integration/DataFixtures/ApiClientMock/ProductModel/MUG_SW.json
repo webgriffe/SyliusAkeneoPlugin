@@ -10,13 +10,18 @@
         "locale": "en_US",
         "scope": null,
         "data": "New Star Wars mug name"
+      },
+      {
+        "locale": "it_IT",
+        "scope": null,
+        "data": "Nuovo nome tazza Star Wars"
       }
     ],
     "slug": [
       {
         "locale": null,
         "scope": null,
-        "data": "star-wars-mug"
+        "data": "new-star-wars-mug"
       }
     ],
     "price": [
