@@ -40,6 +40,11 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $this->supports(new Product(), 'another_attribute', [])->shouldReturn(false);
     }
 
+    function it_throws_when_handling_not_supported_attribute()
+    {
+        $this->shouldThrow(new \InvalidArgumentException('Cannot handle'))->during('handle', [new Product(), 'not_supported_attribute', []]);
+    }
+
     function it_sets_value_on_an_already_existent_product_translation(
         FactoryInterface $productTranslationFactory,
         ProductTranslationInterface $existingProductTranslation,
@@ -50,8 +55,8 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $product = new Product();
         $product->addTranslation($existingProductTranslation->getWrappedObject());
 
-        $this->handle($product, 'name', [['locale' => 'en_US', 'scope' => null, 'data' => 'New name']]);
+        $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
 
-        $propertyAccessor->setValue($existingProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New name')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($existingProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 }

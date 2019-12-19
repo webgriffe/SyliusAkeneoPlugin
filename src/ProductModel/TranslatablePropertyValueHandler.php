@@ -48,6 +48,9 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 
     public function handle(ProductInterface $product, string $attribute, array $value)
     {
+        if (!$this->supports($product, $attribute, $value)) {
+            throw new \InvalidArgumentException('Cannot handle');
+        }
         foreach ($value as $item) {
             /** @var ProductTranslationInterface $newTranslation */
             $newTranslation = $this->productTranslationFactory->createNew();
