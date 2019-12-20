@@ -37,10 +37,24 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_one_product()
+    public function it_updates_already_existent_product()
     {
         $this->fixtureLoader->load([__DIR__ . '/../DataFixtures/ORM/resources/product.yaml'], [], [], PurgeMode::createDeleteMode());
         $this->importer->import('MUG_SW');
+        $products = $this->productRepository->findAll();
+        $this->assertCount(1, $products);
+        $this->assertEquals('New Star Wars mug name', $products[0]->getTranslation('en_US')->getName());
+        $this->assertEquals('Nuovo nome tazza Star Wars', $products[0]->getTranslation('it_IT')->getName());
+        $this->assertEquals('new-star-wars-mug', $products[0]->getSlug());
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_new_product_if_it_does_not_exists()
+    {
+        $this->importer->import('MUG_SW');
+
         $products = $this->productRepository->findAll();
         $this->assertCount(1, $products);
         $this->assertEquals('New Star Wars mug name', $products[0]->getTranslation('en_US')->getName());

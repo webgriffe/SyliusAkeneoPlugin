@@ -66,6 +66,7 @@ final class Importer implements ImporterInterface
         }
         Assert::isInstanceOf($product, ProductInterface::class);
         /** @var ProductInterface $product */
+        $product->setCode($code);
         $this->categoriesHandler->handle($product, $productModelResponse['categories']);
 
         foreach ($productModelResponse['values'] as $attribute => $value) {
