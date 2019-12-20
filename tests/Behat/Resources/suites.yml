@@ -9,9 +9,10 @@ default:
                 - sylius.behat.context.setup.channel
                 - webgriffe_sylius_akeneo.context.setup.queue
 
-                - webgriffe_sylius_akeneo.context.cli.spool_command
+                - webgriffe_sylius_akeneo.context.cli.consume_command
 
                 - webgriffe_sylius_akeneo.context.db.product
+                - webgriffe_sylius_akeneo.context.db.queue
 
             filters:
                 tags: "@importing_products"

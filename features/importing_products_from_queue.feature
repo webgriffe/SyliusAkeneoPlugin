@@ -6,6 +6,7 @@ Feature: Importing products from queue
 
   Scenario: Importing single product model from queue
     Given the store operates on a single channel
-    And there is one product model to import with identifier "model-braided-hat" in the Akeneo queue
+    And there is one product model to import with identifier "MUG_SW" in the Akeneo queue
     When I import products from queue
-    Then the product "model-braided-hat" should exists with the right data
+    Then the product "MUG_SW" should exists with the right data
+    And the queue item has been marked as imported
