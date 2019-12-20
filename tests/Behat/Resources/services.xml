@@ -4,7 +4,10 @@
     <services>
         <defaults public="true" />
 
-        <service id="webgriffe_sylius_akeneo.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext" />
+        <service id="webgriffe_sylius_akeneo.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
+            <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item" />
+            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
+        </service>
 
         <service id="webgriffe_sylius_akeneo.context.cli.spool_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\SpoolCommandContext" />
 
