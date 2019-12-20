@@ -53,7 +53,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         }
         foreach ($value as $item) {
             if (!$item['locale']) {
-                $translation = $this->setValueOnAllTranslations($product, $item);
+                $this->setValueOnAllTranslations($product, $item);
                 continue;
             }
             $translation = $product->getTranslation($item['locale']);
@@ -80,6 +80,5 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 $value['data']
             );
         }
-        return $translation;
     }
 }
