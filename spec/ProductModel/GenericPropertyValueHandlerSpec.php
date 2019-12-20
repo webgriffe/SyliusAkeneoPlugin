@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ProductModel;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Core\Model\ProductInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -14,6 +14,7 @@ use Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerInterface;
 class GenericPropertyValueHandlerSpec extends ObjectBehavior
 {
     private const AKENEO_ATTRIBUTE_CODE = 'akeneo_attribute_code';
+
     private const PROPERTY_PATH = 'property_path';
 
     function let(PropertyAccessorInterface $propertyAccessor)

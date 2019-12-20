@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
@@ -8,17 +9,13 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 final class GenericPropertyValueHandler implements ValueHandlerInterface
 {
-    /**
-     * @var PropertyAccessorInterface
-     */
+    /** @var PropertyAccessorInterface */
     private $propertyAccessor;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     private $akeneoAttributeCode;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     private $propertyPath;
 
     public function __construct(
@@ -43,7 +40,7 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                 sprintf(
                     'Cannot handle Akeneo attribute "%s". %s only supports Akeneo attribute "%s".',
                     'not_supported_property',
-                    GenericPropertyValueHandler::class,
+                    self::class,
                     $this->akeneoAttributeCode
                 )
             );

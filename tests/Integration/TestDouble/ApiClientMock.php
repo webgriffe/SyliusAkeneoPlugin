@@ -26,7 +26,6 @@ final class ApiClientMock implements ApiClientInterface
     }
 
     /**
-     * @param string $filename
      * @return mixed|null
      */
     private function jsonDecodeOrNull(string $filename)
@@ -34,6 +33,7 @@ final class ApiClientMock implements ApiClientInterface
         if (file_exists($filename)) {
             return json_decode(file_get_contents($filename), true);
         }
+
         return null;
     }
 }

@@ -6,19 +6,17 @@ namespace spec\Webgriffe\SyliusAkeneoPlugin\ProductModel;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Core\Model\ProductInterface;
-use Sylius\Component\Core\Model\ProductTranslation;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Webgriffe\SyliusAkeneoPlugin\ProductModel\TranslatablePropertyValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerInterface;
 
 class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
 {
     private const AKENEO_ATTRIBUTE_CODE = 'akeneo_attribute_code';
+
     private const TRANSLATION_PROPERTY_PATH = 'translation_property_path';
 
     function let(PropertyAccessorInterface $propertyAccessor, FactoryInterface $productTranslationFactory)
@@ -75,7 +73,6 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
 
         $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
-
 
     function it_sets_value_on_all_product_translations_when_locale_not_specified(
         ProductInterface $product,

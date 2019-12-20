@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
 
-
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
@@ -14,17 +13,13 @@ use Webmozart\Assert\Assert;
 
 final class FamilyVariantHandler implements FamilyVariantHandlerInterface
 {
-    /**
-     * @var FactoryInterface
-     */
+    /** @var FactoryInterface */
     private $productOptionFactory;
-    /**
-     * @var ProductOptionRepositoryInterface
-     */
+
+    /** @var ProductOptionRepositoryInterface */
     private $productOptionRepository;
-    /**
-     * @var ApiClientInterface
-     */
+
+    /** @var ApiClientInterface */
     private $apiClient;
 
     public function __construct(
@@ -66,6 +61,7 @@ final class FamilyVariantHandler implements FamilyVariantHandlerInterface
                 return true;
             }
         }
+
         return false;
     }
 }

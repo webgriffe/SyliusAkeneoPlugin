@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
 
-
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
@@ -12,21 +11,16 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 {
-    /**
-     * @var PropertyAccessorInterface
-     */
+    /** @var PropertyAccessorInterface */
     private $propertyAccessor;
-    /**
-     * @var FactoryInterface
-     */
+
+    /** @var FactoryInterface */
     private $productTranslationFactory;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     private $akeneoAttributeCode;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     private $translationPropertyPath;
 
     public function __construct(
@@ -54,6 +48,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         foreach ($value as $item) {
             if (!$item['locale']) {
                 $this->setValueOnAllTranslations($product, $item);
+
                 continue;
             }
             $translation = $product->getTranslation($item['locale']);

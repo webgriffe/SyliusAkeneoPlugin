@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
 
-use Sylius\Component\Core\Model\ProductTranslation;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
@@ -14,29 +13,22 @@ use Webmozart\Assert\Assert;
 
 final class Importer implements ImporterInterface
 {
-    /**
-     * @var ProductRepositoryInterface
-     */
+    /** @var ProductRepositoryInterface */
     private $productRepository;
-    /**
-     * @var ProductFactoryInterface
-     */
+
+    /** @var ProductFactoryInterface */
     private $productFactory;
-    /**
-     * @var CategoriesHandlerInterface
-     */
+
+    /** @var CategoriesHandlerInterface */
     private $categoriesHandler;
-    /**
-     * @var FamilyVariantHandlerInterface
-     */
+
+    /** @var FamilyVariantHandlerInterface */
     private $familyVariantHandler;
-    /**
-     * @var ValueHandlerResolverInterface
-     */
+
+    /** @var ValueHandlerResolverInterface */
     private $valueHandlerResolver;
-    /**
-     * @var ApiClientInterface
-     */
+
+    /** @var ApiClientInterface */
     private $apiClient;
 
     public function __construct(

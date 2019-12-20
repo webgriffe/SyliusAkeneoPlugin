@@ -12,17 +12,13 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
 final class QueueContext implements Context
 {
-    /**
-     * @var FactoryInterface
-     */
+    /** @var FactoryInterface */
     private $queueItemFactory;
-    /**
-     * @var QueueItemRepositoryInterface
-     */
+
+    /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
-    /**
-     * @var SharedStorageInterface
-     */
+
+    /** @var SharedStorageInterface */
     private $sharedStorage;
 
     public function __construct(

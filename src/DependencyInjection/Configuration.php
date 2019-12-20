@@ -27,7 +27,6 @@ final class Configuration implements ConfigurationInterface
             $rootNode = $treeBuilder->root('webgriffe_sylius_akeneo_plugin');
         }
 
-
         $rootNode
             ->children()
                 ->arrayNode('resources')

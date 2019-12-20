@@ -14,17 +14,13 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
 final class ConsumeCommandContext implements Context
 {
-    /**
-     * @var KernelInterface
-     */
+    /** @var KernelInterface */
     private $kernel;
-    /**
-     * @var QueueItemRepositoryInterface
-     */
+
+    /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
-    /**
-     * @var ImporterInterface
-     */
+
+    /** @var ImporterInterface */
     private $productModelImporter;
 
     public function __construct(

@@ -10,7 +10,7 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 class QueueItemRepository extends EntityRepository implements QueueItemRepositoryInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function findAllToImport(): array
     {

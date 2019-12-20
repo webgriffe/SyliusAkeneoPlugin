@@ -22,7 +22,7 @@ final class PriorityValueHandlerResolver implements ValueHandlerResolverInterfac
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function resolve(ProductInterface $product, string $attribute, array $value): ?ValueHandlerInterface
     {
@@ -33,6 +33,7 @@ final class PriorityValueHandlerResolver implements ValueHandlerResolverInterfac
                 return $valueHandler;
             }
         }
+
         return null;
     }
 }

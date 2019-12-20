@@ -14,17 +14,13 @@ use Webmozart\Assert\Assert;
 
 final class CategoriesHandler implements CategoriesHandlerInterface
 {
-    /**
-     * @var TaxonRepositoryInterface
-     */
+    /** @var TaxonRepositoryInterface */
     private $taxonRepository;
-    /**
-     * @var ProductTaxonRepositoryInterface
-     */
+
+    /** @var ProductTaxonRepositoryInterface */
     private $productTaxonRepository;
-    /**
-     * @var FactoryInterface
-     */
+
+    /** @var FactoryInterface */
     private $productTaxonFactory;
 
     public function __construct(

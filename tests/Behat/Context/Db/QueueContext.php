@@ -11,9 +11,7 @@ use Webmozart\Assert\Assert;
 
 final class QueueContext implements Context
 {
-    /**
-     * @var SharedStorageInterface
-     */
+    /** @var SharedStorageInterface */
     private $sharedStorage;
 
     public function __construct(SharedStorageInterface $sharedStorage)
