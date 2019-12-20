@@ -8,6 +8,8 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 
 interface QueueItemInterface extends ResourceInterface
 {
+    public const AKENEO_ENTITY_PRODUCT_MODEL = 'ProductModel';
+
     public function getAkeneoEntity(): string;
 
     public function getAkeneoIdentifier(): string;
