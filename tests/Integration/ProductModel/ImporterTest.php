@@ -6,6 +6,7 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\ProductModel;
 
 use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Fidry\AliceDataFixtures\Persistence\PurgeMode;
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
@@ -41,6 +42,7 @@ final class ImporterTest extends KernelTestCase
     {
         $this->fixtureLoader->load([__DIR__ . '/../DataFixtures/ORM/resources/product.yaml'], [], [], PurgeMode::createDeleteMode());
         $this->importer->import('MUG_SW');
+        /** @var ProductInterface[] $products */
         $products = $this->productRepository->findAll();
         $this->assertCount(1, $products);
         $this->assertEquals('New Star Wars mug name', $products[0]->getTranslation('en_US')->getName());
@@ -54,7 +56,7 @@ final class ImporterTest extends KernelTestCase
     public function it_creates_new_product_if_it_does_not_exists()
     {
         $this->importer->import('MUG_SW');
-
+        /** @var ProductInterface[] $products */
         $products = $this->productRepository->findAll();
         $this->assertCount(1, $products);
         $this->assertEquals('New Star Wars mug name', $products[0]->getTranslation('en_US')->getName());
