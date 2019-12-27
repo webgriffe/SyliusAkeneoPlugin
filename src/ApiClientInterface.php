@@ -11,4 +11,6 @@ interface ApiClientInterface
     public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array;
 
     public function findAttribute(string $code): ?array;
+
+    public function downloadFile(string $url): \SplFileInfo;
 }
