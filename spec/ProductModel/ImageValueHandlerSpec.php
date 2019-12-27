@@ -16,14 +16,16 @@ use Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerInterface;
 class ImageValueHandlerSpec extends ObjectBehavior
 {
     private const AKENEO_ATTRIBUTE_CODE = 'akeneo_attribute_code';
+
     private const SYLIUS_IMAGE_TYPE = 'sylius_image_type';
+
     private const AKENEO_IMAGE_ATTRIBUTE_DATA = [
         [
             'locale' => null,
             'scope' => null,
             'data' => 'path/to/a/file.jpg',
-            '_links' => ['download' => ['href' => 'download-url']]
-        ]
+            '_links' => ['download' => ['href' => 'download-url']],
+        ],
     ];
 
     function let(

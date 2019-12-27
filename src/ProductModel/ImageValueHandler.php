@@ -12,21 +12,16 @@ use Webmozart\Assert\Assert;
 
 final class ImageValueHandler implements ValueHandlerInterface
 {
-    /**
-     * @var FactoryInterface
-     */
+    /** @var FactoryInterface */
     private $productImageFactory;
-    /**
-     * @var ApiClientInterface
-     */
+
+    /** @var ApiClientInterface */
     private $apiClient;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     private $akeneoAttributeCode;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     private $syliusImageType;
 
     public function __construct(
