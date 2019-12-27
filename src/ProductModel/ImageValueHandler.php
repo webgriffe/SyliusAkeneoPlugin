@@ -43,13 +43,19 @@ final class ImageValueHandler implements ValueHandlerInterface
 
     public function handle(ProductInterface $product, string $attribute, array $value)
     {
+        $downloadUrl = $value[0]['_links']['download']['href'] ?? null;
+        if (!is_string($downloadUrl)) {
+            throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find download URL.');
+        }
+        $imageFile = $this->apiClient->downloadFile($downloadUrl);
         $productImage = $this->productImageFactory->createNew();
         Assert::isInstanceOf($productImage, ImageInterface::class);
         /** @var ImageInterface $productImage */
         $productImage->setType($this->syliusImageType);
-        $imageFile = $this->apiClient->downloadFile($value[0]['_links']['download']['href']);
         $productImage->setFile($imageFile);
-
+        foreach ($product->getImagesByType($this->syliusImageType) as $existentImage) {
+            $product->removeImage($existentImage);
+        }
         $product->addImage($productImage);
     }
 }

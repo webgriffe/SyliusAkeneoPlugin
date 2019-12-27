@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ProductModel;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\ImageInterface;
@@ -32,10 +33,13 @@ class ImageValueHandlerSpec extends ObjectBehavior
         FactoryInterface $productImageFactory,
         ImageInterface $productImage,
         ApiClientInterface $apiClient,
-        \SplFileInfo $imageFile
+        \SplFileInfo $imageFile,
+        ProductInterface $product
     ) {
         $productImageFactory->createNew()->willReturn($productImage);
         $apiClient->downloadFile(Argument::type('string'))->willReturn($imageFile);
+        $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([]));
+        $product->addImage($productImage)->hasReturnVoid();
         $this->beConstructedWith(
             $productImageFactory,
             $apiClient,
@@ -97,5 +101,23 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
         $productImage->setType(self::SYLIUS_IMAGE_TYPE)->shouldHaveBeenCalled();
+    }
+
+    function it_removes_already_existent_product_image_of_the_provided_type_when_handling(
+        ProductInterface $product,
+        ImageInterface $existentProductImage
+    ) {
+        $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]));
+
+        $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
+
+        $product->removeImage($existentProductImage)->shouldHaveBeenCalled();
+    }
+
+    function it_throws_with_invalid_akeneo_image_data_during_handling(ProductInterface $product)
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo image data. Cannot find download URL.'))
+            ->during('handle', [$product, self::AKENEO_ATTRIBUTE_CODE, [['malformed' => 'data']]]);
     }
 }
