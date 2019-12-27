@@ -20,4 +20,9 @@ final class ApiClient implements ApiClientInterface
     {
         // TODO: Implement findAttribute() method.
     }
+
+    public function downloadFile(string $url): \SplFileInfo
+    {
+        // TODO: Implement downloadFile() method.
+    }
 }
