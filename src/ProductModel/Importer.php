@@ -78,5 +78,7 @@ final class Importer implements ImporterInterface
         $this->familyVariantHandler->handle($product, $familyVariantResponse);
 
         $this->productRepository->add($product);
+        // TODO We should dispatch sylius.product.pre/post_create/update events. For example, the ImageValueHandler
+        //      assumes that the \Sylius\Bundle\CoreBundle\EventListener\ImagesUploadListener is triggered.
     }
 }
