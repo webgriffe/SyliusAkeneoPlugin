@@ -2,3 +2,41 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en_US
+
+services:
+    webgriffe_sylius_akeneo.product_model.name_value_handler:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\TranslatablePropertyValueHandler'
+        arguments:
+            - '@property_accessor'
+            - '@sylius.factory.product_translation'
+            - 'name'
+            - 'name'
+
+    webgriffe_sylius_akeneo.product_model.slug_value_handler:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\TranslatablePropertyValueHandler'
+        arguments:
+            - '@property_accessor'
+            - '@sylius.factory.product_translation'
+            - 'slug'
+            - 'slug'
+
+    webgriffe_sylius_akeneo.product_model.picture_value_handler:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\ImageValueHandler'
+        arguments:
+            - '@sylius.factory.product_image'
+            - '@webgriffe_sylius_akeneo.api_client'
+            - 'picture'
+            - 'main'
+
+    webgriffe_sylius_akeneo.product_model.value_handler_resolver:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\PriorityValueHandlerResolver'
+        calls:
+            - method: add
+              arguments:
+                  - '@webgriffe_sylius_akeneo.product_model.name_value_handler'
+            - method: add
+              arguments:
+                  - '@webgriffe_sylius_akeneo.product_model.slug_value_handler'
+            - method: add
+              arguments:
+                  - '@webgriffe_sylius_akeneo.product_model.picture_value_handler'
