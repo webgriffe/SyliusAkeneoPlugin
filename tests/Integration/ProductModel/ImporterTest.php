@@ -44,6 +44,8 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals('New Star Wars mug name', $products[0]->getTranslation('en_US')->getName());
         $this->assertEquals('Nuovo nome tazza Star Wars', $products[0]->getTranslation('it_IT')->getName());
         $this->assertEquals('new-star-wars-mug', $products[0]->getSlug());
+        $this->assertCount(1, $products[0]->getImages());
+        $this->assertEquals('main', $products[0]->getImages()[0]->getType());
     }
 
     /**
@@ -58,5 +60,7 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals('New Star Wars mug name', $products[0]->getTranslation('en_US')->getName());
         $this->assertEquals('Nuovo nome tazza Star Wars', $products[0]->getTranslation('it_IT')->getName());
         $this->assertEquals('new-star-wars-mug', $products[0]->getSlug());
+        $this->assertCount(1, $products[0]->getImages());
+        $this->assertEquals('main', $products[0]->getImages()[0]->getType());
     }
 }
