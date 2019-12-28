@@ -33,9 +33,8 @@ final class Importer implements ImporterInterface
 
     /** @var ApiClientInterface */
     private $apiClient;
-    /**
-     * @var EventDispatcherInterface
-     */
+
+    /** @var EventDispatcherInterface */
     private $eventDispatcher;
 
     public function __construct(
@@ -99,6 +98,7 @@ final class Importer implements ImporterInterface
     {
         $event = new ResourceControllerEvent($product);
         $this->eventDispatcher->dispatch(sprintf('sylius.product.pre_%s', $eventName), $event);
+
         return $event;
     }
 
@@ -106,6 +106,7 @@ final class Importer implements ImporterInterface
     {
         $event = new ResourceControllerEvent($product);
         $this->eventDispatcher->dispatch(sprintf('sylius.product.post_%s', $eventName), $event);
+
         return $event;
     }
 }
