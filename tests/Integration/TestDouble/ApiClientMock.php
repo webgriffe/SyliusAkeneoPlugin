@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 
+use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 
 final class ApiClientMock implements ApiClientInterface
@@ -48,6 +49,6 @@ final class ApiClientMock implements ApiClientInterface
         $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
         file_put_contents($tempName, file_get_contents($path));
 
-        return new \SplFileInfo($tempName);
+        return new File($tempName);
     }
 }
