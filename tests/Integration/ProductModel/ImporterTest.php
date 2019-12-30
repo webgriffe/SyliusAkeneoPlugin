@@ -36,7 +36,16 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_updates_already_existent_product()
     {
-        $this->fixtureLoader->load([__DIR__ . '/../DataFixtures/ORM/resources/product.yaml'], [], [], PurgeMode::createDeleteMode());
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/it_IT_locale.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/product.yaml'
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
         $this->importer->import('MUG_SW');
         /** @var ProductInterface[] $products */
         $products = $this->productRepository->findAll();
@@ -53,6 +62,15 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_creates_new_product_if_it_does_not_exists()
     {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/it_IT_locale.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
         $this->importer->import('MUG_SW');
         /** @var ProductInterface[] $products */
         $products = $this->productRepository->findAll();

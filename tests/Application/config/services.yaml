@@ -9,6 +9,7 @@ services:
         arguments:
             - '@property_accessor'
             - '@sylius.factory.product_translation'
+            - '@sylius.translation_locale_provider.admin'
             - 'name'
             - 'name'
 
@@ -17,6 +18,7 @@ services:
         arguments:
             - '@property_accessor'
             - '@sylius.factory.product_translation'
+            - '@sylius.translation_locale_provider.admin'
             - 'slug'
             - 'slug'
 

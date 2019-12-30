@@ -7,6 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 final class TranslatablePropertyValueHandler implements ValueHandlerInterface
@@ -17,6 +18,11 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     /** @var FactoryInterface */
     private $productTranslationFactory;
 
+    /**
+     * @var TranslationLocaleProviderInterface
+     */
+    private $localeProvider;
+
     /** @var string */
     private $akeneoAttributeCode;
 
@@ -26,11 +32,13 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     public function __construct(
         PropertyAccessorInterface $propertyAccessor,
         FactoryInterface $productTranslationFactory,
+        TranslationLocaleProviderInterface $localeProvider,
         string $akeneoAttributeCode,
         string $translationPropertyPath
     ) {
         $this->propertyAccessor = $propertyAccessor;
         $this->productTranslationFactory = $productTranslationFactory;
+        $this->localeProvider = $localeProvider;
         $this->akeneoAttributeCode = $akeneoAttributeCode;
         $this->translationPropertyPath = $translationPropertyPath;
     }
@@ -46,18 +54,13 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
             throw new \InvalidArgumentException('Cannot handle');
         }
         foreach ($value as $item) {
-            if (!$item['locale']) {
+            $localeCode = $item['locale'];
+            if (!$localeCode) {
                 $this->setValueOnAllTranslations($product, $item);
 
                 continue;
             }
-            $translation = $product->getTranslation($item['locale']);
-            if ($translation->getLocale() !== $item['locale']) {
-                /** @var ProductTranslationInterface $translation */
-                $translation = $this->productTranslationFactory->createNew();
-                $translation->setLocale($item['locale']);
-                $product->addTranslation($translation);
-            }
+            $translation = $this->getOrCreateNewProductTranslation($product, $localeCode);
             $this->propertyAccessor->setValue(
                 $translation,
                 $this->translationPropertyPath,
@@ -66,14 +69,29 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         }
     }
 
-    private function setValueOnAllTranslations(ProductInterface $product, array $value)
+    private function setValueOnAllTranslations(ProductInterface $product, array $value): void
     {
-        foreach ($product->getTranslations() as $translation) {
+        foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
+            $translation = $this->getOrCreateNewProductTranslation($product, $localeCode);
             $this->propertyAccessor->setValue(
                 $translation,
                 $this->translationPropertyPath,
                 $value['data']
             );
         }
+    }
+
+    private function getOrCreateNewProductTranslation(
+        ProductInterface $product,
+        string $localeCode
+    ): ProductTranslationInterface {
+        $translation = $product->getTranslation($localeCode);
+        if ($translation->getLocale() !== $localeCode) {
+            /** @var ProductTranslationInterface $translation */
+            $translation = $this->productTranslationFactory->createNew();
+            $translation->setLocale($localeCode);
+            $product->addTranslation($translation);
+        }
+        return $translation;
     }
 }
