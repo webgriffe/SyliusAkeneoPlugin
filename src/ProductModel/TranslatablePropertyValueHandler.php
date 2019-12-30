@@ -18,9 +18,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     /** @var FactoryInterface */
     private $productTranslationFactory;
 
-    /**
-     * @var TranslationLocaleProviderInterface
-     */
+    /** @var TranslationLocaleProviderInterface */
     private $localeProvider;
 
     /** @var string */
@@ -92,6 +90,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
             $translation->setLocale($localeCode);
             $product->addTranslation($translation);
         }
+
         return $translation;
     }
 }

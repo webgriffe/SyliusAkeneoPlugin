@@ -40,7 +40,7 @@ final class ImporterTest extends KernelTestCase
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/it_IT_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/product.yaml'
+                __DIR__ . '/../DataFixtures/ORM/resources/product.yaml',
             ],
             [],
             [],
@@ -91,7 +91,7 @@ final class ImporterTest extends KernelTestCase
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/it_IT_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/size_product_option.yaml'
+                __DIR__ . '/../DataFixtures/ORM/resources/size_product_option.yaml',
             ],
             [],
             [],
