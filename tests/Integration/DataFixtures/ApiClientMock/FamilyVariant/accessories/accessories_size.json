@@ -1,0 +1,22 @@
+{
+    "code": "accessories_size",
+    "labels": {
+        "de_DE": "Accessories by size",
+        "en_US": "Accessories by size",
+        "fr_FR": "Accessoires par taille"
+    },
+    "variant_attribute_sets": [
+        {
+            "level": 1,
+            "axes": [
+                "size"
+            ],
+            "attributes": [
+                "sku",
+                "weight",
+                "size",
+                "ean"
+            ]
+        }
+    ]
+}
