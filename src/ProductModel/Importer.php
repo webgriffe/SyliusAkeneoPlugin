@@ -59,6 +59,7 @@ final class Importer implements ImporterInterface
     {
         /** @var array $productModelResponse */
         $productModelResponse = $this->apiClient->findProductModel($identifier);
+        // TODO Handle the case where product model doesn't exists
         $code = $productModelResponse['code'];
         $product = $this->productRepository->findOneByCode($code);
         $eventName = 'update';

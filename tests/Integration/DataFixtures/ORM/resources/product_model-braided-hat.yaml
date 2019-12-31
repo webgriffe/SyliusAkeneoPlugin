@@ -1,0 +1,15 @@
+Sylius\Component\Core\Model\ProductTranslation:
+  model-braided-hat_en_US:
+    locale: "en_US"
+    name: "Braided Hat"
+    slug: "braided-hat"
+    description: <paragraph(2)>
+    translatable: "@model-braided-hat"
+
+Sylius\Component\Core\Model\Product:
+  model-braided-hat:
+    fallbackLocale: "en_US"
+    currentLocale: "en_US"
+    code: "model-braided-hat"
+    translations:
+      - "@model-braided-hat_en_US"

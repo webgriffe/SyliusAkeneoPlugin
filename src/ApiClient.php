@@ -25,4 +25,9 @@ final class ApiClient implements ApiClientInterface
     {
         // TODO: Implement downloadFile() method.
     }
+
+    public function findProduct(string $code): ?array
+    {
+        // TODO: Implement findProduct() method.
+    }
 }
