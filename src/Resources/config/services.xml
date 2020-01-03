@@ -6,6 +6,7 @@
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.importer" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.importer" />
             <tag name="console.command" />
         </service>
 
@@ -41,8 +42,7 @@
         </service>
 
         <!-- Product -->
-        <!-- TODO remove public="true" when webgriffe_sylius_akeneo.product.importer will be used by command -->
-        <service id="webgriffe_sylius_akeneo.product.importer" class="Webgriffe\SyliusAkeneoPlugin\Product\Importer" public="true">
+        <service id="webgriffe_sylius_akeneo.product.importer" class="Webgriffe\SyliusAkeneoPlugin\Product\Importer">
             <argument type="service" id="sylius.factory.product_variant" />
             <argument type="service" id="sylius.repository.product_variant" />
             <argument type="service" id="sylius.repository.product" />

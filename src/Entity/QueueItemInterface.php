@@ -10,6 +10,8 @@ interface QueueItemInterface extends ResourceInterface
 {
     public const AKENEO_ENTITY_PRODUCT_MODEL = 'ProductModel';
 
+    public const AKENEO_ENTITY_PRODUCT = 'Product';
+
     public function getAkeneoEntity(): string;
 
     public function getAkeneoIdentifier(): string;

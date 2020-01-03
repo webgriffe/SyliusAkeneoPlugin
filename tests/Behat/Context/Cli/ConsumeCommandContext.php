@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand;
-use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
 final class ConsumeCommandContext implements Context
@@ -20,17 +19,17 @@ final class ConsumeCommandContext implements Context
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
 
-    /** @var ImporterInterface */
-    private $productModelImporter;
+    /** @var ConsumeCommand */
+    private $consumeCommand;
 
     public function __construct(
         KernelInterface $kernel,
         QueueItemRepositoryInterface $queueItemRepository,
-        ImporterInterface $productModelImporter
+        ConsumeCommand $consumeCommand
     ) {
         $this->kernel = $kernel;
         $this->queueItemRepository = $queueItemRepository;
-        $this->productModelImporter = $productModelImporter;
+        $this->consumeCommand = $consumeCommand;
     }
 
     /**
@@ -39,7 +38,7 @@ final class ConsumeCommandContext implements Context
     public function iImportProductsFromQueue()
     {
         $application = new Application($this->kernel);
-        $application->add(new ConsumeCommand($this->queueItemRepository, $this->productModelImporter));
+        $application->add($this->consumeCommand);
         $command = $application->find('webgriffe:akeneo:consume');
         $commandTester = new CommandTester($command);
         $commandTester->execute(['command' => 'webgriffe:akeneo:consume']);

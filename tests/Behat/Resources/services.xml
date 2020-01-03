@@ -13,11 +13,12 @@
         <service id="webgriffe_sylius_akeneo.context.cli.consume_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ConsumeCommandContext">
             <argument type="service" id="kernel" />
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product_model.importer" />
+            <argument type="service" id="webgriffe_sylius_akeneo.command.consume" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.db.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ProductContext">
             <argument type="service" id="sylius.repository.product" />
+            <argument type="service" id="sylius.repository.product_variant" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\QueueContext">
