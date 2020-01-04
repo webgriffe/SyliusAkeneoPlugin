@@ -38,9 +38,9 @@ final class ImporterTest extends KernelTestCase
     {
         $this->fixtureLoader->load(
             [
-                __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/it_IT_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/product.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_SW.yaml',
             ],
             [],
             [],
@@ -64,8 +64,8 @@ final class ImporterTest extends KernelTestCase
     {
         $this->fixtureLoader->load(
             [
-                __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/it_IT_locale.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
             ],
             [],
             [],
@@ -89,9 +89,9 @@ final class ImporterTest extends KernelTestCase
     {
         $this->fixtureLoader->load(
             [
-                __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/it_IT_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/size_product_option.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOption/size.yaml',
             ],
             [],
             [],

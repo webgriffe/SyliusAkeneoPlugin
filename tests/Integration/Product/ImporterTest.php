@@ -42,8 +42,8 @@ final class ImporterTest extends KernelTestCase
     {
         $this->fixtureLoader->load(
             [
-                __DIR__ . '/../DataFixtures/ORM/resources/en_US_locale.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/product_model-braided-hat.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
             ],
             [],
             [],
