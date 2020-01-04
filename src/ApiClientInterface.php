@@ -15,4 +15,6 @@ interface ApiClientInterface
     public function findProduct(string $code): ?array;
 
     public function downloadFile(string $url): \SplFileInfo;
+
+    public function findAttributeOption(string $attributeCode, string $optionCode): ?array;
 }

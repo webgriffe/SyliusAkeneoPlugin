@@ -30,4 +30,9 @@ final class ApiClient implements ApiClientInterface
     {
         // TODO: Implement findProduct() method.
     }
+
+    public function findAttributeOption(string $attributeCode, string $optionCode): ?array
+    {
+        // TODO: Implement findAttributeOption() method.
+    }
 }

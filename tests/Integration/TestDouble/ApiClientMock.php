@@ -31,6 +31,13 @@ final class ApiClientMock implements ApiClientInterface
         return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Product/' . $code . '.json');
     }
 
+    public function findAttributeOption(string $attributeCode, string $optionCode): ?array
+    {
+        return $this->jsonDecodeOrNull(
+            __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '/' . $optionCode . '.json'
+        );
+    }
+
     /**
      * @return mixed|null
      */

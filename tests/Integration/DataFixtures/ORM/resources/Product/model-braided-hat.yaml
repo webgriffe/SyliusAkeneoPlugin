@@ -1,3 +1,17 @@
+Sylius\Component\Product\Model\ProductOption:
+  size:
+    code: "size"
+
+Sylius\Component\Product\Model\ProductOptionTranslation:
+  size_en_US:
+    translatable: "@size"
+    locale: "en_US"
+    name: "Size"
+  size_it_IT:
+    translatable: "@size"
+    locale: "it_IT"
+    name: "Taglia"
+
 Sylius\Component\Core\Model\ProductTranslation:
   model-braided-hat_en_US:
     locale: "en_US"
@@ -13,3 +27,5 @@ Sylius\Component\Core\Model\Product:
     code: "model-braided-hat"
     translations:
       - "@model-braided-hat_en_US"
+    options:
+      - "@size"
