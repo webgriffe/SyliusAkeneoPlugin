@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
@@ -70,6 +71,11 @@ final class Importer implements ImporterInterface
         if (!$productVariantResponse) {
             throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
         }
+
+        /** @var ProductVariantInterface $productVariant */
+        $productVariant = $this->productVariantFactory->createNew();
+        $productVariant->setCode($identifier);
+
         $parentCode = $productVariantResponse['parent'];
         // TODO Handle $parentCode=null (it happens when Product doesn't belong to a ProductModel) so the importer
         //      should also create the related Sylius Product
@@ -83,44 +89,59 @@ final class Importer implements ImporterInterface
                 )
             );
         }
-        if (count($product->getOptions()) !== 1) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Cannot import Akeneo product "%s", the parent product "%s" has an invalid number of options. ' .
-                    'This importer only supports single option products but this product has "%d" options.',
-                    $identifier,
-                    $parentCode,
-                    count($product->getOptions())
-                )
-            );
+        $productVariant->setProduct($product);
+
+        /**
+         * @var string
+         * @var array $value
+         */
+        foreach ($productVariantResponse['values'] as $attribute => $value) {
+            if ($this->isVariantOption($productVariant, $attribute)) {
+                $optionValue = $this->getOrCreateProductOptionValue($productVariant, $attribute, $value);
+
+                $productVariant->addOptionValue($optionValue);
+                $this->productOptionValueRepository->add($optionValue);
+            }
         }
-        $optionCode = $product->getOptions()[0]->getCode();
-        if (!array_key_exists($optionCode, $productVariantResponse['values']) ||
-            count($productVariantResponse['values'][$optionCode]) === 0
-        ) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Cannot import Akeneo product "%s", the option of the parent product "%s" is "%s". ' .
-                    'But no value for this attribute is set on Akeneo.',
-                    $identifier,
-                    $parentCode,
-                    $optionCode
-                )
-            );
+
+        $this->productVariantRepository->add($productVariant);
+    }
+
+    private function isVariantOption(ProductVariantInterface $productVariant, string $attribute): bool
+    {
+        $product = $productVariant->getProduct();
+        Assert::isInstanceOf($product, ProductInterface::class);
+        /** @var ProductInterface $product */
+        foreach ($product->getOptions() as $option) {
+            if ($attribute === $option->getCode()) {
+                return true;
+            }
         }
-        if (count($productVariantResponse['values'][$optionCode]) > 1) {
+
+        return false;
+    }
+
+    private function getOrCreateProductOptionValue(
+        ProductVariantInterface $productVariant,
+        string $optionCode,
+        array $value
+    ): ProductOptionValueInterface {
+        $product = $productVariant->getProduct();
+        Assert::isInstanceOf($product, ProductInterface::class);
+        /** @var ProductInterface $product */
+        if (count($value) > 1) {
             throw new \RuntimeException(
                 sprintf(
                     'Cannot import Akeneo product "%s", the option of the parent product "%s" is "%s". ' .
                     'More than one value is set for this attribute on Akeneo but this importer only supports single ' .
                     'value for product options.',
-                    $identifier,
-                    $parentCode,
+                    $productVariant->getCode(),
+                    $product->getCode(),
                     $optionCode
                 )
             );
         }
-        $partialValueCode = $productVariantResponse['values'][$optionCode][0]['data'];
+        $partialValueCode = $value[0]['data'];
         $fullValueCode = $optionCode . '_' . $partialValueCode;
         // TODO Try to check if option value already exists
         $akeneoAttributeOption = $this->apiClient->findAttributeOption($optionCode, $partialValueCode);
@@ -129,8 +150,8 @@ final class Importer implements ImporterInterface
                 sprintf(
                     'Cannot import Akeneo product "%s", the option of the parent product "%s" is "%s". ' .
                     'The option value for this variant is "%s" but there is no such option on Akeneo.',
-                    $identifier,
-                    $parentCode,
+                    $productVariant->getCode(),
+                    $product->getCode(),
                     $optionCode,
                     $partialValueCode
                 )
@@ -142,8 +163,8 @@ final class Importer implements ImporterInterface
                 sprintf(
                     'Cannot import Akeneo product "%s", the option of the parent product "%s" is "%s" but this ' .
                     'doesn\'t exist on Sylius and it should.',
-                    $identifier,
-                    $parentCode,
+                    $productVariant->getCode(),
+                    $product->getCode(),
                     $optionCode
                 )
             );
@@ -154,20 +175,14 @@ final class Importer implements ImporterInterface
         $optionValue = $this->productOptionValueFactory->createNew();
         $optionValue->setCode($fullValueCode);
         $optionValue->setOption($productOption);
-        foreach ($akeneoAttributeOption['labels'] as $localeCode => $value) {
+        foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
             /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
             $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
             $optionValueTranslation->setLocale($localeCode);
-            $optionValueTranslation->setValue($value);
+            $optionValueTranslation->setValue($label);
             $optionValue->addTranslation($optionValueTranslation);
-            $this->productOptionValueRepository->add($optionValue);
         }
 
-        /** @var ProductVariantInterface $productVariant */
-        $productVariant = $this->productVariantFactory->createNew();
-        $productVariant->setProduct($product);
-        $productVariant->setCode($identifier);
-        $productVariant->addOptionValue($optionValue);
-        $this->productVariantRepository->add($productVariant);
+        return $optionValue;
     }
 }
