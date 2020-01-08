@@ -50,9 +50,12 @@ final class Importer implements ImporterInterface
             throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
         }
 
-        /** @var ProductVariantInterface $productVariant */
-        $productVariant = $this->productVariantFactory->createNew();
-        $productVariant->setCode($identifier);
+        $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
+        if (!$productVariant instanceof ProductVariantInterface) {
+            /** @var ProductVariantInterface $productVariant */
+            $productVariant = $this->productVariantFactory->createNew();
+            $productVariant->setCode($identifier);
+        }
 
         $parentCode = $productVariantResponse['parent'];
         // TODO Handle $parentCode=null (it happens when Product doesn't belong to a ProductModel) so the importer

@@ -197,7 +197,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         )->during('handle', [$productVariant, self::OPTION_CODE, $value]);
     }
 
-    function it_returns_product_option_value_from_factory_with_all_translation_if_does_not_already_exists(
+    function it_creates_product_option_value_from_factory_with_all_translations_if_does_not_already_exists(
         ProductVariantInterface $productVariant,
         ProductOptionValueInterface $productOptionValue,
         FactoryInterface $productOptionValueFactory,
@@ -215,20 +215,54 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
             ],
         ];
         $productOptionValueFactory->createNew()->willReturn($productOptionValue);
-        $productOptionValueTranslationFactory->createNew()->willReturn(
-            $englishProductOptionValueTranslation,
-            $italianProductOptionValueTranslation
-        );
+        $englishProductOptionValueTranslation->getLocale()->willReturn('en_US');
+        $productOptionValue->getTranslation('en_US')->willReturn($englishProductOptionValueTranslation);
+        $productOptionValue->getTranslation('it_IT')->willReturn($englishProductOptionValueTranslation);
+        $productOptionValueTranslationFactory->createNew()->willReturn($italianProductOptionValueTranslation);
+        $productOptionValue->hasTranslation($englishProductOptionValueTranslation)->willReturn(false);
+        $productOptionValue->hasTranslation($italianProductOptionValueTranslation)->willReturn(false);
+        $productVariant->hasOptionValue($productOptionValue)->willReturn(false);
 
         $this->handle($productVariant, self::OPTION_CODE, $value);
 
         $productOptionValue->setCode('option-code_value-code')->shouldHaveBeenCalled();
         $productOptionValue->setOption($productOption)->shouldHaveBeenCalled();
-        $englishProductOptionValueTranslation->setLocale('en_US')->shouldHaveBeenCalled();
         $englishProductOptionValueTranslation->setValue(self::EN_LABEL)->shouldHaveBeenCalled();
         $italianProductOptionValueTranslation->setLocale('it_IT')->shouldHaveBeenCalled();
         $italianProductOptionValueTranslation->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($englishProductOptionValueTranslation)->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($italianProductOptionValueTranslation)->shouldHaveBeenCalled();
         $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
         $productOptionValueRepository->add($productOptionValue)->shouldHaveBeenCalled();
+    }
+
+    function it_updates_existing_product_option_value_and_all_translations(
+        ProductVariantInterface $productVariant,
+        RepositoryInterface $productOptionValueRepository,
+        ProductOptionValueInterface $existentProductOptionValue,
+        ProductOptionValueTranslationInterface $englishProductOptionValue,
+        ProductOptionValueTranslationInterface $italianProductOptionValue
+    ) {
+        $value = [
+            [
+                'scope' => null,
+                'locale' => null,
+                'data' => self::VALUE_CODE,
+            ],
+        ];
+        $productOptionValueRepository->findOneBy(['code' => self::OPTION_CODE . '_' . self::VALUE_CODE])->willReturn($existentProductOptionValue);
+        $englishProductOptionValue->getLocale()->willReturn('en_US');
+        $italianProductOptionValue->getLocale()->willReturn('it_IT');
+        $existentProductOptionValue->getTranslation('en_US')->willReturn($englishProductOptionValue);
+        $existentProductOptionValue->getTranslation('it_IT')->willReturn($italianProductOptionValue);
+        $existentProductOptionValue->hasTranslation($englishProductOptionValue)->willReturn(true);
+        $existentProductOptionValue->hasTranslation($italianProductOptionValue)->willReturn(true);
+        $productVariant->hasOptionValue($existentProductOptionValue)->willReturn(true);
+
+        $this->handle($productVariant, self::OPTION_CODE, $value);
+
+        $englishProductOptionValue->setValue(self::EN_LABEL)->shouldHaveBeenCalled();
+        $italianProductOptionValue->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
+        $productOptionValueRepository->add($existentProductOptionValue)->shouldHaveBeenCalled();
     }
 }

@@ -1,14 +1,14 @@
 Sylius\Component\Product\Model\ProductOptionValue:
-  size_M:
+  size_m:
     option: "@size"
-    code: "size_M"
+    code: "size_m"
 
 Sylius\Component\Product\Model\ProductOptionValueTranslation:
-  size_M_en_US:
-    translatable: "@size_M"
+  size_m_en_US:
+    translatable: "@size_m"
     locale: "en_US"
-    value: "M"
-  size_M_it_IT:
-    translatable: "@size_M"
+    value: "Medium"
+  size_m_it_IT:
+    translatable: "@size_m"
     locale: "it_IT"
-    value: "M"
+    value: "Media"

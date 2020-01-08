@@ -80,7 +80,6 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
         $partialValueCode = $akeneoValue[0]['data'];
         $fullValueCode = $optionCode . '_' . $partialValueCode;
-        // TODO Try to check if option value already exists
         $akeneoAttributeOption = $this->apiClient->findAttributeOption($optionCode, $partialValueCode);
         if (!$akeneoAttributeOption) {
             throw new \RuntimeException(
@@ -109,18 +108,30 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
         Assert::isInstanceOf($productOption, ProductOptionInterface::class);
         /** @var ProductOptionInterface $productOption */
-        /** @var ProductOptionValueInterface $optionValue */
-        $optionValue = $this->productOptionValueFactory->createNew();
-        $optionValue->setCode($fullValueCode);
-        $optionValue->setOption($productOption);
-        foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
-            /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
-            $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
-            $optionValueTranslation->setLocale($localeCode);
-            $optionValueTranslation->setValue($label);
-            $optionValue->addTranslation($optionValueTranslation);
+        $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $fullValueCode]);
+        if (!$optionValue instanceof ProductOptionValueInterface) {
+            /** @var ProductOptionValueInterface $optionValue */
+            $optionValue = $this->productOptionValueFactory->createNew();
+            $optionValue->setCode($fullValueCode);
+            $optionValue->setOption($productOption);
         }
-        $productVariant->addOptionValue($optionValue);
+        foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
+            $optionValueTranslation = $optionValue->getTranslation($localeCode);
+            if (!$optionValueTranslation instanceof ProductOptionValueTranslationInterface ||
+                $optionValueTranslation->getLocale() !== $localeCode
+            ) {
+                /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
+                $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
+                $optionValueTranslation->setLocale($localeCode);
+            }
+            $optionValueTranslation->setValue($label);
+            if (!$optionValue->hasTranslation($optionValueTranslation)) {
+                $optionValue->addTranslation($optionValueTranslation);
+            }
+        }
+        if (!$productVariant->hasOptionValue($optionValue)) {
+            $productVariant->addOptionValue($optionValue);
+        }
         $this->productOptionValueRepository->add($optionValue);
     }
 
