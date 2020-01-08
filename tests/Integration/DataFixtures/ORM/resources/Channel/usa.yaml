@@ -1,0 +1,8 @@
+Sylius\Component\Core\Model\Channel:
+  usa:
+    code: 'usa'
+    name: 'United States'
+    enabled: true
+    defaultLocale: '@en_US'
+    baseCurrency: '@USD'
+    taxCalculationStrategy: 'order_items_based'

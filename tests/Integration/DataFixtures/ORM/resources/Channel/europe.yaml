@@ -1,0 +1,8 @@
+Sylius\Component\Core\Model\Channel:
+  europe:
+    code: 'europe'
+    name: 'Europe'
+    enabled: true
+    defaultLocale: '@en_US'
+    baseCurrency: '@EUR'
+    taxCalculationStrategy: 'order_items_based'
