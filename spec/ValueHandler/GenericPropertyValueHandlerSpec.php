@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace spec\Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Core\Model\ProductInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Webgriffe\SyliusAkeneoPlugin\ProductModel\GenericPropertyValueHandler;
-use Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerInterface;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandler\GenericPropertyValueHandler;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
 class GenericPropertyValueHandlerSpec extends ObjectBehavior
 {
@@ -24,7 +24,7 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(GenericPropertyValueHandler::class);
+        $this->shouldHaveType(\Webgriffe\SyliusAkeneoPlugin\ValueHandler\GenericPropertyValueHandler::class);
     }
 
     function it_implements_value_handler_interface()

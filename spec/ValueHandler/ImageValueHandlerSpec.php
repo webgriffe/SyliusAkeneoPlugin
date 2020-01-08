@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace spec\Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
@@ -11,8 +11,7 @@ use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
-use Webgriffe\SyliusAkeneoPlugin\ProductModel\ImageValueHandler;
-use Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerInterface;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
 
 class ImageValueHandlerSpec extends ObjectBehavior
 {
@@ -55,7 +54,12 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
     function it_implements_value_handler_interface()
     {
-        $this->shouldHaveType(ValueHandlerInterface::class);
+        $this->shouldHaveType(\Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface::class);
+    }
+
+    function it_supports_product_as_subject(ProductInterface $product)
+    {
+        $this->supports($product, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
     function it_supports_provided_akeneo_attribute_code(ProductInterface $product)
@@ -66,6 +70,26 @@ class ImageValueHandlerSpec extends ObjectBehavior
     function it_does_not_support_another_attribute_code(ProductInterface $product)
     {
         $this->supports($product, 'another_attribute_code', [])->shouldReturn(false);
+    }
+
+    function it_does_not_support_other_types_of_subject_than_product()
+    {
+        $this->supports(new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(false);
+    }
+
+    function it_throws_an_exception_while_handling_subject_that_is_not_a_product()
+    {
+        $this
+            ->shouldThrow(
+                new \InvalidArgumentException(
+                    sprintf(
+                        'This image value handler only supports instances of %s, %s given.',
+                        ProductInterface::class,
+                        \stdClass::class
+                    )
+                )
+            )
+            ->during('handle', [new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, []]);
     }
 
     function it_adds_image_to_product_when_handling(

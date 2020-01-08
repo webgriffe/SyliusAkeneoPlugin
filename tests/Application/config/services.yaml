@@ -4,8 +4,8 @@ parameters:
     locale: en_US
 
 services:
-    webgriffe_sylius_akeneo.product_model.name_value_handler:
-        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\TranslatablePropertyValueHandler'
+    webgriffe_sylius_akeneo.value_handler.name_value_handler:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler'
         arguments:
             - '@property_accessor'
             - '@sylius.factory.product_translation'
@@ -13,8 +13,8 @@ services:
             - 'name'
             - 'name'
 
-    webgriffe_sylius_akeneo.product_model.slug_value_handler:
-        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\TranslatablePropertyValueHandler'
+    webgriffe_sylius_akeneo.value_handler.slug_value_handler:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler'
         arguments:
             - '@property_accessor'
             - '@sylius.factory.product_translation'
@@ -22,8 +22,8 @@ services:
             - 'slug'
             - 'slug'
 
-    webgriffe_sylius_akeneo.product_model.picture_value_handler:
-        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\ImageValueHandler'
+    webgriffe_sylius_akeneo.value_handler.picture_value_handler:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler'
         arguments:
             - '@sylius.factory.product_image'
             - '@webgriffe_sylius_akeneo.api_client'
@@ -31,14 +31,14 @@ services:
             - 'main'
 
     webgriffe_sylius_akeneo.product_model.value_handler_resolver:
-        class: 'Webgriffe\SyliusAkeneoPlugin\ProductModel\PriorityValueHandlerResolver'
+        class: 'Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver'
         calls:
             - method: add
               arguments:
-                  - '@webgriffe_sylius_akeneo.product_model.name_value_handler'
+                  - '@webgriffe_sylius_akeneo.value_handler.name_value_handler'
             - method: add
               arguments:
-                  - '@webgriffe_sylius_akeneo.product_model.slug_value_handler'
+                  - '@webgriffe_sylius_akeneo.value_handler.slug_value_handler'
             - method: add
               arguments:
-                  - '@webgriffe_sylius_akeneo.product_model.picture_value_handler'
+                  - '@webgriffe_sylius_akeneo.value_handler.picture_value_handler'

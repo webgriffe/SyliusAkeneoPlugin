@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
 final class ImageValueHandler implements ValueHandlerInterface
@@ -36,13 +37,22 @@ final class ImageValueHandler implements ValueHandlerInterface
         $this->syliusImageType = $syliusImageType;
     }
 
-    public function supports(ProductInterface $product, string $attribute, array $value): bool
+    public function supports($subject, string $attribute, array $value): bool
     {
-        return $this->akeneoAttributeCode === $attribute;
+        return $subject instanceof ProductInterface && $this->akeneoAttributeCode === $attribute;
     }
 
-    public function handle(ProductInterface $product, string $attribute, array $value)
+    public function handle($subject, string $attribute, array $value)
     {
+        if (!$subject instanceof ProductInterface) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'This image value handler only supports instances of %s, %s given.',
+                    ProductInterface::class,
+                    is_object($subject) ? get_class($subject) : gettype($subject)
+                )
+            );
+        }
         $downloadUrl = $value[0]['_links']['download']['href'] ?? null;
         if (!is_string($downloadUrl)) {
             throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find download URL.');
@@ -53,9 +63,9 @@ final class ImageValueHandler implements ValueHandlerInterface
         /** @var ImageInterface $productImage */
         $productImage->setType($this->syliusImageType);
         $productImage->setFile($imageFile);
-        foreach ($product->getImagesByType($this->syliusImageType) as $existentImage) {
-            $product->removeImage($existentImage);
+        foreach ($subject->getImagesByType($this->syliusImageType) as $existentImage) {
+            $subject->removeImage($existentImage);
         }
-        $product->addImage($productImage);
+        $subject->addImage($productImage);
     }
 }

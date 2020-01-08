@@ -14,8 +14,7 @@
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
 
         <!-- Product Model -->
-        <service id="webgriffe_sylius_akeneo.product_model.value_handler_resolver" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\PriorityValueHandlerResolver" />
-        <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerResolverInterface" alias="webgriffe_sylius_akeneo.product_model.value_handler_resolver" />
+        <service id="webgriffe_sylius_akeneo.product_model.value_handler_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver" />
 
         <service id="webgriffe_sylius_akeneo.product_model.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\CategoriesHandler">
             <argument type="service" id="sylius.repository.taxon" />

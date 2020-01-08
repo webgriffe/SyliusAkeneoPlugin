@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace Webgriffe\SyliusAkeneoPlugin;
 
 use Sylius\Component\Core\Model\ProductInterface;
 

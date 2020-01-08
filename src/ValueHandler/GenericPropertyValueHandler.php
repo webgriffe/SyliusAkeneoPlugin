@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
-use Sylius\Component\Core\Model\ProductInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
 final class GenericPropertyValueHandler implements ValueHandlerInterface
 {
@@ -28,14 +28,14 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
         $this->propertyPath = $propertyPath;
     }
 
-    public function supports(ProductInterface $product, string $attribute, array $value): bool
+    public function supports($subject, string $attribute, array $value): bool
     {
         return $attribute === $this->akeneoAttributeCode;
     }
 
-    public function handle(ProductInterface $product, string $attribute, array $value)
+    public function handle($subject, string $attribute, array $value)
     {
-        if (!$this->supports($product, $attribute, $value)) {
+        if (!$this->supports($subject, $attribute, $value)) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'Cannot handle Akeneo attribute "%s". %s only supports Akeneo attribute "%s".',
@@ -45,6 +45,6 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        $this->propertyAccessor->setValue($product, $this->propertyPath, $value[0]['data']);
+        $this->propertyAccessor->setValue($subject, $this->propertyPath, $value[0]['data']);
     }
 }

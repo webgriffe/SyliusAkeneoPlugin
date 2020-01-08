@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace spec\Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Webgriffe\SyliusAkeneoPlugin\ProductModel\ValueHandlerInterface;
 
 class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
 {
@@ -36,7 +36,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
 
     function it_implements_value_handler_interface()
     {
-        $this->shouldHaveType(ValueHandlerInterface::class);
+        $this->shouldHaveType(\Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface::class);
     }
 
     function it_supports_provided_akeneo_attribute_code()
@@ -44,14 +44,34 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $this->supports(new Product(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
+    function it_supports_any_translatable_subject(TranslatableInterface $subject)
+    {
+        $this->supports($subject, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
+    }
+
     function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code()
     {
         $this->supports(new Product(), 'another_attribute', [])->shouldReturn(false);
     }
 
-    function it_throws_when_handling_not_supported_attribute()
+    function it_does_not_support_any_other_type_of_subject()
     {
-        $this->shouldThrow(new \InvalidArgumentException('Cannot handle'))->during('handle', [new Product(), 'not_supported_attribute', []]);
+        $this->supports(new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(false);
+    }
+
+    function it_throws_when_handling_not_translatable_subject()
+    {
+        $this
+            ->shouldThrow(
+                new \InvalidArgumentException(
+                    sprintf(
+                        'This translatable property value handler only support instances of %s, %s given.',
+                        TranslatableInterface::class,
+                        \stdClass::class
+                    )
+                )
+            )
+            ->during('handle', [new \stdClass(), 'not_supported_attribute', []]);
     }
 
     function it_sets_value_on_product_translation(
