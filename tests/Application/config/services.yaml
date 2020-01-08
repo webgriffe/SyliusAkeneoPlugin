@@ -30,6 +30,15 @@ services:
             - 'picture'
             - 'main'
 
+    webgriffe_sylius_akeneo.value_handler.product_option_value_handler:
+        class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler'
+        arguments:
+            - '@webgriffe_sylius_akeneo.api_client'
+            - '@sylius.repository.product_option'
+            - '@sylius.factory.product_option_value'
+            - '@sylius.factory.product_option_value_translation'
+            - '@sylius.repository.product_option_value'
+
     webgriffe_sylius_akeneo.product_model.value_handler_resolver:
         class: 'Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver'
         calls:
@@ -42,3 +51,10 @@ services:
             - method: add
               arguments:
                   - '@webgriffe_sylius_akeneo.value_handler.picture_value_handler'
+
+    webgriffe_sylius_akeneo.product_variant.value_handler_resolver:
+        class: 'Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver'
+        calls:
+            - method: add
+              arguments:
+                  - '@webgriffe_sylius_akeneo.value_handler.product_option_value_handler'
