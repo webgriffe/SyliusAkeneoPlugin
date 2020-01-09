@@ -32,7 +32,7 @@ final class FamilyVariantHandler implements FamilyVariantHandlerInterface
         $this->apiClient = $apiClient;
     }
 
-    public function handle(ProductInterface $product, array $familyVariant)
+    public function handle(ProductInterface $product, array $familyVariant): void
     {
         foreach ($familyVariant['variant_attribute_sets'][0]['axes'] as $position => $attributeCode) {
             if ($this->optionExists($product, $attributeCode)) {
@@ -46,6 +46,15 @@ final class FamilyVariantHandler implements FamilyVariantHandlerInterface
                 $productOption->setCode($attributeCode);
                 $productOption->setPosition($position);
                 $attributeResponse = $this->apiClient->findAttribute($attributeCode);
+                if ($attributeResponse === null) {
+                    throw new \RuntimeException(
+                        sprintf(
+                            'Cannot handle variant family for product "%s", attribute "%s" does not exists on Akeneo.',
+                            $product->getCode(),
+                            $attributeCode
+                        )
+                    );
+                }
                 foreach ($attributeResponse['labels'] as $locale => $label) {
                     $productOption->getTranslation($locale)->setName($label);
                 }
@@ -54,7 +63,7 @@ final class FamilyVariantHandler implements FamilyVariantHandlerInterface
         }
     }
 
-    private function optionExists(ProductInterface $product, $axe): bool
+    private function optionExists(ProductInterface $product, string $axe): bool
     {
         foreach ($product->getOptions() as $option) {
             if ($option->getCode() === $axe) {

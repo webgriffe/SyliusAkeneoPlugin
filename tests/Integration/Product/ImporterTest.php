@@ -9,7 +9,6 @@ use Fidry\AliceDataFixtures\Persistence\PurgeMode;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
-use Sylius\Component\Product\Model\ProductOptionValue;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 

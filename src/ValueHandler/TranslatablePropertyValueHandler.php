@@ -43,12 +43,18 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         $this->translationPropertyPath = $translationPropertyPath;
     }
 
+    /**
+     * @param mixed $subject
+     */
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof TranslatableInterface && $attribute === $this->akeneoAttributeCode;
     }
 
-    public function handle($subject, string $attribute, array $value)
+    /**
+     * @param mixed $subject
+     */
+    public function handle($subject, string $attribute, array $value): void
     {
         if (!$subject instanceof TranslatableInterface) {
             throw new \InvalidArgumentException(

@@ -37,12 +37,18 @@ final class ImageValueHandler implements ValueHandlerInterface
         $this->syliusImageType = $syliusImageType;
     }
 
+    /**
+     * @param mixed $subject
+     */
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductInterface && $this->akeneoAttributeCode === $attribute;
     }
 
-    public function handle($subject, string $attribute, array $value)
+    /**
+     * @param mixed $subject
+     */
+    public function handle($subject, string $attribute, array $value): void
     {
         if (!$subject instanceof ProductInterface) {
             throw new \InvalidArgumentException(

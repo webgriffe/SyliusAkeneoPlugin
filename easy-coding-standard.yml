@@ -4,3 +4,6 @@ imports:
 parameters:
     exclude_files:
         - 'tests/Application/*'
+    skip:
+        SlevomatCodingStandard\Sniffs\Commenting\InlineDocCommentDeclarationSniff.NoAssignment: ~ # This checker seems bugged
+        SlevomatCodingStandard\Sniffs\Commenting\InlineDocCommentDeclarationSniff.MissingVariable: ~ # This checker seems bugged

@@ -6,7 +6,13 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 interface ValueHandlerInterface
 {
+    /**
+     * @param mixed $subject
+     */
     public function supports($subject, string $attribute, array $value): bool;
 
-    public function handle($subject, string $attribute, array $value);
+    /**
+     * @param mixed $subject
+     */
+    public function handle($subject, string $attribute, array $value): void;
 }

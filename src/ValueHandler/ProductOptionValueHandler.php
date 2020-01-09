@@ -47,12 +47,18 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         $this->productOptionValueRepository = $productOptionValueRepository;
     }
 
+    /**
+     * @param mixed $subject
+     */
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductVariantInterface && $this->isVariantOption($subject, $attribute);
     }
 
-    public function handle($productVariant, string $optionCode, array $akeneoValue)
+    /**
+     * @param mixed $productVariant
+     */
+    public function handle($productVariant, string $optionCode, array $akeneoValue): void
     {
         if (!$productVariant instanceof ProductVariantInterface) {
             throw new \InvalidArgumentException(
@@ -139,7 +145,6 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     {
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        /** @var ProductInterface $product */
         foreach ($product->getOptions() as $option) {
             if ($attribute === $option->getCode()) {
                 return true;

@@ -33,7 +33,7 @@ final class CategoriesHandler implements CategoriesHandlerInterface
         $this->productTaxonFactory = $productTaxonFactory;
     }
 
-    public function handle(ProductInterface $product, array $categories)
+    public function handle(ProductInterface $product, array $categories): void
     {
         foreach ($categories as $category) {
             /** @var TaxonInterface|null $taxon */

@@ -8,5 +8,5 @@ use Sylius\Component\Core\Model\ProductInterface;
 
 interface CategoriesHandlerInterface
 {
-    public function handle(ProductInterface $product, array $categories);
+    public function handle(ProductInterface $product, array $categories): void;
 }

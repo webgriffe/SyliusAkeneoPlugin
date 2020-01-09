@@ -21,6 +21,7 @@ final class QueueItem implements QueueItemInterface
     /** @var \DateTimeInterface|null */
     private $importedAt;
 
+    /** @return mixed */
     public function getId()
     {
         return $this->id;

@@ -35,12 +35,12 @@ final class ConsumeCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         // ...
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $queueItems = $this->queueItemRepository->findAllToImport();
         foreach ($queueItems as $queueItem) {
@@ -49,6 +49,8 @@ final class ConsumeCommand extends Command
             $queueItem->setImportedAt(new \DateTime());
             // TODO persist $queueItem with imported date
         }
+
+        return 0;
     }
 
     private function resolveImporter(string $akeneoEntity): ImporterInterface

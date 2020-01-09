@@ -28,12 +28,18 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
         $this->propertyPath = $propertyPath;
     }
 
+    /**
+     * @param mixed $subject
+     */
     public function supports($subject, string $attribute, array $value): bool
     {
         return $attribute === $this->akeneoAttributeCode;
     }
 
-    public function handle($subject, string $attribute, array $value)
+    /**
+     * @param mixed $subject
+     */
+    public function handle($subject, string $attribute, array $value): void
     {
         if (!$this->supports($subject, $attribute, $value)) {
             throw new \InvalidArgumentException(

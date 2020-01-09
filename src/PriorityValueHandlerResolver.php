@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 final class PriorityValueHandlerResolver implements ValueHandlerResolverInterface
 {
+    /** @var array */
     private $valueHandlers = [];
 
     public function add(ValueHandlerInterface $valueHandler, int $priority = 0): void
