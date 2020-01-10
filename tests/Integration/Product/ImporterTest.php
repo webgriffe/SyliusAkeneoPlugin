@@ -7,6 +7,7 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\Product;
 use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Fidry\AliceDataFixtures\Persistence\PurgeMode;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -174,5 +175,29 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('it_IT')->getValue());
         $this->assertEquals('en_US', $variant->getOptionValues()[0]->getTranslation('en_US')->getLocale());
         $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('en_US')->getValue());
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_product_and_product_variant_when_akeneo_product_has_no_parent()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+        $this->importer->import('10627329');
+
+        $variants = $this->productVariantRepository->findAll();
+        $this->assertCount(1, $variants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variants[0]);
+
+        $products = $this->productRepository->findAll();
+        $this->assertCount(1, $products);
+        $this->assertInstanceOf(ProductInterface::class, $products[0]);
     }
 }
