@@ -46,7 +46,7 @@ final class Importer implements ImporterInterface
     private $categoriesHandler;
 
     /** @var ValueHandlerResolverInterface */
-    private $valueHandlerResolver;
+    private $productModelValueHandlerResolver;
 
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
@@ -56,7 +56,7 @@ final class Importer implements ImporterInterface
         ValueHandlerResolverInterface $variantValueHandlerResolver,
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
-        ValueHandlerResolverInterface $valueHandlerResolver,
+        ValueHandlerResolverInterface $productModelValueHandlerResolver,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->productVariantFactory = $productVariantFactory;
@@ -66,7 +66,7 @@ final class Importer implements ImporterInterface
         $this->variantValueHandlerResolver = $variantValueHandlerResolver;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
-        $this->valueHandlerResolver = $valueHandlerResolver;
+        $this->productModelValueHandlerResolver = $productModelValueHandlerResolver;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -107,8 +107,6 @@ final class Importer implements ImporterInterface
         if ($parentCode !== null) {
             $product = $this->productRepository->findOneByCode($parentCode);
             if (!$product) {
-                $identifier = $productVariantResponse['identifier'];
-
                 throw new \RuntimeException(
                     sprintf(
                         'Cannot import Akeneo product "%s", the parent product "%s" does not exists on Sylius.',
@@ -121,11 +119,12 @@ final class Importer implements ImporterInterface
             return $product;
         }
 
-        $eventName = 'create';
-        // todo: handle product exists case -> find($identifier)
-
-        // todo: from here on it should be extracted into a standalone class or into ProductModel/Importer
-        $product = $this->productFactory->createNew();
+        $product = $this->productRepository->findOneByCode($identifier);
+        $eventName = 'update';
+        if (!$product) {
+            $eventName = 'create';
+            $product = $this->productFactory->createNew();
+        }
         Assert::isInstanceOf($product, ProductInterface::class);
         /** @var ProductInterface $product */
         $product->setCode($identifier);
@@ -133,7 +132,7 @@ final class Importer implements ImporterInterface
         $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
 
         foreach ($productVariantResponse['values'] as $attribute => $value) {
-            $valueHandler = $this->valueHandlerResolver->resolve($product, $attribute, $value);
+            $valueHandler = $this->productModelValueHandlerResolver->resolve($product, $attribute, $value);
             if ($valueHandler === null) {
                 // TODO no value handler for this attribute. Throw? Log?
                 // throw new \RuntimeException(sprintf('No ValueHandler found for attribute "%s"', $attribute));

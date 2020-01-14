@@ -200,4 +200,27 @@ final class ImporterTest extends KernelTestCase
         $this->assertCount(1, $products);
         $this->assertInstanceOf(ProductInterface::class, $products[0]);
     }
+
+    /**
+     * @test
+     */
+    public function it_updates_already_existent_parent_product_when_product_variant_has_no_parent()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/10627329.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('10627329');
+
+        $products = $this->productRepository->findAll();
+        /** @var ProductInterface $parentProduct */
+        $parentProduct = $products[0];
+        $this->assertEquals('NEC EX201W', $parentProduct->getName());
+    }
 }
