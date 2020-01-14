@@ -34,7 +34,7 @@ final class Importer implements ImporterInterface
     private $apiClient;
 
     /** @var ValueHandlerResolverInterface */
-    private $valueHandlerResolver;
+    private $variantValueHandlerResolver;
 
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
@@ -45,23 +45,28 @@ final class Importer implements ImporterInterface
     /** @var CategoriesHandlerInterface */
     private $categoriesHandler;
 
+    /** @var ValueHandlerResolverInterface */
+    private $valueHandlerResolver;
+
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
         ProductRepositoryInterface $productRepository,
         ApiClientInterface $apiClient,
-        ValueHandlerResolverInterface $valueHandlerResolver,
+        ValueHandlerResolverInterface $variantValueHandlerResolver,
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
+        ValueHandlerResolverInterface $valueHandlerResolver,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
         $this->productRepository = $productRepository;
         $this->apiClient = $apiClient;
-        $this->valueHandlerResolver = $valueHandlerResolver;
+        $this->variantValueHandlerResolver = $variantValueHandlerResolver;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
+        $this->valueHandlerResolver = $valueHandlerResolver;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -83,7 +88,7 @@ final class Importer implements ImporterInterface
         $productVariant->setProduct($product);
 
         foreach ($productVariantResponse['values'] as $attribute => $value) {
-            $valueHandler = $this->valueHandlerResolver->resolve($productVariant, $attribute, $value);
+            $valueHandler = $this->variantValueHandlerResolver->resolve($productVariant, $attribute, $value);
             if ($valueHandler === null) {
                 // TODO no value handler for this attribute. Throw? Log?
                 // throw new \RuntimeException(sprintf('No ValueHandler found for attribute "%s"', $attribute));
@@ -119,6 +124,7 @@ final class Importer implements ImporterInterface
         $eventName = 'create';
         // todo: handle product exists case -> find($identifier)
 
+        // todo: from here on it should be extracted into a standalone class or into ProductModel/Importer
         $product = $this->productFactory->createNew();
         Assert::isInstanceOf($product, ProductInterface::class);
         /** @var ProductInterface $product */

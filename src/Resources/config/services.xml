@@ -51,6 +51,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product_variant.value_handler_resolver" />
             <argument type="service" id="sylius.factory.product" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.categories_handler" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product_model.value_handler_resolver" />
             <argument type="service" id="event_dispatcher" />
         </service>
     </services>
