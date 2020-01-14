@@ -6,7 +6,9 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\Product;
 
 use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Fidry\AliceDataFixtures\Persistence\PurgeMode;
+use Sylius\Bundle\ChannelBundle\Doctrine\ORM\ChannelRepository;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
@@ -27,12 +29,16 @@ final class ImporterTest extends KernelTestCase
     /** @var PurgerLoader */
     private $fixtureLoader;
 
+    /** @var ChannelRepository */
+    private $channelRepository;
+
     protected function setUp(): void
     {
         self::bootKernel();
         $this->importer = self::$container->get('webgriffe_sylius_akeneo.product.importer');
         $this->productRepository = self::$container->get('sylius.repository.product');
         $this->productVariantRepository = self::$container->get('sylius.repository.product_variant');
+        $this->channelRepository = self::$container->get('sylius.repository.channel');
         $this->fixtureLoader = self::$container->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
     }
@@ -222,5 +228,39 @@ final class ImporterTest extends KernelTestCase
         /** @var ProductInterface $parentProduct */
         $parentProduct = $products[0];
         $this->assertEquals('NEC EX201W', $parentProduct->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_price_value_per_channel_on_product_variant()
+    {
+        $this->markTestSkipped('todo');
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Currency/EUR.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+        self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
+        /** @var ChannelInterface $italyChannel */
+        $italyChannel = $this->channelRepository->findOneByCode('italy');
+
+        $this->importer->import('braided-hat-m');
+
+        /** @var ProductVariantInterface $variant */
+        $variant = $this->productVariantRepository->findAll()[0];
+        $channelPricings = $variant->getChannelPricingForChannel($italyChannel);
+        $this->assertNotNull($channelPricings);
+        $this->assertEquals(30.00, $channelPricings->getPrice());
     }
 }

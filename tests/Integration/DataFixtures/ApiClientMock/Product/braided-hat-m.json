@@ -78,11 +78,11 @@
                 "scope": null,
                 "data": [
                     {
-                        "amount": null,
+                        "amount": "30.00",
                         "currency": "EUR"
                     },
                     {
-                        "amount": null,
+                        "amount": "33.00",
                         "currency": "USD"
                     }
                 ]
