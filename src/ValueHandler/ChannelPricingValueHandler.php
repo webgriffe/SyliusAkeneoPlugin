@@ -73,12 +73,19 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
             /** @var ChannelInterface[] $channels */
             $channels = $this->channelRepository->findBy(['baseCurrency' => $currency]);
             foreach ($channels as $channel) {
-                /** @var ChannelPricingInterface $channelPricing */
-                $channelPricing = $this->channelPricingFactory->createNew();
+                $isNewChannelPricing = false;
+                $channelPricing = $subject->getChannelPricingForChannel($channel);
+                if ($channelPricing === null) {
+                    $isNewChannelPricing = true;
+                    /** @var ChannelPricingInterface $channelPricing */
+                    $channelPricing = $this->channelPricingFactory->createNew();
+                    $channelPricing->setChannelCode($channel->getCode());
+                }
                 Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
-                $channelPricing->setChannelCode($channel->getCode());
                 $channelPricing->setPrice((int) round($price * 100));
-                $subject->addChannelPricing($channelPricing);
+                if ($isNewChannelPricing) {
+                    $subject->addChannelPricing($channelPricing);
+                }
             }
         }
     }

@@ -6,6 +6,8 @@ namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
+use PhpSpec\Wrapper\Collaborator;
+use Prophecy\Argument;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
@@ -24,6 +26,12 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
 
     private const US_CHANNEL_CODE = 'US';
 
+    /** @var ChannelInterface|Collaborator */
+    private $italyChannel;
+
+    /** @var ChannelInterface|Collaborator */
+    private $usChannel;
+
     function let(
         FactoryInterface $channelPricingFactory,
         ChannelRepositoryInterface $channelRepository,
@@ -33,16 +41,18 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         ChannelInterface $usChannel,
         RepositoryInterface $currencyRepository
     ) {
+        $this->italyChannel = $italyChannel;
+        $this->usChannel = $usChannel;
         $channelRepository
             ->findBy(['baseCurrency' => $eurCurrency])
-            ->willReturn(new ArrayCollection([$italyChannel->getWrappedObject()]));
+            ->willReturn(new ArrayCollection([$this->italyChannel->getWrappedObject()]));
         $channelRepository
             ->findBy(['baseCurrency' => $usdCurrency])
-            ->willReturn(new ArrayCollection([$usChannel->getWrappedObject()]));
+            ->willReturn(new ArrayCollection([$this->usChannel->getWrappedObject()]));
         $currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($eurCurrency);
         $currencyRepository->findOneBy(['code' => 'USD'])->willReturn($usdCurrency);
-        $italyChannel->getCode()->willReturn(self::ITALY_CHANNEL_CODE);
-        $usChannel->getCode()->willReturn(self::US_CHANNEL_CODE);
+        $this->italyChannel->getCode()->willReturn(self::ITALY_CHANNEL_CODE);
+        $this->usChannel->getCode()->willReturn(self::US_CHANNEL_CODE);
         $this->beConstructedWith($channelPricingFactory, $channelRepository, $currencyRepository, self::AKENEO_ATTRIBUTE);
     }
 
@@ -114,6 +124,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
             ],
         ];
         $channelPricingFactory->createNew()->willReturn($italianChannelPricing, $usChannelPricing);
+        /** @noinspection PhpParamsInspection */
+        $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
 
@@ -124,5 +136,41 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         $italianChannelPricing->setChannelCode(self::ITALY_CHANNEL_CODE)->shouldHaveBeenCalled();
         $usChannelPricing->setPrice(3199)->shouldHaveBeenCalled();
         $usChannelPricing->setChannelCode(self::US_CHANNEL_CODE)->shouldHaveBeenCalled();
+    }
+
+    function it_updates_existent_channel_prices_for_the_matching_currency_channels(
+        ProductVariantInterface $productVariant,
+        ChannelPricingInterface $italianChannelPricing,
+        ChannelPricingInterface $usChannelPricing,
+        FactoryInterface $channelPricingFactory
+    ) {
+        $value = [
+            [
+                'locale' => null,
+                'scope' => null,
+                'data' => [
+                    [
+                        'amount' => '29.99',
+                        'currency' => 'EUR',
+                    ],
+                    [
+                        'amount' => '31.99',
+                        'currency' => 'USD',
+                    ],
+                ],
+            ],
+        ];
+        $productVariant->getChannelPricingForChannel($this->italyChannel)->willReturn($italianChannelPricing);
+        $productVariant->getChannelPricingForChannel($this->usChannel)->willReturn($usChannelPricing);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
+
+        $channelPricingFactory->createNew()->shouldNotHaveBeenCalled();
+        $italianChannelPricing->setPrice(2999)->shouldHaveBeenCalled();
+        /** @noinspection PhpStrictTypeCheckingInspection */
+        $italianChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
+        $usChannelPricing->setPrice(3199)->shouldHaveBeenCalled();
+        /** @noinspection PhpStrictTypeCheckingInspection */
+        $usChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
     }
 }
