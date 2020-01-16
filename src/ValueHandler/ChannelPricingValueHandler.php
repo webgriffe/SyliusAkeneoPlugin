@@ -63,6 +63,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
             );
         }
 
+        // todo: ProductVariant could have some prices for channels that does not exist anymore so they should be removed
         foreach ($value[0]['data'] as $currencyPrice) {
             $currencyCode = $currencyPrice['currency'];
             $price = $currencyPrice['amount'];
