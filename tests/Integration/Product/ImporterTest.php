@@ -242,6 +242,8 @@ final class ImporterTest extends KernelTestCase
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
@@ -253,14 +255,24 @@ final class ImporterTest extends KernelTestCase
         self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
+        /** @var ChannelInterface $usaChannel */
+        $usaChannel = $this->channelRepository->findOneByCode('usa');
+        /** @var ChannelInterface $europeChannel */
+        $europeChannel = $this->channelRepository->findOneByCode('europe');
 
         $this->importer->import('braided-hat-m');
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
-        $channelPricings = $variant->getChannelPricingForChannel($italyChannel);
-        $this->assertNotNull($channelPricings);
-        $this->assertEquals(3099, $channelPricings->getPrice());
+        $channelPricing = $variant->getChannelPricingForChannel($italyChannel);
+        $this->assertNotNull($channelPricing);
+        $this->assertEquals(3099, $channelPricing->getPrice());
+        $channelPricing = $variant->getChannelPricingForChannel($usaChannel);
+        $this->assertNotNull($channelPricing);
+        $this->assertEquals(3399, $channelPricing->getPrice());
+        $channelPricing = $variant->getChannelPricingForChannel($europeChannel);
+        $this->assertNotNull($channelPricing);
+        $this->assertEquals(3099, $channelPricing->getPrice());
     }
 
     /**
@@ -275,6 +287,8 @@ final class ImporterTest extends KernelTestCase
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
@@ -287,6 +301,10 @@ final class ImporterTest extends KernelTestCase
         self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
+        /** @var ChannelInterface $usaChannel */
+        $usaChannel = $this->channelRepository->findOneByCode('usa');
+        /** @var ChannelInterface $europeChannel */
+        $europeChannel = $this->channelRepository->findOneByCode('europe');
 
         $this->importer->import('braided-hat-m');
 
@@ -295,5 +313,11 @@ final class ImporterTest extends KernelTestCase
         $channelPricings = $variant->getChannelPricingForChannel($italyChannel);
         $this->assertNotNull($channelPricings);
         $this->assertEquals(3099, $channelPricings->getPrice());
+        $channelPricing = $variant->getChannelPricingForChannel($usaChannel);
+        $this->assertNotNull($channelPricing);
+        $this->assertEquals(3399, $channelPricing->getPrice());
+        $channelPricing = $variant->getChannelPricingForChannel($europeChannel);
+        $this->assertNotNull($channelPricing);
+        $this->assertEquals(3099, $channelPricing->getPrice());
     }
 }

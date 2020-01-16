@@ -3,3 +3,11 @@ Sylius\Component\Core\Model\ChannelPricing:
     price: 2099
     channelCode: 'italy'
     productVariant: '@braided-hat-m'
+  braided-hat-m-usa:
+    price: 1099
+    channelCode: 'usa'
+    productVariant: '@braided-hat-m'
+  braided-hat-m-europe:
+    price: 2599
+    channelCode: 'europe'
+    productVariant: '@braided-hat-m'

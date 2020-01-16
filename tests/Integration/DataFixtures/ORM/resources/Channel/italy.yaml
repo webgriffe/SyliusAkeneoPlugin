@@ -3,7 +3,7 @@ Sylius\Component\Core\Model\Channel:
     code: 'italy'
     name: 'Italy'
     enabled: true
-    description: "Lorem ipsum"
+    description: 'Italy'
     defaultLocale: '@it_IT'
     locales: ['@it_IT']
     baseCurrency: '@EUR'
