@@ -262,4 +262,38 @@ final class ImporterTest extends KernelTestCase
         $this->assertNotNull($channelPricings);
         $this->assertEquals(3099, $channelPricings->getPrice());
     }
+
+    /**
+     * @test
+     */
+    public function it_updates_channel_price_value_on_product_variant()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Currency/EUR.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ChannelPricing/braided-hat-m-italy.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+        self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
+        /** @var ChannelInterface $italyChannel */
+        $italyChannel = $this->channelRepository->findOneByCode('italy');
+
+        $this->importer->import('braided-hat-m');
+
+        /** @var ProductVariantInterface $variant */
+        $variant = $this->productVariantRepository->findAll()[0];
+        $channelPricings = $variant->getChannelPricingForChannel($italyChannel);
+        $this->assertNotNull($channelPricings);
+        $this->assertEquals(3099, $channelPricings->getPrice());
+    }
 }
