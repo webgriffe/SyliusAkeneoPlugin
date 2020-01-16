@@ -233,9 +233,8 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_sets_price_value_per_channel_on_product_variant()
+    public function it_sets_channel_price_value_on_product_variant()
     {
-        $this->markTestSkipped('todo');
         $this->fixtureLoader->load(
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/Currency/EUR.yaml',
@@ -261,6 +260,6 @@ final class ImporterTest extends KernelTestCase
         $variant = $this->productVariantRepository->findAll()[0];
         $channelPricings = $variant->getChannelPricingForChannel($italyChannel);
         $this->assertNotNull($channelPricings);
-        $this->assertEquals(30.00, $channelPricings->getPrice());
+        $this->assertEquals(3099, $channelPricings->getPrice());
     }
 }
