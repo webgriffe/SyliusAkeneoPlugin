@@ -58,7 +58,6 @@ final class Importer implements ImporterInterface
 
     public function import(string $identifier): void
     {
-        /** @var array $productModelResponse */
         $productModelResponse = $this->apiClient->findProductModel($identifier);
         if ($productModelResponse === null) {
             throw new \InvalidArgumentException(sprintf('Cannot find Product Model "%s" on Akeneo.', $identifier));
