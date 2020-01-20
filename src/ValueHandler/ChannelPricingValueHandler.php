@@ -68,7 +68,6 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
             $price = $currencyPrice['amount'];
             $currency = $this->currencyRepository->findOneBy(['code' => $currencyCode]);
             if ($currency === null) {
-                // todo: log?
                 continue;
             }
             Assert::isInstanceOf($currency, CurrencyInterface::class);

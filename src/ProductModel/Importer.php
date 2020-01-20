@@ -60,7 +60,9 @@ final class Importer implements ImporterInterface
     {
         /** @var array $productModelResponse */
         $productModelResponse = $this->apiClient->findProductModel($identifier);
-        // TODO Handle the case where product model doesn't exists
+        if ($productModelResponse === null) {
+            throw new \InvalidArgumentException(sprintf('Cannot find Product Model "%s" on Akeneo.', $identifier));
+        }
         $code = $productModelResponse['code'];
         $product = $this->productRepository->findOneByCode($code);
         $eventName = 'update';
@@ -76,8 +78,6 @@ final class Importer implements ImporterInterface
         foreach ($productModelResponse['values'] as $attribute => $value) {
             $valueHandler = $this->valueHandlerResolver->resolve($product, $attribute, $value);
             if ($valueHandler === null) {
-                // TODO no value handler for this attribute. Throw? Log?
-                // throw new \RuntimeException(sprintf('No ValueHandler found for attribute "%s"', $attribute));
                 continue;
             }
             $valueHandler->handle($product, $attribute, $value);

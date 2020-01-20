@@ -90,8 +90,6 @@ final class Importer implements ImporterInterface
         foreach ($productVariantResponse['values'] as $attribute => $value) {
             $valueHandler = $this->variantValueHandlerResolver->resolve($productVariant, $attribute, $value);
             if ($valueHandler === null) {
-                // TODO no value handler for this attribute. Throw? Log?
-                // throw new \RuntimeException(sprintf('No ValueHandler found for attribute "%s"', $attribute));
                 continue;
             }
             $valueHandler->handle($productVariant, $attribute, $value);
@@ -134,8 +132,6 @@ final class Importer implements ImporterInterface
         foreach ($productVariantResponse['values'] as $attribute => $value) {
             $valueHandler = $this->productModelValueHandlerResolver->resolve($product, $attribute, $value);
             if ($valueHandler === null) {
-                // TODO no value handler for this attribute. Throw? Log?
-                // throw new \RuntimeException(sprintf('No ValueHandler found for attribute "%s"', $attribute));
                 continue;
             }
             $valueHandler->handle($product, $attribute, $value);
