@@ -6,7 +6,6 @@ namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
-use PhpSpec\Wrapper\Collaborator;
 use Prophecy\Argument;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
