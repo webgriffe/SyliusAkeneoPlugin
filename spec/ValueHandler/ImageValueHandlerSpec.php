@@ -7,8 +7,9 @@ namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Sylius\Component\Core\Model\ImageInterface;
+use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
@@ -30,7 +31,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
     function let(
         FactoryInterface $productImageFactory,
-        ImageInterface $productImage,
+        ProductImageInterface $productImage,
         ApiClientInterface $apiClient,
         \SplFileInfo $imageFile,
         ProductInterface $product
@@ -62,6 +63,11 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $this->supports($product, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
+    function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant)
+    {
+        $this->supports($productVariant, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
+    }
+
     function it_supports_provided_akeneo_attribute_code(ProductInterface $product)
     {
         $this->supports($product, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
@@ -83,8 +89,9 @@ class ImageValueHandlerSpec extends ObjectBehavior
             ->shouldThrow(
                 new \InvalidArgumentException(
                     sprintf(
-                        'This image value handler only supports instances of %s, %s given.',
+                        'This image value handler only supports instances of %s and %s, %s given.',
                         ProductInterface::class,
+                        ProductVariantInterface::class,
                         \stdClass::class
                     )
                 )
@@ -94,11 +101,35 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
     function it_adds_image_to_product_when_handling(
         ProductInterface $product,
-        ImageInterface $productImage
+        ProductImageInterface $productImage
     ) {
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
         $product->addImage($productImage)->shouldHaveBeenCalled();
+    }
+
+    function it_adds_image_to_product_when_handling_product_variant(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductImageInterface $productImage
+    ) {
+        $productVariant->getProduct()->shouldNotHaveBeenCalled()->willReturn($product);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
+
+        $product->addImage($productImage)->shouldHaveBeenCalled();
+    }
+
+    function it_adds_product_variant_association_to_image_when_handling_product_variant(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductImageInterface $productImage
+    ) {
+        $productVariant->getProduct()->shouldNotHaveBeenCalled()->willReturn($product);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
+
+        $productImage->addProductVariant($productVariant)->shouldHaveBeenCalled();
     }
 
     function it_should_download_image_from_akeneo_when_handling(
@@ -112,7 +143,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
     function it_sets_downloaded_image_to_product_image_when_handling(
         ProductInterface $product,
-        ImageInterface $productImage,
+        ProductImageInterface $productImage,
         \SplFileInfo $imageFile
     ) {
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
@@ -120,7 +151,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productImage->setFile($imageFile)->shouldHaveBeenCalled();
     }
 
-    function it_sets_provided_product_image_type_when_handling(ProductInterface $product, ImageInterface $productImage)
+    function it_sets_provided_product_image_type_when_handling(ProductInterface $product, ProductImageInterface $productImage)
     {
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
@@ -129,7 +160,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
     function it_removes_already_existent_product_image_of_the_provided_type_when_handling(
         ProductInterface $product,
-        ImageInterface $existentProductImage
+        ProductImageInterface $existentProductImage
     ) {
         $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]));
 
