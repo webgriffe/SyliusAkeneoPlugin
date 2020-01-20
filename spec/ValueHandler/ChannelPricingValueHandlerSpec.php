@@ -26,21 +26,6 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
 
     private const US_CHANNEL_CODE = 'US';
 
-    /** @var CurrencyInterface|Collaborator */
-    private $eurCurrency;
-
-    /** @var ChannelInterface|Collaborator */
-    private $italyChannel;
-
-    /** @var CurrencyInterface|Collaborator */
-    private $usdCurrency;
-
-    /** @var ChannelInterface|Collaborator */
-    private $usChannel;
-
-    /** @var RepositoryInterface|Collaborator */
-    private $currencyRepository;
-
     function let(
         FactoryInterface $channelPricingFactory,
         ChannelRepositoryInterface $channelRepository,
@@ -50,25 +35,19 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         ChannelInterface $usChannel,
         RepositoryInterface $currencyRepository
     ) {
-        $this->eurCurrency = $eurCurrency;
-        $this->italyChannel = $italyChannel;
-        $this->usdCurrency = $usdCurrency;
-        $this->usChannel = $usChannel;
-        $this->currencyRepository = $currencyRepository;
-
         $channelRepository
-            ->findBy(['baseCurrency' => $this->eurCurrency])
-            ->willReturn(new ArrayCollection([$this->italyChannel->getWrappedObject()]));
+            ->findBy(['baseCurrency' => $eurCurrency])
+            ->willReturn(new ArrayCollection([$italyChannel->getWrappedObject()]));
         $channelRepository
-            ->findBy(['baseCurrency' => $this->usdCurrency])
-            ->willReturn(new ArrayCollection([$this->usChannel->getWrappedObject()]));
-        $this->italyChannel->getCode()->willReturn(self::ITALY_CHANNEL_CODE);
-        $this->usChannel->getCode()->willReturn(self::US_CHANNEL_CODE);
+            ->findBy(['baseCurrency' => $usdCurrency])
+            ->willReturn(new ArrayCollection([$usChannel->getWrappedObject()]));
+        $italyChannel->getCode()->willReturn(self::ITALY_CHANNEL_CODE);
+        $usChannel->getCode()->willReturn(self::US_CHANNEL_CODE);
 
         $this->beConstructedWith(
             $channelPricingFactory,
             $channelRepository,
-            $this->currencyRepository,
+            $currencyRepository,
             self::AKENEO_ATTRIBUTE
         );
     }
@@ -120,7 +99,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
 
     function it_does_nothing_when_currency_does_not_exists(
         ProductVariantInterface $productVariant,
-        FactoryInterface $channelPricingFactory
+        FactoryInterface $channelPricingFactory,
+        RepositoryInterface $currencyRepository
     ) {
         $value = [
             [
@@ -139,7 +119,7 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
             ],
         ];
         /** @noinspection PhpParamsInspection */
-        $this->currencyRepository->findOneBy(Argument::any())->willReturn(null);
+        $currencyRepository->findOneBy(Argument::any())->willReturn(null);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
 
@@ -150,7 +130,10 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         ProductVariantInterface $productVariant,
         ChannelPricingInterface $italianChannelPricing,
         ChannelPricingInterface $usChannelPricing,
-        FactoryInterface $channelPricingFactory
+        FactoryInterface $channelPricingFactory,
+        CurrencyInterface $eurCurrency,
+        CurrencyInterface $usdCurrency,
+        RepositoryInterface $currencyRepository
     ) {
         $value = [
             [
@@ -168,8 +151,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
                 ],
             ],
         ];
-        $this->currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($this->eurCurrency);
-        $this->currencyRepository->findOneBy(['code' => 'USD'])->willReturn($this->usdCurrency);
+        $currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($eurCurrency);
+        $currencyRepository->findOneBy(['code' => 'USD'])->willReturn($usdCurrency);
         $channelPricingFactory->createNew()->willReturn($italianChannelPricing, $usChannelPricing);
         /** @noinspection PhpParamsInspection */
         $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
@@ -189,7 +172,12 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         ProductVariantInterface $productVariant,
         ChannelPricingInterface $italianChannelPricing,
         ChannelPricingInterface $usChannelPricing,
-        FactoryInterface $channelPricingFactory
+        FactoryInterface $channelPricingFactory,
+        CurrencyInterface $eurCurrency,
+        CurrencyInterface $usdCurrency,
+        ChannelInterface $italyChannel,
+        ChannelInterface $usChannel,
+        RepositoryInterface $currencyRepository
     ) {
         $value = [
             [
@@ -207,10 +195,10 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
                 ],
             ],
         ];
-        $this->currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($this->eurCurrency);
-        $this->currencyRepository->findOneBy(['code' => 'USD'])->willReturn($this->usdCurrency);
-        $productVariant->getChannelPricingForChannel($this->italyChannel)->willReturn($italianChannelPricing);
-        $productVariant->getChannelPricingForChannel($this->usChannel)->willReturn($usChannelPricing);
+        $currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($eurCurrency);
+        $currencyRepository->findOneBy(['code' => 'USD'])->willReturn($usdCurrency);
+        $productVariant->getChannelPricingForChannel($italyChannel)->willReturn($italianChannelPricing);
+        $productVariant->getChannelPricingForChannel($usChannel)->willReturn($usChannelPricing);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
 
