@@ -8,8 +8,9 @@ use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\Product;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
+use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Product\Model\ProductVariantTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -44,7 +45,12 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $this->supports(new Product(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_supports_any_translatable_subject(TranslatableInterface $subject)
+    function it_supports_any_product_subject(ProductInterface $subject)
+    {
+        $this->supports($subject, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
+    }
+
+    function it_supports_any_product_variant_subject(ProductVariantInterface $subject)
     {
         $this->supports($subject, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
@@ -59,14 +65,15 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $this->supports(new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(false);
     }
 
-    function it_throws_when_handling_not_translatable_subject()
+    function it_throws_when_handling_not_product_or_product_variant_subject()
     {
         $this
             ->shouldThrow(
                 new \InvalidArgumentException(
                     sprintf(
-                        'This translatable property value handler only support instances of %s, %s given.',
-                        TranslatableInterface::class,
+                        'This translatable property value handler only support instances of %s or %s, %s given.',
+                        ProductInterface::class,
+                        ProductVariantInterface::class,
                         \stdClass::class
                     )
                 )
@@ -139,5 +146,26 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
         $newProductTranslation->setLocale('it_IT')->shouldHaveBeenCalled();
         $product->addTranslation($newProductTranslation)->shouldHaveBeenCalled();
+    }
+
+    function it_sets_value_on_product_translation_when_handling_variant_and_its_property_path_is_not_writable(
+        ProductVariantInterface $productVariant,
+        ProductVariantTranslationInterface $productVariantTranslation,
+        PropertyAccessorInterface $propertyAccessor,
+        ProductInterface $product,
+        ProductTranslationInterface $productTranslation
+    ) {
+        $productVariantTranslation->getLocale()->willReturn('en_US');
+        $productVariant->getTranslation('en_US')->shouldBeCalled()->willReturn($productVariantTranslation);
+        $propertyAccessor->isWritable($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(false);
+        $productVariantTranslation->getTranslatable()->willReturn($productVariant);
+        $productVariant->getProduct()->willReturn($product);
+        $product->getTranslation('en_US')->willReturn($productTranslation);
+        $productTranslation->getLocale()->willReturn('en_US');
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
+
+        $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 }

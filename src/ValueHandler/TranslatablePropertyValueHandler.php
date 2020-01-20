@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Product\Model\ProductVariantTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\TranslatableInterface;
 use Sylius\Component\Resource\Model\TranslationInterface;
@@ -48,7 +51,8 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
      */
     public function supports($subject, string $attribute, array $value): bool
     {
-        return $subject instanceof TranslatableInterface && $attribute === $this->akeneoAttributeCode;
+        return ($subject instanceof ProductInterface || $subject instanceof ProductVariantInterface) &&
+            $attribute === $this->akeneoAttributeCode;
     }
 
     /**
@@ -56,11 +60,12 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
      */
     public function handle($subject, string $attribute, array $value): void
     {
-        if (!$subject instanceof TranslatableInterface) {
+        if (!$subject instanceof ProductInterface && !$subject instanceof ProductVariantInterface) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'This translatable property value handler only support instances of %s, %s given.',
-                    TranslatableInterface::class,
+                    'This translatable property value handler only support instances of %s or %s, %s given.',
+                    ProductInterface::class,
+                    ProductVariantInterface::class,
                     is_object($subject) ? get_class($subject) : gettype($subject)
                 )
             );
@@ -73,11 +78,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
             $translation = $this->getOrCreateNewProductTranslation($subject, $localeCode);
-            $this->propertyAccessor->setValue(
-                $translation,
-                $this->translationPropertyPath,
-                $item['data']
-            );
+            $this->setValueWithFallback($translation, $item['data']);
         }
     }
 
@@ -85,12 +86,29 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     {
         foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
             $translation = $this->getOrCreateNewProductTranslation($subject, $localeCode);
-            $this->propertyAccessor->setValue(
-                $translation,
-                $this->translationPropertyPath,
-                $value['data']
-            );
+            $this->setValueWithFallback($translation, $value['data']);
         }
+    }
+
+    /**
+     * @param mixed $value
+     */
+    private function setValueWithFallback(TranslationInterface $translation, $value): void
+    {
+        if ($translation instanceof ProductVariantTranslationInterface) {
+            $variant = $translation->getTranslatable();
+            Assert::isInstanceOf($variant, ProductVariantInterface::class);
+            if (!$this->propertyAccessor->isWritable($translation, $this->translationPropertyPath)) {
+                $product = $variant->getProduct();
+                Assert::isInstanceOf($product, ProductInterface::class);
+                $translation = $this->getOrCreateNewProductTranslation($product, $translation->getLocale());
+            }
+        }
+        $this->propertyAccessor->setValue(
+            $translation,
+            $this->translationPropertyPath,
+            $value
+        );
     }
 
     private function getOrCreateNewProductTranslation(
