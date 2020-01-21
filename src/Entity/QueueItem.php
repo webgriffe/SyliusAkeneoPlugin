@@ -15,6 +15,9 @@ final class QueueItem implements QueueItemInterface
     /** @var string */
     private $akeneoIdentifier;
 
+    /** @var string|null */
+    private $errorMessage;
+
     /** @var \DateTimeInterface */
     private $createdAt;
 
@@ -37,6 +40,11 @@ final class QueueItem implements QueueItemInterface
         return $this->akeneoIdentifier;
     }
 
+    public function getErrorMessage(): ?string
+    {
+        return $this->errorMessage;
+    }
+
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
@@ -55,6 +63,11 @@ final class QueueItem implements QueueItemInterface
     public function setAkeneoEntity(string $akeneoEntity): void
     {
         $this->akeneoEntity = $akeneoEntity;
+    }
+
+    public function setErrorMessage(?string $errorMessage): void
+    {
+        $this->errorMessage = $errorMessage;
     }
 
     public function setCreatedAt(\DateTimeInterface $createdAt): void

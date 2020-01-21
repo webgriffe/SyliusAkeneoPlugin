@@ -16,6 +16,8 @@ interface QueueItemInterface extends ResourceInterface
 
     public function getAkeneoIdentifier(): string;
 
+    public function getErrorMessage(): ?string;
+
     public function getCreatedAt(): \DateTimeInterface;
 
     public function getImportedAt(): ?\DateTimeInterface;
@@ -23,6 +25,8 @@ interface QueueItemInterface extends ResourceInterface
     public function setAkeneoIdentifier(string $identifier): void;
 
     public function setAkeneoEntity(string $entity): void;
+
+    public function setErrorMessage(?string $errorMessage): void;
 
     public function setCreatedAt(\DateTimeInterface $createdAt): void;
 

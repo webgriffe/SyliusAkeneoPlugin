@@ -10,6 +10,8 @@
 
         <field name="akeneoIdentifier" column="akeneo_identifier" type="string" nullable="false" />
 
+        <field name="errorMessage" column="error_message" type="string" nullable="true" />
+
         <field name="createdAt" column="created_at" type="datetime" nullable="false" />
 
         <field name="importedAt" column="imported_at" type="datetime" nullable="true" />
