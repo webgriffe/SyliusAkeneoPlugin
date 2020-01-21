@@ -88,6 +88,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
     ) {
         $productTranslation->getLocale()->willReturn('en_US');
         $product->getTranslation('en_US')->shouldBeCalled()->willReturn($productTranslation);
+        $propertyAccessor->isWritable($productTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
 
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
 
@@ -105,6 +106,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $product->getTranslation('it_IT')->shouldBeCalled()->willReturn($fallbackProductTranslation);
         $productTranslationFactory->createNew()->shouldBeCalled()->willReturn($newProductTranslation);
         $product->addTranslation($newProductTranslation)->shouldBeCalled();
+        $propertyAccessor->isWritable($newProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
 
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'it_IT', 'scope' => null, 'data' => 'New value']]);
 
@@ -121,6 +123,8 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $italianProductTranslation->getLocale()->willReturn('it_IT');
         $product->getTranslation('en_US')->willReturn($englishProductTranslation);
         $product->getTranslation('it_IT')->willReturn($italianProductTranslation);
+        $propertyAccessor->isWritable($englishProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
+        $propertyAccessor->isWritable($italianProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
 
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => 'New value']]);
 
@@ -139,6 +143,8 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $product->getTranslation('en_US')->willReturn($existentEnglishProductTranslation);
         $product->getTranslation('it_IT')->willReturn($existentEnglishProductTranslation);
         $productTranslationFactory->createNew()->willReturn($newProductTranslation);
+        $propertyAccessor->isWritable($existentEnglishProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
+        $propertyAccessor->isWritable($newProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
 
         $this->handle($product, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => 'New value']]);
 
@@ -162,10 +168,47 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $productVariant->getProduct()->willReturn($product);
         $product->getTranslation('en_US')->willReturn($productTranslation);
         $productTranslation->getLocale()->willReturn('en_US');
+        $propertyAccessor->isWritable($productTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
 
         $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
+    }
+
+    function it_throws_exception_when_property_path_is_not_writable_on_both_product_and_variant_translation(
+        ProductVariantInterface $productVariant,
+        ProductVariantTranslationInterface $productVariantTranslation,
+        PropertyAccessorInterface $propertyAccessor,
+        ProductInterface $product,
+        ProductTranslationInterface $productTranslation
+    ) {
+        $productVariantTranslation->getLocale()->willReturn('en_US');
+        $productVariant->getTranslation('en_US')->shouldBeCalled()->willReturn($productVariantTranslation);
+        $propertyAccessor->isWritable($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(false);
+        $productVariantTranslation->getTranslatable()->willReturn($productVariant);
+        $productVariant->getProduct()->willReturn($product);
+        $product->getTranslation('en_US')->willReturn($productTranslation);
+        $productTranslation->getLocale()->willReturn('en_US');
+        $propertyAccessor->isWritable($productTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(false);
+
+        $this
+            ->shouldThrow(
+                new \RuntimeException(
+                    sprintf(
+                        'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
+                        self::TRANSLATION_PROPERTY_PATH,
+                        ProductVariantTranslationInterface::class,
+                        ProductTranslationInterface::class
+                    )
+                )
+            )
+            ->during('handle',
+                [
+                    $productVariant,
+                    self::AKENEO_ATTRIBUTE_CODE,
+                    [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']],
+                ]
+            );
     }
 }

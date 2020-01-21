@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductVariantTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
@@ -78,7 +79,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
             $translation = $this->getOrCreateNewProductTranslation($subject, $localeCode);
-            $this->setValueWithFallback($translation, $item['data']);
+            $this->setValueOnProductAndProductVariantTranslation($translation, $item['data']);
         }
     }
 
@@ -86,29 +87,50 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     {
         foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
             $translation = $this->getOrCreateNewProductTranslation($subject, $localeCode);
-            $this->setValueWithFallback($translation, $value['data']);
+            $this->setValueOnProductAndProductVariantTranslation($translation, $value['data']);
         }
     }
 
     /**
      * @param mixed $value
      */
-    private function setValueWithFallback(TranslationInterface $translation, $value): void
+    private function setValueOnProductAndProductVariantTranslation(TranslationInterface $translation, $value): void
     {
+        $hasBeenSet = false;
         if ($translation instanceof ProductVariantTranslationInterface) {
             $variant = $translation->getTranslatable();
             Assert::isInstanceOf($variant, ProductVariantInterface::class);
-            if (!$this->propertyAccessor->isWritable($translation, $this->translationPropertyPath)) {
-                $product = $variant->getProduct();
-                Assert::isInstanceOf($product, ProductInterface::class);
-                $translation = $this->getOrCreateNewProductTranslation($product, $translation->getLocale());
+            if ($this->propertyAccessor->isWritable($translation, $this->translationPropertyPath)) {
+                $this->propertyAccessor->setValue(
+                    $translation,
+                    $this->translationPropertyPath,
+                    $value
+                );
+                $hasBeenSet = true;
             }
+            $product = $variant->getProduct();
+            Assert::isInstanceOf($product, ProductInterface::class);
+            $translation = $this->getOrCreateNewProductTranslation($product, $translation->getLocale());
         }
-        $this->propertyAccessor->setValue(
-            $translation,
-            $this->translationPropertyPath,
-            $value
-        );
+        Assert::isInstanceOf($translation, ProductTranslationInterface::class);
+        if ($this->propertyAccessor->isWritable($translation, $this->translationPropertyPath)) {
+            $this->propertyAccessor->setValue(
+                $translation,
+                $this->translationPropertyPath,
+                $value
+            );
+            $hasBeenSet = true;
+        }
+        if (!$hasBeenSet) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
+                    $this->translationPropertyPath,
+                    ProductVariantTranslationInterface::class,
+                    ProductTranslationInterface::class
+                )
+            );
+        }
     }
 
     private function getOrCreateNewProductTranslation(
