@@ -15,8 +15,6 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
-use Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandlerInterface;
-use Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerResolverInterface;
 use Webmozart\Assert\Assert;
 
