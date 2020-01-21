@@ -19,18 +19,13 @@ final class ConsumeCommand extends Command
     private $queueItemRepository;
 
     /** @var ImporterInterface */
-    private $productModelImporter;
-
-    /** @var ImporterInterface */
     private $productImporter;
 
     public function __construct(
         QueueItemRepositoryInterface $queueItemRepository,
-        ImporterInterface $productModelImporter,
         ImporterInterface $productImporter
     ) {
         $this->queueItemRepository = $queueItemRepository;
-        $this->productModelImporter = $productModelImporter;
         $this->productImporter = $productImporter;
         parent::__construct();
     }
@@ -61,7 +56,6 @@ final class ConsumeCommand extends Command
     {
         // TODO implement better Akeneo entity importer resolver
         $map = [
-            QueueItemInterface::AKENEO_ENTITY_PRODUCT_MODEL => $this->productModelImporter,
             QueueItemInterface::AKENEO_ENTITY_PRODUCT => $this->productImporter,
         ];
 

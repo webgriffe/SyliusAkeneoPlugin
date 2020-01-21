@@ -5,7 +5,6 @@
         <!-- General -->
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product_model.importer" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.importer" />
             <tag name="console.command" />
         </service>
@@ -30,16 +29,6 @@
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\FamilyVariantHandlerInterface" alias="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
 
-        <service id="webgriffe_sylius_akeneo.product_model.importer" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer">
-            <argument type="service" id="sylius.repository.product" />
-            <argument type="service" id="sylius.factory.product" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product_model.categories_handler" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product.value_handler_resolver" />
-            <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
-            <argument type="service" id="event_dispatcher" />
-        </service>
-
         <!-- Product -->
         <service id="webgriffe_sylius_akeneo.product.importer" class="Webgriffe\SyliusAkeneoPlugin\Product\Importer">
             <argument type="service" id="sylius.factory.product_variant" />
@@ -49,6 +38,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product.value_handler_resolver" />
             <argument type="service" id="sylius.factory.product" />
             <argument type="service" id="webgriffe_sylius_akeneo.product_model.categories_handler" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
             <argument type="service" id="event_dispatcher" />
         </service>
     </services>

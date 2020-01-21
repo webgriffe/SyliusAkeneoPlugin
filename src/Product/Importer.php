@@ -16,6 +16,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ProductModel\CategoriesHandlerInterface;
+use Webgriffe\SyliusAkeneoPlugin\ProductModel\FamilyVariantHandlerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerResolverInterface;
 use Webmozart\Assert\Assert;
 
@@ -45,6 +46,9 @@ final class Importer implements ImporterInterface
     /** @var CategoriesHandlerInterface */
     private $categoriesHandler;
 
+    /** @var FamilyVariantHandlerInterface */
+    private $familyVariantHandler;
+
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
@@ -53,6 +57,7 @@ final class Importer implements ImporterInterface
         ValueHandlerResolverInterface $valueHandlerResolver,
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
+        FamilyVariantHandlerInterface $familyVariantHandler,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->productVariantFactory = $productVariantFactory;
@@ -62,6 +67,7 @@ final class Importer implements ImporterInterface
         $this->valueHandlerResolver = $valueHandlerResolver;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
+        $this->familyVariantHandler = $familyVariantHandler;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -75,6 +81,11 @@ final class Importer implements ImporterInterface
         $product = $this->getOrCreateProductFromVariantResponse($productVariantResponse);
 
         $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
+
+        $familyCode = $productVariantResponse['family'];
+        $familyVariantCode = $productVariantResponse['family_variant'];
+        $familyVariantResponse = $this->apiClient->findFamilyVariant($familyCode, $familyVariantCode);
+        $this->familyVariantHandler->handle($product, $familyVariantResponse);
 
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
         if (!$productVariant instanceof ProductVariantInterface) {
@@ -93,10 +104,7 @@ final class Importer implements ImporterInterface
             $valueHandler->handle($productVariant, $attribute, $value);
         }
 
-        $eventName = 'create';
-        if ($product->getId()) {
-            $eventName = 'update';
-        }
+        $eventName = $product->getId() ? 'update' : 'create';
         $this->dispatchPreEvent($product, $eventName);
         // TODO We should handle $event->isStopped() where $event is the return value of the dispatchPreEvent method.
         //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
@@ -111,14 +119,11 @@ final class Importer implements ImporterInterface
         if ($parentCode !== null) {
             $product = $this->productRepository->findOneByCode($parentCode);
             if (!$product) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Cannot import Akeneo product "%s", the parent product "%s" does not exists on Sylius.',
-                        $identifier,
-                        $parentCode
-                    )
-                );
+                $product = $this->productFactory->createNew();
             }
+            Assert::isInstanceOf($product, ProductInterface::class);
+            /** @var ProductInterface $product */
+            $product->setCode($parentCode);
 
             return $product;
         }
