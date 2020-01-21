@@ -44,9 +44,13 @@ final class ConsumeCommand extends Command
     {
         $queueItems = $this->queueItemRepository->findAllToImport();
         foreach ($queueItems as $queueItem) {
-            $importer = $this->resolveImporter($queueItem->getAkeneoEntity());
-            $importer->import($queueItem->getAkeneoIdentifier());
-            $queueItem->setImportedAt(new \DateTime());
+            try {
+                $importer = $this->resolveImporter($queueItem->getAkeneoEntity());
+                $importer->import($queueItem->getAkeneoIdentifier());
+                $queueItem->setImportedAt(new \DateTime());
+            } catch (\Throwable $t) {
+                $queueItem->setErrorMessage($t->getMessage());
+            }
             // TODO persist $queueItem with imported date
         }
 

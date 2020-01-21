@@ -44,4 +44,13 @@ final class ProductContext implements Context
         $product = $this->productVariantRepository->findOneByCodeAndProductCode($code, $productCode);
         Assert::isInstanceOf($product, ProductVariantInterface::class);
     }
+
+    /**
+     * @Then /^the product "([^"]*)" should not exists$/
+     */
+    public function theProductShouldNotExists(string $code)
+    {
+        $product = $this->productRepository->findOneByCode($code);
+        Assert::null($product);
+    }
 }

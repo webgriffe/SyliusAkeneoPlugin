@@ -28,4 +28,24 @@ final class QueueContext implements Context
         $queueItem = $this->sharedStorage->get('queue_item');
         Assert::notNull($queueItem->getImportedAt());
     }
+
+    /**
+     * @Given /^the queue item has not been marked as imported$/
+     */
+    public function theQueueItemHasNotBeenMarkedAsImported()
+    {
+        /** @var QueueItemInterface $queueItem */
+        $queueItem = $this->sharedStorage->get('queue_item');
+        Assert::null($queueItem->getImportedAt());
+    }
+
+    /**
+     * @Given /^the queue item has an error message$/
+     */
+    public function theQueueItemHasAnErrorMessage()
+    {
+        /** @var QueueItemInterface $queueItem */
+        $queueItem = $this->sharedStorage->get('queue_item');
+        Assert::notNull($queueItem->getErrorMessage());
+    }
 }
