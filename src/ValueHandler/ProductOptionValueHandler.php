@@ -100,6 +100,12 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             );
         }
         $productOption = $this->productOptionRepository->findOneBy(['code' => $optionCode]);
+        // TODO productOptionRepository could be removed by getting product option from product with something like:
+        //        $productOption = $product->getOptions()->filter(
+        //            function (ProductOptionInterface $productOption) use ($optionCode) {
+        //                return $productOption->getCode() === $optionCode;
+        //            }
+        //        )->first();
         if (!$productOption) {
             throw new \RuntimeException(
                 sprintf(
@@ -120,6 +126,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             $optionValue = $this->productOptionValueFactory->createNew();
             $optionValue->setCode($fullValueCode);
             $optionValue->setOption($productOption);
+            $productOption->addValue($optionValue);
         }
         foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
             $optionValueTranslation = $optionValue->getTranslation($localeCode);

@@ -46,22 +46,25 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_product_variant_of_a_product_model()
+    public function it_creates_new_product_variant_and_its_product_when_importing_variant_of_configurable_product()
     {
         $this->fixtureLoader->load(
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
             ],
             [],
             [],
             PurgeMode::createDeleteMode()
         );
+
         $this->importer->import('braided-hat-m');
 
+        /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $allVariants);
         $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
+        $this->assertInstanceOf(ProductInterface::class, $allVariants[0]->getProduct());
+        $this->assertEquals('model-braided-hat', $allVariants[0]->getProduct()->getCode());
     }
 
     /**
@@ -186,7 +189,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_product_and_product_variant_when_akeneo_product_has_no_parent()
+    public function it_creates_product_and_product_variant_when_importing_simple_product()
     {
         $this->fixtureLoader->load(
             [
@@ -196,12 +199,12 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
+
         $this->importer->import('10627329');
 
         $variants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $variants);
         $this->assertInstanceOf(ProductVariantInterface::class, $variants[0]);
-
         $products = $this->productRepository->findAll();
         $this->assertCount(1, $products);
         $this->assertInstanceOf(ProductInterface::class, $products[0]);
@@ -210,7 +213,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_already_existent_parent_product_when_product_variant_has_no_parent()
+    public function it_updates_already_existent_parent_product_when_importing_simple_product()
     {
         $this->fixtureLoader->load(
             [
@@ -233,7 +236,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_sets_channel_price_value_on_product_variant()
+    public function it_sets_channel_price_value_on_product_variant_according_to_channel_currency()
     {
         $this->fixtureLoader->load(
             [
@@ -278,7 +281,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_channel_price_value_on_product_variant()
+    public function it_updates_channel_price_value_on_product_variant_according_channel_currency()
     {
         $this->fixtureLoader->load(
             [

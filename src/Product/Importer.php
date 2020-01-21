@@ -82,11 +82,6 @@ final class Importer implements ImporterInterface
 
         $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
 
-        $familyCode = $productVariantResponse['family'];
-        $familyVariantCode = $productVariantResponse['family_variant'];
-        $familyVariantResponse = $this->apiClient->findFamilyVariant($familyCode, $familyVariantCode);
-        $this->familyVariantHandler->handle($product, $familyVariantResponse);
-
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
         if (!$productVariant instanceof ProductVariantInterface) {
             /** @var ProductVariantInterface $productVariant */
@@ -120,6 +115,16 @@ final class Importer implements ImporterInterface
             $product = $this->productRepository->findOneByCode($parentCode);
             if (!$product) {
                 $product = $this->productFactory->createNew();
+                Assert::isInstanceOf($product, ProductInterface::class);
+                /** @var ProductInterface $product */
+                $productResponse = $this->apiClient->findProductModel($parentCode);
+                if (!$productResponse) {
+                    throw new \RuntimeException(sprintf('Cannot find product model "%s" on Akeneo.', $parentCode));
+                }
+                $familyCode = $productResponse['family'];
+                $familyVariantCode = $productResponse['family_variant'];
+                $familyVariantResponse = $this->apiClient->findFamilyVariant($familyCode, $familyVariantCode);
+                $this->familyVariantHandler->handle($product, $familyVariantResponse);
             }
             Assert::isInstanceOf($product, ProductInterface::class);
             /** @var ProductInterface $product */

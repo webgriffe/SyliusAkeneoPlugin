@@ -32,20 +32,6 @@ final class QueueContext implements Context
     }
 
     /**
-     * @Given /^there is one product model to import with identifier "([^"]*)" in the Akeneo queue$/
-     */
-    public function thereIsOneProductModelToImportWithIdentifierInTheAkeneoQueue(string $identifier)
-    {
-        /** @var QueueItemInterface $queueItem */
-        $queueItem = $this->queueItemFactory->createNew();
-        $queueItem->setAkeneoEntity(QueueItemInterface::AKENEO_ENTITY_PRODUCT_MODEL);
-        $queueItem->setAkeneoIdentifier($identifier);
-        $queueItem->setCreatedAt(new \DateTime());
-        $this->queueItemRepository->add($queueItem);
-        $this->sharedStorage->set('queue_item', $queueItem);
-    }
-
-    /**
      * @Given /^there is one product to import with identifier "([^"]*)" in the Akeneo queue$/
      */
     public function thereIsOneProductToImportWithIdentifierInTheAkeneoQueue(string $identifier)

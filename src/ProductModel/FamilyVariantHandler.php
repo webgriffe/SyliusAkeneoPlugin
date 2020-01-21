@@ -56,9 +56,13 @@ final class FamilyVariantHandler implements FamilyVariantHandlerInterface
                     );
                 }
                 foreach ($attributeResponse['labels'] as $locale => $label) {
-                    $productOption->getTranslation($locale)->setName($label);
+                    $productOptionTranslation = $productOption->getTranslation($locale);
+                    if ($productOptionTranslation->getLocale() === $locale) {
+                        $productOptionTranslation->setName($label);
+                    }
                 }
             }
+            $this->productOptionRepository->add($productOption);
             $product->addOption($productOption);
         }
     }
