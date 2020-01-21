@@ -3,6 +3,9 @@ imports:
     - tests/Behat/Resources/suites.yml
 
 default:
+    gherkin:
+        filters:
+            tags: "~@todo"
     extensions:
         Lakion\Behat\MinkDebugExtension:
             directory: etc/build
