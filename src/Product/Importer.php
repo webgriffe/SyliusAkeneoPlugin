@@ -74,6 +74,8 @@ final class Importer implements ImporterInterface
 
         $product = $this->getOrCreateProductFromVariantResponse($productVariantResponse);
 
+        $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
+
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
         if (!$productVariant instanceof ProductVariantInterface) {
             /** @var ProductVariantInterface $productVariant */
@@ -128,8 +130,6 @@ final class Importer implements ImporterInterface
         Assert::isInstanceOf($product, ProductInterface::class);
         /** @var ProductInterface $product */
         $product->setCode($identifier);
-
-        $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
 
         return $product;
     }
