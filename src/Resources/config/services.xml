@@ -14,22 +14,21 @@
 
         <service id="webgriffe_sylius_akeneo.product.value_handler_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver" />
 
-        <!-- Product Model -->
-        <service id="webgriffe_sylius_akeneo.product_model.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\CategoriesHandler">
+        <!-- Product Importer -->
+        <service id="webgriffe_sylius_akeneo.product.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandler">
             <argument type="service" id="sylius.repository.taxon" />
             <argument type="service" id="sylius.repository.product_taxon" />
             <argument type="service" id="sylius.factory.product_taxon" />
         </service>
-        <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\CategoriesHandlerInterface" alias="webgriffe_sylius_akeneo.product_model.categories_handler" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandlerInterface" alias="webgriffe_sylius_akeneo.product.categories_handler" />
 
-        <service id="webgriffe_sylius_akeneo.product_model.family_variant_handler" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\FamilyVariantHandler">
+        <service id="webgriffe_sylius_akeneo.product.family_variant_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandler">
             <argument type="service" id="sylius.factory.product_option" />
             <argument type="service" id="sylius.repository.product_option" />
             <argument type="service" id="webgriffe_sylius_akeneo.api_client"/>
         </service>
-        <service id="Webgriffe\SyliusAkeneoPlugin\ProductModel\FamilyVariantHandlerInterface" alias="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface" alias="webgriffe_sylius_akeneo.product.family_variant_handler" />
 
-        <!-- Product -->
         <service id="webgriffe_sylius_akeneo.product.importer" class="Webgriffe\SyliusAkeneoPlugin\Product\Importer">
             <argument type="service" id="sylius.factory.product_variant" />
             <argument type="service" id="sylius.repository.product_variant" />
@@ -37,8 +36,8 @@
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.value_handler_resolver" />
             <argument type="service" id="sylius.factory.product" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product_model.categories_handler" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product_model.family_variant_handler" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.categories_handler" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.family_variant_handler" />
             <argument type="service" id="event_dispatcher" />
         </service>
     </services>

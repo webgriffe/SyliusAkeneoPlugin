@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTaxonInterface;
@@ -10,6 +10,7 @@ use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Core\Repository\ProductTaxonRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
+use Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandlerInterface;
 use Webmozart\Assert\Assert;
 
 final class CategoriesHandler implements CategoriesHandlerInterface

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Webgriffe\SyliusAkeneoPlugin\ProductModel;
+namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface;
 use Webmozart\Assert\Assert;
 
 final class FamilyVariantHandler implements FamilyVariantHandlerInterface
