@@ -9,6 +9,7 @@ services:
         arguments:
             - '@property_accessor'
             - '@sylius.factory.product_translation'
+            - '@sylius.factory.product_variant_translation'
             - '@sylius.translation_locale_provider.admin'
             - 'name'
             - 'name'
@@ -18,6 +19,7 @@ services:
         arguments:
             - '@property_accessor'
             - '@sylius.factory.product_translation'
+            - '@sylius.factory.product_variant_translation'
             - '@sylius.translation_locale_provider.admin'
             - 'slug'
             - 'slug'
@@ -47,7 +49,7 @@ services:
             - '@sylius.repository.currency'
             - 'price'
 
-    webgriffe_sylius_akeneo.product_model.value_handler_resolver:
+    webgriffe_sylius_akeneo.product.value_handler_resolver:
         class: 'Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver'
         calls:
             - method: add
@@ -59,10 +61,6 @@ services:
             - method: add
               arguments:
                   - '@webgriffe_sylius_akeneo.value_handler.picture_value_handler'
-
-    webgriffe_sylius_akeneo.product_variant.value_handler_resolver:
-        class: 'Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver'
-        calls:
             - method: add
               arguments:
                   - '@webgriffe_sylius_akeneo.value_handler.product_option_value_handler'

@@ -19,6 +19,12 @@ Sylius\Component\Core\Model\ProductTranslation:
     slug: "braided-hat"
     description: <paragraph(2)>
     translatable: "@model-braided-hat"
+  model-braided-hat_it_IT:
+    locale: "it_IT"
+    name: "Cappello Intrecciato"
+    slug: "cappello-intrecciato"
+    description: <paragraph(2)>
+    translatable: "@model-braided-hat"
 
 Sylius\Component\Core\Model\Product:
   model-braided-hat:
@@ -27,5 +33,6 @@ Sylius\Component\Core\Model\Product:
     code: "model-braided-hat"
     translations:
       - "@model-braided-hat_en_US"
+      - "@model-braided-hat_it_IT"
     options:
       - "@size"

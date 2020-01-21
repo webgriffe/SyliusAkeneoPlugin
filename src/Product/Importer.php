@@ -34,7 +34,7 @@ final class Importer implements ImporterInterface
     private $apiClient;
 
     /** @var ValueHandlerResolverInterface */
-    private $variantValueHandlerResolver;
+    private $valueHandlerResolver;
 
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
@@ -45,28 +45,23 @@ final class Importer implements ImporterInterface
     /** @var CategoriesHandlerInterface */
     private $categoriesHandler;
 
-    /** @var ValueHandlerResolverInterface */
-    private $productModelValueHandlerResolver;
-
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
         ProductRepositoryInterface $productRepository,
         ApiClientInterface $apiClient,
-        ValueHandlerResolverInterface $variantValueHandlerResolver,
+        ValueHandlerResolverInterface $valueHandlerResolver,
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
-        ValueHandlerResolverInterface $productModelValueHandlerResolver,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
         $this->productRepository = $productRepository;
         $this->apiClient = $apiClient;
-        $this->variantValueHandlerResolver = $variantValueHandlerResolver;
+        $this->valueHandlerResolver = $valueHandlerResolver;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
-        $this->productModelValueHandlerResolver = $productModelValueHandlerResolver;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -85,17 +80,26 @@ final class Importer implements ImporterInterface
             $productVariant = $this->productVariantFactory->createNew();
             $productVariant->setCode($identifier);
         }
+        $product->addVariant($productVariant);
         $productVariant->setProduct($product);
 
         foreach ($productVariantResponse['values'] as $attribute => $value) {
-            $valueHandler = $this->variantValueHandlerResolver->resolve($productVariant, $attribute, $value);
+            $valueHandler = $this->valueHandlerResolver->resolve($productVariant, $attribute, $value);
             if ($valueHandler === null) {
                 continue;
             }
             $valueHandler->handle($productVariant, $attribute, $value);
         }
 
-        $this->productVariantRepository->add($productVariant);
+        $eventName = 'create';
+        if ($product->getId()) {
+            $eventName = 'update';
+        }
+        $this->dispatchPreEvent($product, $eventName);
+        // TODO We should handle $event->isStopped() where $event is the return value of the dispatchPreEvent method.
+        //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
+        $this->productRepository->add($product);
+        $this->dispatchPostEvent($product, $eventName);
     }
 
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
@@ -118,9 +122,7 @@ final class Importer implements ImporterInterface
         }
 
         $product = $this->productRepository->findOneByCode($identifier);
-        $eventName = 'update';
         if (!$product) {
-            $eventName = 'create';
             $product = $this->productFactory->createNew();
         }
         Assert::isInstanceOf($product, ProductInterface::class);
@@ -128,20 +130,6 @@ final class Importer implements ImporterInterface
         $product->setCode($identifier);
 
         $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
-
-        foreach ($productVariantResponse['values'] as $attribute => $value) {
-            $valueHandler = $this->productModelValueHandlerResolver->resolve($product, $attribute, $value);
-            if ($valueHandler === null) {
-                continue;
-            }
-            $valueHandler->handle($product, $attribute, $value);
-        }
-
-        $this->dispatchPreEvent($product, $eventName);
-        // TODO We should handle $event->isStopped() where $event is the return value of the dispatchPreEvent method.
-        //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
-        $this->productRepository->add($product);
-        $this->dispatchPostEvent($product, $eventName);
 
         return $product;
     }
