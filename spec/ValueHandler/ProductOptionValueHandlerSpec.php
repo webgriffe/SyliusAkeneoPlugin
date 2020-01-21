@@ -227,6 +227,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
 
         $productOptionValue->setCode('option-code_value-code')->shouldHaveBeenCalled();
         $productOptionValue->setOption($productOption)->shouldHaveBeenCalled();
+        $productOption->addValue($productOptionValue)->shouldHaveBeenCalled();
         $englishProductOptionValueTranslation->setValue(self::EN_LABEL)->shouldHaveBeenCalled();
         $italianProductOptionValueTranslation->setLocale('it_IT')->shouldHaveBeenCalled();
         $italianProductOptionValueTranslation->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
