@@ -20,7 +20,7 @@ final class QueueContext implements Context
     }
 
     /**
-     * @Given /^the queue item has been marked as imported$/
+     * @Given /^the(?:| last) queue item has been marked as imported$/
      */
     public function theQueueItemHasBeenMarkedAsImported()
     {
@@ -30,7 +30,7 @@ final class QueueContext implements Context
     }
 
     /**
-     * @Given /^the queue item has not been marked as imported$/
+     * @Given /^the(?:| last) queue item has not been marked as imported$/
      */
     public function theQueueItemHasNotBeenMarkedAsImported()
     {
@@ -40,7 +40,7 @@ final class QueueContext implements Context
     }
 
     /**
-     * @Given /^the queue item has an error message$/
+     * @Given /^the(?:| last) queue item has an error message$/
      */
     public function theQueueItemHasAnErrorMessage()
     {

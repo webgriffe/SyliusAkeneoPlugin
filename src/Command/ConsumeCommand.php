@@ -46,7 +46,7 @@ final class ConsumeCommand extends Command
             } catch (\Throwable $t) {
                 $queueItem->setErrorMessage($t->getMessage());
             }
-            // TODO persist $queueItem with imported date
+            $this->queueItemRepository->add($queueItem);
         }
 
         return 0;
