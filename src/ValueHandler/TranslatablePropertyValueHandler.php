@@ -22,7 +22,10 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     private $propertyAccessor;
 
     /** @var FactoryInterface */
-    private $translationFactory;
+    private $productTranslationFactory;
+
+    /** @var FactoryInterface */
+    private $productVariantTranslationFactory;
 
     /** @var TranslationLocaleProviderInterface */
     private $localeProvider;
@@ -36,12 +39,14 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     public function __construct(
         PropertyAccessorInterface $propertyAccessor,
         FactoryInterface $productTranslationFactory,
+        FactoryInterface $productVariantTranslationFactory,
         TranslationLocaleProviderInterface $localeProvider,
         string $akeneoAttributeCode,
         string $translationPropertyPath
     ) {
         $this->propertyAccessor = $propertyAccessor;
-        $this->translationFactory = $productTranslationFactory;
+        $this->productTranslationFactory = $productTranslationFactory;
+        $this->productVariantTranslationFactory = $productVariantTranslationFactory;
         $this->localeProvider = $localeProvider;
         $this->akeneoAttributeCode = $akeneoAttributeCode;
         $this->translationPropertyPath = $translationPropertyPath;
@@ -139,8 +144,16 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     ): TranslationInterface {
         $translation = $subject->getTranslation($localeCode);
         if ($translation->getLocale() !== $localeCode) {
-            $translation = $this->translationFactory->createNew();
+            if ($subject instanceof ProductVariantInterface) {
+                $translation = $this->productVariantTranslationFactory->createNew();
+            } else {
+                $translation = $this->productTranslationFactory->createNew();
+            }
             Assert::isInstanceOf($translation, TranslationInterface::class);
+            Assert::isInstanceOfAny(
+                $translation,
+                [ProductVariantTranslationInterface::class, ProductTranslationInterface::class]
+            );
             /** @var TranslationInterface $translation */
             $translation->setLocale($localeCode);
             $subject->addTranslation($translation);

@@ -23,12 +23,14 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
     function let(
         PropertyAccessorInterface $propertyAccessor,
         FactoryInterface $productTranslationFactory,
+        FactoryInterface $productVariantTranslationFactory,
         TranslationLocaleProviderInterface $localeProvider
     ) {
         $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
         $this->beConstructedWith(
             $propertyAccessor,
             $productTranslationFactory,
+            $productVariantTranslationFactory,
             $localeProvider,
             self::AKENEO_ATTRIBUTE_CODE,
             self::TRANSLATION_PROPERTY_PATH
