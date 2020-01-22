@@ -7,6 +7,7 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db;
 use Behat\Behat\Context\Context;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
+use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 use Webmozart\Assert\Assert;
 
 final class QueueContext implements Context
@@ -14,9 +15,15 @@ final class QueueContext implements Context
     /** @var SharedStorageInterface */
     private $sharedStorage;
 
-    public function __construct(SharedStorageInterface $sharedStorage)
-    {
+    /** @var QueueItemRepositoryInterface */
+    private $queueItemRepository;
+
+    public function __construct(
+        SharedStorageInterface $sharedStorage,
+        QueueItemRepositoryInterface $queueItemRepository
+    ) {
         $this->sharedStorage = $sharedStorage;
+        $this->queueItemRepository = $queueItemRepository;
     }
 
     /**
@@ -47,5 +54,30 @@ final class QueueContext implements Context
         /** @var QueueItemInterface $queueItem */
         $queueItem = $this->sharedStorage->get('queue_item');
         Assert::notNull($queueItem->getErrorMessage());
+    }
+
+    /**
+     * @Then /^the product "([^"]*)" should not be in the Akeneo queue$/
+     */
+    public function theProductShouldNotBeInTheAkeneoQueue(string $identifier)
+    {
+        Assert::null(
+            $this->queueItemRepository->findOneBy(
+                ['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT, 'akeneoIdentifier' => $identifier]
+            )
+        );
+    }
+
+    /**
+     * @Then /^the product "([^"]*)" should be in the Akeneo queue$/
+     */
+    public function theProductShouldBeInTheAkeneoQueue(string $identifier)
+    {
+        Assert::isInstanceOf(
+            $this->queueItemRepository->findOneBy(
+                ['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT, 'akeneoIdentifier' => $identifier]
+            ),
+            QueueItemInterface::class
+        );
     }
 }

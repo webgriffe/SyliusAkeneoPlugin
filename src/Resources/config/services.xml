@@ -9,6 +9,10 @@
             <tag name="console.command" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.command.enqueue" class="Webgriffe\SyliusAkeneoPlugin\Command\EnqueueCommand">
+            <tag name="console.command" />
+        </service>
+
         <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" />
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
 

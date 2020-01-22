@@ -323,4 +323,31 @@ final class ImporterTest extends KernelTestCase
         $this->assertNotNull($channelPricing);
         $this->assertEquals(3099, $channelPricing->getPrice());
     }
+
+    /**
+     * @test
+     */
+    public function it_sets_all_channels_to_imported_products()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Currency/EUR.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findAll()[0];
+        $this->assertCount(3, $product->getChannels());
+    }
 }

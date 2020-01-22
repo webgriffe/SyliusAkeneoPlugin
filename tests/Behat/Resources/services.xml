@@ -10,10 +10,18 @@
             <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
+        </service>
+
         <service id="webgriffe_sylius_akeneo.context.cli.consume_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ConsumeCommandContext">
             <argument type="service" id="kernel" />
-            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo.command.consume" />
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.context.cli.enqueue_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\EnqueueCommandContext">
+            <argument type="service" id="kernel" />
+            <argument type="service" id="webgriffe_sylius_akeneo.command.enqueue" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.db.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ProductContext">
@@ -23,6 +31,7 @@
 
         <service id="webgriffe_sylius_akeneo.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\QueueContext">
             <argument type="service" id="sylius.behat.shared_storage" />
+            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
     </services>
 </container>

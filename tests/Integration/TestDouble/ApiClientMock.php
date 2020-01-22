@@ -9,6 +9,8 @@ use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 
 final class ApiClientMock implements ApiClientInterface
 {
+    private $productsUpdatedAt = [];
+
     public function findProductModel(string $code): ?array
     {
         return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/ProductModel/' . $code . '.json');
@@ -36,6 +38,11 @@ final class ApiClientMock implements ApiClientInterface
         return $this->jsonDecodeOrNull(
             __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '/' . $optionCode . '.json'
         );
+    }
+
+    public function addProductUpdatedAt(string $identifier, \DateTime $updatedAt): void
+    {
+        $this->productsUpdatedAt[$identifier] = $updatedAt;
     }
 
     /**
