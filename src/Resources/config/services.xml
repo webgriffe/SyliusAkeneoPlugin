@@ -29,6 +29,11 @@
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface" alias="webgriffe_sylius_akeneo.product.family_variant_handler" />
 
+        <service id="webgriffe_sylius_akeneo.product.channels_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\AllChannelsResolver">
+            <argument type="service" id="sylius.repository.channel" />
+        </service>
+        <service id="Webgriffe\SyliusAkeneoPlugin\Product\ChannelsResolverInterface" alias="webgriffe_sylius_akeneo.product.channels_resolver" />
+
         <service id="webgriffe_sylius_akeneo.product.importer" class="Webgriffe\SyliusAkeneoPlugin\Product\Importer">
             <argument type="service" id="sylius.factory.product_variant" />
             <argument type="service" id="sylius.repository.product_variant" />
@@ -39,6 +44,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product.categories_handler" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.family_variant_handler" />
             <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.channels_resolver" />
         </service>
     </services>
 </container>

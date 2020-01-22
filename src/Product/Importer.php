@@ -47,6 +47,9 @@ final class Importer implements ImporterInterface
     /** @var FamilyVariantHandlerInterface */
     private $familyVariantHandler;
 
+    /** @var ChannelsResolverInterface */
+    private $channelsResolver;
+
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
@@ -56,7 +59,8 @@ final class Importer implements ImporterInterface
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
         FamilyVariantHandlerInterface $familyVariantHandler,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        ChannelsResolverInterface $channelsResolver
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
@@ -67,6 +71,7 @@ final class Importer implements ImporterInterface
         $this->categoriesHandler = $categoriesHandler;
         $this->familyVariantHandler = $familyVariantHandler;
         $this->eventDispatcher = $eventDispatcher;
+        $this->channelsResolver = $channelsResolver;
     }
 
     public function import(string $identifier): void
@@ -77,6 +82,8 @@ final class Importer implements ImporterInterface
         }
 
         $product = $this->getOrCreateProductFromVariantResponse($productVariantResponse);
+
+        $this->handleChannels($product, $productVariantResponse);
 
         $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
 
@@ -156,5 +163,18 @@ final class Importer implements ImporterInterface
         $this->eventDispatcher->dispatch(sprintf('sylius.product.post_%s', $eventName), $event);
 
         return $event;
+    }
+
+    private function handleChannels(ProductInterface $product, array $productVariantResponse): void
+    {
+        foreach ($product->getChannels() as $channel) {
+            $product->removeChannel($channel);
+        }
+        $channels = $this->channelsResolver->resolve($productVariantResponse);
+        foreach ($channels as $channel) {
+            if (!$product->hasChannel($channel)) {
+                $product->addChannel($channel);
+            }
+        }
     }
 }
