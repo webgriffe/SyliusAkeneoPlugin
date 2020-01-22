@@ -27,14 +27,18 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When I enqueue products modified since :date
+     * @When /^I run enqueue command with since date "([^"]+)"$/
      */
-    public function iEnqueueProductsModifiedSince(\DateTime $date)
+    public function iRunEnqueueCommandWithSinceDate($date = null)
     {
         $application = new Application($this->kernel);
         $application->add($this->enqueueCommand);
         $command = $application->find('webgriffe:akeneo:enqueue');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => $date->format('Y-m-d H:i:s')]);
+        $input = ['command' => 'webgriffe:akeneo:enqueue'];
+        if ($date !== null) {
+            $input['since'] = $date;
+        }
+        $commandTester->execute($input);
     }
 }
