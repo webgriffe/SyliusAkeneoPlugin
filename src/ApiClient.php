@@ -41,4 +41,10 @@ final class ApiClient implements ApiClientInterface
         // TODO: Implement findAttributeOption() method.
         return null;
     }
+
+    public function findProductsModifiedAfter(\DateTime $date): ?array
+    {
+        // TODO: Implement findProductsModifiedAfter() method.
+        return null;
+    }
 }

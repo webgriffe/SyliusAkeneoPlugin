@@ -17,4 +17,6 @@ interface ApiClientInterface
     public function downloadFile(string $url): \SplFileInfo;
 
     public function findAttributeOption(string $attributeCode, string $optionCode): ?array;
+
+    public function findProductsModifiedAfter(\DateTime $date): ?array;
 }

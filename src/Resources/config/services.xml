@@ -10,6 +10,9 @@
         </service>
 
         <service id="webgriffe_sylius_akeneo.command.enqueue" class="Webgriffe\SyliusAkeneoPlugin\Command\EnqueueCommand">
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
+            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item"/>
+            <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item"/>
             <tag name="console.command" />
         </service>
 

@@ -70,4 +70,16 @@ final class ApiClientMock implements ApiClientInterface
 
         return new File($tempName);
     }
+
+    public function findProductsModifiedAfter(\DateTime $date): ?array
+    {
+        $products = [];
+        foreach ($this->productsUpdatedAt as $identifier => $updatedAt) {
+            if ($updatedAt > $date) {
+                $products[] = $identifier;
+            }
+        }
+
+        return $products;
+    }
 }
