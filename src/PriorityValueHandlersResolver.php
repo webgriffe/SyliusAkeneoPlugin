@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin;
 
-final class PriorityValueHandlerResolver implements ValueHandlerResolverInterface
+final class PriorityValueHandlersResolver implements ValueHandlersResolverInterface
 {
     /** @var array */
     private $valueHandlers = [];
@@ -23,16 +23,17 @@ final class PriorityValueHandlerResolver implements ValueHandlerResolverInterfac
     /**
      * {@inheritdoc}
      */
-    public function resolve($subject, string $attribute, array $value): ?ValueHandlerInterface
+    public function resolve($subject, string $attribute, array $value): array
     {
+        $supportedHandlers = [];
         /** @var ValueHandlerInterface[] $valueHandlers */
         $valueHandlers = array_column($this->valueHandlers, 'handler');
         foreach ($valueHandlers as $valueHandler) {
             if ($valueHandler->supports($subject, $attribute, $value)) {
-                return $valueHandler;
+                $supportedHandlers[] = $valueHandler;
             }
         }
 
-        return null;
+        return $supportedHandlers;
     }
 }

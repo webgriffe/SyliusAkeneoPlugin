@@ -15,7 +15,7 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
-use Webgriffe\SyliusAkeneoPlugin\ValueHandlerResolverInterface;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
 use Webmozart\Assert\Assert;
 
 final class Importer implements ImporterInterface
@@ -32,8 +32,8 @@ final class Importer implements ImporterInterface
     /** @var ApiClientInterface */
     private $apiClient;
 
-    /** @var ValueHandlerResolverInterface */
-    private $valueHandlerResolver;
+    /** @var ValueHandlersResolverInterface */
+    private $valueHandlersResolver;
 
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
@@ -55,7 +55,7 @@ final class Importer implements ImporterInterface
         ProductVariantRepositoryInterface $productVariantRepository,
         ProductRepositoryInterface $productRepository,
         ApiClientInterface $apiClient,
-        ValueHandlerResolverInterface $valueHandlerResolver,
+        ValueHandlersResolverInterface $valueHandlerResolver,
         ProductFactoryInterface $productFactory,
         CategoriesHandlerInterface $categoriesHandler,
         FamilyVariantHandlerInterface $familyVariantHandler,
@@ -66,7 +66,7 @@ final class Importer implements ImporterInterface
         $this->productVariantRepository = $productVariantRepository;
         $this->productRepository = $productRepository;
         $this->apiClient = $apiClient;
-        $this->valueHandlerResolver = $valueHandlerResolver;
+        $this->valueHandlersResolver = $valueHandlerResolver;
         $this->productFactory = $productFactory;
         $this->categoriesHandler = $categoriesHandler;
         $this->familyVariantHandler = $familyVariantHandler;
@@ -97,11 +97,10 @@ final class Importer implements ImporterInterface
         $productVariant->setProduct($product);
 
         foreach ($productVariantResponse['values'] as $attribute => $value) {
-            $valueHandler = $this->valueHandlerResolver->resolve($productVariant, $attribute, $value);
-            if ($valueHandler === null) {
-                continue;
+            $valueHandlers = $this->valueHandlersResolver->resolve($productVariant, $attribute, $value);
+            foreach ($valueHandlers as $valueHandler) {
+                $valueHandler->handle($productVariant, $attribute, $value);
             }
-            $valueHandler->handle($productVariant, $attribute, $value);
         }
 
         $eventName = $product->getId() ? 'update' : 'create';

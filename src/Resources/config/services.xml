@@ -16,7 +16,8 @@
         <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" />
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
 
-        <service id="webgriffe_sylius_akeneo.product.value_handler_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver" />
+        <service id="webgriffe_sylius_akeneo.product.value_handlers_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface" alias="webgriffe_sylius_akeneo.product.value_handlers_resolver" />
 
         <!-- Product Importer -->
         <service id="webgriffe_sylius_akeneo.product.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandler">
@@ -43,7 +44,7 @@
             <argument type="service" id="sylius.repository.product_variant" />
             <argument type="service" id="sylius.repository.product" />
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product.value_handler_resolver" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.value_handlers_resolver" />
             <argument type="service" id="sylius.factory.product" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.categories_handler" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.family_variant_handler" />

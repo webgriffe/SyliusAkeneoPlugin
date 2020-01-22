@@ -49,8 +49,8 @@ services:
             - '@sylius.repository.currency'
             - 'price'
 
-    webgriffe_sylius_akeneo.product.value_handler_resolver:
-        class: 'Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlerResolver'
+    webgriffe_sylius_akeneo.product.value_handlers_resolver:
+        class: 'Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver'
         calls:
             - method: add
               arguments:
