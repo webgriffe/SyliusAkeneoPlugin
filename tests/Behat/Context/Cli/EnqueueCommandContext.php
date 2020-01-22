@@ -42,7 +42,12 @@ final class EnqueueCommandContext implements Context
         $application->add($this->enqueueCommand);
         $command = $application->find('webgriffe:akeneo:enqueue');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', 'since' => $date]);
+
+        try {
+            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', 'since' => $date]);
+        } catch (\Throwable $t) {
+            $this->sharedStorage->set('command_exception', $t);
+        }
     }
 
     /**
@@ -54,6 +59,7 @@ final class EnqueueCommandContext implements Context
         $application->add($this->enqueueCommand);
         $command = $application->find('webgriffe:akeneo:enqueue');
         $commandTester = new CommandTester($command);
+
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue']);
         } catch (\Throwable $t) {
@@ -62,9 +68,9 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @Then /^the command should have thrown exception with message containing "([^"]+)"$/
+     * @Then /^the command should have thrown exception with message containing \'([^\']*)\'$/
      */
-    public function theCommandShouldHaveThrownExceptionWithMessage($message)
+    public function theCommandShouldHaveThrownExceptionWithMessageContaining($message)
     {
         /** @var \Throwable $throwable */
         $throwable = $this->sharedStorage->get('command_exception');

@@ -16,6 +16,8 @@ use Webmozart\Assert\Assert;
 
 final class EnqueueCommand extends Command
 {
+    public const SINCE_ARGUMENT_NAME = 'since';
+
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
 
     /** @var ApiClientInterface */
@@ -40,14 +42,20 @@ final class EnqueueCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('since', InputArgument::REQUIRED, '');
+        $this->addArgument(self::SINCE_ARGUMENT_NAME, InputArgument::REQUIRED, '');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $since = $input->getArgument('since');
-        // todo: date time throws exception
-        $sinceDate = new \DateTime($since);
+        $since = $input->getArgument(self::SINCE_ARGUMENT_NAME);
+
+        try {
+            $sinceDate = new \DateTime($since);
+        } catch (\Throwable $t) {
+            throw new \InvalidArgumentException(
+                sprintf('The "%s" argument must be a valid date', self::SINCE_ARGUMENT_NAME)
+            );
+        }
         $productModifiedAfterResponse = $this->apiClient->findProductsModifiedAfter($sinceDate);
         if ($productModifiedAfterResponse === null || empty($productModifiedAfterResponse)) {
             $output->writeln(sprintf('There are no products modified after %s', $sinceDate->format('Y-m-d H:i:s')));

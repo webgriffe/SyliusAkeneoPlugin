@@ -19,5 +19,10 @@ Feature: Enqueuing products
 
   Scenario: Cannot run the command without since date
     When I run enqueue command with no since date
-    Then the command should have thrown exception with message containing "Not enough arguments"
+    Then the command should have thrown exception with message containing 'Not enough arguments'
+    And there should be no product in the Akeneo queue
+
+  Scenario: Run the command with bad since date
+    When I run enqueue command with since date "bad date"
+    Then the command should have thrown exception with message containing 'The "since" argument must be a valid date'
     And there should be no product in the Akeneo queue
