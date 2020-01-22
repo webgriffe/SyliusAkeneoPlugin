@@ -126,7 +126,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
-        $apiClient->downloadFile('download-url')->shouldHaveBeenCalled();
+        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
     }
 
     function it_sets_downloaded_image_to_product_image_when_handling(
@@ -172,7 +172,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
     function it_throws_with_invalid_akeneo_image_data_during_handling(ProductVariantInterface $productVariant)
     {
         $this
-            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo image data. Cannot find download URL.'))
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.'))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [['malformed' => 'data']]]);
     }
 }

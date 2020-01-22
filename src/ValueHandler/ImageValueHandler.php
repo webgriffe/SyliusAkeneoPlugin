@@ -60,11 +60,11 @@ final class ImageValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        $downloadUrl = $value[0]['_links']['download']['href'] ?? null;
-        if (!is_string($downloadUrl)) {
-            throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find download URL.');
+        $mediaCode = $value[0]['data'] ?? null;
+        if (!is_string($mediaCode)) {
+            throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.');
         }
-        $imageFile = $this->apiClient->downloadFile($downloadUrl);
+        $imageFile = $this->apiClient->downloadFile($mediaCode);
 
         $productImage = $this->productImageFactory->createNew();
         Assert::isInstanceOf($productImage, ProductImageInterface::class);
