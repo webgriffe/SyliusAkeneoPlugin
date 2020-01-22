@@ -22,6 +22,7 @@
         <service id="webgriffe_sylius_akeneo.context.cli.enqueue_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\EnqueueCommandContext">
             <argument type="service" id="kernel" />
             <argument type="service" id="webgriffe_sylius_akeneo.command.enqueue" />
+            <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.db.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ProductContext">

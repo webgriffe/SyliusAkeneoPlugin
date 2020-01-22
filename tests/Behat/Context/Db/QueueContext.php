@@ -80,4 +80,14 @@ final class QueueContext implements Context
             QueueItemInterface::class
         );
     }
+
+    /**
+     * @Then /^there should be no product in the Akeneo queue$/
+     */
+    public function thereShouldBeNoProductInTheAkeneoQueue()
+    {
+        Assert::isEmpty(
+            $this->queueItemRepository->findBy(['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT])
+        );
+    }
 }

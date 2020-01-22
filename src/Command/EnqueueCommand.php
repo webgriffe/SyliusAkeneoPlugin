@@ -6,8 +6,8 @@ namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
@@ -40,13 +40,12 @@ final class EnqueueCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption('since', 's', InputOption::VALUE_REQUIRED);
+        $this->addArgument('since', InputArgument::REQUIRED, '');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // todo: since option could not exists
-        $since = $input->getOption('since');
+        $since = $input->getArgument('since');
         // todo: date time throws exception
         $sinceDate = new \DateTime($since);
         $productModifiedAfterResponse = $this->apiClient->findProductsModifiedAfter($sinceDate);

@@ -16,3 +16,8 @@ Feature: Enqueuing products
     Then the product "product-1" should not be in the Akeneo queue
     And the product "product-2" should be in the Akeneo queue
     And the product "product-3" should be in the Akeneo queue
+
+  Scenario: Cannot run the command without since date
+    When I run enqueue command with no since date
+    Then the command should have thrown exception with message containing "Not enough arguments"
+    And there should be no product in the Akeneo queue
