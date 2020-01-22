@@ -43,7 +43,7 @@ final class ImageValueHandler implements ValueHandlerInterface
      */
     public function supports($subject, string $attribute, array $value): bool
     {
-        return ($subject instanceof ProductInterface || $subject instanceof ProductVariantInterface) && $this->akeneoAttributeCode === $attribute;
+        return $subject instanceof ProductVariantInterface && $this->akeneoAttributeCode === $attribute;
     }
 
     /**
@@ -51,11 +51,10 @@ final class ImageValueHandler implements ValueHandlerInterface
      */
     public function handle($subject, string $attribute, array $value): void
     {
-        if (!$subject instanceof ProductInterface && !$subject instanceof ProductVariantInterface) {
+        if (!$subject instanceof ProductVariantInterface) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'This image value handler only supports instances of %s and %s, %s given.',
-                    ProductInterface::class,
+                    'This image value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
                     is_object($subject) ? get_class($subject) : gettype($subject)
                 )
@@ -73,10 +72,8 @@ final class ImageValueHandler implements ValueHandlerInterface
         $productImage->setType($this->syliusImageType);
         $productImage->setFile($imageFile);
 
-        if ($subject instanceof ProductVariantInterface) {
-            $productImage->addProductVariant($subject);
-            $subject = $subject->getProduct();
-        }
+        $productImage->addProductVariant($subject);
+        $subject = $subject->getProduct();
         /** @var ProductInterface $subject */
         Assert::isInstanceOf($subject, ProductInterface::class);
 
