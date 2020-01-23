@@ -48,22 +48,45 @@ final class ApiClient implements ApiClientInterface
         $this->secret = $secret;
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
     public function findProductModel(string $code): ?array
     {
-        // TODO: Implement findProductModelByIdentifier() method.
-        return null;
+        if (!$this->token) {
+            $this->login();
+        }
+
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', $code));
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
     public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array
     {
-        // TODO: Implement findFamilyVariant() method.
-        return null;
+        if (!$this->token) {
+            $this->login();
+        }
+
+        return $this->getResourceOrNull(
+            sprintf('/api/rest/v1/families/%s/variants/%s', $familyCode, $familyVariantCode)
+        );
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
     public function findAttribute(string $code): ?array
     {
-        // TODO: Implement findAttribute() method.
-        return null;
+        if (!$this->token) {
+            $this->login();
+        }
+
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/attributes/%s', $code));
     }
 
     public function downloadFile(string $url): \SplFileInfo
@@ -72,16 +95,30 @@ final class ApiClient implements ApiClientInterface
         return new \SplFileInfo('');
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
     public function findProduct(string $code): ?array
     {
-        // TODO: Implement findProduct() method.
-        return null;
+        if (!$this->token) {
+            $this->login();
+        }
+
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', $code));
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
     public function findAttributeOption(string $attributeCode, string $optionCode): ?array
     {
-        // TODO: Implement findAttributeOption() method.
-        return null;
+        if (!$this->token) {
+            $this->login();
+        }
+
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/attributes/%s/options/%s', $attributeCode, $optionCode));
     }
 
     /**
@@ -155,5 +192,25 @@ final class ApiClient implements ApiClientInterface
         }
 
         return $responseResult;
+    }
+
+    /**
+     * @throws \HttpException
+     * @throws GuzzleException
+     */
+    private function getResourceOrNull(string $endpoint): ?array
+    {
+        try {
+            $response = $this->doRequest($endpoint);
+        } catch (\HttpException $exception) {
+            if ($exception->getCode() !== 404) {
+                throw $exception;
+            }
+
+            return null;
+        }
+        Assert::isArray($response);
+
+        return $response;
     }
 }
