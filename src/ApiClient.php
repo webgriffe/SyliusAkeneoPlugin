@@ -7,6 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
+use Symfony\Component\HttpFoundation\File\File;
 use Webmozart\Assert\Assert;
 
 final class ApiClient implements ApiClientInterface
@@ -89,10 +90,29 @@ final class ApiClient implements ApiClientInterface
         return $this->getResourceOrNull(sprintf('/api/rest/v1/attributes/%s', $code));
     }
 
-    public function downloadFile(string $url): \SplFileInfo
+    /**
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
+    public function downloadFile(string $code): \SplFileInfo
     {
-        // TODO: Implement downloadFile() method.
-        return new \SplFileInfo('');
+        $endpoint = sprintf('/api/rest/v1/media-files/%s/download', $code);
+        $headers = ['Authorization' => sprintf('Bearer %s', $this->token)];
+        $request = new Request('GET', $this->baseUrl . $endpoint, $headers);
+        $response = $this->httpClient->send($request);
+        $statusClass = (int) ($response->getStatusCode() / 100);
+        $bodyContents = $response->getBody()->getContents();
+        Assert::string($bodyContents);
+        if ($statusClass !== 2) {
+            $responseResult = json_decode($bodyContents, true);
+
+            throw new \HttpException($responseResult['message'], $responseResult['code']);
+        }
+        $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
+        Assert::string($tempName);
+        file_put_contents($tempName, $bodyContents);
+
+        return new File($tempName);
     }
 
     /**
