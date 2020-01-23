@@ -56,9 +56,9 @@ final class EnqueueCommand extends Command
                 sprintf('The "%s" argument must be a valid date', self::SINCE_ARGUMENT_NAME)
             );
         }
-        $products = $this->apiClient->findProductsModifiedAfter($sinceDate);
+        $products = $this->apiClient->findProductsModifiedSince($sinceDate);
         if ($products === null || empty($products)) {
-            $output->writeln(sprintf('There are no products modified after %s', $sinceDate->format('Y-m-d H:i:s')));
+            $output->writeln(sprintf('There are no products modified since %s', $sinceDate->format('Y-m-d H:i:s')));
 
             return 0;
         }

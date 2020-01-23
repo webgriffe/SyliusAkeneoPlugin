@@ -18,5 +18,5 @@ interface ApiClientInterface
 
     public function findAttributeOption(string $attributeCode, string $optionCode): ?array;
 
-    public function findProductsModifiedAfter(\DateTime $date): ?array;
+    public function findProductsModifiedSince(\DateTime $date): ?array;
 }
