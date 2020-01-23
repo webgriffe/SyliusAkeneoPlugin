@@ -9,8 +9,6 @@ use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductVariantTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Sylius\Component\Resource\Model\TranslatableInterface;
-use Sylius\Component\Resource\Model\TranslationInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
@@ -57,8 +55,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
      */
     public function supports($subject, string $attribute, array $value): bool
     {
-        return ($subject instanceof ProductInterface || $subject instanceof ProductVariantInterface) &&
-            $attribute === $this->akeneoAttributeCode;
+        return $subject instanceof ProductVariantInterface && $attribute === $this->akeneoAttributeCode;
     }
 
     /**
@@ -66,11 +63,10 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
      */
     public function handle($subject, string $attribute, array $value): void
     {
-        if (!$subject instanceof ProductInterface && !$subject instanceof ProductVariantInterface) {
+        if (!$subject instanceof ProductVariantInterface) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'This translatable property value handler only support instances of %s or %s, %s given.',
-                    ProductInterface::class,
+                    'This translatable property value handler only support instances of %s, %s given.',
                     ProductVariantInterface::class,
                     is_object($subject) ? get_class($subject) : gettype($subject)
                 )
@@ -83,44 +79,46 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 
                 continue;
             }
-            $translation = $this->getOrCreateNewProductTranslation($subject, $localeCode);
-            $this->setValueOnProductAndProductVariantTranslation($translation, $item['data']);
+            $variantTranslation = $this->getOrCreateNewProductVariantTranslation($subject, $localeCode);
+            $this->setValueOnProductVariantAndProductTranslation($variantTranslation, $item['data']);
         }
     }
 
-    private function setValueOnAllTranslations(TranslatableInterface $subject, array $value): void
+    private function setValueOnAllTranslations(ProductVariantInterface $subject, array $value): void
     {
         foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
-            $translation = $this->getOrCreateNewProductTranslation($subject, $localeCode);
-            $this->setValueOnProductAndProductVariantTranslation($translation, $value['data']);
+            $variantTranslation = $this->getOrCreateNewProductVariantTranslation($subject, $localeCode);
+            $this->setValueOnProductVariantAndProductTranslation($variantTranslation, $value['data']);
         }
     }
 
     /**
      * @param mixed $value
      */
-    private function setValueOnProductAndProductVariantTranslation(TranslationInterface $translation, $value): void
-    {
+    private function setValueOnProductVariantAndProductTranslation(
+        ProductVariantTranslationInterface $variantTranslation,
+        $value
+    ): void {
         $hasBeenSet = false;
-        if ($translation instanceof ProductVariantTranslationInterface) {
-            $variant = $translation->getTranslatable();
-            Assert::isInstanceOf($variant, ProductVariantInterface::class);
-            if ($this->propertyAccessor->isWritable($translation, $this->translationPropertyPath)) {
-                $this->propertyAccessor->setValue(
-                    $translation,
-                    $this->translationPropertyPath,
-                    $value
-                );
-                $hasBeenSet = true;
-            }
-            $product = $variant->getProduct();
-            Assert::isInstanceOf($product, ProductInterface::class);
-            $translation = $this->getOrCreateNewProductTranslation($product, $translation->getLocale());
-        }
-        Assert::isInstanceOf($translation, ProductTranslationInterface::class);
-        if ($this->propertyAccessor->isWritable($translation, $this->translationPropertyPath)) {
+
+        $variant = $variantTranslation->getTranslatable();
+        Assert::isInstanceOf($variant, ProductVariantInterface::class);
+        if ($this->propertyAccessor->isWritable($variantTranslation, $this->translationPropertyPath)) {
             $this->propertyAccessor->setValue(
-                $translation,
+                $variantTranslation,
+                $this->translationPropertyPath,
+                $value
+            );
+            $hasBeenSet = true;
+        }
+
+        $product = $variant->getProduct();
+        Assert::isInstanceOf($product, ProductInterface::class);
+        $productTranslation = $this->getOrCreateNewProductTranslation($product, $variantTranslation->getLocale());
+        Assert::isInstanceOf($productTranslation, ProductTranslationInterface::class);
+        if ($this->propertyAccessor->isWritable($productTranslation, $this->translationPropertyPath)) {
+            $this->propertyAccessor->setValue(
+                $productTranslation,
                 $this->translationPropertyPath,
                 $value
             );
@@ -139,22 +137,30 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     }
 
     private function getOrCreateNewProductTranslation(
-        TranslatableInterface $subject,
+        ProductInterface $subject,
         string $localeCode
-    ): TranslationInterface {
+    ): ProductTranslationInterface {
         $translation = $subject->getTranslation($localeCode);
         if ($translation->getLocale() !== $localeCode) {
-            if ($subject instanceof ProductVariantInterface) {
-                $translation = $this->productVariantTranslationFactory->createNew();
-            } else {
-                $translation = $this->productTranslationFactory->createNew();
-            }
-            Assert::isInstanceOf($translation, TranslationInterface::class);
-            Assert::isInstanceOfAny(
-                $translation,
-                [ProductVariantTranslationInterface::class, ProductTranslationInterface::class]
-            );
-            /** @var TranslationInterface $translation */
+            $translation = $this->productTranslationFactory->createNew();
+            Assert::isInstanceOf($translation, ProductTranslationInterface::class);
+            /** @var ProductTranslationInterface $translation */
+            $translation->setLocale($localeCode);
+            $subject->addTranslation($translation);
+        }
+
+        return $translation;
+    }
+
+    private function getOrCreateNewProductVariantTranslation(
+        ProductVariantInterface $subject,
+        string $localeCode
+    ): ProductVariantTranslationInterface {
+        $translation = $subject->getTranslation($localeCode);
+        if ($translation->getLocale() !== $localeCode) {
+            $translation = $this->productVariantTranslationFactory->createNew();
+            Assert::isInstanceOf($translation, ProductVariantTranslationInterface::class);
+            /** @var ProductVariantTranslationInterface $translation */
             $translation->setLocale($localeCode);
             $subject->addTranslation($translation);
         }
