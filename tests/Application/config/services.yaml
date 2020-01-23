@@ -15,14 +15,12 @@ services:
             - 'name'
 
     webgriffe_sylius_akeneo.value_handler.slug_value_handler:
-        class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler'
+        class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler'
         arguments:
-            - '@property_accessor'
+            - '@sonata.core.slugify.cocur'
             - '@sylius.factory.product_translation'
-            - '@sylius.factory.product_variant_translation'
             - '@sylius.translation_locale_provider.admin'
-            - 'slug'
-            - 'slug'
+            - 'name'
 
     webgriffe_sylius_akeneo.value_handler.picture_value_handler:
         class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler'

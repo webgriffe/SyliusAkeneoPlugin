@@ -9,13 +9,6 @@
     "groups": [],
     "parent": "model-braided-hat",
     "values": {
-        "slug": [
-            {
-                "locale": null,
-                "scope": null,
-                "data": "braided-hat"
-            }
-        ],
         "size": [
             {
                 "locale": null,

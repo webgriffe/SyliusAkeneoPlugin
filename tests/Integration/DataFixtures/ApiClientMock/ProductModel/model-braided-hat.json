@@ -7,13 +7,6 @@
         "master_accessories_hats"
     ],
     "values": {
-        "slug": [
-            {
-                "locale": null,
-                "scope": null,
-                "data": "braided-hat"
-            }
-        ],
         "color": [
             {
                 "locale": null,
