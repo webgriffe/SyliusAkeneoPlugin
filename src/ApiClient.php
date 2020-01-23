@@ -150,14 +150,24 @@ final class ApiClient implements ApiClientInterface
         if (!$this->token) {
             $this->login();
         }
+
         $endpoint = sprintf(
-            '/api/rest/v1/products?search={"updated":[{"operator":">","value":"%s"}]}',
+            '/api/rest/v1/products?search={"updated":[{"operator":">","value":"%s"}]}&limit=20&page=1',
             $date->format('Y-m-d H:i:s')
         );
+        $responseResult = $this->doRequestByEndpoint($endpoint);
+        $products = $responseResult['_embedded']['items'];
 
-        $responseResult = $this->doRequest($endpoint);
+        while ($nextPageUrl = ($responseResult['_links']['next']['href'] ?? null)) {
+            Assert::string($nextPageUrl);
+            /** @var string $nextPageUrl */
+            $responseResult = $this->doRequest($nextPageUrl);
 
-        return $responseResult['_embedded']['items'];
+            /** @noinspection SlowArrayOperationsInLoopInspection */
+            $products = array_merge($products, $responseResult['_embedded']['items']);
+        }
+
+        return $products;
     }
 
     private function login(): void
@@ -197,13 +207,24 @@ final class ApiClient implements ApiClientInterface
      * @throws GuzzleException
      * @throws \HttpException
      */
-    private function doRequest(string $endpoint)
+    private function doRequestByEndpoint(string $endpoint)
+    {
+        return $this->doRequest($this->baseUrl . $endpoint);
+    }
+
+    /**
+     * @return mixed
+     *
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
+    private function doRequest(string $uri)
     {
         $headers = [
             'Content-Type' => 'application/json',
             'Authorization' => sprintf('Bearer %s', $this->token),
         ];
-        $request = new Request('GET', $this->baseUrl . $endpoint, $headers);
+        $request = new Request('GET', $uri, $headers);
         $response = $this->httpClient->send($request);
         $statusClass = (int) ($response->getStatusCode() / 100);
         $responseResult = json_decode($response->getBody()->getContents(), true);
@@ -221,7 +242,7 @@ final class ApiClient implements ApiClientInterface
     private function getResourceOrNull(string $endpoint): ?array
     {
         try {
-            $response = $this->doRequest($endpoint);
+            $response = $this->doRequestByEndpoint($endpoint);
         } catch (\HttpException $exception) {
             if ($exception->getCode() !== 404) {
                 throw $exception;
