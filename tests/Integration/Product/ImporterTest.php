@@ -113,7 +113,7 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
+        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -143,7 +143,7 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
+        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -172,7 +172,7 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
+        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -255,7 +255,7 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
+        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
@@ -301,7 +301,7 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->reset(); // Hack to get rid of weird collection keys loading
+        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
