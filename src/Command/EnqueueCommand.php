@@ -56,18 +56,18 @@ final class EnqueueCommand extends Command
                 sprintf('The "%s" argument must be a valid date', self::SINCE_ARGUMENT_NAME)
             );
         }
-        $productModifiedAfterResponse = $this->apiClient->findProductsModifiedAfter($sinceDate);
-        if ($productModifiedAfterResponse === null || empty($productModifiedAfterResponse)) {
+        $products = $this->apiClient->findProductsModifiedAfter($sinceDate);
+        if ($products === null || empty($products)) {
             $output->writeln(sprintf('There are no products modified after %s', $sinceDate->format('Y-m-d H:i:s')));
 
             return 0;
         }
-        foreach ($productModifiedAfterResponse as $identifier) {
+        foreach ($products as $product) {
             /** @var QueueItemInterface $queueItem */
             $queueItem = $this->queueItemFactory->createNew();
             Assert::isInstanceOf($queueItem, QueueItemInterface::class);
             $queueItem->setAkeneoEntity(QueueItemInterface::AKENEO_ENTITY_PRODUCT);
-            $queueItem->setAkeneoIdentifier($identifier);
+            $queueItem->setAkeneoIdentifier($product['identifier']);
             $queueItem->setCreatedAt(new \DateTime());
             $this->queueItemRepository->add($queueItem);
         }

@@ -100,13 +100,7 @@ final class ApiClient implements ApiClientInterface
 
         $responseResult = $this->doRequest($endpoint);
 
-        $items = $responseResult['_embedded']['items'];
-        $identifiers = [];
-        foreach ($items as $item) {
-            $identifiers[] = $item['identifier'];
-        }
-
-        return $identifiers;
+        return $responseResult['_embedded']['items'];
     }
 
     private function login(): void

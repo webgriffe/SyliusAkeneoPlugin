@@ -75,7 +75,7 @@ final class ApiClientMock implements ApiClientInterface
         $products = [];
         foreach ($this->productsUpdatedAt as $identifier => $updatedAt) {
             if ($updatedAt > $date) {
-                $products[] = $identifier;
+                $products[] = ['identifier' => $identifier];
             }
         }
 
