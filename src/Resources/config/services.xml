@@ -17,7 +17,14 @@
             <tag name="console.command" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" />
+        <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" >
+            <argument type="service" id="sylius.http_client"/>
+            <argument>%webgriffe_sylius_akeneo.api_client.base_url%</argument>
+            <argument>%webgriffe_sylius_akeneo.api_client.username%</argument>
+            <argument>%webgriffe_sylius_akeneo.api_client.password%</argument>
+            <argument>%webgriffe_sylius_akeneo.api_client.client_id%</argument>
+            <argument>%webgriffe_sylius_akeneo.api_client.secret%</argument>
+        </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
 
         <service id="webgriffe_sylius_akeneo.product.value_handlers_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver" />
