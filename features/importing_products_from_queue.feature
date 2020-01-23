@@ -32,3 +32,12 @@ Feature: Importing products from queue
     Then the product "NOT_EXISTS" should not exists
     And the product variant "braided-hat-m" of product "model-braided-hat" should exists with the right data
     And the last queue item has been marked as imported
+
+  Scenario: Keeping the queue item as not imported while importing product with missing mandatory data
+    Given the store operates on a single channel
+    And the store is also available in "it_IT"
+    And there is one product to import with identifier "null-name-product" in the Akeneo queue
+    When I import products from queue
+    Then the product "null-name-product" should not exists
+    And the queue item has not been marked as imported
+    And the queue item has an error message

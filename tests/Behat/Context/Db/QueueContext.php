@@ -53,6 +53,7 @@ final class QueueContext implements Context
     {
         /** @var QueueItemInterface $queueItem */
         $queueItem = $this->sharedStorage->get('queue_item');
+        $queueItem = $this->queueItemRepository->find($queueItem->getId());
         Assert::notNull($queueItem->getErrorMessage());
     }
 

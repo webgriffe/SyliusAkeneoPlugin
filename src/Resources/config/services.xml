@@ -6,6 +6,7 @@
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.importer" />
+            <argument type="service" id="doctrine"/>
             <tag name="console.command" />
         </service>
 
