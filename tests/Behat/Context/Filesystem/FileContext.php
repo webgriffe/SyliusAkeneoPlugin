@@ -14,13 +14,18 @@ final class FileContext implements Context
     private $vfsStream;
 
     /**
+     * @BeforeScenario
+     */
+    public function before()
+    {
+        $this->vfsStream = vfsStream::setup('root');
+    }
+
+    /**
      * @Given /^there is a file with name "([^"]+)" and content "([^"]+)"$/
      */
     public function thereIsAFileWithNameAndContent($filename, $date)
     {
-        if (!$this->vfsStream) {
-            $this->vfsStream = vfsStream::setup('root');
-        }
         vfsStream::newFile($filename)->at($this->vfsStream)->setContent($date);
     }
 }
