@@ -19,10 +19,9 @@ Feature: Enqueuing products
     And the product "product-2" should be in the Akeneo queue
     And the product "product-3" should be in the Akeneo queue
 
-  @todo
-  Scenario: Cannot run the command without since date
+  Scenario: The command cannot be run without since parameter
     When I run enqueue command with no since date
-    Then the command should have thrown exception with message containing 'Not enough arguments'
+    Then the command should have thrown exception with message containing 'One of "--since" and "--since-file" paramaters must be specified'
     And there should be no product in the Akeneo queue
 
   Scenario: Run the command with bad since date

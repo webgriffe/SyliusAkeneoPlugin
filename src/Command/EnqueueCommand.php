@@ -59,6 +59,14 @@ final class EnqueueCommand extends Command
             }
         } elseif ($sinceFileOptionValue = $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
             $sinceDate = $this->getSinceDateByFile($sinceFileOptionValue);
+        } else {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'One of "--%s" and "--%s" paramaters must be specified',
+                    self::SINCE_OPTION_NAME,
+                    self::SINCE_FILE_OPTION_NAME
+                )
+            );
         }
 
         $products = $this->apiClient->findProductsModifiedSince($sinceDate);
