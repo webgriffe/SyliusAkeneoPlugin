@@ -2,7 +2,7 @@
 
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <!-- General -->
+        <!-- Commands -->
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.importer" />
@@ -17,6 +17,7 @@
             <tag name="console.command" />
         </service>
 
+        <!-- General -->
         <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" >
             <argument type="service" id="sylius.http_client"/>
             <argument>%webgriffe_sylius_akeneo.api_client.base_url%</argument>

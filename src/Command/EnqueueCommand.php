@@ -43,8 +43,26 @@ final class EnqueueCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption(self::SINCE_OPTION_NAME, 's', InputOption::VALUE_REQUIRED, '');
-        $this->addOption(self::SINCE_FILE_OPTION_NAME, 'sf', InputOption::VALUE_REQUIRED, '');
+        $this->setDescription(
+            sprintf(
+                'Retrieve from Akeneo products that has been modified since the date/datetime specified' .
+                ' with --%s parameter or in a file with --%s parameter',
+                self::SINCE_OPTION_NAME,
+                self::SINCE_FILE_OPTION_NAME
+            )
+        );
+        $this->addOption(
+            self::SINCE_OPTION_NAME,
+            's',
+            InputOption::VALUE_REQUIRED,
+            'Date or datetime with format Y-m-d H:i:s'
+        );
+        $this->addOption(
+            self::SINCE_FILE_OPTION_NAME,
+            'sf',
+            InputOption::VALUE_REQUIRED,
+            'Relative or absolute path to a file containing a datetime'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
