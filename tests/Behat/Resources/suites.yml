@@ -31,6 +31,7 @@ default:
                 - webgriffe_sylius_akeneo.context.db.queue
 
                 - webgriffe_sylius_akeneo.context.system.filesystem
+                - webgriffe_sylius_akeneo.context.system.datetime
 
             filters:
                 tags: "@enqueuing_products"

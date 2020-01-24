@@ -5,3 +5,5 @@ imports:
 services:
     webgriffe_sylius_akeneo.api_client:
         class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock'
+    webgriffe_sylius_akeneo.date_time_builder:
+        class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\DateTimeBuilder'

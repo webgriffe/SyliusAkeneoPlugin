@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 use Webmozart\Assert\Assert;
@@ -30,14 +31,19 @@ final class EnqueueCommand extends Command
     /** @var FactoryInterface */
     private $queueItemFactory;
 
+    /** @var DateTimeBuilderInterface */
+    private $dateTimeBuilder;
+
     public function __construct(
         ApiClientInterface $apiClient,
         QueueItemRepositoryInterface $queueItemRepository,
-        FactoryInterface $queueItemFactory
+        FactoryInterface $queueItemFactory,
+        DateTimeBuilderInterface $dateTimeBuilder
     ) {
         $this->apiClient = $apiClient;
         $this->queueItemRepository = $queueItemRepository;
         $this->queueItemFactory = $queueItemFactory;
+        $this->dateTimeBuilder = $dateTimeBuilder;
         parent::__construct();
     }
 
@@ -67,6 +73,7 @@ final class EnqueueCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $filepath = null;
         if ($sinceOptionValue = $input->getOption(self::SINCE_OPTION_NAME)) {
             try {
                 $sinceDate = new \DateTime($sinceOptionValue);
@@ -75,8 +82,8 @@ final class EnqueueCommand extends Command
                     sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME)
                 );
             }
-        } elseif ($sinceFileOptionValue = $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
-            $sinceDate = $this->getSinceDateByFile($sinceFileOptionValue);
+        } elseif ($filepath = $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
+            $sinceDate = $this->getSinceDateByFile($filepath);
         } else {
             throw new \InvalidArgumentException(
                 sprintf(
@@ -90,6 +97,9 @@ final class EnqueueCommand extends Command
         $products = $this->apiClient->findProductsModifiedSince($sinceDate);
         if ($products === null || empty($products)) {
             $output->writeln(sprintf('There are no products modified since %s', $sinceDate->format('Y-m-d H:i:s')));
+            if ($filepath) {
+                $this->writeSinceDateFile($filepath);
+            }
 
             return 0;
         }
@@ -101,6 +111,10 @@ final class EnqueueCommand extends Command
             $queueItem->setAkeneoIdentifier($product['identifier']);
             $queueItem->setCreatedAt(new \DateTime());
             $this->queueItemRepository->add($queueItem);
+        }
+
+        if ($filepath) {
+            $this->writeSinceDateFile($filepath);
         }
 
         return 0;
@@ -133,5 +147,13 @@ final class EnqueueCommand extends Command
             throw new \RuntimeException(sprintf('The file "%s" must contain a valid datetime', $filepath), 0, $t);
         }
         return $sinceDate;
+    }
+
+    /**
+     * @param string $filepath
+     */
+    protected function writeSinceDateFile(string $filepath): void
+    {
+        file_put_contents($filepath, $this->dateTimeBuilder->build()->format('Y-m-d H:i:s'));
     }
 }

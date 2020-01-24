@@ -14,6 +14,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item"/>
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.date_time_builder"/>
             <tag name="console.command" />
         </service>
 
@@ -30,6 +31,9 @@
 
         <service id="webgriffe_sylius_akeneo.product.value_handlers_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver" />
         <service id="Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface" alias="webgriffe_sylius_akeneo.product.value_handlers_resolver" />
+
+        <service id="webgriffe_sylius_akeneo.date_time_builder" class="Webgriffe\SyliusAkeneoPlugin\DateTimeBuilder"/>
+        <service id="Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface" alias="webgriffe_sylius_akeneo.date_time_builder" />
 
         <!-- Product Importer -->
         <service id="webgriffe_sylius_akeneo.product.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandler">

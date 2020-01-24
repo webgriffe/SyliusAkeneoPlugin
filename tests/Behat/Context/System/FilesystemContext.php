@@ -31,19 +31,13 @@ final class FilesystemContext implements Context
     }
 
     /**
-     * @Given /^there is a file with name "([^"]+)" that contains a datetime$/
+     * @Given /^there is a file with name "([^"]+)" that contains "([^"]+)"$/
      */
-    public function thereIsAFileWithNameThatContainsADatetime($filename)
+    public function thereIsAFileWithNameThatContains($filename, $content)
     {
         $file = vfsStream::url('root/' . $filename);
-        $fileContent = file_get_contents($file);
-        try {
-            new \DateTime($fileContent);
-        } catch (\Throwable $t) {
-            throw new \RuntimeException(
-                sprintf('File "%s" content is not a valid datetime: %s', $filename, $fileContent)
-            );
-        }
+        $actualFileContent = file_get_contents($file);
+        Assert::same($actualFileContent, $content);
     }
 
     /**
