@@ -6,8 +6,8 @@ namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
@@ -16,7 +16,8 @@ use Webmozart\Assert\Assert;
 
 final class EnqueueCommand extends Command
 {
-    public const SINCE_ARGUMENT_NAME = 'since';
+    public const SINCE_OPTION_NAME = 'since';
+    public const SINCE_FILE_OPTION_NAME = 'since-file';
 
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
 
@@ -42,20 +43,24 @@ final class EnqueueCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument(self::SINCE_ARGUMENT_NAME, InputArgument::REQUIRED, '');
+        $this->addOption(self::SINCE_OPTION_NAME, 's', InputOption::VALUE_REQUIRED, '');
+        $this->addOption(self::SINCE_FILE_OPTION_NAME, 'sf', InputOption::VALUE_REQUIRED, '');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $since = $input->getArgument(self::SINCE_ARGUMENT_NAME);
-
-        try {
-            $sinceDate = new \DateTime($since);
-        } catch (\Throwable $t) {
-            throw new \InvalidArgumentException(
-                sprintf('The "%s" argument must be a valid date', self::SINCE_ARGUMENT_NAME)
-            );
+        if ($sinceOptionValue = $input->getOption(self::SINCE_OPTION_NAME)) {
+            try {
+                $sinceDate = new \DateTime($sinceOptionValue);
+            } catch (\Throwable $t) {
+                throw new \InvalidArgumentException(
+                    sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME)
+                );
+            }
+        } elseif ($sinceFileOptionValue = $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
+            $sinceDate = $this->getSinceDateByFile($sinceFileOptionValue);
         }
+
         $products = $this->apiClient->findProductsModifiedSince($sinceDate);
         if ($products === null || empty($products)) {
             $output->writeln(sprintf('There are no products modified since %s', $sinceDate->format('Y-m-d H:i:s')));
@@ -73,5 +78,34 @@ final class EnqueueCommand extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * @param string $filepath
+     * @return \DateTime
+     */
+    protected function getSinceDateByFile(string $filepath): \DateTime
+    {
+        if (!file_exists($filepath)) {
+            throw new \InvalidArgumentException(
+                sprintf('The file "%s" does not exists', $filepath)
+            );
+        }
+        if (!is_readable($filepath)) {
+            throw new \InvalidArgumentException(
+                sprintf('The file "%s" is not readable', $filepath)
+            );
+        }
+        if (!is_writeable($filepath)) {
+            throw new \InvalidArgumentException(
+                sprintf('The file "%s" is not writable', $filepath)
+            );
+        }
+        try {
+            $sinceDate = new \DateTime(file_get_contents($filepath));
+        } catch (\Throwable $t) {
+            throw new \RuntimeException(sprintf('The file "%s" must contain a valid datetime', $filepath), 0, $t);
+        }
+        return $sinceDate;
     }
 }

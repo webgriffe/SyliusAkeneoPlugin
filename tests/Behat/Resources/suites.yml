@@ -30,5 +30,7 @@ default:
 
                 - webgriffe_sylius_akeneo.context.db.queue
 
+                - webgriffe_sylius_akeneo.context.filesystem.file
+
             filters:
                 tags: "@enqueuing_products"

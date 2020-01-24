@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli;
 
 use Behat\Behat\Context\Context;
+use org\bovigo\vfs\vfsStream;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -25,11 +26,11 @@ final class EnqueueCommandContext implements Context
 
     public function __construct(
         KernelInterface $kernel,
-        EnqueueCommand $consumeCommand,
+        EnqueueCommand $enqueueCommand,
         SharedStorageInterface $sharedStorage
     ) {
         $this->kernel = $kernel;
-        $this->enqueueCommand = $consumeCommand;
+        $this->enqueueCommand = $enqueueCommand;
         $this->sharedStorage = $sharedStorage;
     }
 
@@ -38,13 +39,10 @@ final class EnqueueCommandContext implements Context
      */
     public function iRunEnqueueCommandWithSinceDate($date)
     {
-        $application = new Application($this->kernel);
-        $application->add($this->enqueueCommand);
-        $command = $application->find('webgriffe:akeneo:enqueue');
-        $commandTester = new CommandTester($command);
+        $commandTester = $this->getCommandTester();
 
         try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', 'since' => $date]);
+            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => $date]);
         } catch (\Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
@@ -55,15 +53,22 @@ final class EnqueueCommandContext implements Context
      */
     public function iRunEnqueueCommandWithNoSinceDate()
     {
-        $application = new Application($this->kernel);
-        $application->add($this->enqueueCommand);
-        $command = $application->find('webgriffe:akeneo:enqueue');
-        $commandTester = new CommandTester($command);
+        $commandTester = $this->getCommandTester();
 
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue']);
         } catch (\Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
+        }
+    }
+
+    /**
+     * @Then /^the command should have run successfully$/
+     */
+    public function theCommandShouldHaveRunSuccessfully()
+    {
+        if ($this->sharedStorage->has('command_exception')) {
+            throw $this->sharedStorage->get('command_exception');
         }
     }
 
@@ -76,5 +81,31 @@ final class EnqueueCommandContext implements Context
         $throwable = $this->sharedStorage->get('command_exception');
         Assert::isInstanceOf($throwable, \Throwable::class);
         Assert::contains($throwable->getMessage(), $message);
+    }
+
+    /**
+     * @When /^I run enqueue command with since file "([^"]+)"$/
+     */
+    public function iRunEnqueueCommandWithSinceFile($filename)
+    {
+        $commandTester = $this->getCommandTester();
+        $filepath = vfsStream::url('root/' . $filename);
+
+        try {
+            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since-file' => $filepath]);
+        } catch (\Throwable $t) {
+            $this->sharedStorage->set('command_exception', $t);
+        }
+    }
+
+    /**
+     * @return CommandTester
+     */
+    private function getCommandTester(): CommandTester
+    {
+        $application = new Application($this->kernel);
+        $application->add($this->enqueueCommand);
+        $command = $application->find('webgriffe:akeneo:enqueue');
+        return new CommandTester($command);
     }
 }

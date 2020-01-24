@@ -34,5 +34,8 @@
             <argument type="service" id="sylius.behat.shared_storage" />
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
+
+        <service id="webgriffe_sylius_akeneo.context.filesystem.file" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Filesystem\FileContext">
+        </service>
     </services>
 </container>
