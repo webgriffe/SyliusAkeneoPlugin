@@ -34,6 +34,7 @@ Feature: Enqueuing products
     When I run enqueue command with since file "last-date"
     Then the command should have run successfully
     And there should be no product in the Akeneo queue
+    And there is a file with name "last-date" that contains a datetime
 
   Scenario: Enqueuing products modified since datetime read in file
     Given there is a product "product-1" updated at "2020-01-10 22:23:13" on Akeneo
@@ -43,8 +44,10 @@ Feature: Enqueuing products
     Then the command should have run successfully
     And the product "product-1" should not be in the Akeneo queue
     And the product "product-2" should be in the Akeneo queue
+    And there is a file with name "last-date" that contains a datetime
 
   Scenario: Run the command with not existent since file
     When I run enqueue command with since file "last-date"
     Then the command should have thrown exception with message containing 'does not exists'
     And there should be no product in the Akeneo queue
+    And there is no file with name "last-date"
