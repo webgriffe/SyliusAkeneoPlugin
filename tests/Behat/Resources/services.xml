@@ -36,6 +36,6 @@
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.system.filesystem" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\FilesystemContext" />
-        <service id="webgriffe_sylius_akeneo.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DatetimeContext" />
+        <service id="webgriffe_sylius_akeneo.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext" />
     </services>
 </container>
