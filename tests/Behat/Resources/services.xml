@@ -35,7 +35,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.filesystem.file" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Filesystem\FileContext">
+        <service id="webgriffe_sylius_akeneo.context.system.filesystem" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\FilesystemContext">
         </service>
     </services>
 </container>

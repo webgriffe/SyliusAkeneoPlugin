@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Filesystem;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System;
 
 use Behat\Behat\Context\Context;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamContainer;
 use Webmozart\Assert\Assert;
 
-final class FileContext implements Context
+final class FilesystemContext implements Context
 {
     /** @var vfsStreamContainer */
     private $vfsStream;
