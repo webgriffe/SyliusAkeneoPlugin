@@ -18,6 +18,7 @@ use Webmozart\Assert\Assert;
 final class EnqueueCommand extends Command
 {
     public const SINCE_OPTION_NAME = 'since';
+
     public const SINCE_FILE_OPTION_NAME = 'since-file';
 
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
@@ -76,6 +77,8 @@ final class EnqueueCommand extends Command
         $filepath = null;
         if ($sinceOptionValue = $input->getOption(self::SINCE_OPTION_NAME)) {
             try {
+                Assert::string($sinceOptionValue);
+                /** @var string $sinceOptionValue */
                 $sinceDate = new \DateTime($sinceOptionValue);
             } catch (\Throwable $t) {
                 throw new \InvalidArgumentException(
@@ -83,6 +86,8 @@ final class EnqueueCommand extends Command
                 );
             }
         } elseif ($filepath = $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
+            Assert::string($filepath);
+            /** @var string $filepath */
             $sinceDate = $this->getSinceDateByFile($filepath);
         } else {
             throw new \InvalidArgumentException(
@@ -120,10 +125,6 @@ final class EnqueueCommand extends Command
         return 0;
     }
 
-    /**
-     * @param string $filepath
-     * @return \DateTime
-     */
     protected function getSinceDateByFile(string $filepath): \DateTime
     {
         if (!file_exists($filepath)) {
@@ -136,22 +137,24 @@ final class EnqueueCommand extends Command
                 sprintf('The file "%s" is not readable', $filepath)
             );
         }
-        if (!is_writeable($filepath)) {
+        if (!is_writable($filepath)) {
             throw new \InvalidArgumentException(
                 sprintf('The file "%s" is not writable', $filepath)
             );
         }
+
         try {
-            $sinceDate = new \DateTime(file_get_contents($filepath));
+            $content = file_get_contents($filepath);
+            Assert::string($content);
+            /** @var string $content */
+            $sinceDate = new \DateTime($content);
         } catch (\Throwable $t) {
             throw new \RuntimeException(sprintf('The file "%s" must contain a valid datetime', $filepath), 0, $t);
         }
+
         return $sinceDate;
     }
 
-    /**
-     * @param string $filepath
-     */
     protected function writeSinceDateFile(string $filepath): void
     {
         file_put_contents($filepath, $this->dateTimeBuilder->build()->format('Y-m-d H:i:s'));

@@ -98,14 +98,12 @@ final class EnqueueCommandContext implements Context
         }
     }
 
-    /**
-     * @return CommandTester
-     */
     private function getCommandTester(): CommandTester
     {
         $application = new Application($this->kernel);
         $application->add($this->enqueueCommand);
         $command = $application->find('webgriffe:akeneo:enqueue');
+
         return new CommandTester($command);
     }
 }

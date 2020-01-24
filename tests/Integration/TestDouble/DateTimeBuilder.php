@@ -12,8 +12,7 @@ class DateTimeBuilder implements DateTimeBuilderInterface
 
     /**
      * @param string $time
-     * @param \DateTimeZone|null $timezone
-     * @return \DateTime
+     *
      * @throws \Exception
      */
     public function build($time = 'now', \DateTimeZone $timezone = null): \DateTime
@@ -23,8 +22,10 @@ class DateTimeBuilder implements DateTimeBuilderInterface
             if (null !== $time) {
                 $dateTime->modify($time);
             }
+
             return $dateTime;
         }
+
         return new \DateTime($time, $timezone);
     }
 }
