@@ -9,12 +9,15 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
 final class ImmutableSlugValueHandler implements ValueHandlerInterface
 {
+    private const MAX_DEDUPLICATION_INCREMENT = 100;
+
     /** @var SlugifyInterface */
     private $slugify;
 
@@ -24,6 +27,9 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
     /** @var TranslationLocaleProviderInterface */
     private $translationLocaleProvider;
 
+    /** @var RepositoryInterface */
+    private $productTranslationRepository;
+
     /** @var string */
     private $akeneoAttributeToSlugify;
 
@@ -31,11 +37,13 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         SlugifyInterface $slugify,
         FactoryInterface $productTranslationFactory,
         TranslationLocaleProviderInterface $translationLocaleProvider,
+        RepositoryInterface $productTranslationRepository,
         string $akeneoAttributeToSlugify
     ) {
         $this->slugify = $slugify;
         $this->productTranslationFactory = $productTranslationFactory;
         $this->translationLocaleProvider = $translationLocaleProvider;
+        $this->productTranslationRepository = $productTranslationRepository;
         $this->akeneoAttributeToSlugify = $akeneoAttributeToSlugify;
     }
 
@@ -79,7 +87,9 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             if ($productTranslation->getSlug()) {
                 continue;
             }
-            $productTranslation->setSlug($this->slugify->slugify($valueToSlugify));
+            $slug = $this->slugify->slugify($valueToSlugify);
+            $slug = $this->getDeduplicatedSlug($slug, $localeCode, $product);
+            $productTranslation->setSlug($slug);
         }
     }
 
@@ -106,7 +116,34 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             if ($productTranslation->getSlug()) {
                 continue;
             }
-            $productTranslation->setSlug($this->slugify->slugify($valueToSlugify));
+            $slug = $this->slugify->slugify($valueToSlugify);
+            $slug = $this->getDeduplicatedSlug($slug, $localeCode, $product);
+            $productTranslation->setSlug($slug);
         }
+    }
+
+    private function getDeduplicatedSlug(
+        string $slug,
+        string $localeCode,
+        ProductInterface $product,
+        int $increment = 1
+    ): string {
+        if ($increment > self::MAX_DEDUPLICATION_INCREMENT) {
+            throw new \RuntimeException('Maximum slug deduplication increment reached.');
+        }
+
+        /** @var ProductTranslationInterface|null $anotherProductTranslation */
+        $anotherProductTranslation = $this->productTranslationRepository->findOneBy(
+            ['slug' => $slug, 'locale' => $localeCode]
+        );
+        if ($anotherProductTranslation &&
+            $anotherProductTranslation->getTranslatable() instanceof ProductInterface &&
+            $anotherProductTranslation->getTranslatable()->getId() !== $product->getId()) {
+            $slug .= '-' . $increment;
+
+            return $this->getDeduplicatedSlug($slug, $localeCode, $product, ++$increment);
+        }
+
+        return $slug;
     }
 }

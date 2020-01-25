@@ -11,6 +11,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
@@ -26,14 +27,18 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
     function let(
         SlugifyInterface $slugify,
         FactoryInterface $productTranslationFactory,
-        TranslationLocaleProviderInterface $translationLocaleProvider
+        TranslationLocaleProviderInterface $translationLocaleProvider,
+        RepositoryInterface $productTranslationRepository
     ) {
         $slugify->slugify(self::VALUE_TO_SLUGIFY)->willReturn(self::SLUGIFIED_VALUE);
         $translationLocaleProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
+        $productTranslationRepository->findOneBy(['slug' => self::SLUGIFIED_VALUE, 'locale' => 'en_US'])->willReturn(null);
+        $productTranslationRepository->findOneBy(['slug' => self::SLUGIFIED_VALUE, 'locale' => 'it_IT'])->willReturn(null);
         $this->beConstructedWith(
             $slugify,
             $productTranslationFactory,
             $translationLocaleProvider,
+            $productTranslationRepository,
             self::AKENEO_ATTRIBUTE
         );
     }
@@ -152,5 +157,32 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
 
         $italianProductTranslation->setSlug(self::SLUGIFIED_VALUE)->shouldHaveBeenCalled();
         $englishProductTranslation->setSlug(self::SLUGIFIED_VALUE)->shouldHaveBeenCalled();
+    }
+
+    function it_avoid_to_set_duplicated_slug_on_product_translation(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductTranslationInterface $productTranslation,
+        RepositoryInterface $productTranslationRepository,
+        ProductTranslationInterface $anotherProductTranslation,
+        ProductInterface $anotherProduct
+    ) {
+        $productVariant->getProduct()->willReturn($product);
+        $product->getTranslation('en_US')->willReturn($productTranslation);
+        $productTranslation->getLocale()->willReturn('en_US');
+        $productTranslation->getSlug()->willReturn(null);
+        $productTranslationRepository
+            ->findOneBy(['slug' => self::SLUGIFIED_VALUE, 'locale' => 'en_US'])
+            ->willReturn($anotherProductTranslation);
+        $anotherProductTranslation->getTranslatable()->willReturn($anotherProduct);
+        $product->getId()->willReturn(1);
+        $anotherProduct->getId()->willReturn(2);
+        $productTranslationRepository
+            ->findOneBy(['slug' => self::SLUGIFIED_VALUE . '-1', 'locale' => 'en_US'])
+            ->willReturn(null);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE, [['locale' => 'en_US', 'scope' => null, 'data' => self::VALUE_TO_SLUGIFY]]);
+
+        $productTranslation->setSlug(self::SLUGIFIED_VALUE . '-1')->shouldHaveBeenCalled();
     }
 }
