@@ -62,7 +62,7 @@ final class ConsumeCommand extends Command
                     $queueItem = $this->queueItemRepository->find($queueItem->getId());
                     Assert::isInstanceOf($queueItem, QueueItemInterface::class);
                 }
-                $queueItem->setErrorMessage(substr($t->getMessage(), 0, 255));
+                $queueItem->setErrorMessage($t->getMessage());
             }
 
             $this->queueItemRepository->add($queueItem);
