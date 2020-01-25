@@ -53,6 +53,7 @@ final class ConsumeCommand extends Command
                 $importer = $this->resolveImporter($queueItem->getAkeneoEntity());
                 $importer->import($akeneoIdentifier);
                 $queueItem->setImportedAt(new \DateTime());
+                $queueItem->setErrorMessage(null);
             } catch (\Throwable $t) {
                 /** @var EntityManagerInterface $objectManager */
                 $objectManager = $this->managerRegistry->getManager();
@@ -62,7 +63,7 @@ final class ConsumeCommand extends Command
                     $queueItem = $this->queueItemRepository->find($queueItem->getId());
                     Assert::isInstanceOf($queueItem, QueueItemInterface::class);
                 }
-                $queueItem->setErrorMessage($t->getMessage());
+                $queueItem->setErrorMessage($t->getMessage() . \PHP_EOL . $t->getTraceAsString());
             }
 
             $this->queueItemRepository->add($queueItem);
