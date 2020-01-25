@@ -109,6 +109,9 @@ final class EnqueueCommand extends Command
             return 0;
         }
         foreach ($products as $product) {
+            if ($this->isEntityAlreadyQueuedToImport($product)) {
+                continue;
+            }
             /** @var QueueItemInterface $queueItem */
             $queueItem = $this->queueItemFactory->createNew();
             Assert::isInstanceOf($queueItem, QueueItemInterface::class);
@@ -158,5 +161,17 @@ final class EnqueueCommand extends Command
     protected function writeSinceDateFile(string $filepath): void
     {
         file_put_contents($filepath, $this->dateTimeBuilder->build()->format('Y-m-d H:i:s'));
+    }
+
+    private function isEntityAlreadyQueuedToImport($product): bool
+    {
+        $queueItem = $this->queueItemRepository->findOneToImport(
+            QueueItemInterface::AKENEO_ENTITY_PRODUCT,
+            $product['identifier']
+        );
+        if ($queueItem) {
+            return true;
+        }
+        return false;
     }
 }

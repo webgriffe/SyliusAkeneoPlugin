@@ -13,4 +13,6 @@ interface QueueItemRepositoryInterface extends RepositoryInterface
      * @return array|QueueItemInterface[]
      */
     public function findAllToImport(): array;
+
+    public function findOneToImport(string $akeneoEntity, string $akeneoIdentifier): ?QueueItemInterface;
 }

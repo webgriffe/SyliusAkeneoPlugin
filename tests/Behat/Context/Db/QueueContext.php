@@ -91,4 +91,15 @@ final class QueueContext implements Context
             $this->queueItemRepository->findBy(['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT])
         );
     }
+
+    /**
+     * @Then /^there should be only one product queue item for "([^"]*)" in the Akeneo queue$/
+     */
+    public function thereShouldBeOnlyOneProductQueueItemForInTheAkeneoQueue(string $identifier)
+    {
+        $items = $this->queueItemRepository->findBy(
+            ['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT, 'akeneoIdentifier' => $identifier]
+        );
+        Assert::count($items, 1);
+    }
 }

@@ -25,6 +25,7 @@ default:
                 - sylius.behat.context.transform.date_time
 
                 - webgriffe_sylius_akeneo.context.setup.akeneo
+                - webgriffe_sylius_akeneo.context.setup.queue
 
                 - webgriffe_sylius_akeneo.context.cli.enqueue_command
 
