@@ -163,15 +163,16 @@ final class EnqueueCommand extends Command
         file_put_contents($filepath, $this->dateTimeBuilder->build()->format('Y-m-d H:i:s'));
     }
 
-    private function isEntityAlreadyQueuedToImport($product): bool
+    private function isEntityAlreadyQueuedToImport(array $akeneoEntity): bool
     {
         $queueItem = $this->queueItemRepository->findOneToImport(
             QueueItemInterface::AKENEO_ENTITY_PRODUCT,
-            $product['identifier']
+            $akeneoEntity['identifier']
         );
         if ($queueItem) {
             return true;
         }
+
         return false;
     }
 }
