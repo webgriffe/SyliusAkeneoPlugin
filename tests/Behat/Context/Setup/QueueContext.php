@@ -38,7 +38,7 @@ final class QueueContext implements Context
     {
         /** @var QueueItemInterface $queueItem */
         $queueItem = $this->queueItemFactory->createNew();
-        $queueItem->setAkeneoEntity(QueueItemInterface::AKENEO_ENTITY_PRODUCT);
+        $queueItem->setAkeneoEntity('Product');
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);

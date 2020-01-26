@@ -64,7 +64,7 @@ final class QueueContext implements Context
     {
         Assert::null(
             $this->queueItemRepository->findOneBy(
-                ['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT, 'akeneoIdentifier' => $identifier]
+                ['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]
             )
         );
     }
@@ -76,7 +76,7 @@ final class QueueContext implements Context
     {
         Assert::isInstanceOf(
             $this->queueItemRepository->findOneBy(
-                ['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT, 'akeneoIdentifier' => $identifier]
+                ['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]
             ),
             QueueItemInterface::class
         );
@@ -88,7 +88,7 @@ final class QueueContext implements Context
     public function thereShouldBeNoProductInTheAkeneoQueue()
     {
         Assert::isEmpty(
-            $this->queueItemRepository->findBy(['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT])
+            $this->queueItemRepository->findBy(['akeneoEntity' => 'Product'])
         );
     }
 
@@ -98,7 +98,7 @@ final class QueueContext implements Context
     public function thereShouldBeOnlyOneProductQueueItemForInTheAkeneoQueue(string $identifier)
     {
         $items = $this->queueItemRepository->findBy(
-            ['akeneoEntity' => QueueItemInterface::AKENEO_ENTITY_PRODUCT, 'akeneoIdentifier' => $identifier]
+            ['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]
         );
         Assert::count($items, 1);
     }
