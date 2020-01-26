@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 use Webmozart\Assert\Assert;
 
@@ -21,19 +22,19 @@ final class ConsumeCommand extends Command
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
 
-    /** @var ImporterInterface */
-    private $productImporter;
+    /** @var ImporterRegistryInterface */
+    private $importerRegistry;
 
     /** @var ManagerRegistry */
     private $managerRegistry;
 
     public function __construct(
         QueueItemRepositoryInterface $queueItemRepository,
-        ImporterInterface $productImporter,
+        ImporterRegistryInterface $importerRegistry,
         ManagerRegistry $managerRegistry
     ) {
         $this->queueItemRepository = $queueItemRepository;
-        $this->productImporter = $productImporter;
+        $this->importerRegistry = $importerRegistry;
         $this->managerRegistry = $managerRegistry;
         parent::__construct();
     }
@@ -74,11 +75,12 @@ final class ConsumeCommand extends Command
 
     private function resolveImporter(string $akeneoEntity): ImporterInterface
     {
-        // TODO implement better Akeneo entity importer resolver
-        $map = [
-            QueueItemInterface::AKENEO_ENTITY_PRODUCT => $this->productImporter,
-        ];
+        foreach ($this->importerRegistry->all() as $importer) {
+            if ($importer->getAkeneoEntity() === $akeneoEntity) {
+                return $importer;
+            }
+        }
 
-        return $map[$akeneoEntity];
+        throw new \RuntimeException(sprintf('Cannot find suitable importer for entity "%s".', $akeneoEntity));
     }
 }
