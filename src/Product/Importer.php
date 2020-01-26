@@ -77,7 +77,7 @@ final class Importer implements ImporterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getAkeneoEntity(): string
     {
@@ -122,7 +122,7 @@ final class Importer implements ImporterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
     {
@@ -131,6 +131,7 @@ final class Importer implements ImporterInterface
         foreach ($products as $product) {
             $identifiers[] = $product['identifier'];
         }
+
         return $identifiers;
     }
 

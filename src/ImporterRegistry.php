@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin;
 
-
 class ImporterRegistry implements ImporterRegistryInterface
 {
     /** @var ImporterInterface[] */
@@ -16,7 +15,7 @@ class ImporterRegistry implements ImporterRegistryInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function all(): array
     {
