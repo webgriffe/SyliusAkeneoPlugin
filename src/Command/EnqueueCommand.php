@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
+use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 use Webmozart\Assert\Assert;
 
@@ -35,16 +36,21 @@ final class EnqueueCommand extends Command
     /** @var DateTimeBuilderInterface */
     private $dateTimeBuilder;
 
+    /** @var ImporterRegistryInterface */
+    private $importerRegistry;
+
     public function __construct(
         ApiClientInterface $apiClient,
         QueueItemRepositoryInterface $queueItemRepository,
         FactoryInterface $queueItemFactory,
-        DateTimeBuilderInterface $dateTimeBuilder
+        DateTimeBuilderInterface $dateTimeBuilder,
+        ImporterRegistryInterface $importerRegistry
     ) {
         $this->apiClient = $apiClient;
         $this->queueItemRepository = $queueItemRepository;
         $this->queueItemFactory = $queueItemFactory;
         $this->dateTimeBuilder = $dateTimeBuilder;
+        $this->importerRegistry = $importerRegistry;
         parent::__construct();
     }
 
@@ -99,30 +105,42 @@ final class EnqueueCommand extends Command
             );
         }
 
-        $products = $this->apiClient->findProductsModifiedSince($sinceDate);
-        if (empty($products)) {
-            $output->writeln(sprintf('There are no products modified since %s', $sinceDate->format('Y-m-d H:i:s')));
-            if ($filepath) {
-                $this->writeSinceDateFile($filepath);
-            }
+        foreach ($this->importerRegistry->all() as $importer) {
+            $identifiers = $importer->getIdentifiersModifiedSince($sinceDate);
+            if (empty($identifiers)) {
+                $output->writeln(
+                    sprintf(
+                        'There are no <info>%s</info> entities modified since <info>%s</info>',
+                        $importer->getAkeneoEntity(),
+                        $sinceDate->format('Y-m-d H:i:s')
+                    )
+                );
 
-            return 0;
-        }
-        foreach ($products as $product) {
-            if ($this->isEntityAlreadyQueuedToImport($product)) {
                 continue;
             }
-            /** @var QueueItemInterface $queueItem */
-            $queueItem = $this->queueItemFactory->createNew();
-            Assert::isInstanceOf($queueItem, QueueItemInterface::class);
-            $queueItem->setAkeneoEntity(QueueItemInterface::AKENEO_ENTITY_PRODUCT);
-            $queueItem->setAkeneoIdentifier($product['identifier']);
-            $queueItem->setCreatedAt(new \DateTime());
-            $this->queueItemRepository->add($queueItem);
-
-            if ($filepath) {
-                $this->writeSinceDateFile($filepath);
+            foreach ($identifiers as $identifier) {
+                if ($this->isEntityAlreadyQueuedToImport($importer->getAkeneoEntity(), $identifier)) {
+                    continue;
+                }
+                /** @var QueueItemInterface $queueItem */
+                $queueItem = $this->queueItemFactory->createNew();
+                Assert::isInstanceOf($queueItem, QueueItemInterface::class);
+                $queueItem->setAkeneoEntity($importer->getAkeneoEntity());
+                $queueItem->setAkeneoIdentifier($identifier);
+                $queueItem->setCreatedAt(new \DateTime());
+                $this->queueItemRepository->add($queueItem);
+                $output->writeln(
+                    sprintf(
+                        '<info>%s</info> entity with identifier <info>%s</info> enqueued.',
+                        $importer->getAkeneoEntity(),
+                        $sinceDate->format('Y-m-d H:i:s')
+                    )
+                );
             }
+        }
+
+        if ($filepath) {
+            $this->writeSinceDateFile($filepath);
         }
 
         return 0;
@@ -163,12 +181,9 @@ final class EnqueueCommand extends Command
         file_put_contents($filepath, $this->dateTimeBuilder->build()->format('Y-m-d H:i:s'));
     }
 
-    private function isEntityAlreadyQueuedToImport(array $akeneoEntity): bool
+    private function isEntityAlreadyQueuedToImport(string $akeneoEntity, string $akeneoIdentifier): bool
     {
-        $queueItem = $this->queueItemRepository->findOneToImport(
-            QueueItemInterface::AKENEO_ENTITY_PRODUCT,
-            $akeneoEntity['identifier']
-        );
+        $queueItem = $this->queueItemRepository->findOneToImport($akeneoEntity, $akeneoIdentifier);
         if ($queueItem) {
             return true;
         }

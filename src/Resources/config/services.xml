@@ -15,6 +15,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item"/>
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item"/>
             <argument type="service" id="webgriffe_sylius_akeneo.date_time_builder"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.importer_registry"/>
             <tag name="console.command" />
         </service>
 
@@ -34,6 +35,13 @@
 
         <service id="webgriffe_sylius_akeneo.date_time_builder" class="Webgriffe\SyliusAkeneoPlugin\DateTimeBuilder"/>
         <service id="Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface" alias="webgriffe_sylius_akeneo.date_time_builder" />
+
+        <service id="webgriffe_sylius_akeneo.importer_registry" class="Webgriffe\SyliusAkeneoPlugin\ImporterRegistry">
+            <call method="add">
+                <argument type="service" id="webgriffe_sylius_akeneo.product.importer" />
+            </call>
+        </service>
+        <service id="Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface" alias="webgriffe_sylius_akeneo.importer_registry" />
 
         <!-- Product Importer -->
         <service id="webgriffe_sylius_akeneo.product.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandler">
