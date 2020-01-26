@@ -20,6 +20,8 @@ use Webmozart\Assert\Assert;
 
 final class Importer implements ImporterInterface
 {
+    private const AKENEO_ENTITY = 'Product';
+
     /** @var ProductVariantFactoryInterface */
     private $productVariantFactory;
 
@@ -74,6 +76,14 @@ final class Importer implements ImporterInterface
         $this->channelsResolver = $channelsResolver;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getAkeneoEntity(): string
+    {
+        return self::AKENEO_ENTITY;
+    }
+
     public function import(string $identifier): void
     {
         $productVariantResponse = $this->apiClient->findProduct($identifier);
@@ -109,6 +119,19 @@ final class Importer implements ImporterInterface
         //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
         $this->productRepository->add($product);
         $this->dispatchPostEvent($product, $eventName);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
+    {
+        $products = $this->apiClient->findProductsModifiedSince($sinceDate);
+        $identifiers = [];
+        foreach ($products as $product) {
+            $identifiers[] = $product['identifier'];
+        }
+        return $identifiers;
     }
 
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
