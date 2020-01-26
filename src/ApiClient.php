@@ -145,7 +145,7 @@ final class ApiClient implements ApiClientInterface
      * @throws GuzzleException
      * @throws \HttpException
      */
-    public function findProductsModifiedSince(\DateTime $date): ?array
+    public function findProductsModifiedSince(\DateTime $date): array
     {
         if (!$this->token) {
             $this->login();

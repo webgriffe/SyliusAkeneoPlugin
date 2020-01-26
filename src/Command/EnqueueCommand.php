@@ -100,7 +100,7 @@ final class EnqueueCommand extends Command
         }
 
         $products = $this->apiClient->findProductsModifiedSince($sinceDate);
-        if ($products === null || empty($products)) {
+        if (empty($products)) {
             $output->writeln(sprintf('There are no products modified since %s', $sinceDate->format('Y-m-d H:i:s')));
             if ($filepath) {
                 $this->writeSinceDateFile($filepath);
