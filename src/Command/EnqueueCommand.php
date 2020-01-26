@@ -119,10 +119,10 @@ final class EnqueueCommand extends Command
             $queueItem->setAkeneoIdentifier($product['identifier']);
             $queueItem->setCreatedAt(new \DateTime());
             $this->queueItemRepository->add($queueItem);
-        }
 
-        if ($filepath) {
-            $this->writeSinceDateFile($filepath);
+            if ($filepath) {
+                $this->writeSinceDateFile($filepath);
+            }
         }
 
         return 0;
