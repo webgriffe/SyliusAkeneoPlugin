@@ -89,7 +89,10 @@
             "groups": []
         },
         "UPSELL": {
-            "products": [],
+            "products": [
+                "upsell-product-1",
+                "upsell-product-2"
+            ],
             "product_models": [],
             "groups": []
         },

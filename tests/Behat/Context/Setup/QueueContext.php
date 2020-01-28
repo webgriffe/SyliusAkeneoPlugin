@@ -44,4 +44,18 @@ final class QueueContext implements Context
         $this->queueItemRepository->add($queueItem);
         $this->sharedStorage->set('queue_item', $queueItem);
     }
+
+    /**
+     * @Given /^there is one product associations to import with identifier "([^"]*)" in the Akeneo queue$/
+     */
+    public function thereIsOneProductAssociationsToImportWithIdentifierInTheAkeneoQueue(string $identifier)
+    {
+        /** @var QueueItemInterface $queueItem */
+        $queueItem = $this->queueItemFactory->createNew();
+        $queueItem->setAkeneoEntity('ProductAssociations');
+        $queueItem->setAkeneoIdentifier($identifier);
+        $queueItem->setCreatedAt(new \DateTime());
+        $this->queueItemRepository->add($queueItem);
+        $this->sharedStorage->set('queue_item', $queueItem);
+    }
 }

@@ -53,4 +53,18 @@ final class ProductContext implements Context
         $product = $this->productRepository->findOneByCode($code);
         Assert::null($product);
     }
+
+    /**
+     * @Then /^the product "([^"]*)" should be associated to product "([^"]*)" for association with code "([^"]*)"$/
+     */
+    public function theProductShouldBeAssociatedToProductForAssociationWithCode(
+        string $code,
+        string $relatedProductCode,
+        string $associationTypeCode
+    ) {
+        $product = $this->productRepository->findOneByCode($code);
+        Assert::isInstanceOf($product, ProductInterface::class);
+        $associations = $product->getAssociations();
+        Assert::count($associations, 2);
+    }
 }

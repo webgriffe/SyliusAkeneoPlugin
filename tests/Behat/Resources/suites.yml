@@ -6,6 +6,7 @@ default:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
+                - sylius.behat.context.setup.product
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.locale
                 - webgriffe_sylius_akeneo.context.setup.queue
@@ -17,6 +18,23 @@ default:
 
             filters:
                 tags: "@importing_products"
+
+        importing_product_associations:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.setup.product
+                - sylius.behat.context.setup.product_association
+                - sylius.behat.context.setup.channel
+                - webgriffe_sylius_akeneo.context.setup.queue
+
+                - webgriffe_sylius_akeneo.context.cli.consume_command
+
+                - webgriffe_sylius_akeneo.context.db.product
+                - webgriffe_sylius_akeneo.context.db.queue
+
+            filters:
+                tags: "@importing_product_associations"
 
         enqueuing:
             contexts:
