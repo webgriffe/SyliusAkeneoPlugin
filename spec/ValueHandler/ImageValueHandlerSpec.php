@@ -11,6 +11,7 @@ use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
 
@@ -31,6 +32,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
     function let(
         FactoryInterface $productImageFactory,
+        RepositoryInterface $productImageRepository,
         ProductImageInterface $productImage,
         ApiClientInterface $apiClient,
         \SplFileInfo $imageFile,
@@ -40,8 +42,13 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $apiClient->downloadFile(Argument::type('string'))->willReturn($imageFile);
         $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([]));
         $product->addImage($productImage)->hasReturnVoid();
+        $productImageRepository
+            ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
+            ->willReturn(new ArrayCollection([]))
+        ;
         $this->beConstructedWith(
             $productImageFactory,
+            $productImageRepository,
             $apiClient,
             self::AKENEO_ATTRIBUTE_CODE,
             self::SYLIUS_IMAGE_TYPE
@@ -154,19 +161,49 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productImage->setType(self::SYLIUS_IMAGE_TYPE)->shouldHaveBeenCalled();
     }
 
-    function it_removes_already_existent_product_image_of_the_provided_type_when_handling(
+    function it_updates_already_existent_product_image_of_the_provided_type_when_handling(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
-        ProductImageInterface $existentProductImage
+        ProductImageInterface $existentProductImage,
+        RepositoryInterface $productImageRepository,
+        FactoryInterface $productImageFactory
     ) {
         $productVariant->getProduct()->willReturn($product);
-        $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(
-            new ArrayCollection([$existentProductImage->getWrappedObject()])
-        );
+        $productImageRepository
+            ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
+        ;
+        $existentProductImage->hasProductVariant($productVariant)->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
-        $product->removeImage($existentProductImage)->shouldHaveBeenCalled();
+        $productImageFactory->createNew()->shouldNotHaveBeenCalled();
+        $existentProductImage->setFile(Argument::type(\SplFileInfo::class))->shouldHaveBeenCalled();
+    }
+
+    function it_does_not_overwrite_already_existent_product_image_of_another_product_variant(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductImageInterface $existentProductImage,
+        RepositoryInterface $productImageRepository,
+        FactoryInterface $productImageFactory,
+        ProductImageInterface $newProductImage
+    ) {
+        $productVariant->getProduct()->willReturn($product);
+        $productImageRepository
+            ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
+        ;
+        $existentProductImage->hasProductVariant($productVariant)->willReturn(false);
+        $productImageFactory->createNew()->willReturn($newProductImage);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
+
+        $productImageFactory->createNew()->shouldHaveBeenCalled();
+        $newProductImage->addProductVariant($productVariant)->shouldHaveBeenCalled();
+        $newProductImage->setType(self::SYLIUS_IMAGE_TYPE)->shouldHaveBeenCalled();
+        $product->addImage($newProductImage)->shouldHaveBeenCalled();
+        $newProductImage->setFile(Argument::type(\SplFileInfo::class))->shouldHaveBeenCalled();
     }
 
     function it_throws_with_invalid_akeneo_image_data_during_handling(ProductVariantInterface $productVariant)

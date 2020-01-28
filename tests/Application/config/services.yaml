@@ -32,6 +32,7 @@ services:
         class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler'
         arguments:
             - '@sylius.factory.product_image'
+            - '@sylius.repository.product_image'
             - '@webgriffe_sylius_akeneo.api_client'
             - 'picture'
             - 'picture'
@@ -40,6 +41,7 @@ services:
         class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler'
         arguments:
             - '@sylius.factory.product_image'
+            - '@sylius.repository.product_image'
             - '@webgriffe_sylius_akeneo.api_client'
             - 'image'
             - 'image'
@@ -48,6 +50,7 @@ services:
         class: 'Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler'
         arguments:
             - '@sylius.factory.product_image'
+            - '@sylius.repository.product_image'
             - '@webgriffe_sylius_akeneo.api_client'
             - 'variation_image'
             - 'variation_image'
@@ -81,6 +84,12 @@ services:
             - method: add
               arguments:
                   - '@webgriffe_sylius_akeneo.value_handler.picture_value_handler'
+            - method: add
+              arguments:
+                  - '@webgriffe_sylius_akeneo.value_handler.image_value_handler'
+            - method: add
+              arguments:
+                  - '@webgriffe_sylius_akeneo.value_handler.variation_image_value_handler'
             - method: add
               arguments:
                   - '@webgriffe_sylius_akeneo.value_handler.product_option_value_handler'

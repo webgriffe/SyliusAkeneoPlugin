@@ -9,6 +9,7 @@ use Fidry\AliceDataFixtures\Persistence\PurgeMode;
 use Sylius\Bundle\ChannelBundle\Doctrine\ORM\ChannelRepository;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
@@ -349,5 +350,69 @@ final class ImporterTest extends KernelTestCase
         /** @var ProductInterface $product */
         $product = $this->productRepository->findAll()[0];
         $this->assertCount(3, $product->getChannels());
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_all_product_images_when_importing_variants_of_configurable_product()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+        $this->importer->import('Braided-hat-l');
+
+        /** @var ProductVariantInterface[] $allVariants */
+        $allVariants = $this->productVariantRepository->findAll();
+        $this->assertCount(2, $allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
+        $product = $allVariants[0]->getProduct();
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals('model-braided-hat', $product->getCode());
+        $this->assertCount(2, $product->getImages());
+        /** @var ProductImageInterface $image */
+        foreach ($product->getImages() as $image) {
+            $this->assertTrue($image->hasProductVariant($allVariants[0]) || $image->hasProductVariant($allVariants[1]));
+            $this->assertEquals('image', $image->getType());
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_already_existent_product_image_without_duplicating_it()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/10627329.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('10627329');
+
+        /** @var ProductVariantInterface[] $allVariants */
+        $allVariants = $this->productVariantRepository->findAll();
+        $this->assertCount(1, $allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
+        $product = $allVariants[0]->getProduct();
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals('10627329', $product->getCode());
+        $this->assertCount(1, $product->getImages());
+        /** @var ProductImageInterface $image */
+        $image = $product->getImages()[0];
+        $this->assertTrue($image->hasProductVariant($allVariants[0]));
+        $this->assertEquals('picture', $image->getType());
+        $this->assertNotEquals('path/to/existent-image/10627329.jpg', $image->getPath());
     }
 }

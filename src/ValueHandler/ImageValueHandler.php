@@ -8,6 +8,7 @@ use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
@@ -16,6 +17,9 @@ final class ImageValueHandler implements ValueHandlerInterface
 {
     /** @var FactoryInterface */
     private $productImageFactory;
+
+    /** @var RepositoryInterface */
+    private $productImageRepository;
 
     /** @var ApiClientInterface */
     private $apiClient;
@@ -28,11 +32,13 @@ final class ImageValueHandler implements ValueHandlerInterface
 
     public function __construct(
         FactoryInterface $productImageFactory,
+        RepositoryInterface $productImageRepository,
         ApiClientInterface $apiClient,
         string $akeneoAttributeCode,
         string $syliusImageType
     ) {
         $this->productImageFactory = $productImageFactory;
+        $this->productImageRepository = $productImageRepository;
         $this->apiClient = $apiClient;
         $this->akeneoAttributeCode = $akeneoAttributeCode;
         $this->syliusImageType = $syliusImageType;
@@ -66,20 +72,37 @@ final class ImageValueHandler implements ValueHandlerInterface
         }
         $imageFile = $this->apiClient->downloadFile($mediaCode);
 
-        $productImage = $this->productImageFactory->createNew();
-        Assert::isInstanceOf($productImage, ProductImageInterface::class);
-        /** @var ProductImageInterface $productImage */
-        $productImage->setType($this->syliusImageType);
-        $productImage->setFile($imageFile);
+        $product = $subject->getProduct();
+        /** @var ProductInterface $product */
+        Assert::isInstanceOf($product, ProductInterface::class);
 
-        $productImage->addProductVariant($subject);
-        $subject = $subject->getProduct();
-        /** @var ProductInterface $subject */
-        Assert::isInstanceOf($subject, ProductInterface::class);
-
-        foreach ($subject->getImagesByType($this->syliusImageType) as $existentImage) {
-            $subject->removeImage($existentImage);
+        $productImage = $this->getExistentProductVariantImage($subject, $product);
+        if (!$productImage) {
+            $productImage = $this->productImageFactory->createNew();
+            Assert::isInstanceOf($productImage, ProductImageInterface::class);
+            /** @var ProductImageInterface $productImage */
+            $productImage->setType($this->syliusImageType);
+            $productImage->addProductVariant($subject);
+            $product->addImage($productImage);
         }
-        $subject->addImage($productImage);
+        $productImage->setFile($imageFile);
+    }
+
+    private function getExistentProductVariantImage(
+        ProductVariantInterface $subject,
+        ProductInterface $product
+    ): ?ProductImageInterface {
+        $existentProductImages = $this->productImageRepository->findBy(
+            ['owner' => $product, 'type' => $this->syliusImageType]
+        );
+        /** @var ProductImageInterface[] $existentProductImages */
+        Assert::allIsInstanceOf($existentProductImages, ProductImageInterface::class);
+        foreach ($existentProductImages as $existentProductImage) {
+            if ($existentProductImage->hasProductVariant($subject)) {
+                return $existentProductImage;
+            }
+        }
+
+        return null;
     }
 }
