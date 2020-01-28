@@ -9,7 +9,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
@@ -24,9 +23,6 @@ final class EnqueueCommand extends Command
 
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
 
-    /** @var ApiClientInterface */
-    private $apiClient;
-
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
 
@@ -40,13 +36,11 @@ final class EnqueueCommand extends Command
     private $importerRegistry;
 
     public function __construct(
-        ApiClientInterface $apiClient,
         QueueItemRepositoryInterface $queueItemRepository,
         FactoryInterface $queueItemFactory,
         DateTimeBuilderInterface $dateTimeBuilder,
         ImporterRegistryInterface $importerRegistry
     ) {
-        $this->apiClient = $apiClient;
         $this->queueItemRepository = $queueItemRepository;
         $this->queueItemFactory = $queueItemFactory;
         $this->dateTimeBuilder = $dateTimeBuilder;
