@@ -140,7 +140,7 @@ final class EnqueueCommand extends Command
         return 0;
     }
 
-    protected function getSinceDateByFile(string $filepath): \DateTime
+    private function getSinceDateByFile(string $filepath): \DateTime
     {
         if (!file_exists($filepath)) {
             throw new \InvalidArgumentException(
@@ -170,7 +170,7 @@ final class EnqueueCommand extends Command
         return $sinceDate;
     }
 
-    protected function writeSinceDateFile(string $filepath): void
+    private function writeSinceDateFile(string $filepath): void
     {
         file_put_contents($filepath, $this->dateTimeBuilder->build()->format('Y-m-d H:i:s'));
     }
