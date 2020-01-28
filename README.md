@@ -7,27 +7,45 @@
 <h1 align="center">Akeneo Plugin</h1>
 <p align="center">Plugin allowing to import products data from Akeneo PIM to your Sylius store.</p>
 
-
 # This plugin is WORK IN PROGRESS!
 
 Do not use or test it.
 
 ## Installation
 
-1. Run `composer create-project sylius/plugin-skeleton ProjectName`.
+1. Run `composer require webgriffe/sylius-akeneo-plugin`.
 
-2. From the plugin skeleton root directory, run the following commands:
+2. Add the plugin to the `config/bundles.php` file:
 
-    ```bash
-    $ (cd tests/Application && yarn install)
-    $ (cd tests/Application && yarn build)
-    $ (cd tests/Application && bin/console assets:install public -e test)
-    
-    $ (cd tests/Application && bin/console doctrine:database:create -e test)
-    $ (cd tests/Application && bin/console doctrine:schema:create -e test)
+    ```php
+    Webgriffe\SyliusAkeneoPlugin\WebgriffeSyliusAkeneoPlugin::class => ['all' => true],
     ```
 
-To be able to setup a plugin's database, remember to configure you database credentials in `tests/Application/.env` and `tests/Application/.env.test`.
+3. Finish the installation by updating the database schema and installing assets:
+
+    ```bash
+    bin/console doctrine:migrations:diff
+    bin/console doctrine:migrations:migrate
+    bin/console assets:install
+    bin/console sylius:theme:assets:install
+    ```
+
+## Configuration
+
+First of all you must configure your Akeneo API connection parameters:
+
+```yaml
+parameters:
+    # ...
+    # These values are from the official Akeneo PIM demo, replace with yours.
+    webgriffe_sylius_akeneo.api_client.base_url: http://demo.akeneo.com/
+    webgriffe_sylius_akeneo.api_client.username: admin
+    webgriffe_sylius_akeneo.api_client.password: admin
+    webgriffe_sylius_akeneo.api_client.client_id: 1_demo_client_id
+    webgriffe_sylius_akeneo.api_client.secret: demo_secret
+```
+
+
 
 ## Usage
 
