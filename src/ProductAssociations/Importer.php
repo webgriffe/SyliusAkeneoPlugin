@@ -32,7 +32,6 @@ class Importer implements ImporterInterface
      */
     public function import(string $identifier): void
     {
-        // TODO: Implement import() method.
     }
 
     /**
