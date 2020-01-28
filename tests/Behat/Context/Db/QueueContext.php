@@ -93,6 +93,14 @@ final class QueueContext implements Context
     }
 
     /**
+     * @Then /^there should be no item in the Akeneo queue$/
+     */
+    public function thereShouldBeNoItemInTheAkeneoQueue()
+    {
+        Assert::isEmpty($this->queueItemRepository->findAll());
+    }
+
+    /**
      * @Then /^there should be only one product queue item for "([^"]*)" in the Akeneo queue$/
      */
     public function thereShouldBeOnlyOneProductQueueItemForInTheAkeneoQueue(string $identifier)

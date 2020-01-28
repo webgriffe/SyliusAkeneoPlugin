@@ -18,7 +18,7 @@ default:
             filters:
                 tags: "@importing_products"
 
-        enqueuing_products:
+        enqueuing:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
@@ -35,4 +35,4 @@ default:
                 - webgriffe_sylius_akeneo.context.system.datetime
 
             filters:
-                tags: "@enqueuing_products"
+                tags: "@enqueuing"
