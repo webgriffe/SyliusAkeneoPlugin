@@ -39,6 +39,9 @@
             <call method="add">
                 <argument type="service" id="webgriffe_sylius_akeneo.product.importer" />
             </call>
+            <call method="add">
+                <argument type="service" id="webgriffe_sylius_akeneo.product_associations.importer" />
+            </call>
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface" alias="webgriffe_sylius_akeneo.importer_registry" />
 
@@ -73,6 +76,11 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product.family_variant_handler" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.channels_resolver" />
+        </service>
+
+        <!-- Product Associations Importer -->
+        <service id="webgriffe_sylius_akeneo.product_associations.importer" class="Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer" >
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client"/>
         </service>
     </services>
 </container>

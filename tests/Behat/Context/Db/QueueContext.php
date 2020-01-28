@@ -70,6 +70,18 @@ final class QueueContext implements Context
     }
 
     /**
+     * @Then /^the product associations for product "([^"]*)" should not be in the Akeneo queue$/
+     */
+    public function theProductAssociationsForProductShouldNotBeInTheAkeneoQueue(string $identifier)
+    {
+        Assert::null(
+            $this->queueItemRepository->findOneBy(
+                ['akeneoEntity' => 'ProductAssociations', 'akeneoIdentifier' => $identifier]
+            )
+        );
+    }
+
+    /**
      * @Then /^the product "([^"]*)" should be in the Akeneo queue$/
      */
     public function theProductShouldBeInTheAkeneoQueue(string $identifier)
@@ -83,12 +95,35 @@ final class QueueContext implements Context
     }
 
     /**
+     * @Then /^the product associations for product "([^"]*)" should be in the Akeneo queue$/
+     */
+    public function theProductAssociationsForProductShouldBeInTheAkeneoQueue(string $identifier)
+    {
+        Assert::isInstanceOf(
+            $this->queueItemRepository->findOneBy(
+                ['akeneoEntity' => 'ProductAssociations', 'akeneoIdentifier' => $identifier]
+            ),
+            QueueItemInterface::class
+        );
+    }
+
+    /**
      * @Then /^there should be no product in the Akeneo queue$/
      */
     public function thereShouldBeNoProductInTheAkeneoQueue()
     {
         Assert::isEmpty(
             $this->queueItemRepository->findBy(['akeneoEntity' => 'Product'])
+        );
+    }
+
+    /**
+     * @Then /^there should be no product associations in the Akeneo queue$/
+     */
+    public function thereShouldBeNoProductAssociationsInTheAkeneoQueue()
+    {
+        Assert::isEmpty(
+            $this->queueItemRepository->findBy(['akeneoEntity' => 'ProductAssociations'])
         );
     }
 
