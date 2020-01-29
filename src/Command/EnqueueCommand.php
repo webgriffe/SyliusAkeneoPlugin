@@ -122,7 +122,7 @@ final class EnqueueCommand extends Command
                     sprintf(
                         '<info>%s</info> entity with identifier <info>%s</info> enqueued.',
                         $importer->getAkeneoEntity(),
-                        $sinceDate->format('Y-m-d H:i:s')
+                        $identifier
                     )
                 );
             }
