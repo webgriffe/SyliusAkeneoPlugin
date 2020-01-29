@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup;
 
 use Behat\Behat\Context\Context;
-use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
@@ -18,17 +17,12 @@ final class QueueContext implements Context
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
 
-    /** @var SharedStorageInterface */
-    private $sharedStorage;
-
     public function __construct(
         FactoryInterface $queueItemFactory,
-        QueueItemRepositoryInterface $queueItemRepository,
-        SharedStorageInterface $sharedStorage
+        QueueItemRepositoryInterface $queueItemRepository
     ) {
         $this->queueItemFactory = $queueItemFactory;
         $this->queueItemRepository = $queueItemRepository;
-        $this->sharedStorage = $sharedStorage;
     }
 
     /**
@@ -42,7 +36,6 @@ final class QueueContext implements Context
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);
-        $this->sharedStorage->set('queue_item', $queueItem);
     }
 
     /**
@@ -56,6 +49,5 @@ final class QueueContext implements Context
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);
-        $this->sharedStorage->set('queue_item', $queueItem);
     }
 }

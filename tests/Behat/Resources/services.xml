@@ -7,7 +7,6 @@
         <service id="webgriffe_sylius_akeneo.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
-            <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
@@ -31,7 +30,6 @@
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\QueueContext">
-            <argument type="service" id="sylius.behat.shared_storage" />
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
 

@@ -5,56 +5,55 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db;
 
 use Behat\Behat\Context\Context;
-use Sylius\Behat\Service\SharedStorageInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 use Webmozart\Assert\Assert;
 
 final class QueueContext implements Context
 {
-    /** @var SharedStorageInterface */
-    private $sharedStorage;
-
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
 
     public function __construct(
-        SharedStorageInterface $sharedStorage,
         QueueItemRepositoryInterface $queueItemRepository
     ) {
-        $this->sharedStorage = $sharedStorage;
         $this->queueItemRepository = $queueItemRepository;
     }
 
     /**
-     * @Given /^the(?:| last) queue item has been marked as imported$/
+     * @Given /^the queue item for product with identifier "([^"]*)" has been marked as imported$/
      */
-    public function theQueueItemHasBeenMarkedAsImported()
+    public function theQueueItemForProductWithIdentifierHasBeenMarkedAsImported(string $identifier)
     {
-        /** @var QueueItemInterface $queueItem */
-        $queueItem = $this->sharedStorage->get('queue_item');
+        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
         Assert::notNull($queueItem->getImportedAt());
     }
 
     /**
-     * @Given /^the(?:| last) queue item has not been marked as imported$/
+     * @Given /^the queue item for product with identifier "([^"]*)" has not been marked as imported$/
      */
-    public function theQueueItemHasNotBeenMarkedAsImported()
+    public function theQueueItemForProductWithIdentifierHasNotBeenMarkedAsImported(string $identifier)
     {
-        /** @var QueueItemInterface $queueItem */
-        $queueItem = $this->sharedStorage->get('queue_item');
+        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
         Assert::null($queueItem->getImportedAt());
     }
 
     /**
-     * @Given /^the(?:| last) queue item has an error message$/
+     * @Given /^the queue item for product with identifier "([^"]*)" has an error message$/
      */
-    public function theQueueItemHasAnErrorMessage()
+    public function theQueueItemHasAnErrorMessage(string $identifier)
     {
-        /** @var QueueItemInterface $queueItem */
-        $queueItem = $this->sharedStorage->get('queue_item');
-        $queueItem = $this->queueItemRepository->find($queueItem->getId());
+        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
         Assert::notNull($queueItem->getErrorMessage());
+    }
+
+    /**
+     * @Given /^the queue item for product with identifier "([^"]*)" has an error message containing "([^"]*)"$/
+     */
+    public function theQueueItemHasAnErrorMessageContaining(string $identifier, string $message)
+    {
+        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
+        Assert::contains($queueItem->getErrorMessage(), $message);
     }
 
     /**
@@ -112,9 +111,7 @@ final class QueueContext implements Context
      */
     public function thereShouldBeNoProductInTheAkeneoQueue()
     {
-        Assert::isEmpty(
-            $this->queueItemRepository->findBy(['akeneoEntity' => 'Product'])
-        );
+        Assert::isEmpty($this->queueItemRepository->findBy(['akeneoEntity' => 'Product']));
     }
 
     /**
@@ -122,9 +119,7 @@ final class QueueContext implements Context
      */
     public function thereShouldBeNoProductAssociationsInTheAkeneoQueue()
     {
-        Assert::isEmpty(
-            $this->queueItemRepository->findBy(['akeneoEntity' => 'ProductAssociations'])
-        );
+        Assert::isEmpty($this->queueItemRepository->findBy(['akeneoEntity' => 'ProductAssociations']));
     }
 
     /**
@@ -144,5 +139,14 @@ final class QueueContext implements Context
             ['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]
         );
         Assert::count($items, 1);
+    }
+
+    private function getQueueItemByProductIdentifier(string $identifier): QueueItemInterface
+    {
+        /** @var QueueItemInterface $item */
+        $item = $this->queueItemRepository->findOneBy(['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]);
+        Assert::isInstanceOf($item, QueueItemInterface::class);
+
+        return $item;
     }
 }

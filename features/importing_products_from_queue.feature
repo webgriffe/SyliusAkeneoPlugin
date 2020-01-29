@@ -20,8 +20,8 @@ Feature: Importing products from queue
     And there is one product to import with identifier "NOT_EXISTS" in the Akeneo queue
     When I import products from queue
     Then the product "NOT_EXISTS" should not exists
-    And the queue item has not been marked as imported
-    And the queue item has an error message
+    And the queue item for product with identifier "NOT_EXISTS" has not been marked as imported
+    And the queue item for product with identifier "NOT_EXISTS" has an error message
 
   Scenario: Going on with subsequent product imports when any fail
     Given the store operates on a single channel
@@ -31,7 +31,7 @@ Feature: Importing products from queue
     When I import products from queue
     Then the product "NOT_EXISTS" should not exists
     And the product variant "braided-hat-m" of product "model-braided-hat" should exists with the right data
-    And the last queue item has been marked as imported
+    And the queue item for product with identifier "braided-hat-m" has been marked as imported
 
   Scenario: Keeping the queue item as not imported while importing product with missing mandatory data
     Given the store operates on a single channel
@@ -39,5 +39,5 @@ Feature: Importing products from queue
     And there is one product to import with identifier "null-name-product" in the Akeneo queue
     When I import products from queue
     Then the product "null-name-product" should not exists
-    And the queue item has not been marked as imported
-    And the queue item has an error message
+    And the queue item for product with identifier "null-name-product" has not been marked as imported
+    And the queue item for product with identifier "null-name-product" has an error message
