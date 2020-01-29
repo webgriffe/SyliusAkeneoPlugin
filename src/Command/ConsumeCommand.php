@@ -9,11 +9,9 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
-use Webmozart\Assert\Assert;
 
 final class ConsumeCommand extends Command
 {
@@ -44,6 +42,9 @@ final class ConsumeCommand extends Command
         $this->setDescription('Process the Queue by calling the proper importer for each item');
     }
 
+    /**
+     * @throws \Throwable
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $queueItems = $this->queueItemRepository->findAllToImport();
@@ -59,10 +60,7 @@ final class ConsumeCommand extends Command
                 /** @var EntityManagerInterface $objectManager */
                 $objectManager = $this->managerRegistry->getManager();
                 if (!$objectManager->isOpen()) {
-                    $this->managerRegistry->resetManager();
-                    /** @var QueueItemInterface $queueItem */
-                    $queueItem = $this->queueItemRepository->find($queueItem->getId());
-                    Assert::isInstanceOf($queueItem, QueueItemInterface::class);
+                    throw $t;
                 }
                 $queueItem->setErrorMessage($t->getMessage() . \PHP_EOL . $t->getTraceAsString());
             }
