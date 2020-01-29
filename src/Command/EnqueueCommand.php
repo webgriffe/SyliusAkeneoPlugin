@@ -51,12 +51,7 @@ final class EnqueueCommand extends Command
     protected function configure(): void
     {
         $this->setDescription(
-            sprintf(
-                'Retrieve from Akeneo products that has been modified since the date/datetime specified' .
-                ' with --%s parameter or in a file with --%s parameter',
-                self::SINCE_OPTION_NAME,
-                self::SINCE_FILE_OPTION_NAME
-            )
+            'Populate the Queue with Akeneo\'s entities that has been modified since a specified date/datetime'
         );
         $this->addOption(
             self::SINCE_OPTION_NAME,

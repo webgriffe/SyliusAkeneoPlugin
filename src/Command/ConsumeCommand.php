@@ -41,7 +41,7 @@ final class ConsumeCommand extends Command
 
     protected function configure(): void
     {
-        // ...
+        $this->setDescription('Process the Queue by calling the proper importer for each item');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
