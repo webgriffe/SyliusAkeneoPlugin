@@ -42,6 +42,8 @@ parameters:
     webgriffe_sylius_akeneo.api_client.secret: demo_secret
 ```
 
+Pay attention that among these parameters there are some sensitive configuration that you probably don't want to commit in your VCS. There are different solutions to this problem, like env configurations and secrets. Refer to [Symfony best practices doc](https://symfony.com/doc/current/best_practices.html#configuration) for more info.
+
 Then you'll probably need to configure other services like **value handlers** that we'll cover later in this document.
 
 ## Main concepts
@@ -105,23 +107,23 @@ To contribute to this plugin clone this repository, create a branch for your fea
   - Behat (JS scenarios)
 
     1. Download [Chromedriver](https://sites.google.com/a/chromium.org/chromedriver/)
-    
+
     2. Download [Selenium Standalone Server](https://www.seleniumhq.org/download/).
-    
+
     2. Run Selenium server with previously downloaded Chromedriver:
-    
+
         ```bash
         java -Dwebdriver.chrome.driver=chromedriver -jar selenium-server-standalone.jar
         ```
-        
+
     3. Run test application's webserver on `localhost:8080`:
-    
+
         ```bash
         (cd tests/Application && bin/console server:run localhost:8080 -d public -e test)
         ```
-    
+
     4. Run Behat:
-    
+
         ```bash
         vendor/bin/behat --tags="@javascript"
         ```
@@ -134,7 +136,7 @@ To contribute to this plugin clone this repository, create a branch for your fea
     (cd tests/Application && bin/console sylius:fixtures:load -e test)
     (cd tests/Application && bin/console server:run -d public -e test)
     ```
-    
+
 - Using `dev` environment:
 
     ```bash
