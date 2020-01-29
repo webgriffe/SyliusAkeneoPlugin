@@ -1,5 +1,5 @@
 {
-    "identifier": "null-name-product",
+    "identifier": "no-name-product",
     "enabled": true,
     "family": "pc_monitors",
     "categories": [
@@ -10,11 +10,30 @@
     "groups": [],
     "parent": null,
     "values": {
-        "name": [
+        "price": [
             {
                 "locale": null,
                 "scope": null,
-                "data": null
+                "data": [
+                    {
+                        "amount": "99.99",
+                        "currency": "EUR"
+                    }
+                ]
+            }
+        ],
+        "slug": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "no-name-product"
+            }
+        ],
+        "description": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "No name product"
             }
         ]
     },
