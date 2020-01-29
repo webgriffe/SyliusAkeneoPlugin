@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Entity;
 
-final class QueueItem implements QueueItemInterface
+/** @final */
+/** @internal */
+class QueueItem implements QueueItemInterface
 {
     /** @var mixed */
     private $id;
