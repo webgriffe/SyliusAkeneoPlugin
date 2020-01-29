@@ -7,7 +7,6 @@
 <h1 align="center">Akeneo Plugin</h1>
 <p align="center">Plugin allowing to import data from Akeneo PIM to your Sylius store.</p>
 <p align="center"><a href="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin"><img src="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin.svg?branch=master" alt="Build Status" /></a></p>
-
 ## Installation
 
 1. Run `composer require webgriffe/sylius-akeneo-plugin`.
@@ -61,12 +60,37 @@ An importer is a service implementing the `Webgriffe\SyliusAkeneoPlugin\Importer
 
 Akeneo is a Product Information Management system so its job is to manage product data. For this reason, this Sylius Akeneo plugin it's focused on importing products and provides a **product importer** (`\Webgriffe\SyliusAkeneoPlugin\Product\Importer`).
 
-This product importer process Akeneo product data through several components:
+This product importer process Akeneo product data through the following several components.
 
-* A **categories handler** (`Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandlerInterface`) which is responsible to associate imported products with their categories.
-* A **family variant handler** (`Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface`) which, given an Akeneo family variant, is responsible to set the related Sylius's **product option(s)** on configurable products.
-* A **channels resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\ChannelsResolverInterface`) which si responsible to return the list of Sylius channels where the products should be enabled.
-* A **value handlers resolver** (`Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface`) which is responsible to return a list of **value handlers** (`Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface`) for each Akeneo product value.
+### Categories handler
+
+A **categories handler** (`Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandlerInterface`) which is responsible to associate imported products with their categories. The provided implementation of the categories handler is the `Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandler` class which associate the product to the already existent Sylius taxons which have the same code as the related Akeneo categories.
+
+### Family variant handler
+
+A **family variant handler** (`Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface`) which, given an Akeneo family variant, is responsible to set the related Sylius's **product option(s)** on configurable products. The provided implementation of the family variant handler is the `Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandler` class, look at its code for more information.
+
+### Channels resolver
+
+A **channels resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\ChannelsResolverInterface`) which si responsible to return the list of Sylius channels where the products should be enabled. The provided implementation of the channels resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\AllChannelsResolver` class which simply enables the product to all available Sylius channels.
+
+### Value handlers resolver
+
+A **value handlers resolver** (`Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface`) which is responsible to return a list of **value handlers** (`Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface`) for each Akeneo product attribute value.
+
+The provided implementation of the value handlers resolver is the `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` which returns, for each attribute value, the list of all the value handlers supporting that attribute value sorted by a priority.
+
+For more detail on how the Product importer works look at the code of the `Webgriffe\SyliusAkeneoPlugin\Product\Importer::import()` method.
+
+### Value handlers
+
+By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` is configured without any value handler. This means that no Akeneo product attribute value will be imported. If you want to start to import the Akeneo products attributes values you have to add to this resolver some value handlers. This plugin already provides some value handler implementations but you can easily implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface`. The provided value handlers implementation are:
+
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler`
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler`
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler`
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler`
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler`
 
 ## Contributing
 
@@ -86,47 +110,47 @@ To contribute to this plugin clone this repository, create a branch for your fea
   vendor/bin/phpstan analyse -c phpstan.neon -l max src/
   ```
 
-  - PHPUnit
+- PHPUnit
 
-    ```bash
-    vendor/bin/phpunit
-    ```
+  ```bash
+  vendor/bin/phpunit
+  ```
 
-  - PHPSpec
+- PHPSpec
 
-    ```bash
-    vendor/bin/phpspec run
-    ```
+  ```bash
+  vendor/bin/phpspec run
+  ```
 
-  - Behat (non-JS scenarios)
+- Behat (non-JS scenarios)
 
-    ```bash
-    vendor/bin/behat --tags="~@javascript"
-    ```
+  ```bash
+  vendor/bin/behat --tags="~@javascript"
+  ```
 
-  - Behat (JS scenarios)
+- Behat (JS scenarios)
 
-    1. Download [Chromedriver](https://sites.google.com/a/chromium.org/chromedriver/)
+  1. Download [Chromedriver](https://sites.google.com/a/chromium.org/chromedriver/)
 
-    2. Download [Selenium Standalone Server](https://www.seleniumhq.org/download/).
+  2. Download [Selenium Standalone Server](https://www.seleniumhq.org/download/).
 
-    2. Run Selenium server with previously downloaded Chromedriver:
+  2. Run Selenium server with previously downloaded Chromedriver:
 
-        ```bash
-        java -Dwebdriver.chrome.driver=chromedriver -jar selenium-server-standalone.jar
-        ```
+      ```bash
+      java -Dwebdriver.chrome.driver=chromedriver -jar selenium-server-standalone.jar
+      ```
 
-    3. Run test application's webserver on `localhost:8080`:
+  3. Run test application's webserver on `localhost:8080`:
 
-        ```bash
-        (cd tests/Application && bin/console server:run localhost:8080 -d public -e test)
-        ```
+      ```bash
+      (cd tests/Application && bin/console server:run localhost:8080 -d public -e test)
+      ```
 
-    4. Run Behat:
+  4. Run Behat:
 
-        ```bash
-        vendor/bin/behat --tags="@javascript"
-        ```
+      ```bash
+      vendor/bin/behat --tags="@javascript"
+      ```
 
 ### Opening Sylius with your plugin
 
