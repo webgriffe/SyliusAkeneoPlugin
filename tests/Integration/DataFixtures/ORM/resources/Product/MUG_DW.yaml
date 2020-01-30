@@ -1,5 +1,5 @@
 Sylius\Component\Core\Model\Product:
-  product1:
+  MUG_DW:
     fallbackLocale: "en_US"
     currentLocale: "en_US"
     code: "MUG_DW"
