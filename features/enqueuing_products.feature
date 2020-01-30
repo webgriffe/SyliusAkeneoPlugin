@@ -16,7 +16,7 @@ Feature: Enqueuing products
 
   Scenario: There are no products modified since datetime read in file
     Given there is a file with name "last-date" and content "2020-01-20 01:00:00"
-    And current date time is "2020-01-25 12:00:00"
+    And current date time is "2020-01-25T12:00:00+01:00"
     When I run enqueue command with since file "last-date"
     Then the command should have run successfully
     And there should be no product in the Akeneo queue
@@ -26,7 +26,7 @@ Feature: Enqueuing products
     Given there is a product "product-1" updated at "2020-01-10 22:23:13" on Akeneo
     And there is a product "product-2" updated at "2020-01-21 09:54:12" on Akeneo
     And there is a file with name "last-date" and content "2020-01-20 01:00:00"
-    And current date time is "2020-01-25 12:00:00"
+    And current date time is "2020-01-25T12:00:00+01:00"
     When I run enqueue command with since file "last-date"
     Then the command should have run successfully
     And the product "product-1" should not be in the Akeneo queue
