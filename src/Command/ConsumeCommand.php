@@ -63,9 +63,25 @@ final class ConsumeCommand extends Command
                     throw $t;
                 }
                 $queueItem->setErrorMessage($t->getMessage() . \PHP_EOL . $t->getTraceAsString());
+                $output->writeln(
+                    sprintf(
+                        'There has been an error importing <info>%s</info> entity with identifier <info>%s</info>. ' .
+                        'The error was: <error>%s</error>.',
+                        $queueItem->getAkeneoEntity(),
+                        $akeneoIdentifier,
+                        $t->getMessage()
+                    )
+                );
             }
 
             $this->queueItemRepository->add($queueItem);
+            $output->writeln(
+                sprintf(
+                    '<info>%s</info> entity with identifier <info>%s</info> has been imported.',
+                    $queueItem->getAkeneoEntity(),
+                    $akeneoIdentifier
+                )
+            );
         }
 
         return 0;
