@@ -84,13 +84,58 @@ For more detail on how the Product importer works look at the code of the `Webgr
 
 ### Value handlers
 
-By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` is configured without any value handler. This means that no Akeneo product attribute value will be imported. If you want to start to import the Akeneo products attributes values you have to add to this resolver some value handlers. This plugin already provides some value handler implementations but you can easily implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface`. The provided value handlers implementation are:
+By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` is configured without any value handler. This means that no Akeneo product attribute value will be imported. If you want to start to import the Akeneo products attributes values you have to add to this resolver some value handlers. This plugin already provides some value handler implementations but you can easily implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface`. The provided value handlers implementations are:
 
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler`
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler`
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler`
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler`
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler`
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler`: it sets  the value found on a given Akeneo price attribute as the Sylius product's channels price for channels which the base currency is the price currency of the Akeneo price.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler`: it downloads  the image found on a given Akeneo image attribute and sets it as a Sylius product image with a provided type string.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler`: it slugifies the value found on a given Akeneo attribute and sets it on the Sylius slug product translation property.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler`: it sets the value found on a given Akeneo attribute as a Sylius product option value on the product variant.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler`: using the [Symofony's Property Access component](https://symfony.com/doc/current/components/property_access.html), it sets the value found on a given Akeneo attribute on a given property path of both product and product variant translations.
+
+To see an example about how to add value handlers to the value handlers resolver see the `tests/Application/config/services.yaml` config file provided in the test application of this plugin.
+
+## Usage
+
+To import data you must first create queue items with the **enqueue command** and then you can import them with the **consume command**.
+
+### Enqueue command
+
+To create queue items you can use the `webgriffe:akeneo:enqueue` console command:
+
+```bash
+bin/console webgriffe:akeneo:enqueue --since="2020-01-30"
+```
+
+This will enqueue all Akeneo entities updated after the provided date.
+
+You can also use a "since file" where to read the since date:
+
+```bash
+echo "2020-01-30" > var/storage/akeneo-sincefile.txt
+bin/console webgriffe:akeneo:enqueue --since-file="var/storage/akeneo-sincefile.txt"
+```
+
+When run with the since file, the enqueue command will write the current date/time to the since file after the enqueueing process is terminated. This is useful when you put the  enqueue command in cron:
+
+```
+*  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt
+```
+
+### Consume command
+
+To import the Akeneo entities that are in the queue you can use the `webgriffe:akeneo:consume` console command:
+
+```bash
+bin/console webgriffe:akeneo:consume
+```
+
+This will consume all queue items which are not imported yet.
+
+Of course you can put this command in cron as well:
+
+```
+*  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
+```
 
 ## Contributing
 
