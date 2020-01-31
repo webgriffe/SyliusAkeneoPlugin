@@ -77,8 +77,12 @@ class Importer implements ImporterInterface
                 ['code' => $associationTypeCode]
             );
 
-            // todo: actually only association of "products" is handled
-            $productAssociationIdentifiers = $associationInfo['products'] ?? [];
+            $productsToAssociateIdentifiers = $associationInfo['products'] ?? [];
+            $productModelsToAssociateIdentifiers = $associationInfo['product_models'] ?? [];
+            $productAssociationIdentifiers = array_merge(
+                $productsToAssociateIdentifiers,
+                $productModelsToAssociateIdentifiers
+            );
             if ($productAssociationType === null) {
                 if (empty($productAssociationIdentifiers)) {
                     continue;
