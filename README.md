@@ -7,6 +7,7 @@
 <h1 align="center">Akeneo Plugin</h1>
 <p align="center">Plugin allowing to import data from Akeneo PIM to your Sylius store.</p>
 <p align="center"><a href="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin"><img src="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin.svg?branch=master" alt="Build Status" /></a></p>
+
 ## Installation
 
 1. Run `composer require webgriffe/sylius-akeneo-plugin`.
