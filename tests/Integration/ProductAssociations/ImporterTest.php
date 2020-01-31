@@ -59,4 +59,71 @@ final class ImporterTest extends KernelTestCase
         $this->assertCount(1, $association->getAssociatedProducts());
         $this->assertEquals('MUG_SW', $association->getAssociatedProducts()->first()->getCode());
     }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_the_product_that_has_being_importer_does_not_exists_on_akeneo()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot find product "NOT-EXISTS-ON-AKENEO" on Akeneo');
+
+        $this->importer->import('NOT-EXISTS-ON-AKENEO');
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_the_product_that_has_being_importer_does_not_exists_on_the_store()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot find product "MUG_DW" on Sylius.');
+
+        $this->importer->import('MUG_DW');
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_the_product_association_type_does_not_exists_and_it_has_products()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_SW.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage(
+            'There are products for the association type "PACK" but it does not exists on Sylius.'
+        );
+
+        $this->importer->import('MUG_SW');
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_exception_when_a_product_to_associate_does_not_exists_on_the_store()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_DW.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductAssociationType/UPSELL.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage(
+            'Cannot associate the product "MUG_SW" to product "MUG_DW" because the former does not exists on Sylius'
+        );
+
+        $this->importer->import('MUG_DW');
+    }
 }

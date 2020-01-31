@@ -50,7 +50,9 @@
   "associations": {
     "PACK": {
       "groups": [],
-      "products": [],
+      "products": [
+        "MUG_BAD"
+      ],
       "product_models": []
     },
     "SUBSTITUTION": {

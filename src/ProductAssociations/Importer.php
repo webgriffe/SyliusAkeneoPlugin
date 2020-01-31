@@ -67,7 +67,9 @@ class Importer implements ImporterInterface
         }
 
         $product = $this->productRepository->findOneByCode($identifier);
-        Assert::isInstanceOf($product, ProductInterface::class);
+        if ($product === null) {
+            throw new \RuntimeException(sprintf('Cannot find product "%s" on Sylius.', $identifier));
+        }
         /** @var ProductInterface $product */
         $associations = $productVariantResponse['associations'];
         foreach ($associations as $associationTypeCode => $associationInfo) {
@@ -82,14 +84,26 @@ class Importer implements ImporterInterface
                     continue;
                 }
 
-                throw new \RuntimeException(sprintf('Product association type must exist on Sylius')); // todo
+                throw new \RuntimeException(
+                    sprintf(
+                        'There are products for the association type "%s" but it does not exists on Sylius.',
+                        $associationTypeCode
+                    )
+                );
             }
             /** @var ProductAssociationTypeInterface $productAssociationType */
             $productsToAssociate = [];
-            foreach ($productAssociationIdentifiers as $productIdentifier) {
-                $productToAssociate = $this->productRepository->findOneByCode($productIdentifier);
+            foreach ($productAssociationIdentifiers as $productToAssociateIdentifier) {
+                $productToAssociate = $this->productRepository->findOneByCode($productToAssociateIdentifier);
                 if ($productToAssociate === null) {
-                    throw new \RuntimeException(sprintf('Related product does not exists on Sylius')); // todo
+                    throw new \RuntimeException(
+                        sprintf(
+                            'Cannot associate the product "%s" to product "%s" because the former does not exists' .
+                            ' on Sylius',
+                            $productToAssociateIdentifier,
+                            $identifier
+                        )
+                    );
                 }
                 $productsToAssociate[] = $productToAssociate;
             }
