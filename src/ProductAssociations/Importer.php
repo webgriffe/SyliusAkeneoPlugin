@@ -120,7 +120,9 @@ class Importer implements ImporterInterface
             $productAssociation->setOwner($product);
             $productAssociation->setType($productAssociationType);
             foreach ($productsToAssociate as $productToAssociate) {
-                $productAssociation->addAssociatedProduct($productToAssociate);
+                if (!$productAssociation->hasAssociatedProduct($productToAssociate)) {
+                    $productAssociation->addAssociatedProduct($productToAssociate);
+                }
             }
 
             $product->addAssociation($productAssociation);
