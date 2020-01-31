@@ -9,6 +9,10 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
+use Sylius\Component\Product\Model\ProductAssociationInterface;
+use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
+use Sylius\Component\Product\Repository\ProductAssociationTypeRepositoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Webmozart\Assert\Assert;
 
 final class ProductContext implements Context
@@ -19,12 +23,22 @@ final class ProductContext implements Context
     /** @var ProductVariantRepositoryInterface */
     private $productVariantRepository;
 
+    /** @var RepositoryInterface */
+    private $productAssociationRepository;
+
+    /** @var ProductAssociationTypeRepositoryInterface */
+    private $productAssociationTypeRepository;
+
     public function __construct(
         ProductRepositoryInterface $productRepository,
-        ProductVariantRepositoryInterface $productVariantRepository
+        ProductVariantRepositoryInterface $productVariantRepository,
+        RepositoryInterface $productAssociationRepository,
+        ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository
     ) {
         $this->productRepository = $productRepository;
         $this->productVariantRepository = $productVariantRepository;
+        $this->productAssociationRepository = $productAssociationRepository;
+        $this->productAssociationTypeRepository = $productAssociationTypeRepository;
     }
 
     /**
@@ -59,12 +73,24 @@ final class ProductContext implements Context
      */
     public function theProductShouldBeAssociatedToProductForAssociationWithCode(
         string $code,
-        string $relatedProductCode,
+        string $associatedProductCode,
         string $associationTypeCode
     ) {
         $product = $this->productRepository->findOneByCode($code);
         Assert::isInstanceOf($product, ProductInterface::class);
-        $associations = $product->getAssociations();
-        Assert::count($associations, 2);
+
+        $associatedProduct = $this->productRepository->findOneByCode($associatedProductCode);
+        Assert::isInstanceOf($associatedProduct, ProductInterface::class);
+
+        $productAssociationType = $this->productAssociationTypeRepository->findOneBy(['code' => $associationTypeCode]);
+        Assert::isInstanceOf($productAssociationType, ProductAssociationTypeInterface::class);
+        /** @var ProductAssociationTypeInterface $productAssociationType */
+        $productAssociation = $this->productAssociationRepository->findOneBy(
+            ['owner' => $product, 'type' => $productAssociationType]
+        );
+        Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
+        /** @var ProductAssociationInterface $productAssociation */
+        $associatedProducts = $productAssociation->getAssociatedProducts();
+        Assert::true($associatedProducts->contains($associatedProduct));
     }
 }

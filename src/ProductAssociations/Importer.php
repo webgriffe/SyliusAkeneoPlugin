@@ -120,7 +120,6 @@ class Importer implements ImporterInterface
                 Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
             }
             /** @var ProductAssociationInterface $productAssociation */
-
             $productAssociation->setOwner($product);
             $productAssociation->setType($productAssociationType);
             foreach ($productsToAssociate as $productToAssociate) {

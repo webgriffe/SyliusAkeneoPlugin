@@ -4,7 +4,6 @@ Feature: Enqueuing products associations
   As a Store Owner
   I want to add them to the Akeneo PIM queue
 
-  @todo
   Scenario: Enqueuing products associations for products modified since a given date
     Given there is a product "product-1" updated at "2020-01-10 22:23:13" on Akeneo
     And there is a product "product-2" updated at "2020-01-21 09:54:12" on Akeneo
