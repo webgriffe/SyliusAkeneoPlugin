@@ -108,10 +108,15 @@ class Importer implements ImporterInterface
                 $productsToAssociate[] = $productToAssociate;
             }
 
-            // todo: check if product association already exists
-            $productAssociation = $this->productAssociationFactory->createNew();
-            Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
+            $productAssociation = $this->productAssociationRepository->findOneBy(
+                ['owner' => $product, 'type' => $productAssociationType]
+            );
+            if ($productAssociation === null) {
+                $productAssociation = $this->productAssociationFactory->createNew();
+                Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
+            }
             /** @var ProductAssociationInterface $productAssociation */
+
             $productAssociation->setOwner($product);
             $productAssociation->setType($productAssociationType);
             foreach ($productsToAssociate as $productToAssociate) {

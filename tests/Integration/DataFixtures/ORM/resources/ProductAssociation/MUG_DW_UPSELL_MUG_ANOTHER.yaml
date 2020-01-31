@@ -1,0 +1,6 @@
+Sylius\Component\Product\Model\ProductAssociation:
+  MUG_DW_UPSELL-product-association:
+    owner: '@MUG_DW'
+    type: '@UPSELL-association-type'
+    associatedProducts:
+      - '@MUG_ANOTHER'

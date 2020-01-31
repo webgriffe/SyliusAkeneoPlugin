@@ -38,9 +38,9 @@ final class ImporterTest extends KernelTestCase
     {
         $this->fixtureLoader->load(
             [
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductAssociationType/UPSELL.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_SW.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_DW.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductAssociationType/UPSELL.yaml',
             ],
             [],
             [],
@@ -125,5 +125,41 @@ final class ImporterTest extends KernelTestCase
         );
 
         $this->importer->import('MUG_DW');
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_product_association_when_it_already_exists()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductAssociationType/UPSELL.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_SW.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_DW.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_ANOTHER.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductAssociation/MUG_DW_UPSELL_MUG_ANOTHER.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('MUG_DW');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneBy(['code' => 'MUG_DW']);
+        $associations = $product->getAssociations();
+        $this->assertCount(1, $associations);
+        $association = $associations[0];
+        $this->assertEquals($product->getId(), $association->getOwner()->getId());
+        $this->assertEquals('UPSELL', $association->getType()->getCode());
+
+        $associatedProducts = $association->getAssociatedProducts();
+        $this->assertCount(2, $associatedProducts);
+        $productMugSw = $this->productRepository->findOneBy(['code' => 'MUG_SW']);
+        $this->assertTrue($associatedProducts->contains($productMugSw));
+        $productMugAnother = $this->productRepository->findOneBy(['code' => 'MUG_ANOTHER']);
+        $this->assertTrue($associatedProducts->contains($productMugAnother));
     }
 }

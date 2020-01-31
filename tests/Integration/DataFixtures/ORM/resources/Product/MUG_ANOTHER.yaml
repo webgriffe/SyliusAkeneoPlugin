@@ -1,0 +1,12 @@
+Sylius\Component\Core\Model\Product:
+  MUG_ANOTHER:
+    fallbackLocale: "en_US"
+    currentLocale: "en_US"
+    code: "MUG_ANOTHER"
+    variants:
+      - "@MUG_ANOTHER-variant"
+
+Sylius\Component\Core\Model\ProductVariant:
+  MUG_ANOTHER-variant:
+    code: "MUG_ANOTHER"
+    product: "@MUG_ANOTHER"
