@@ -1,0 +1,57 @@
+{
+    "identifier": "tshirt-new-m",
+    "enabled": true,
+    "family": "T-shirt",
+    "categories": [],
+    "groups": [],
+    "parent": "tshirt-new",
+    "values": {
+        "name": [
+            {
+                "locale": "it_IT",
+                "scope": null,
+                "data": "T-shirt new"
+            }
+        ],
+        "price": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": [
+                    {
+                        "amount": "19.00",
+                        "currency": "USD"
+                    }
+                ]
+            }
+        ],
+        "short_description": [
+            {
+                "locale": "it_IT",
+                "scope": null,
+                "data": "Una nuova t-shirt."
+            }
+        ]
+    },
+    "created": "2019-12-03T15:42:33+01:00",
+    "updated": "2019-12-03T17:22:58+01:00",
+    "associations": {
+        "SUBSTITUTION": {
+            "groups": [],
+            "products": [],
+            "product_models": []
+        },
+        "UPSELL": {
+            "groups": [],
+            "products": [
+                "MUG_SW"
+            ],
+            "product_models": []
+        },
+        "X_SELL": {
+            "groups": [],
+            "products": [],
+            "product_models": []
+        }
+    }
+}

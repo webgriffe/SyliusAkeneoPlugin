@@ -162,4 +162,36 @@ final class ImporterTest extends KernelTestCase
         $productMugAnother = $this->productRepository->findOneBy(['code' => 'MUG_ANOTHER']);
         $this->assertTrue($associatedProducts->contains($productMugAnother));
     }
+
+    /**
+     * @test
+     */
+    public function it_uses_parent_product_when_the_product_that_is_being_imported_is_a_variant()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductAssociationType/UPSELL.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOption/size.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_SW.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/tshirt-new.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/tshirt-new-m.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('tshirt-new-m');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneBy(['code' => 'tshirt-new']);
+        $associations = $product->getAssociations();
+        $this->assertCount(1, $associations);
+        $association = $associations[0];
+        $this->assertEquals($product->getId(), $association->getOwner()->getId());
+        $this->assertEquals('UPSELL', $association->getType()->getCode());
+        $this->assertCount(1, $association->getAssociatedProducts());
+        $this->assertEquals('MUG_SW', $association->getAssociatedProducts()->first()->getCode());
+    }
 }

@@ -66,9 +66,16 @@ class Importer implements ImporterInterface
             throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
         }
 
-        $product = $this->productRepository->findOneByCode($identifier);
+        $parentCode = $productVariantResponse['parent'];
+        if ($parentCode !== null) {
+            $productCode = $parentCode;
+        } else {
+            $productCode = $identifier;
+        }
+
+        $product = $this->productRepository->findOneByCode($productCode);
         if ($product === null) {
-            throw new \RuntimeException(sprintf('Cannot find product "%s" on Sylius.', $identifier));
+            throw new \RuntimeException(sprintf('Cannot find product "%s" on Sylius.', $productCode));
         }
         /** @var ProductInterface $product */
         $associations = $productVariantResponse['associations'];
@@ -105,7 +112,7 @@ class Importer implements ImporterInterface
                             'Cannot associate the product "%s" to product "%s" because the former does not exists' .
                             ' on Sylius',
                             $productToAssociateIdentifier,
-                            $identifier
+                            $productCode
                         )
                     );
                 }
