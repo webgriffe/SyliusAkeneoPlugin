@@ -1,20 +1,21 @@
 {
-  "code": "MUG_SW",
-  "family_variant": "COLOR",
+  "identifier": "MUG_DW",
+  "enabled": true,
   "family": "Mugs",
-  "parent": null,
   "categories": [],
+  "groups": [],
+  "parent": null,
   "values": {
     "name": [
       {
         "locale": "en_US",
         "scope": null,
-        "data": "New Star Wars mug name"
+        "data": "New Digital Wars mug name"
       },
       {
         "locale": "it_IT",
         "scope": null,
-        "data": "Nuovo nome tazza Star Wars"
+        "data": "Nuovo nome tazza Digital Wars"
       }
     ],
     "price": [
@@ -33,26 +34,14 @@
       {
         "locale": "en_US",
         "scope": null,
-        "data": "<p>A beautiful Star Wars mug. Lorem ipsum dolor sit amet.<\/p>"
+        "data": "<p>A beautiful Digital Wars mug. Lorem ipsum dolor sit amet.<\/p>"
       }
     ],
     "short_description": [
       {
         "locale": "en_US",
         "scope": null,
-        "data": "A beautiful Star Wars mug."
-      }
-    ],
-    "picture": [
-      {
-        "locale": null,
-        "scope": null,
-        "data": "4/a/f/0/4af0dd6fbd5e310a80b6cd2caf413bcf7183d632_1314976_5566.jpg",
-        "_links": {
-          "download": {
-            "href": "http://demo.akeneo.com/api/rest/v1/media-files/4/a/f/0/4af0dd6fbd5e310a80b6cd2caf413bcf7183d632_1314976_5566.jpg/download"
-          }
-        }
+        "data": "A beautiful Digital Wars mug."
       }
     ]
   },
@@ -71,7 +60,9 @@
     },
     "UPSELL": {
       "groups": [],
-      "products": [],
+      "products": [
+        "MUG_SW"
+      ],
       "product_models": []
     },
     "X_SELL": {

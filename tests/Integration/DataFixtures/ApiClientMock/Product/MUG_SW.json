@@ -1,20 +1,21 @@
 {
-  "code": "MUG_DW",
-  "family_variant": "COLOR",
+  "identifier": "MUG_SW",
+  "enabled": true,
   "family": "Mugs",
-  "parent": null,
   "categories": [],
+  "groups": [],
+  "parent": null,
   "values": {
     "name": [
       {
         "locale": "en_US",
         "scope": null,
-        "data": "New Digital Wars mug name"
+        "data": "New Star Wars mug name"
       },
       {
         "locale": "it_IT",
         "scope": null,
-        "data": "Nuovo nome tazza Digital Wars"
+        "data": "Nuovo nome tazza Star Wars"
       }
     ],
     "price": [
@@ -33,14 +34,14 @@
       {
         "locale": "en_US",
         "scope": null,
-        "data": "<p>A beautiful Digital Wars mug. Lorem ipsum dolor sit amet.<\/p>"
+        "data": "<p>A beautiful Star Wars mug. Lorem ipsum dolor sit amet.<\/p>"
       }
     ],
     "short_description": [
       {
         "locale": "en_US",
         "scope": null,
-        "data": "A beautiful Digital Wars mug."
+        "data": "A beautiful Star Wars mug."
       }
     ]
   },
@@ -59,9 +60,7 @@
     },
     "UPSELL": {
       "groups": [],
-      "products": [
-        "MUG_SW"
-      ],
+      "products": [],
       "product_models": []
     },
     "X_SELL": {

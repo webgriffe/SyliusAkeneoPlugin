@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ProductAssociations;
 
+use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Repository\ProductRepositoryInterface;
+use Sylius\Component\Product\Model\ProductAssociationInterface;
+use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
+use Sylius\Component\Product\Repository\ProductAssociationTypeRepositoryInterface;
+use Sylius\Component\Resource\Factory\FactoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webmozart\Assert\Assert;
 
 class Importer implements ImporterInterface
 {
@@ -14,9 +22,30 @@ class Importer implements ImporterInterface
     /** @var ApiClientInterface */
     private $apiClient;
 
-    public function __construct(ApiClientInterface $apiClient)
-    {
+    /** @var ProductRepositoryInterface */
+    private $productRepository;
+
+    /** @var RepositoryInterface */
+    private $productAssociationRepository;
+
+    /** @var ProductAssociationTypeRepositoryInterface */
+    private $productAssociationTypeRepository;
+
+    /** @var FactoryInterface */
+    private $productAssociationFactory;
+
+    public function __construct(
+        ApiClientInterface $apiClient,
+        ProductRepositoryInterface $productRepository,
+        RepositoryInterface $productAssociationRepository,
+        ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository,
+        FactoryInterface $productAssociationFactory
+    ) {
         $this->apiClient = $apiClient;
+        $this->productRepository = $productRepository;
+        $this->productAssociationRepository = $productAssociationRepository;
+        $this->productAssociationTypeRepository = $productAssociationTypeRepository;
+        $this->productAssociationFactory = $productAssociationFactory;
     }
 
     /**
@@ -32,6 +61,52 @@ class Importer implements ImporterInterface
      */
     public function import(string $identifier): void
     {
+        $productVariantResponse = $this->apiClient->findProduct($identifier);
+        if (!$productVariantResponse) {
+            throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
+        }
+
+        $product = $this->productRepository->findOneByCode($identifier);
+        Assert::isInstanceOf($product, ProductInterface::class);
+        /** @var ProductInterface $product */
+        $associations = $productVariantResponse['associations'];
+        foreach ($associations as $associationTypeCode => $associationInfo) {
+            $productAssociationType = $this->productAssociationTypeRepository->findOneBy(
+                ['code' => $associationTypeCode]
+            );
+
+            // todo: actually only association of "products" is handled
+            $productAssociationIdentifiers = $associationInfo['products'] ?? [];
+            if ($productAssociationType === null) {
+                if (empty($productAssociationIdentifiers)) {
+                    continue;
+                }
+
+                throw new \RuntimeException(sprintf('Product association type must exist on Sylius')); // todo
+            }
+            /** @var ProductAssociationTypeInterface $productAssociationType */
+            $productsToAssociate = [];
+            foreach ($productAssociationIdentifiers as $productIdentifier) {
+                $productToAssociate = $this->productRepository->findOneByCode($productIdentifier);
+                if ($productToAssociate === null) {
+                    throw new \RuntimeException(sprintf('Related product does not exists on Sylius')); // todo
+                }
+                $productsToAssociate[] = $productToAssociate;
+            }
+
+            // todo: check if product association already exists
+            $productAssociation = $this->productAssociationFactory->createNew();
+            Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
+            /** @var ProductAssociationInterface $productAssociation */
+            $productAssociation->setOwner($product);
+            $productAssociation->setType($productAssociationType);
+            foreach ($productsToAssociate as $productToAssociate) {
+                $productAssociation->addAssociatedProduct($productToAssociate);
+            }
+
+            $product->addAssociation($productAssociation);
+            $this->productAssociationRepository->add($productAssociation);
+        }
     }
 
     /**

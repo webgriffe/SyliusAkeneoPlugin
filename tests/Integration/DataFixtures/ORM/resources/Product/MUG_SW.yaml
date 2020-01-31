@@ -13,3 +13,10 @@ Sylius\Component\Core\Model\Product:
     code: "MUG_SW"
     translations:
       - "@MUG_SW_en_US"
+    variants:
+      - "@MUG_SW-variant"
+
+Sylius\Component\Core\Model\ProductVariant:
+  MUG_SW-variant:
+    code: "MUG_SW"
+    product: "@MUG_SW"

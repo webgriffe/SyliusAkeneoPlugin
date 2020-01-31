@@ -24,7 +24,6 @@ final class ImporterTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        $this->markTestIncomplete('todo');
         self::bootKernel();
         $this->importer = self::$container->get('webgriffe_sylius_akeneo.product_associations.importer');
         $this->productRepository = self::$container->get('sylius.repository.product');
@@ -35,13 +34,13 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_new_product_associations_between_already_existent_products()
+    public function it_creates_new_product_association_between_already_existent_products()
     {
-        $this->markTestSkipped('todo');
         $this->fixtureLoader->load(
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_SW.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/MUG_DW.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductAssociationType/UPSELL.yaml',
             ],
             [],
             [],
@@ -52,6 +51,12 @@ final class ImporterTest extends KernelTestCase
 
         /** @var ProductInterface $product */
         $product = $this->productRepository->findOneBy(['code' => 'MUG_DW']);
-        $this->assertNotEmpty($product->getAssociations());
+        $associations = $product->getAssociations();
+        $this->assertCount(1, $associations);
+        $association = $associations[0];
+        $this->assertEquals($product->getId(), $association->getOwner()->getId());
+        $this->assertEquals('UPSELL', $association->getType()->getCode());
+        $this->assertCount(1, $association->getAssociatedProducts());
+        $this->assertEquals('MUG_SW', $association->getAssociatedProducts()->first()->getCode());
     }
 }

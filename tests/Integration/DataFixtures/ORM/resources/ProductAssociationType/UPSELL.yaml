@@ -1,0 +1,3 @@
+Sylius\Component\Product\Model\ProductAssociationType:
+  UPSELL-association-type:
+    code: 'UPSELL'
