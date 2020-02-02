@@ -137,6 +137,8 @@ When run with the since file, the enqueue command will write the current date/ti
 *  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt
 ```
 
+This way the enqueue command is run repeatedly enqueing only producs modified since the last command execution.
+
 ### Consume command
 
 To import the Akeneo entities that are in the queue you can use the `webgriffe:akeneo:consume` console command:
