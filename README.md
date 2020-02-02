@@ -8,6 +8,7 @@
 <p align="center">Plugin allowing to import data from Akeneo PIM to your Sylius store.</p>
 <p align="center"><a href="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin"><img src="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin.svg?branch=master" alt="Build Status" /></a></p>
 
+
 ## Installation
 
 1. Run `composer require webgriffe/sylius-akeneo-plugin`.
@@ -74,6 +75,10 @@ A **family variant handler** (`Webgriffe\SyliusAkeneoPlugin\Product\FamilyVarian
 ### Channels resolver
 
 A **channels resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\ChannelsResolverInterface`) which si responsible to return the list of Sylius channels where the products should be enabled. The provided implementation of the channels resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\AllChannelsResolver` class which simply enables the product to all available Sylius channels.
+
+### Status resolver
+
+A **status resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\StatusResolverInterface`) which is responsible to return the Sylius product status (enabled or disabled, true or false). The provided implementation of the status resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\StatusResolver` which returns the same produc status of the related Akeneo product but only if this doesn't belong to a parent product model, otherwise it will always return true (enabled). This is because  in Sylius the product status is at product level and not (also) at product variant level; instead in Akeneo the status is only at product level and not at product model level. So, in Akeneo, you could have only one disabled product variant for a parent product which have several other variants enabled. This situation couldn't be mapped currently on Sylius.
 
 ### Value handlers resolver
 
