@@ -106,6 +106,10 @@ By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersReso
 
 To see an example about how to add value handlers to the value handlers resolver see the `tests/Application/config/services.yaml` config file provided in the test application of this plugin.
 
+## Product associations importer
+
+Another provided importer is the **product associations importer** (`Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer`). This importer imports the Akeneo products associations to the analog Sylius products associations. The association types must already exist on Sylius with the same code they have on Akeneo.
+
 ## Usage
 
 To import data you must first create queue items with the **enqueue command** and then you can import them with the **consume command**.
