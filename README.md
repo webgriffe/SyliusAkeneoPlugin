@@ -9,6 +9,12 @@
 <p align="center"><a href="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin"><img src="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin.svg?branch=master" alt="Build Status" /></a></p>
 
 
+## Requirements
+
+* Sylius `^1.6`
+* Akeneo PIM CE or EE `>= 3.2`.
+  The requirement for the version `3.2` is because the provided implementation of the product importer relies on the `family_variant` key in the Akeneo [GET Product model](https://api.akeneo.com/api-reference.html#get_product_models__code_) API response.
+
 ## Installation
 
 1. Run `composer require webgriffe/sylius-akeneo-plugin`.
