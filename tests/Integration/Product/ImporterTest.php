@@ -415,4 +415,47 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals('picture', $image->getType());
         $this->assertNotEquals('path/to/existent-image/10627329.jpg', $image->getPath());
     }
+
+    /**
+     * @test
+     */
+    public function it_imports_disabled_product_if_it_is_disabled_on_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('16466450');
+
+        $product = $this->productRepository->findOneByCode('16466450');
+        $this->assertFalse($product->isEnabled());
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_disable_product_when_importing_variant_of_a_configurable_product()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-s');
+
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertTrue($product->isEnabled());
+    }
 }

@@ -65,6 +65,9 @@
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\Product\ChannelsResolverInterface" alias="webgriffe_sylius_akeneo.product.channels_resolver" />
 
+        <service id="webgriffe_sylius_akeneo.product.status_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\StatusResolver" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\Product\StatusResolverInterface" alias="webgriffe_sylius_akeneo.product.status_resolver"/>
+
         <service id="webgriffe_sylius_akeneo.product.importer" class="Webgriffe\SyliusAkeneoPlugin\Product\Importer">
             <argument type="service" id="sylius.factory.product_variant" />
             <argument type="service" id="sylius.repository.product_variant" />
@@ -76,6 +79,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product.family_variant_handler" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.channels_resolver" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.status_resolver" />
         </service>
 
         <!-- Product Associations Importer -->
