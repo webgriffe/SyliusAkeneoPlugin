@@ -35,25 +35,29 @@ final class CategoriesHandler implements CategoriesHandlerInterface
 
     public function handle(ProductInterface $product, array $categories): void
     {
-        foreach ($categories as $category) {
-            /** @var TaxonInterface|null $taxon */
-            $taxon = $this->taxonRepository->findOneBy(['code' => $category]);
-            if ($taxon) {
-                $productTaxon = $this->productTaxonRepository->findOneByProductCodeAndTaxonCode(
-                    $product->getCode(),
-                    $taxon->getCode()
-                );
-                if ($productTaxon) {
-                    return;
-                }
-                /** @var ProductTaxonInterface $productTaxon */
-                $productTaxon = $this->productTaxonFactory->createNew();
-                Assert::isInstanceOf($productTaxon, ProductTaxonInterface::class);
-                $productTaxon->setProduct($product);
-                $productTaxon->setTaxon($taxon);
-                $productTaxon->setPosition(0);
-                $product->addProductTaxon($productTaxon);
+        if (empty($categories)) {
+            return;
+        }
+        foreach ($categories as $categoryCode) {
+            $taxon = $this->taxonRepository->findOneBy(['code' => $categoryCode]);
+            if (!$taxon) {
+                continue;
             }
+            /** @var TaxonInterface $taxon */
+            $productTaxon = $this->productTaxonRepository->findOneByProductCodeAndTaxonCode(
+                $product->getCode(),
+                $taxon->getCode()
+            );
+            if ($productTaxon) {
+                continue;
+            }
+            /** @var ProductTaxonInterface $productTaxon */
+            $productTaxon = $this->productTaxonFactory->createNew();
+            Assert::isInstanceOf($productTaxon, ProductTaxonInterface::class);
+            $productTaxon->setProduct($product);
+            $productTaxon->setTaxon($taxon);
+            $productTaxon->setPosition(0);
+            $product->addProductTaxon($productTaxon);
         }
     }
 }
