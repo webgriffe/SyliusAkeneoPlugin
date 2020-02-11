@@ -46,12 +46,10 @@
         <service id="Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface" alias="webgriffe_sylius_akeneo.importer_registry" />
 
         <!-- Product Importer -->
-        <service id="webgriffe_sylius_akeneo.product.categories_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandler">
+        <service id="webgriffe_sylius_akeneo.product.taxons_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\AlreadyExistingTaxonsResolver">
             <argument type="service" id="sylius.repository.taxon" />
-            <argument type="service" id="sylius.repository.product_taxon" />
-            <argument type="service" id="sylius.factory.product_taxon" />
         </service>
-        <service id="Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandlerInterface" alias="webgriffe_sylius_akeneo.product.categories_handler" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\Product\TaxonsResolverInterface" alias="webgriffe_sylius_akeneo.product.taxons_resolver" />
 
         <service id="webgriffe_sylius_akeneo.product.family_variant_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandler">
             <argument type="service" id="sylius.factory.product_option" />
@@ -75,11 +73,12 @@
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.value_handlers_resolver" />
             <argument type="service" id="sylius.factory.product" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product.categories_handler" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.taxons_resolver" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.family_variant_handler" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.channels_resolver" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.status_resolver" />
+            <argument type="service" id="sylius.factory.product_taxon" />
         </service>
 
         <!-- Product Associations Importer -->

@@ -6,11 +6,13 @@ namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductTaxonInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
 use Sylius\Component\Product\Factory\ProductVariantFactoryInterface;
+use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
@@ -43,8 +45,8 @@ final class Importer implements ImporterInterface
     /** @var ProductFactoryInterface */
     private $productFactory;
 
-    /** @var CategoriesHandlerInterface */
-    private $categoriesHandler;
+    /** @var TaxonsResolverInterface */
+    private $taxonsResolver;
 
     /** @var FamilyVariantHandlerInterface */
     private $familyVariantHandler;
@@ -55,6 +57,9 @@ final class Importer implements ImporterInterface
     /** @var StatusResolverInterface */
     private $statusResolver;
 
+    /** @var FactoryInterface */
+    private $productTaxonFactory;
+
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
@@ -62,11 +67,12 @@ final class Importer implements ImporterInterface
         ApiClientInterface $apiClient,
         ValueHandlersResolverInterface $valueHandlerResolver,
         ProductFactoryInterface $productFactory,
-        CategoriesHandlerInterface $categoriesHandler,
+        TaxonsResolverInterface $taxonsResolver,
         FamilyVariantHandlerInterface $familyVariantHandler,
         EventDispatcherInterface $eventDispatcher,
         ChannelsResolverInterface $channelsResolver,
-        StatusResolverInterface $statusResolver
+        StatusResolverInterface $statusResolver,
+        FactoryInterface $productTaxonFactory
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
@@ -74,11 +80,12 @@ final class Importer implements ImporterInterface
         $this->apiClient = $apiClient;
         $this->valueHandlersResolver = $valueHandlerResolver;
         $this->productFactory = $productFactory;
-        $this->categoriesHandler = $categoriesHandler;
+        $this->taxonsResolver = $taxonsResolver;
         $this->familyVariantHandler = $familyVariantHandler;
         $this->eventDispatcher = $eventDispatcher;
         $this->channelsResolver = $channelsResolver;
         $this->statusResolver = $statusResolver;
+        $this->productTaxonFactory = $productTaxonFactory;
     }
 
     /**
@@ -100,7 +107,7 @@ final class Importer implements ImporterInterface
 
         $this->handleChannels($product, $productVariantResponse);
 
-        $this->categoriesHandler->handle($product, $productVariantResponse['categories']);
+        $this->handleTaxons($product, $productVariantResponse);
 
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
         if (!$productVariant instanceof ProductVariantInterface) {
@@ -205,6 +212,22 @@ final class Importer implements ImporterInterface
             if (!$product->hasChannel($channel)) {
                 $product->addChannel($channel);
             }
+        }
+    }
+
+    private function handleTaxons(ProductInterface $product, array $akeneoProduct): void
+    {
+        $taxons = $this->taxonsResolver->resolve($akeneoProduct);
+        foreach ($taxons as $taxon) {
+            if ($product->hasTaxon($taxon)) {
+                continue;
+            }
+            $productTaxon = $this->productTaxonFactory->createNew();
+            Assert::isInstanceOf($productTaxon, ProductTaxonInterface::class);
+            /** @var ProductTaxonInterface $productTaxon */
+            $productTaxon->setTaxon($taxon);
+            $productTaxon->setPosition(0);
+            $product->addProductTaxon($productTaxon);
         }
     }
 }
