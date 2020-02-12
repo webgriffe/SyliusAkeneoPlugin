@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin;
 
-class DateTimeBuilder implements DateTimeBuilderInterface
+final class DateTimeBuilder implements DateTimeBuilderInterface
 {
     /**
      * @param string $time

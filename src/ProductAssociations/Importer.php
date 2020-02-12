@@ -15,7 +15,7 @@ use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webmozart\Assert\Assert;
 
-class Importer implements ImporterInterface
+final class Importer implements ImporterInterface
 {
     private const AKENEO_ENTITY = 'ProductAssociations';
 

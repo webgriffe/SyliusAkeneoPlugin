@@ -8,7 +8,7 @@ use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
 use Webmozart\Assert\Assert;
 
-class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
+final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
 {
     /** @var TaxonRepositoryInterface */
     private $taxonRepository;
