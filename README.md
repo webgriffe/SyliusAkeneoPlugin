@@ -70,9 +70,9 @@ Akeneo is a Product Information Management system so its job is to manage produc
 
 This product importer process Akeneo product data through the following several components.
 
-### Categories handler
+### Taxons resolver
 
-A **categories handler** (`Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandlerInterface`) which is responsible to associate imported products with their categories. The provided implementation of the categories handler is the `Webgriffe\SyliusAkeneoPlugin\Product\CategoriesHandler` class which associate the product to the already existent Sylius taxons which have the same code as the related Akeneo categories.
+A **taxons resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\TaxonsResolverInterface`) which is responsible to return the list of Sylius taxons for a given Akeneo product. The provided implementation of the taxons resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\AlreadyExistingTaxonsResolver` class which returns the already existent Sylius taxons which have the same code as the related Akeneo categories.
 
 ### Family variant handler
 
