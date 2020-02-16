@@ -109,12 +109,10 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         if (!$productOption) {
             throw new \RuntimeException(
                 sprintf(
-                    'Cannot import Akeneo product "%s", the option of the parent product "%s" is ' .
-                    '"%s" but this doesn\'t exist on Sylius and it should (it should was created during Product model ' .
-                    'import).',
+                    'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',
                     $productVariant->getCode(),
-                    $product->getCode(),
-                    $optionCode
+                    $optionCode,
+                    $product->getCode()
                 )
             );
         }

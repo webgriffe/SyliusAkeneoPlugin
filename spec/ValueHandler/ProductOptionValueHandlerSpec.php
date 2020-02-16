@@ -186,12 +186,10 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $this->shouldThrow(
             new \RuntimeException(
                 sprintf(
-                    'Cannot import Akeneo product "%s", the option of the parent product "%s" is ' .
-                    '"%s" but this doesn\'t exist on Sylius and it should (it should was created during Product model ' .
-                    'import).',
+                    'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',
                     self::VARIANT_CODE,
-                    self::PRODUCT_CODE,
-                    self::OPTION_CODE
+                    self::OPTION_CODE,
+                    self::PRODUCT_CODE
                 )
             )
         )->during('handle', [$productVariant, self::OPTION_CODE, $value]);
