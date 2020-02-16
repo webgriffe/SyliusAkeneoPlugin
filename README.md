@@ -74,9 +74,9 @@ This product importer process Akeneo product data through the following several 
 
 A **taxons resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\TaxonsResolverInterface`) which is responsible to return the list of Sylius taxons for a given Akeneo product. The provided implementation of the taxons resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\AlreadyExistingTaxonsResolver` class which returns the already existent Sylius taxons which have the same code as the related Akeneo categories.
 
-### Family variant handler
+### Product options resolver
 
-A **family variant handler** (`Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface`) which, given an Akeneo family variant, is responsible to set the related Sylius's **product option(s)** on configurable products. The provided implementation of the family variant handler is the `Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandler` class, look at its code for more information.
+A **product options resolve** (`Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolverInterface`) which is responsible to return the related Sylius's **product option(s)** when the product being imported is part of a parent product model. The provided implementation of the product options resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolver` class, which returns already existend product options but also create new ones if needed.
 
 ### Channels resolver
 
