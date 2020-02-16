@@ -51,12 +51,13 @@
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\Product\TaxonsResolverInterface" alias="webgriffe_sylius_akeneo.product.taxons_resolver" />
 
-        <service id="webgriffe_sylius_akeneo.product.family_variant_handler" class="Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandler">
-            <argument type="service" id="sylius.factory.product_option" />
-            <argument type="service" id="sylius.repository.product_option" />
+        <service id="webgriffe_sylius_akeneo.product.product_options_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolver">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client"/>
+            <argument type="service" id="sylius.repository.product_option" />
+            <argument type="service" id="sylius.factory.product_option" />
+            <argument type="service" id="sylius.factory.product_option_translation" />
         </service>
-        <service id="Webgriffe\SyliusAkeneoPlugin\Product\FamilyVariantHandlerInterface" alias="webgriffe_sylius_akeneo.product.family_variant_handler" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolverInterface" alias="webgriffe_sylius_akeneo.product.product_options_resolver" />
 
         <service id="webgriffe_sylius_akeneo.product.channels_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\AllChannelsResolver">
             <argument type="service" id="sylius.repository.channel" />
@@ -74,7 +75,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product.value_handlers_resolver" />
             <argument type="service" id="sylius.factory.product" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.taxons_resolver" />
-            <argument type="service" id="webgriffe_sylius_akeneo.product.family_variant_handler" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.product_options_resolver" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.channels_resolver" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.status_resolver" />

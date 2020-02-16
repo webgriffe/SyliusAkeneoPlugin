@@ -48,8 +48,8 @@ final class Importer implements ImporterInterface
     /** @var TaxonsResolverInterface */
     private $taxonsResolver;
 
-    /** @var FamilyVariantHandlerInterface */
-    private $familyVariantHandler;
+    /** @var ProductOptionsResolverInterface */
+    private $productOptionsResolver;
 
     /** @var ChannelsResolverInterface */
     private $channelsResolver;
@@ -68,7 +68,7 @@ final class Importer implements ImporterInterface
         ValueHandlersResolverInterface $valueHandlerResolver,
         ProductFactoryInterface $productFactory,
         TaxonsResolverInterface $taxonsResolver,
-        FamilyVariantHandlerInterface $familyVariantHandler,
+        ProductOptionsResolverInterface $productOptionsResolver,
         EventDispatcherInterface $eventDispatcher,
         ChannelsResolverInterface $channelsResolver,
         StatusResolverInterface $statusResolver,
@@ -81,7 +81,7 @@ final class Importer implements ImporterInterface
         $this->valueHandlersResolver = $valueHandlerResolver;
         $this->productFactory = $productFactory;
         $this->taxonsResolver = $taxonsResolver;
-        $this->familyVariantHandler = $familyVariantHandler;
+        $this->productOptionsResolver = $productOptionsResolver;
         $this->eventDispatcher = $eventDispatcher;
         $this->channelsResolver = $channelsResolver;
         $this->statusResolver = $statusResolver;
@@ -156,21 +156,10 @@ final class Importer implements ImporterInterface
         if ($parentCode !== null) {
             $product = $this->productRepository->findOneByCode($parentCode);
             if (!$product) {
-                $product = $this->productFactory->createNew();
-                Assert::isInstanceOf($product, ProductInterface::class);
-                /** @var ProductInterface $product */
-                $productResponse = $this->apiClient->findProductModel($parentCode);
-                if (!$productResponse) {
-                    throw new \RuntimeException(sprintf('Cannot find product model "%s" on Akeneo.', $parentCode));
-                }
-                $familyCode = $productResponse['family'];
-                $familyVariantCode = $productResponse['family_variant'];
-                $familyVariantResponse = $this->apiClient->findFamilyVariant($familyCode, $familyVariantCode);
-                $this->familyVariantHandler->handle($product, $familyVariantResponse);
+                $product = $this->createNewProductFromAkneoProduct($productVariantResponse);
             }
             Assert::isInstanceOf($product, ProductInterface::class);
             /** @var ProductInterface $product */
-            $product->setCode($parentCode);
 
             return $product;
         }
@@ -229,5 +218,19 @@ final class Importer implements ImporterInterface
             $productTaxon->setPosition(0);
             $product->addProductTaxon($productTaxon);
         }
+    }
+
+    private function createNewProductFromAkneoProduct(array $productVariantResponse): ProductInterface
+    {
+        $parentCode = $productVariantResponse['parent'];
+        $product = $this->productFactory->createNew();
+        Assert::isInstanceOf($product, ProductInterface::class);
+        /** @var ProductInterface $product */
+        $product->setCode($parentCode);
+        foreach ($this->productOptionsResolver->resolve($productVariantResponse) as $productOption) {
+            $product->addOption($productOption);
+        }
+
+        return $product;
     }
 }
