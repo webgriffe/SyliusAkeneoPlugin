@@ -11,7 +11,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webmozart\Assert\Assert;
 
-class ProductOptionsResolver implements ProductOptionsResolverInterface
+final class ProductOptionsResolver implements ProductOptionsResolverInterface
 {
     /** @var ApiClientInterface */
     private $apiClient;
