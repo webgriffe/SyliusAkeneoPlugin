@@ -1,0 +1,33 @@
+webgriffe_sylius_akeneo:
+  value_handlers:
+    product:
+      name:
+        type: 'translatable_property'
+        options:
+          akeneo_attribute_code: 'name'
+          sylius_translation_property_path: 'name'
+      slug:
+        type: 'immutable_slug'
+        options:
+          akeneo_attribute_code: 'name'
+      picture:
+        type: 'image'
+        options:
+          akeneo_attribute_code: 'picture'
+          sylius_image_type: 'picture'
+      image:
+        type: 'image'
+        options:
+          akeneo_attribute_code: 'image'
+          sylius_image_type: 'image'
+      variation_image:
+        type: 'image'
+        options:
+          akeneo_attribute_code: 'variation_image'
+          sylius_image_type: 'variation_image'
+      product_option:
+        type: 'product_option'
+      price:
+        type: 'channel_pricing'
+        options:
+          akeneo_attribute_code: 'price'
