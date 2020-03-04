@@ -2,11 +2,6 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en_US
-    webgriffe_sylius_akeneo.api_client.base_url: http://demo.akeneo.com/
-    webgriffe_sylius_akeneo.api_client.username: admin
-    webgriffe_sylius_akeneo.api_client.password: admin
-    webgriffe_sylius_akeneo.api_client.client_id: 1_demo_client_id
-    webgriffe_sylius_akeneo.api_client.secret: demo_secret
 
 services:
 

@@ -1,4 +1,11 @@
 webgriffe_sylius_akeneo:
+  api_client:
+    base_url: 'http://demo.akeneo.com/'
+    username: 'admin'
+    password: 'admin'
+    client_id: '1_demo_client_id'
+    secret: 'demo_secret'
+
   value_handlers:
     product:
       name:

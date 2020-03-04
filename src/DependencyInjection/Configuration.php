@@ -30,6 +30,16 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
 
+                ->arrayNode('api_client')
+                    ->children()
+                        ->scalarNode('base_url')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('username')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('password')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('client_id')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('secret')->isRequired()->cannotBeEmpty()->end()
+                    ->end()
+                ->end()
+
                 ->arrayNode('value_handlers')
                     ->children()
                         ->arrayNode('product')
