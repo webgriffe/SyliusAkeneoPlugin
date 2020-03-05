@@ -73,9 +73,8 @@ final class ImageValueHandler implements ValueHandlerInterface
         $imageFile = $this->apiClient->downloadFile($mediaCode);
 
         $product = $subject->getProduct();
-        /** @var ProductInterface $product */
         Assert::isInstanceOf($product, ProductInterface::class);
-
+        /** @var ProductInterface $product */
         $productImage = $this->getExistentProductVariantImage($subject, $product);
         if (!$productImage) {
             $productImage = $this->productImageFactory->createNew();
@@ -95,8 +94,8 @@ final class ImageValueHandler implements ValueHandlerInterface
         $existentProductImages = $this->productImageRepository->findBy(
             ['owner' => $product, 'type' => $this->syliusImageType]
         );
-        /** @var ProductImageInterface[] $existentProductImages */
         Assert::allIsInstanceOf($existentProductImages, ProductImageInterface::class);
+        /** @var ProductImageInterface $existentProductImage */
         foreach ($existentProductImages as $existentProductImage) {
             if ($existentProductImage->hasProductVariant($subject)) {
                 return $existentProductImage;

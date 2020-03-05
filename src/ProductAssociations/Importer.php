@@ -91,7 +91,7 @@ final class Importer implements ImporterInterface
                 $productModelsToAssociateIdentifiers
             );
             if ($productAssociationType === null) {
-                if (empty($productAssociationIdentifiers)) {
+                if (count($productAssociationIdentifiers) === 0) {
                     continue;
                 }
 

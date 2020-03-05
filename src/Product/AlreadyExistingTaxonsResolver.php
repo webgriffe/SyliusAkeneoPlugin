@@ -24,7 +24,7 @@ final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
     public function resolve(array $akeneoProduct): array
     {
         $categories = $akeneoProduct['categories'] ?? [];
-        if (empty($categories)) {
+        if (count($categories) === 0) {
             return [];
         }
         $taxons = [];

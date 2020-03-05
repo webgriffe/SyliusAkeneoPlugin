@@ -14,8 +14,12 @@ final class PriorityValueHandlersResolver implements ValueHandlersResolverInterf
         $this->valueHandlers[] = ['handler' => $valueHandler, 'priority' => $priority];
         usort(
             $this->valueHandlers,
-            function (array $a, array $b) {
-                return $a['priority'] > $b['priority'];
+            static function (array $a, array $b): int {
+                if ($a['priority'] === $b['priority']) {
+                    return 0;
+                }
+
+                return $a['priority'] > $b['priority'] ? 1 : -1;
             }
         );
     }

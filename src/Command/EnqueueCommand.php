@@ -97,7 +97,7 @@ final class EnqueueCommand extends Command
         $runDate = $this->dateTimeBuilder->build();
         foreach ($this->importerRegistry->all() as $importer) {
             $identifiers = $importer->getIdentifiersModifiedSince($sinceDate);
-            if (empty($identifiers)) {
+            if (count($identifiers) === 0) {
                 $output->writeln(
                     sprintf(
                         'There are no <info>%s</info> entities modified since <info>%s</info>',
@@ -112,9 +112,9 @@ final class EnqueueCommand extends Command
                 if ($this->isEntityAlreadyQueuedToImport($importer->getAkeneoEntity(), $identifier)) {
                     continue;
                 }
-                /** @var QueueItemInterface $queueItem */
                 $queueItem = $this->queueItemFactory->createNew();
                 Assert::isInstanceOf($queueItem, QueueItemInterface::class);
+                /** @var QueueItemInterface $queueItem */
                 $queueItem->setAkeneoEntity($importer->getAkeneoEntity());
                 $queueItem->setAkeneoIdentifier($identifier);
                 $queueItem->setCreatedAt(new \DateTime());

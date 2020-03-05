@@ -70,10 +70,10 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             );
         }
 
-        /** @var ProductInterface $product */
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
         foreach ($value as $item) {
+            /** @var ProductInterface $product */
             $localeCode = $item['locale'];
             $valueToSlugify = $item['data'];
             Assert::string($valueToSlugify);

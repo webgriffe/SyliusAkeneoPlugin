@@ -128,9 +128,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
         foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
             $optionValueTranslation = $optionValue->getTranslation($localeCode);
-            if (!$optionValueTranslation instanceof ProductOptionValueTranslationInterface ||
-                $optionValueTranslation->getLocale() !== $localeCode
-            ) {
+            if ($optionValueTranslation->getLocale() !== $localeCode) {
                 /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
                 $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
                 $optionValueTranslation->setLocale($localeCode);

@@ -21,6 +21,6 @@ final class AllChannelsResolver implements ChannelsResolverInterface
      */
     public function resolve(array $akeneoProduct): array
     {
-        return (array) $this->channelRepository->findBy(['enabled' => true]);
+        return $this->channelRepository->findBy(['enabled' => true]);
     }
 }

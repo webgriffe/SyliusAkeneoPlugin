@@ -112,7 +112,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension
 
             $arguments = array_merge(
                 array_map(
-                    function (string $argument) {
+                    static function (string $argument): Reference {
                         return new Reference($argument);
                     },
                     self::$valueHandlersTypesDefinitions[$type]['arguments']

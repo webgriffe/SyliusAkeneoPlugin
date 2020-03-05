@@ -158,8 +158,6 @@ final class Importer implements ImporterInterface
             if (!$product) {
                 $product = $this->createNewProductFromAkneoProduct($productVariantResponse);
             }
-            Assert::isInstanceOf($product, ProductInterface::class);
-            /** @var ProductInterface $product */
 
             return $product;
         }

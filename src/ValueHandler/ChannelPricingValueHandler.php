@@ -84,7 +84,6 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                     $channelPricing = $this->channelPricingFactory->createNew();
                     $channelPricing->setChannelCode($channel->getCode());
                 }
-                Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
                 $channelPricing->setPrice((int) round($price * 100));
                 if ($isNewChannelPricing) {
                     $subject->addChannelPricing($channelPricing);

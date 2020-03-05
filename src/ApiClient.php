@@ -55,7 +55,7 @@ final class ApiClient implements ApiClientInterface
      */
     public function findProductModel(string $code): ?array
     {
-        if (!$this->token) {
+        if (!(bool) $this->token) {
             $this->login();
         }
 
@@ -68,7 +68,7 @@ final class ApiClient implements ApiClientInterface
      */
     public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array
     {
-        if (!$this->token) {
+        if (!(bool) $this->token) {
             $this->login();
         }
 
@@ -83,7 +83,7 @@ final class ApiClient implements ApiClientInterface
      */
     public function findAttribute(string $code): ?array
     {
-        if (!$this->token) {
+        if (!(bool) $this->token) {
             $this->login();
         }
 
@@ -102,7 +102,6 @@ final class ApiClient implements ApiClientInterface
         $response = $this->httpClient->send($request);
         $statusClass = (int) ($response->getStatusCode() / 100);
         $bodyContents = $response->getBody()->getContents();
-        Assert::string($bodyContents);
         if ($statusClass !== 2) {
             $responseResult = json_decode($bodyContents, true);
 
@@ -121,7 +120,7 @@ final class ApiClient implements ApiClientInterface
      */
     public function findProduct(string $code): ?array
     {
-        if (!$this->token) {
+        if (!(bool) $this->token) {
             $this->login();
         }
 
@@ -134,7 +133,7 @@ final class ApiClient implements ApiClientInterface
      */
     public function findAttributeOption(string $attributeCode, string $optionCode): ?array
     {
-        if (!$this->token) {
+        if (!(bool) $this->token) {
             $this->login();
         }
 
@@ -147,7 +146,7 @@ final class ApiClient implements ApiClientInterface
      */
     public function findProductsModifiedSince(\DateTime $date): array
     {
-        if (!$this->token) {
+        if (!(bool) $this->token) {
             $this->login();
         }
 

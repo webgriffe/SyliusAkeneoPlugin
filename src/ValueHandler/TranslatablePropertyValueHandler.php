@@ -115,7 +115,6 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         $product = $variant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
         $productTranslation = $this->getOrCreateNewProductTranslation($product, $variantTranslation->getLocale());
-        Assert::isInstanceOf($productTranslation, ProductTranslationInterface::class);
         if ($this->propertyAccessor->isWritable($productTranslation, $this->translationPropertyPath)) {
             $this->propertyAccessor->setValue(
                 $productTranslation,
