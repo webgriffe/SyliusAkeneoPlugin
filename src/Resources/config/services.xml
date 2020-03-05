@@ -45,6 +45,9 @@
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface" alias="webgriffe_sylius_akeneo.importer_registry" />
 
+        <service id="webgriffe_sylius_akeneo.slugify" class="Cocur\Slugify\Slugify" />
+        <service id="Cocur\Slugify\SlugifyInterface" alias="webgriffe_sylius_akeneo.slugify" />
+
         <!-- Product Importer -->
         <service id="webgriffe_sylius_akeneo.product.taxons_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\AlreadyExistingTaxonsResolver">
             <argument type="service" id="sylius.repository.taxon" />

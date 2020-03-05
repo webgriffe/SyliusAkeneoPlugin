@@ -46,7 +46,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension
         'immutable_slug' => [
             'class' => ImmutableSlugValueHandler::class,
             'arguments' => [
-                'sonata.core.slugify.cocur',
+                'webgriffe_sylius_akeneo.slugify',
                 'sylius.factory.product_translation',
                 'sylius.translation_locale_provider.admin',
                 'sylius.repository.product_translation',
