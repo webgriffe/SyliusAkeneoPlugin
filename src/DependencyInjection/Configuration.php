@@ -44,6 +44,7 @@ final class Configuration implements ConfigurationInterface
                     ->children()
                         ->arrayNode('product')
                             ->arrayPrototype()
+                                ->addDefaultsIfNotSet()
                                 ->children()
                                     ->enumNode('type')
                                         ->values(
@@ -54,6 +55,9 @@ final class Configuration implements ConfigurationInterface
                                     ->arrayNode('options')
                                         ->variablePrototype()
                                         ->end()
+                                    ->end()
+                                    ->integerNode('priority')
+                                        ->defaultValue(0)
                                     ->end()
                                 ->end()
                             ->end()

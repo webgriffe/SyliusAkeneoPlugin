@@ -86,26 +86,29 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension
 
         $loader->load('services.xml');
 
-        $productValueHandlersDefinitions = $this->createValueHandlersDefinitions($config['value_handlers']['product']);
+        [$productValueHandlersDefinitions, $valueHandlersPriorities] = $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product']);
         $container->addDefinitions($productValueHandlersDefinitions);
 
         if ($container->hasDefinition('webgriffe_sylius_akeneo.product.value_handlers_resolver')) {
             $resolverDefinition = $container->getDefinition('webgriffe_sylius_akeneo.product.value_handlers_resolver');
+            /** @var string $reference */
             foreach (array_keys($productValueHandlersDefinitions) as $reference) {
-                $resolverDefinition->addMethodCall('add', [new Reference($reference)]);
+                $resolverDefinition->addMethodCall(
+                    'add',
+                    [new Reference($reference), $valueHandlersPriorities[$reference]]
+                );
             }
         }
     }
 
-    /**
-     * @return Definition[]
-     */
-    private function createValueHandlersDefinitions(array $valueHandlers): array
+    private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers): array
     {
         $definitions = [];
-        foreach ($valueHandlers as $name => $valueHandler) {
+        $priorities = [];
+        foreach ($valueHandlers as $key => $valueHandler) {
             $type = $valueHandler['type'];
             $options = $valueHandler['options'] ?? [];
+            $priority = $valueHandler['priority'];
 
             $arguments = array_merge(
                 array_map(
@@ -116,11 +119,12 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension
                 ),
                 array_values($options)
             );
-            $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $name);
+            $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $key);
             $definitions[$id] = new Definition(self::$valueHandlersTypesDefinitions[$type]['class'], $arguments);
+            $priorities[$id] = $priority;
         }
 
-        return $definitions;
+        return [$definitions, $priorities];
     }
 
     private function registerApiClientParameters(array $apiClient, ContainerBuilder $container): void
