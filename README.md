@@ -40,7 +40,7 @@ First of all you must configure your Akeneo API connection parameters. Create a 
 
 ```yaml
 webgriffe_sylius_akeneo:
-	api_client:
+  api_client:
     # These values are from the official Akeneo PIM demo, replace with yours.
     base_url: 'http://demo.akeneo.com/'
     username: 'admin'
@@ -55,45 +55,45 @@ Then you'll need to configure the product importer **value handlers**. In the sa
 
 ```yaml
 webgriffe_sylius_akeneo:
-	# ...
-	
-	value_handlers:
-		product:
-			name:
+  # ...
+
+  value_handlers:
+    product:
+      name:
         type: 'translatable_property'
-        	# The 'translatable_property' value handler will take values from 
-        	# the provided Akeneo attribute and will set them to the provided 
-        	# Sylius property path relative to both Product and Product 
-        	# Variant tranlsations.
+          # The 'translatable_property' value handler will take values from
+          # the provided Akeneo attribute and will set them to the provided
+          # Sylius property path relative to both Product and Product
+          # Variant tranlsations.
         options:
           akeneo_attribute_code: 'name'
-          	# The Akeneo attribute code where product names are stored.
+            # The Akeneo attribute code where product names are stored.
           sylius_translation_property_path: 'name'
-          	# The Sylius product (and product variant) trslations property
-          	# path of property where to store the product names. It should
-          	# always be set to 'name' unless you have customized Sylius.
+            # The Sylius product (and product variant) trslations property
+            # path of property where to store the product names. It should
+            # always be set to 'name' unless you have customized Sylius.
       slug:
         type: 'immutable_slug'
-        	# The 'immutable_slug' value handler will take values from the 
-        	# provided Akeneo attribute and set the sluggified version of 
-        	# that value on the Sylius slug property.
+          # The 'immutable_slug' value handler will take values from the
+          # provided Akeneo attribute and set the sluggified version of
+          # that value on the Sylius slug property.
         options:
           akeneo_attribute_code: 'name'
-          	# The Akeneo attribute to sluggify and set to the Sylius slug
-          	# property.
+            # The Akeneo attribute to sluggify and set to the Sylius slug
+            # property.
       product_option:
         type: 'product_option'
-        	# The 'product_option' value handler sets Sylius product options
-        	# values for Product Variants which are part of configurable
-        	# products.
+          # The 'product_option' value handler sets Sylius product options
+          # values for Product Variants which are part of configurable
+          # products.
       price:
         type: 'channel_pricing'
-        	# The 'channel_pricing' value handler will take values from the
-        	# provided Akeneo attribute and will set them to the Sylius
-        	# product channel pricing.
+          # The 'channel_pricing' value handler will take values from the
+          # provided Akeneo attribute and will set them to the Sylius
+          # product channel pricing.
         options:
           akeneo_attribute_code: 'price'
-          	# The Akeneo attribute code where prices are stored.
+            # The Akeneo attribute code where prices are stored.
 ```
 
 On a base Sylius installation without any customization these are the minimum required value handlers that you'll need to configure. In a real-world project you'll probably need to configure more value handlers. Every value handler must have a `type` and some `options` depending on the type itself. You can also specify a `priority` that will be used when adding that handler in the **value handlers resolver**. We'll cover **value handlers**  and its resolver later in this document.
