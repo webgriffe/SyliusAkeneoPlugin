@@ -10,28 +10,28 @@ use GuzzleHttp\Psr7\Request;
 use Symfony\Component\HttpFoundation\File\File;
 use Webmozart\Assert\Assert;
 
-final class ApiClient implements ApiClientInterface
+class ApiClient implements ApiClientInterface
 {
     /** @var string */
-    private $token;
+    protected $token;
 
     /** @var ClientInterface */
-    private $httpClient;
+    protected $httpClient;
 
     /** @var string */
-    private $baseUrl;
+    protected $baseUrl;
 
     /** @var string */
-    private $username;
+    protected $username;
 
     /** @var string */
-    private $password;
+    protected $password;
 
     /** @var string */
-    private $clientId;
+    protected $clientId;
 
     /** @var string */
-    private $secret;
+    protected $secret;
 
     public function __construct(
         ClientInterface $httpClient,
@@ -169,7 +169,7 @@ final class ApiClient implements ApiClientInterface
         return $products;
     }
 
-    private function login(): void
+    protected function login(): void
     {
         $body = json_encode(
             [
@@ -206,7 +206,7 @@ final class ApiClient implements ApiClientInterface
      * @throws GuzzleException
      * @throws \HttpException
      */
-    private function doRequestByEndpoint(string $endpoint)
+    protected function doRequestByEndpoint(string $endpoint)
     {
         return $this->doRequest($this->baseUrl . $endpoint);
     }
@@ -217,7 +217,7 @@ final class ApiClient implements ApiClientInterface
      * @throws GuzzleException
      * @throws \HttpException
      */
-    private function doRequest(string $uri)
+    protected function doRequest(string $uri)
     {
         $headers = [
             'Content-Type' => 'application/json',
@@ -238,7 +238,7 @@ final class ApiClient implements ApiClientInterface
      * @throws \HttpException
      * @throws GuzzleException
      */
-    private function getResourceOrNull(string $endpoint): ?array
+    protected function getResourceOrNull(string $endpoint): ?array
     {
         try {
             $response = $this->doRequestByEndpoint($endpoint);

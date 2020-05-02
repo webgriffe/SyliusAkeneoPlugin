@@ -7,9 +7,9 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 
-final class ApiClientMock implements ApiClientInterface
+class ApiClientMock implements ApiClientInterface
 {
-    private $productsUpdatedAt = [];
+    protected $productsUpdatedAt = [];
 
     public function findProductModel(string $code): ?array
     {
@@ -48,7 +48,7 @@ final class ApiClientMock implements ApiClientInterface
     /**
      * @return mixed|null
      */
-    private function jsonDecodeOrNull(string $filename)
+    protected function jsonDecodeOrNull(string $filename)
     {
         if (file_exists($filename)) {
             return json_decode(file_get_contents($filename), true);
