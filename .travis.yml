@@ -72,3 +72,6 @@ script:
 
 after_failure:
     - vendor/lakion/mink-debug-extension/travis/tools/upload-textfiles "${SYLIUS_BUILD_DIR}/*.log"
+
+after_success:
+    - docker run --rm -v $(pwd):/app nyholm/roave-bc-check roave-backwards-compatibility-check:assert-backwards-compatible --from=$(git describe --tags $(git rev-list --tags --max-count=1))
