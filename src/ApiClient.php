@@ -53,12 +53,40 @@ final class ApiClient implements ApiClientInterface
      * @throws GuzzleException
      * @throws \HttpException
      */
-    public function findProductModel(string $code): ?array
+    public function authenticatedRequest(string $uri, string $method, array $headers): array
     {
+        if (strpos($uri, '/') === 0) {
+            $uri = $this->baseUrl . $uri;
+        }
+
         if (!(bool) $this->token) {
             $this->login();
         }
 
+        $headers = array_merge(
+            $headers,
+            [
+                'Content-Type' => 'application/json',
+                'Authorization' => sprintf('Bearer %s', $this->token),
+            ]
+        );
+        $request = new Request($method, $uri, $headers);
+        $response = $this->httpClient->send($request);
+        $statusClass = (int) ($response->getStatusCode() / 100);
+        $responseResult = json_decode($response->getBody()->getContents(), true);
+        if ($statusClass !== 2) {
+            throw new \HttpException($responseResult['message'], $responseResult['code']);
+        }
+
+        return $responseResult;
+    }
+
+    /**
+     * @throws GuzzleException
+     * @throws \HttpException
+     */
+    public function findProductModel(string $code): ?array
+    {
         return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', $code));
     }
 
@@ -68,10 +96,6 @@ final class ApiClient implements ApiClientInterface
      */
     public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array
     {
-        if (!(bool) $this->token) {
-            $this->login();
-        }
-
         return $this->getResourceOrNull(
             sprintf('/api/rest/v1/families/%s/variants/%s', $familyCode, $familyVariantCode)
         );
@@ -83,10 +107,6 @@ final class ApiClient implements ApiClientInterface
      */
     public function findAttribute(string $code): ?array
     {
-        if (!(bool) $this->token) {
-            $this->login();
-        }
-
         return $this->getResourceOrNull(sprintf('/api/rest/v1/attributes/%s', $code));
     }
 
@@ -120,10 +140,6 @@ final class ApiClient implements ApiClientInterface
      */
     public function findProduct(string $code): ?array
     {
-        if (!(bool) $this->token) {
-            $this->login();
-        }
-
         return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', $code));
     }
 
@@ -133,10 +149,6 @@ final class ApiClient implements ApiClientInterface
      */
     public function findAttributeOption(string $attributeCode, string $optionCode): ?array
     {
-        if (!(bool) $this->token) {
-            $this->login();
-        }
-
         return $this->getResourceOrNull(sprintf('/api/rest/v1/attributes/%s/options/%s', $attributeCode, $optionCode));
     }
 
@@ -146,21 +158,17 @@ final class ApiClient implements ApiClientInterface
      */
     public function findProductsModifiedSince(\DateTime $date): array
     {
-        if (!(bool) $this->token) {
-            $this->login();
-        }
-
         $endpoint = sprintf(
             '/api/rest/v1/products?search={"updated":[{"operator":">","value":"%s"}]}&limit=20&page=1',
             $date->format('Y-m-d H:i:s')
         );
-        $responseResult = $this->doRequestByEndpoint($endpoint);
+        $responseResult = $this->authenticatedRequest($endpoint, 'GET', []);
         $products = $responseResult['_embedded']['items'];
 
         while ($nextPageUrl = ($responseResult['_links']['next']['href'] ?? null)) {
             Assert::string($nextPageUrl);
             /** @var string $nextPageUrl */
-            $responseResult = $this->doRequest($nextPageUrl);
+            $responseResult = $this->authenticatedRequest($nextPageUrl, 'GET', []);
 
             /** @noinspection SlowArrayOperationsInLoopInspection */
             $products = array_merge($products, $responseResult['_embedded']['items']);
@@ -201,47 +209,13 @@ final class ApiClient implements ApiClientInterface
     }
 
     /**
-     * @return mixed
-     *
-     * @throws GuzzleException
-     * @throws \HttpException
-     */
-    private function doRequestByEndpoint(string $endpoint)
-    {
-        return $this->doRequest($this->baseUrl . $endpoint);
-    }
-
-    /**
-     * @return mixed
-     *
-     * @throws GuzzleException
-     * @throws \HttpException
-     */
-    private function doRequest(string $uri)
-    {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $this->token),
-        ];
-        $request = new Request('GET', $uri, $headers);
-        $response = $this->httpClient->send($request);
-        $statusClass = (int) ($response->getStatusCode() / 100);
-        $responseResult = json_decode($response->getBody()->getContents(), true);
-        if ($statusClass !== 2) {
-            throw new \HttpException($responseResult['message'], $responseResult['code']);
-        }
-
-        return $responseResult;
-    }
-
-    /**
      * @throws \HttpException
      * @throws GuzzleException
      */
     private function getResourceOrNull(string $endpoint): ?array
     {
         try {
-            $response = $this->doRequestByEndpoint($endpoint);
+            $response = $this->authenticatedRequest($endpoint, 'GET', []);
         } catch (\HttpException $exception) {
             if ($exception->getCode() !== 404) {
                 throw $exception;

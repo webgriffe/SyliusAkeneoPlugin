@@ -11,6 +11,11 @@ final class ApiClientMock implements ApiClientInterface
 {
     private $productsUpdatedAt = [];
 
+    public function authenticatedRequest(string $uri, string $method, array $headers): array
+    {
+        throw new \RuntimeException('Not implemented.');
+    }
+
     public function findProductModel(string $code): ?array
     {
         return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/ProductModel/' . $code . '.json');
