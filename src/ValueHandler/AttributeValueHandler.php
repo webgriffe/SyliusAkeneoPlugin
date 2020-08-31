@@ -135,7 +135,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         Assert::isInstanceOf($product, ProductInterface::class);
         $options = $product->getOptions();
 
-        $productOptions = $options->filter(function (ProductOptionInterface $option) use ($attributeCode): bool  {
+        $productOptions = $options->filter(function (ProductOptionInterface $option) use ($attributeCode): bool {
             return $option->getCode() === $attributeCode;
         });
 
