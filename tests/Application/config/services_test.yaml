@@ -3,6 +3,10 @@ imports:
     - { resource: "../../../vendor/sylius/sylius/src/Sylius/Behat/Resources/config/services.xml" }
 
 services:
+    # workaround needed for strange "test.client.history" problem
+    # see https://github.com/FriendsOfBehat/SymfonyExtension/issues/88
+    Symfony\Component\BrowserKit\AbstractBrowser: '@test.client'
+
     webgriffe_sylius_akeneo.api_client:
         class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock'
     webgriffe_sylius_akeneo.date_time_builder:
