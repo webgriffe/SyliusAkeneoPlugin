@@ -11,3 +11,6 @@ services:
         class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock'
     webgriffe_sylius_akeneo.date_time_builder:
         class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\DateTimeBuilder'
+
+    Sylius\Component\Core\Generator\ImagePathGeneratorInterface:
+        class: Sylius\Component\Core\Generator\UploadedImagePathGenerator
