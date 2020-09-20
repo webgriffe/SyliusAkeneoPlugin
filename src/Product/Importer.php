@@ -60,6 +60,9 @@ final class Importer implements ImporterInterface
     /** @var FactoryInterface */
     private $productTaxonFactory;
 
+    /** @var StatusResolverInterface */
+    private $variantStatusResolver;
+
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
@@ -72,7 +75,8 @@ final class Importer implements ImporterInterface
         EventDispatcherInterface $eventDispatcher,
         ChannelsResolverInterface $channelsResolver,
         StatusResolverInterface $statusResolver,
-        FactoryInterface $productTaxonFactory
+        FactoryInterface $productTaxonFactory,
+        StatusResolverInterface $variantStatusResolver
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
@@ -86,6 +90,7 @@ final class Importer implements ImporterInterface
         $this->channelsResolver = $channelsResolver;
         $this->statusResolver = $statusResolver;
         $this->productTaxonFactory = $productTaxonFactory;
+        $this->variantStatusResolver = $variantStatusResolver;
     }
 
     /**
@@ -119,6 +124,7 @@ final class Importer implements ImporterInterface
         $productVariant->setProduct($product);
 
         $product->setEnabled($this->statusResolver->resolve($productVariantResponse));
+        $productVariant->setEnabled($this->variantStatusResolver->resolve($productVariantResponse));
 
         foreach ($productVariantResponse['values'] as $attribute => $value) {
             $valueHandlers = $this->valueHandlersResolver->resolve($productVariant, $attribute, $value);
