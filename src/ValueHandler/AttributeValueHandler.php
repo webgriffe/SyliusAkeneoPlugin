@@ -107,7 +107,9 @@ final class AttributeValueHandler implements ValueHandlerInterface
         string $localeCode,
         ProductInterface $product
     ): void {
-        $attributeValue = $product->getAttributeByCodeAndLocale($attribute->getCode(), $localeCode);
+        $attributeCode = $attribute->getCode();
+        Assert::notNull($attributeCode);
+        $attributeValue = $product->getAttributeByCodeAndLocale($attributeCode, $localeCode);
 
         if (!$attributeValue) {
             /** @var ProductAttributeValueInterface $attributeValue */
