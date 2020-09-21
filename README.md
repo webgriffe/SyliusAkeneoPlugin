@@ -279,7 +279,7 @@ To be able to setup a plugin's database, remember to configure you database cred
 - Behat (non-JS scenarios)
 
   ```bash
-  vendor/bin/behat --strict --tags="~@javascript"
+  vendor/bin/behat --strict --tags="~@javascript && ~@todo && ~@cli"
   ```
 
 - Behat (JS scenarios)
