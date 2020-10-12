@@ -90,7 +90,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'class' => FileAttributeValueHandler::class,
             'arguments' => [
                 'webgriffe_sylius_akeneo.api_client',
-                'filesystem'
+                'filesystem',
             ],
         ],
     ];

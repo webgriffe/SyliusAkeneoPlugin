@@ -8,6 +8,8 @@ webgriffe_sylius_akeneo:
 
   value_handlers:
     product:
+      attribute:
+        type: 'generic_attribute'
       name:
         type: 'translatable_property'
         options:

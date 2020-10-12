@@ -31,3 +31,4 @@ Sylius\Component\Core\Model\ProductVariant:
   product-variant-10627329:
     code: "10627329"
     product: "@product-10627329"
+

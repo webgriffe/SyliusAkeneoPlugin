@@ -25,9 +25,14 @@
         ],
         "material": [
             {
-                "locale": null,
+                "locale": "it_IT",
                 "scope": null,
-                "data": "wool"
+                "data": "cotone"
+            },
+            {
+                "locale": "en_US",
+                "scope": null,
+                "data": "cotton"
             }
         ],
         "collection": [

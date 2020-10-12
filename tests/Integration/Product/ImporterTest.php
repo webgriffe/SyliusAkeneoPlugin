@@ -482,4 +482,28 @@ final class ImporterTest extends KernelTestCase
         $productVariant = $this->productVariantRepository->findOneByCode('braided-hat-s');
         $this->assertFalse($productVariant->isEnabled());
     }
+
+    /**
+     * @test
+     */
+    public function it_updates_custom_attributes()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertEquals('cotton', $product->getAttributeByCodeAndLocale('material', 'en_US')->getValue());
+        $this->assertEquals('cotone', $product->getAttributeByCodeAndLocale('material', 'it_IT')->getValue());
+    }
 }
