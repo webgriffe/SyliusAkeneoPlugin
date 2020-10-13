@@ -419,7 +419,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_disabled_product_if_it_is_disabled_on_akeneo()
+    public function it_imports_product_as_disabled_if_it_is_disabled_on_akeneo_and_has_not_a_parent_model()
     {
         $this->fixtureLoader->load(
             [
@@ -440,7 +440,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_does_not_disable_product_when_importing_variant_of_a_configurable_product()
+    public function it_imports_product_as_enabled_even_if_is_disabled_on_akeneo_but_has_a_parent_model()
     {
         $this->fixtureLoader->load(
             [
@@ -463,7 +463,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_disabled_variant_of_a_configurable_product_if_it_is_disabled_on_akeneo()
+    public function it_imports_variant_of_a_configurable_product_as_disabled_if_it_is_disabled_on_akeneo()
     {
         $this->fixtureLoader->load(
             [
