@@ -76,7 +76,7 @@ final class Importer implements ImporterInterface
         ChannelsResolverInterface $channelsResolver,
         StatusResolverInterface $statusResolver,
         FactoryInterface $productTaxonFactory,
-        StatusResolverInterface $variantStatusResolver
+        StatusResolverInterface $variantStatusResolver = null
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
@@ -90,6 +90,16 @@ final class Importer implements ImporterInterface
         $this->channelsResolver = $channelsResolver;
         $this->statusResolver = $statusResolver;
         $this->productTaxonFactory = $productTaxonFactory;
+        if (null === $variantStatusResolver) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.2',
+                'Not passing a variant status resolver to "%s" is deprecated and will be removed in %s.',
+                __CLASS__,
+                '2.0'
+            );
+            $variantStatusResolver = new VariantStatusResolver();
+        }
         $this->variantStatusResolver = $variantStatusResolver;
     }
 
