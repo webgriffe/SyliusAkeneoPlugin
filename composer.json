@@ -43,6 +43,9 @@
         "theofidry/alice-data-fixtures": "^1.1",
         "mikey179/vfsstream": "^1.6"
     },
+    "conflict": {
+        "symplify/package-builder": "^8.3.25"
+    },
     "autoload": {
         "psr-4": {
             "Webgriffe\\SyliusAkeneoPlugin\\": "src/",
