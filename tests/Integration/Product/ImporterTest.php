@@ -419,7 +419,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_disabled_product_if_it_is_disabled_on_akeneo()
+    public function it_imports_product_as_disabled_if_it_is_disabled_on_akeneo_and_has_not_a_parent_model()
     {
         $this->fixtureLoader->load(
             [
@@ -434,12 +434,13 @@ final class ImporterTest extends KernelTestCase
 
         $product = $this->productRepository->findOneByCode('16466450');
         $this->assertFalse($product->isEnabled());
+        $this->assertFalse($product->getVariants()->first()->isEnabled());
     }
 
     /**
      * @test
      */
-    public function it_does_not_disable_product_when_importing_variant_of_a_configurable_product()
+    public function it_imports_product_as_enabled_even_if_is_disabled_on_akeneo_but_has_a_parent_model()
     {
         $this->fixtureLoader->load(
             [
@@ -457,5 +458,28 @@ final class ImporterTest extends KernelTestCase
 
         $product = $this->productRepository->findOneByCode('model-braided-hat');
         $this->assertTrue($product->isEnabled());
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_variant_of_a_configurable_product_as_disabled_if_it_is_disabled_on_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-s');
+
+        $productVariant = $this->productVariantRepository->findOneByCode('braided-hat-s');
+        $this->assertFalse($productVariant->isEnabled());
     }
 }

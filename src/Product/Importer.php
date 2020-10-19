@@ -60,6 +60,9 @@ final class Importer implements ImporterInterface
     /** @var FactoryInterface */
     private $productTaxonFactory;
 
+    /** @var StatusResolverInterface */
+    private $variantStatusResolver;
+
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
@@ -72,7 +75,8 @@ final class Importer implements ImporterInterface
         EventDispatcherInterface $eventDispatcher,
         ChannelsResolverInterface $channelsResolver,
         StatusResolverInterface $statusResolver,
-        FactoryInterface $productTaxonFactory
+        FactoryInterface $productTaxonFactory,
+        StatusResolverInterface $variantStatusResolver = null
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
@@ -86,6 +90,17 @@ final class Importer implements ImporterInterface
         $this->channelsResolver = $channelsResolver;
         $this->statusResolver = $statusResolver;
         $this->productTaxonFactory = $productTaxonFactory;
+        if (null === $variantStatusResolver) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.2',
+                'Not passing a variant status resolver to "%s" is deprecated and will be removed in %s.',
+                __CLASS__,
+                '2.0'
+            );
+            $variantStatusResolver = new VariantStatusResolver();
+        }
+        $this->variantStatusResolver = $variantStatusResolver;
     }
 
     /**
@@ -119,6 +134,7 @@ final class Importer implements ImporterInterface
         $productVariant->setProduct($product);
 
         $product->setEnabled($this->statusResolver->resolve($productVariantResponse));
+        $productVariant->setEnabled($this->variantStatusResolver->resolve($productVariantResponse));
 
         foreach ($productVariantResponse['values'] as $attribute => $value) {
             $valueHandlers = $this->valueHandlersResolver->resolve($productVariant, $attribute, $value);
