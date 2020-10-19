@@ -65,6 +65,18 @@
                 "data": "Braided hat battleship grey"
             }
         ],
+        "attachment": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "1\/3\/9\/e\/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg",
+                "_links": {
+                    "download": {
+                        "href": "https:\/\/demo.akeneo.com\/api\/rest\/v1\/media-files\/1\/3\/9\/e\/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg\/download"
+                    }
+                }
+            }
+        ],
         "image": [
             {
                 "locale": null,

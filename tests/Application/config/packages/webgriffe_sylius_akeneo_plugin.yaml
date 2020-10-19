@@ -40,3 +40,10 @@ webgriffe_sylius_akeneo:
         type: 'channel_pricing'
         options:
           akeneo_attribute_code: 'price'
+      datasheet:
+          type: 'file_attribute'
+          options:
+            akeneo_attribute_code: 'attachment'
+            download_path: '%sylius_core.public_dir%/media/attachment/product'
+
+
