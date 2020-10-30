@@ -181,13 +181,13 @@ A **status resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\StatusResolverInter
 
 A **value handlers resolver** (`Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface`) which is responsible to return a list of **value handlers** (`Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface`) for each Akeneo product attribute value.
 
-The provided implementation of the value handlers resolver is the `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` which returns, for each attribute value, the list of all the value handlers supporting that attribute value sorted by a priority.
+The provided implementation of the value handlers resolver is the `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` which returns, for each attribute value, the list of all the value handlers supporting that attribute value sorted by a priority. Each value handler returned by the resolver for a given attribute is then called to handle that value.
 
 For more detail on how the Product importer works look at the code of the `Webgriffe\SyliusAkeneoPlugin\Product\Importer::import()` method.
 
 #### Value handlers
 
-By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` is configured without any value handler. By configuring the `webgriffe_sylius_akeneo.value_handlers.product` array as explained in the configuration paragraph you add value handlers to the value handlers resolver. This plugin already provides some value handler implementations but you can easily implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface`. The provided value handlers implementations are:
+By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` is configured with value handlers specified in the `webgriffe_sylius_akeneo.value_handlers.product` array as explained in the configuration paragraph. This plugin already provides some value handler implementations that are:
 
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler` (type `channel_pricing`): it sets  the value found on a given Akeneo price attribute (`options.akeneo_attribute_code`) as the Sylius product's channels price for channels which the base currency is the price currency of the Akeneo price.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler` (type `image`): it downloads  the image found on a given Akeneo image attribute (`options.akeneo_attribute_code`) and sets it as a Sylius product image with a provided type string (`options.sylius_image_type`).
@@ -195,7 +195,17 @@ By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersReso
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler` (type `product_option`): it sets the value found on a given Akeneo attribute as a Sylius product option value on the product variant.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler` (type `translatable_property`): using the [Symofony's Property Access component](https://symfony.com/doc/current/components/property_access.html), it sets the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) on a given property path (`options.sylius_translation_property_path`) of both product and product variant translations.
 
-To see an example about how to add more value handlers to the value handlers resolver see the `tests/Application/config/packages/webgriffe_sylius_akeneo_plugin.yaml` config file provided in the test application of this plugin.
+To add a custom value handler to the resolver you can implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface` and then tag it with the `webgriffe_sylius_akeneo.product.value_handler` tag:
+
+```yaml
+# config/services.yaml
+app.my_custom_value_handler:
+  class: App\MyCustomValueHandler
+  tags:
+    - { name: 'webgriffe_sylius_akeneo.product.value_handler', priority: 42 }
+```
+
+
 
 ## Product associations importer
 
@@ -251,7 +261,7 @@ To be able to setup a plugin's database, remember to configure you database cred
 - Behat (JS scenarios)
 
     1. [Install Symfony CLI command](https://symfony.com/download).
- 
+
     2. Start Headless Chrome:
 
       ```bash
