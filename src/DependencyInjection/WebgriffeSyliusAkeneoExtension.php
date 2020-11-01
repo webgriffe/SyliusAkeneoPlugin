@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\DependencyInjection;
 
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -17,8 +18,10 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler;
 
-final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension
+final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension implements CompilerPassInterface
 {
+    private const VALUE_HANDLER_TAG = 'webgriffe_sylius_akeneo.product.value_handler';
+
     /** @var array */
     public static $valueHandlersTypesDefinitions = [
         'channel_pricing' => [
@@ -97,6 +100,26 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension
                     'add',
                     [new Reference($reference), $valueHandlersPriorities[$reference]]
                 );
+            }
+        }
+    }
+
+    public function process(ContainerBuilder $container): void
+    {
+        if (!$container->has('webgriffe_sylius_akeneo.product.value_handlers_resolver')) {
+            return;
+        }
+
+        $valueHandlersResolverDefinition = $container->findDefinition(
+            'webgriffe_sylius_akeneo.product.value_handlers_resolver'
+        );
+
+        $taggedValueHandlers = $container->findTaggedServiceIds(self::VALUE_HANDLER_TAG);
+        foreach ($taggedValueHandlers as $id => $tags) {
+            // a service could have the same tag twice
+            foreach ($tags as $attributes) {
+                $priority = $attributes['priority'] ?? 0;
+                $valueHandlersResolverDefinition->addMethodCall('add', [new Reference($id), $priority]);
             }
         }
     }
