@@ -20,7 +20,7 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler;
 
 final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension implements CompilerPassInterface
 {
-    private const VALUE_HANDLER_TAG = 'webgriffe_sylius_akeneo.product.value_handler';
+    private const PRODUCT_VALUE_HANDLER_TAG = 'webgriffe_sylius_akeneo.product.value_handler';
 
     /** @var array */
     public static $valueHandlersTypesDefinitions = [
@@ -89,19 +89,9 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
         $loader->load('services.xml');
 
-        [$productValueHandlersDefinitions, $valueHandlersPriorities] = $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product']);
-        $container->addDefinitions($productValueHandlersDefinitions);
-
-        if ($container->hasDefinition('webgriffe_sylius_akeneo.product.value_handlers_resolver')) {
-            $resolverDefinition = $container->getDefinition('webgriffe_sylius_akeneo.product.value_handlers_resolver');
-            /** @var string $reference */
-            foreach (array_keys($productValueHandlersDefinitions) as $reference) {
-                $resolverDefinition->addMethodCall(
-                    'add',
-                    [new Reference($reference), $valueHandlersPriorities[$reference]]
-                );
-            }
-        }
+        $container->addDefinitions(
+            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'])
+        );
     }
 
     public function process(ContainerBuilder $container): void
@@ -114,7 +104,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'webgriffe_sylius_akeneo.product.value_handlers_resolver'
         );
 
-        $taggedValueHandlers = $container->findTaggedServiceIds(self::VALUE_HANDLER_TAG);
+        $taggedValueHandlers = $container->findTaggedServiceIds(self::PRODUCT_VALUE_HANDLER_TAG);
         foreach ($taggedValueHandlers as $id => $tags) {
             // a service could have the same tag twice
             foreach ($tags as $attributes) {
@@ -127,11 +117,10 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers): array
     {
         $definitions = [];
-        $priorities = [];
         foreach ($valueHandlers as $key => $valueHandler) {
             $type = $valueHandler['type'];
             $options = $valueHandler['options'] ?? [];
-            $priority = $valueHandler['priority'];
+            $priority = $valueHandler['priority'] ?? 0;
 
             $arguments = array_merge(
                 array_map(
@@ -143,11 +132,12 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 array_values($options)
             );
             $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $key);
-            $definitions[$id] = new Definition(self::$valueHandlersTypesDefinitions[$type]['class'], $arguments);
-            $priorities[$id] = $priority;
+            $definition = new Definition(self::$valueHandlersTypesDefinitions[$type]['class'], $arguments);
+            $definition->addTag(self::PRODUCT_VALUE_HANDLER_TAG, ['priority' => $priority]);
+            $definitions[$id] = $definition;
         }
 
-        return [$definitions, $priorities];
+        return $definitions;
     }
 
     private function registerApiClientParameters(array $apiClient, ContainerBuilder $container): void
