@@ -26,13 +26,13 @@ final class QueueContext implements Context
     }
 
     /**
-     * @Given /^there is one product to import with identifier "([^"]*)" in the Akeneo queue$/
+     * @Given /^there is one item to import with identifier "([^"]*)" for the "([^"]*)" importer in the Akeneo queue$/
      */
-    public function thereIsOneProductToImportWithIdentifierInTheAkeneoQueue(string $identifier)
+    public function thereIsOneProductToImportWithIdentifierInTheAkeneoQueue(string $identifier, string $importer)
     {
         /** @var QueueItemInterface $queueItem */
         $queueItem = $this->queueItemFactory->createNew();
-        $queueItem->setAkeneoEntity('Product');
+        $queueItem->setAkeneoEntity($importer);
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);

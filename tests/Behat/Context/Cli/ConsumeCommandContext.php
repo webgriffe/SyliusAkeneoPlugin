@@ -27,11 +27,9 @@ final class ConsumeCommandContext implements Context
     }
 
     /**
-     * @todo replace "I import products from queue" with generic "I run the Consume command"
-     * @When /^I import products from queue$/
-     * @When /^I run the Consume command$/
+     * @When /^I import all items in queue$/
      */
-    public function iImportProductsFromQueue()
+    public function iImportAllItemsInQueue()
     {
         $application = new Application($this->kernel);
         $application->add($this->consumeCommand);

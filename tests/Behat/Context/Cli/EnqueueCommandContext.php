@@ -35,7 +35,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When /^I run enqueue command with since date "([^"]+)"$/
+     * @When /^I enqueue items for all importers modified since date "([^"]+)"$/
      */
     public function iRunEnqueueCommandWithSinceDate($date)
     {
@@ -49,7 +49,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When I run enqueue command with no since date
+     * @When I enqueue items for all importers with no since date
      */
     public function iRunEnqueueCommandWithNoSinceDate()
     {
@@ -63,33 +63,74 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @Then /^the command should have run successfully$/
+     * @Then /^I should be notified that a since date is required$/
      */
-    public function theCommandShouldHaveRunSuccessfully()
-    {
-        if ($this->sharedStorage->has('command_exception')) {
-            throw $this->sharedStorage->get('command_exception');
-        }
-    }
-
-    /**
-     * @Then /^the command should have thrown exception with message containing \'([^\']*)\'$/
-     */
-    public function theCommandShouldHaveThrownExceptionWithMessageContaining($message)
+    public function theCommandShouldHaveThrownExceptionWithMessageContaining()
     {
         /** @var \Throwable $throwable */
         $throwable = $this->sharedStorage->get('command_exception');
         Assert::isInstanceOf($throwable, \Throwable::class);
-        Assert::contains($throwable->getMessage(), $message);
+        Assert::contains($throwable->getMessage(), 'One of "--since" and "--since-file" paramaters must be specified');
     }
 
     /**
-     * @When /^I run enqueue command with since file "([^"]+)"$/
+     * @When /^I enqueue items for all importers with invalid since date$/
      */
-    public function iRunEnqueueCommandWithSinceFile($filename)
+    public function iEnqueueItemsForAllImportersWithInvalidSinceDate()
     {
         $commandTester = $this->getCommandTester();
-        $filepath = vfsStream::url('root/' . $filename);
+
+        try {
+            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => 'bad date']);
+        } catch (\Throwable $t) {
+            $this->sharedStorage->set('command_exception', $t);
+        }
+    }
+
+    /**
+     * @Then /^I should be notified that the since date must be a valid date$/
+     */
+    public function iShouldBeNotifiedThatTheSinceDateMustBeAValidDate()
+    {
+        /** @var \Throwable $throwable */
+        $throwable = $this->sharedStorage->get('command_exception');
+        Assert::isInstanceOf($throwable, \Throwable::class);
+        Assert::contains($throwable->getMessage(), 'The "since" argument must be a valid date');
+    }
+
+    /**
+     * @When /^I enqueue items with since date specified from a not existent file$/
+     */
+    public function iEnqueueItemsWithSinceDateSpecifiedFromANotExistentFile()
+    {
+        $commandTester = $this->getCommandTester();
+        $filepath = vfsStream::url('root/not-existent-file.txt');
+
+        try {
+            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since-file' => $filepath]);
+        } catch (\Throwable $t) {
+            $this->sharedStorage->set('command_exception', $t);
+        }
+    }
+
+    /**
+     * @Then /^I should be notified that the since date file does not exists$/
+     */
+    public function iShouldBeNotifiedThatTheSinceDateFileDoesNotExists()
+    {
+        /** @var \Throwable $throwable */
+        $throwable = $this->sharedStorage->get('command_exception');
+        Assert::isInstanceOf($throwable, \Throwable::class);
+        Assert::contains($throwable->getMessage(), 'does not exists');
+    }
+
+    /**
+     * @When /^I enqueue items for all importers modified since date specified from file "([^"]+)"$/
+     */
+    public function iEnqueueItemsWithSinceDateSpecifiedFromFile(string $file)
+    {
+        $commandTester = $this->getCommandTester();
+        $filepath = vfsStream::url('root/' . $file);
 
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since-file' => $filepath]);
