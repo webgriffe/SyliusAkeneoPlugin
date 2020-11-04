@@ -23,12 +23,13 @@ final class Configuration implements ConfigurationInterface
             ->children()
 
                 ->arrayNode('api_client')
+                    ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('base_url')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('username')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('password')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('client_id')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('secret')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('base_url')->isRequired()->cannotBeEmpty()->defaultNull()->end()
+                        ->scalarNode('username')->isRequired()->cannotBeEmpty()->defaultNull()->end()
+                        ->scalarNode('password')->isRequired()->cannotBeEmpty()->defaultNull()->end()
+                        ->scalarNode('client_id')->isRequired()->cannotBeEmpty()->defaultNull()->end()
+                        ->scalarNode('secret')->isRequired()->cannotBeEmpty()->defaultNull()->end()
                     ->end()
                 ->end()
 

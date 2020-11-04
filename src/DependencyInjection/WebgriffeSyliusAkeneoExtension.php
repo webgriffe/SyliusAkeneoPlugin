@@ -90,7 +90,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $loader->load('services.xml');
 
         $container->addDefinitions(
-            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'])
+            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? [])
         );
     }
 

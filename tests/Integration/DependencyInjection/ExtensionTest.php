@@ -38,17 +38,27 @@ final class ExtensionTest extends AbstractExtensionTestCase
         );
     }
 
-    protected function getMinimalConfiguration(): array
+    /**
+     * @test
+     */
+    public function it_should_register_api_client_parameters_even_if_not_defined()
     {
-        return [
-            'api_client' => [
-                'base_url' => 'value',
-                'username' => 'value',
-                'password' => 'value',
-                'client_id' => 'value',
-                'secret' => 'value',
-            ],
-        ];
+        $this->load();
+
+        $this->assertContainerBuilderHasParameter('webgriffe_sylius_akeneo.api_client.base_url', null);
+        $this->assertContainerBuilderHasParameter('webgriffe_sylius_akeneo.api_client.username', null);
+        $this->assertContainerBuilderHasParameter('webgriffe_sylius_akeneo.api_client.client_id', null);
+        $this->assertContainerBuilderHasParameter('webgriffe_sylius_akeneo.api_client.secret', null);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_not_register_any_product_value_handler_when_not_defined()
+    {
+        $this->load();
+
+        self::assertEmpty($this->container->findTaggedServiceIds('webgriffe_sylius_akeneo.product.value_handler'));
     }
 
     protected function getContainerExtensions(): array
