@@ -152,6 +152,18 @@ final class EnqueueCommandContext implements Context
         $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--all' => true]);
     }
 
+    /**
+     * @When /^I enqueue all items for the "([^"]+)" importer$/
+     */
+    public function iEnqueueItemsModifiedSinceDateForTheImporter(string $importer)
+    {
+        $commandTester = $this->getCommandTester();
+
+        $commandTester->execute(
+            ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => [$importer]]
+        );
+    }
+
     private function getCommandTester(): CommandTester
     {
         $application = new Application($this->kernel);

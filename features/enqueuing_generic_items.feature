@@ -38,3 +38,10 @@ Feature: Enqueuing items
     When I enqueue all items for all importers
     Then there should be 3 items for the "Product" importer in the Akeneo queue
     And there should be 3 items for the "ProductAssociations" importer in the Akeneo queue
+
+  @cli
+  Scenario: Enqueuing all items for one importer only
+    Given there are 3 products on Akeneo
+    When I enqueue all items for the "Product" importer
+    Then there should be 3 items for the "Product" importer in the Akeneo queue
+    And there should be items for the "Product" importer only in the Akeneo queue

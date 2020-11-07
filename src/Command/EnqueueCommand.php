@@ -23,6 +23,8 @@ final class EnqueueCommand extends Command
 
     private const ALL_OPTION_NAME = 'all';
 
+    private const IMPORTER_OPTION_NAME = 'importer';
+
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
 
     /** @var QueueItemRepositoryInterface */
@@ -73,6 +75,12 @@ final class EnqueueCommand extends Command
             InputOption::VALUE_NONE,
             'Enqueue all identifiers regardless their last modified date.'
         );
+        $this->addOption(
+            self::IMPORTER_OPTION_NAME,
+            'i',
+            InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+            'Enqueue items only for specified importers'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -105,8 +113,14 @@ final class EnqueueCommand extends Command
             );
         }
 
+        $importers = $input->getOption(self::IMPORTER_OPTION_NAME);
+        Assert::isArray($importers);
+
         $runDate = $this->dateTimeBuilder->build();
         foreach ($this->importerRegistry->all() as $importer) {
+            if (count($importers) > 0 && !in_array($importer->getAkeneoEntity(), $importers, true)) {
+                continue;
+            }
             $identifiers = $importer->getIdentifiersModifiedSince($sinceDate);
             if (count($identifiers) === 0) {
                 $output->writeln(
