@@ -164,6 +164,33 @@ final class EnqueueCommandContext implements Context
         );
     }
 
+    /**
+     * @When /^I enqueue all items for a not existent importer$/
+     */
+    public function iEnqueueAllItemsForANotExistentImporter()
+    {
+        $commandTester = $this->getCommandTester();
+
+        try {
+            $commandTester->execute(
+                ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => ['not_existent']]
+            );
+        } catch (\Throwable $t) {
+            $this->sharedStorage->set('command_exception', $t);
+        }
+    }
+
+    /**
+     * @Then /^I should be notified that the importer does not exists$/
+     */
+    public function iShouldBeNotifiedThatTheImporterDoesNotExists()
+    {
+        /** @var \Throwable $throwable */
+        $throwable = $this->sharedStorage->get('command_exception');
+        Assert::isInstanceOf($throwable, \Throwable::class);
+        Assert::regex($throwable->getMessage(), '/Importer ".*?" does not exists/');
+    }
+
     private function getCommandTester(): CommandTester
     {
         $application = new Application($this->kernel);

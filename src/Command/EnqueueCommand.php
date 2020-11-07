@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
+use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 use Webmozart\Assert\Assert;
@@ -113,14 +114,8 @@ final class EnqueueCommand extends Command
             );
         }
 
-        $importers = $input->getOption(self::IMPORTER_OPTION_NAME);
-        Assert::isArray($importers);
-
         $runDate = $this->dateTimeBuilder->build();
-        foreach ($this->importerRegistry->all() as $importer) {
-            if (count($importers) > 0 && !in_array($importer->getAkeneoEntity(), $importers, true)) {
-                continue;
-            }
+        foreach ($this->getImporters($input) as $importer) {
             $identifiers = $importer->getIdentifiersModifiedSince($sinceDate);
             if (count($identifiers) === 0) {
                 $output->writeln(
@@ -204,5 +199,42 @@ final class EnqueueCommand extends Command
         }
 
         return false;
+    }
+
+    /**
+     * @return ImporterInterface[]
+     */
+    private function getImporters(InputInterface $input): array
+    {
+        $allImporters = $this->importerRegistry->all();
+        if (count($allImporters) === 0) {
+            throw new \RuntimeException('There are no importers in registry.');
+        }
+        $importersCodes = array_map(
+            static function (ImporterInterface $importer) {
+                return $importer->getAkeneoEntity();
+            },
+            $allImporters
+        );
+
+        $importersToUse = $input->getOption(self::IMPORTER_OPTION_NAME);
+        Assert::isArray($importersToUse);
+
+        if (count($importersToUse) === 0) {
+            return $allImporters;
+        }
+
+        $allImporters = array_combine($importersCodes, $allImporters);
+        Assert::isArray($allImporters);
+
+        $importers = [];
+        foreach ($importersToUse as $importerToUse) {
+            if (!array_key_exists($importerToUse, $allImporters)) {
+                throw new \InvalidArgumentException(sprintf('Importer "%s" does not exists.', $importerToUse));
+            }
+            $importers[] = $allImporters[$importerToUse];
+        }
+
+        return $importers;
     }
 }
