@@ -27,4 +27,14 @@ final class AkeneoContext implements Context
         Assert::isInstanceOf($this->apiClient, ApiClientMock::class);
         $this->apiClient->addProductUpdatedAt($identifier, $date);
     }
+
+    /**
+     * @Given /^there are (\d+) products on Akeneo$/
+     */
+    public function thereAreProductsOnAkeneo(int $count)
+    {
+        for ($i = 1; $i <= $count; ++$i) {
+            $this->apiClient->addProductUpdatedAt('product-' . $i, new \DateTime());
+        }
+    }
 }

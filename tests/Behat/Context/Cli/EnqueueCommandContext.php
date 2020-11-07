@@ -70,7 +70,10 @@ final class EnqueueCommandContext implements Context
         /** @var \Throwable $throwable */
         $throwable = $this->sharedStorage->get('command_exception');
         Assert::isInstanceOf($throwable, \Throwable::class);
-        Assert::contains($throwable->getMessage(), 'One of "--since" and "--since-file" paramaters must be specified');
+        Assert::contains(
+            $throwable->getMessage(),
+            'One of "--since", "--since-file" or "--all" option must be specified'
+        );
     }
 
     /**
@@ -137,6 +140,16 @@ final class EnqueueCommandContext implements Context
         } catch (\Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
+    }
+
+    /**
+     * @When /^I enqueue all items for all importers$/
+     */
+    public function iEnqueueAllItemsForAllImporters()
+    {
+        $commandTester = $this->getCommandTester();
+
+        $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--all' => true]);
     }
 
     private function getCommandTester(): CommandTester

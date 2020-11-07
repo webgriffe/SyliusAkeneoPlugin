@@ -21,6 +21,8 @@ final class EnqueueCommand extends Command
 
     public const SINCE_FILE_OPTION_NAME = 'since-file';
 
+    private const ALL_OPTION_NAME = 'all';
+
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
 
     /** @var QueueItemRepositoryInterface */
@@ -65,6 +67,12 @@ final class EnqueueCommand extends Command
             InputOption::VALUE_REQUIRED,
             'Relative or absolute path to a file containing a datetime'
         );
+        $this->addOption(
+            self::ALL_OPTION_NAME,
+            'a',
+            InputOption::VALUE_NONE,
+            'Enqueue all identifiers regardless their last modified date.'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -84,12 +92,15 @@ final class EnqueueCommand extends Command
             Assert::string($sinceFilePath);
             /** @var string $sinceFilePath */
             $sinceDate = $this->getSinceDateByFile($sinceFilePath);
+        } elseif ($input->getOption(self::ALL_OPTION_NAME) === true) {
+            $sinceDate = (new \DateTime())->setTimestamp(0);
         } else {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'One of "--%s" and "--%s" paramaters must be specified',
+                    'One of "--%s", "--%s" or "--%s" option must be specified',
                     self::SINCE_OPTION_NAME,
-                    self::SINCE_FILE_OPTION_NAME
+                    self::SINCE_FILE_OPTION_NAME,
+                    self::ALL_OPTION_NAME
                 )
             );
         }

@@ -31,3 +31,10 @@ Feature: Enqueuing items
     And there is one item to import with identifier "product-1" for the "Product" importer in the Akeneo queue
     When I enqueue items for all importers modified since date "2020-01-20 01:00:00"
     Then there should be only one queue item with identifier "product-1" for the "Product" importer in the Akeneo queue
+
+  @cli
+  Scenario: Enqueuing all items regardless last modified date
+    Given there are 3 products on Akeneo
+    When I enqueue all items for all importers
+    Then there should be 3 items for the "Product" importer in the Akeneo queue
+    And there should be 3 items for the "ProductAssociations" importer in the Akeneo queue

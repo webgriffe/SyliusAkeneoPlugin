@@ -106,6 +106,15 @@ final class QueueContext implements Context
         Assert::count($items, 1);
     }
 
+    /**
+     * @Then /^there should be (\d+) items for the "([^"]*)" importer in the Akeneo queue$/
+     */
+    public function thereShouldBeItemsForTheImporterInTheAkeneoQueue(int $count, string $importer)
+    {
+        $items = $this->queueItemRepository->findBy(['akeneoEntity' => $importer]);
+        Assert::count($items, $count);
+    }
+
     private function getQueueItemByImporterAndIdentifier(string $importer, string $identifier): QueueItemInterface
     {
         /** @var QueueItemInterface $item */
