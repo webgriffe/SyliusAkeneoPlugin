@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Webgriffe\SyliusAkeneoPlugin\DependencyInjection\WebgriffeSyliusAkeneoExtension;
+use Webgriffe\SyliusAkeneoPlugin\Product\Importer;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\GenericPropertyValueHandler;
 
 final class CompilerPassTest extends AbstractCompilerPassTestCase
@@ -41,6 +42,26 @@ final class CompilerPassTest extends AbstractCompilerPassTestCase
             'webgriffe_sylius_akeneo.product.value_handlers_resolver',
             'add',
             [new Reference('app.my.custom.value_handler'), 42]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function adds_tagged_importers_to_registry(): void
+    {
+        $importerRegistryDefinition = new Definition();
+        $this->setDefinition('webgriffe_sylius_akeneo.importer_registry', $importerRegistryDefinition);
+        $taggedImporterDefinition = new Definition(Importer::class);
+        $taggedImporterDefinition->addTag('webgriffe_sylius_akeneo.importer');
+        $this->setDefinition('app.my.custom.importer', $taggedImporterDefinition);
+
+        $this->compile();
+
+        $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
+            'webgriffe_sylius_akeneo.importer_registry',
+            'add',
+            [new Reference('app.my.custom.importer')]
         );
     }
 

@@ -144,7 +144,7 @@ Of course you can put this command in cron as well:
 *  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
 ```
 
-## Architecture
+## Architecture & customization
 
 This plugin has basically two main entry points:
 
@@ -153,7 +153,33 @@ This plugin has basically two main entry points:
 
 To be able to import different entities (or even only different parts of each entity), both commands use an **importer registry** which holds all the registered **importers**.
 
-An importer is a service implementing the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface` and mainly holds the logic about how to import its Akeneo entities. If you want to import from Akeneo other entities not implemented in this plugin you have "only" to implement your own importer and add it to the importer registry. You can also replace an importer provided with this plugin by decorating or replacing its service definition.
+An importer is a service implementing the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface` and mainly holds the logic about how to import its Akeneo entities. If you want to import from Akeneo other entities not implemented in this plugin you have can implement your own importer. You can also replace an importer provided with this plugin by decorating or replacing its service definition.
+
+To implement a new custom importer create a class which implements the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface`:
+
+```php
+// src/Importer/CustomImporter.php
+namespace App\Importer;
+
+use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+
+final class CustomImporter implements ImporterInterface
+{
+    // ...
+}
+```
+
+Then define the importer with the `webgriffe_sylius_akeneo.importer` tag:
+
+```yaml
+# config/services.yaml
+app.custom_importer:
+  class: App\Importer\CustomImporter
+  tags:
+    - { name: 'webgriffe_sylius_akeneo.importer' }
+```
+
+Anyway, this plugin already implement the following importers.
 
 ### Product Importer
 
@@ -205,9 +231,7 @@ app.my_custom_value_handler:
     - { name: 'webgriffe_sylius_akeneo.product.value_handler', priority: 42 }
 ```
 
-
-
-## Product associations importer
+### Product associations importer
 
 Another provided importer is the **product associations importer** (`Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer`). This importer imports the Akeneo products associations to the analog Sylius products associations. The association types must already exist on Sylius with the same code they have on Akeneo.
 
