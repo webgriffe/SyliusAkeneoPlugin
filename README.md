@@ -95,6 +95,25 @@ webgriffe_sylius_akeneo:
         options:
           akeneo_attribute_code: 'price'
             # The Akeneo attribute code where prices are stored.
+      attributes:
+        type: 'generic_attribute'
+          # The 'generic_attribute' value handler will automatically handle Sylius 
+          # attributes whose attribute code matches Akeneo attribute code.
+          # You just need to create Sylius attributes with the same code as Akeneo
+          # attributes and the connector will automatically import them.
+          # Supported Sylius attributes types are textarea, text, checkbox and select.
+      attachment:
+        type: 'file_attribute'
+          # The 'file_attribute' value handler will download files from the
+          # provided Akeneo file attribute and will save them to the given
+          # destination folder.
+        options:
+          akeneo_attribute_code: 'technical_specs'
+          # The Akeneo file attribute code.
+          download_path: '%sylius_core.public_dir%/media/attachment/product'
+          # The file destination folder.
+
+            
 ```
 
 On a base Sylius installation without any customization these are the minimum required value handlers that you'll need to configure. In a real-world project you'll probably need to configure more value handlers. Every value handler must have a `type` and some `options` depending on the type itself. You can also specify a `priority` that will be used when adding that handler in the **value handlers resolver**. We'll cover **value handlers**  and its resolver later in this document.
@@ -220,6 +239,8 @@ By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersReso
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler` (type `immutable_slug`): it slugifies the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) and sets it on the Sylius slug product translation property.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler` (type `product_option`): it sets the value found on a given Akeneo attribute as a Sylius product option value on the product variant.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler` (type `translatable_property`): using the [Symofony's Property Access component](https://symfony.com/doc/current/components/property_access.html), it sets the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) on a given property path (`options.sylius_translation_property_path`) of both product and product variant translations.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler` (type `generic_attribute`) it will automatically handle Sylius attributes whose attribute code matches Akeneo attribute code.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler` (type `file_attribute`): it saves the file downloaded from the Akeneo file attribute (`options.akeneo_attribute_code`) to the given destination path (`options.download_path`)
 
 To add a custom value handler to the resolver you can implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface` and then tag it with the `webgriffe_sylius_akeneo.product.value_handler` tag:
 
@@ -279,7 +300,7 @@ To be able to setup a plugin's database, remember to configure you database cred
 - Behat (non-JS scenarios)
 
   ```bash
-  vendor/bin/behat --strict --tags="~@javascript"
+  vendor/bin/behat --strict --tags="~@javascript && ~@todo && ~@cli"
   ```
 
 - Behat (JS scenarios)

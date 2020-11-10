@@ -36,3 +36,25 @@ Sylius\Component\Core\Model\Product:
       - "@model-braided-hat_it_IT"
     options:
       - "@size"
+    attributes:
+      - "@material_it_IT"
+      - "@material_en_US"
+
+Sylius\Component\Product\Model\ProductAttribute:
+  material:
+    code: "material"
+    type: "text"
+    storage_type: "text"
+
+Sylius\Component\Product\Model\ProductAttributeValue:
+  material_it_IT:
+    attribute: "@material"
+    product: "@model-braided-hat"
+    locale_code: "it_IT"
+    value: "lana"
+  material_en_US:
+    attribute: "@material"
+    product: "@model-braided-hat"
+    locale_code: "en_US"
+    value: "wool"
+

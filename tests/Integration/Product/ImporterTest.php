@@ -14,6 +14,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class ImporterTest extends KernelTestCase
@@ -33,6 +34,9 @@ final class ImporterTest extends KernelTestCase
     /** @var ChannelRepository */
     private $channelRepository;
 
+    /** @var Filesystem */
+    private $filesystem;
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -41,6 +45,7 @@ final class ImporterTest extends KernelTestCase
         $this->productVariantRepository = self::$container->get('sylius.repository.product_variant');
         $this->channelRepository = self::$container->get('sylius.repository.channel');
         $this->fixtureLoader = self::$container->get('fidry_alice_data_fixtures.loader.doctrine');
+        $this->filesystem = self::$container->get('filesystem');
         $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
     }
 
@@ -481,5 +486,55 @@ final class ImporterTest extends KernelTestCase
 
         $productVariant = $this->productVariantRepository->findOneByCode('braided-hat-s');
         $this->assertFalse($productVariant->isEnabled());
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_custom_attributes()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertEquals('cotton', $product->getAttributeByCodeAndLocale('material', 'en_US')->getValue());
+        $this->assertEquals('cotone', $product->getAttributeByCodeAndLocale('material', 'it_IT')->getValue());
+    }
+
+    /**
+     * @test
+     */
+    public function it_downloads_file_from_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+        $this->assertTrue(
+            $this->filesystem->exists(
+                self::$container->getParameter(
+                    'sylius_core.public_dir'
+                ) . '/media/attachment/product/1/3/9/e/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg'
+            )
+        );
     }
 }

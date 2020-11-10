@@ -172,7 +172,7 @@ final class Importer implements ImporterInterface
         if ($parentCode !== null) {
             $product = $this->productRepository->findOneByCode($parentCode);
             if (!$product) {
-                $product = $this->createNewProductFromAkneoProduct($productVariantResponse);
+                $product = $this->createNewProductFromAkeneoProduct($productVariantResponse);
             }
 
             return $product;
@@ -234,7 +234,7 @@ final class Importer implements ImporterInterface
         }
     }
 
-    private function createNewProductFromAkneoProduct(array $productVariantResponse): ProductInterface
+    private function createNewProductFromAkeneoProduct(array $productVariantResponse): ProductInterface
     {
         $parentCode = $productVariantResponse['parent'];
         $product = $this->productFactory->createNew();

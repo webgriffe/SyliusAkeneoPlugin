@@ -11,7 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\GenericPropertyValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler;
@@ -74,6 +76,21 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 'sylius.factory.product_translation',
                 'sylius.factory.product_variant_translation',
                 'sylius.translation_locale_provider.admin',
+            ],
+        ],
+        'generic_attribute' => [
+            'class' => AttributeValueHandler::class,
+            'arguments' => [
+                'sylius.repository.product_attribute',
+                'sylius.factory.product_attribute_value',
+                'sylius.translation_locale_provider.admin',
+            ],
+        ],
+        'file_attribute' => [
+            'class' => FileAttributeValueHandler::class,
+            'arguments' => [
+                'webgriffe_sylius_akeneo.api_client',
+                'filesystem',
             ],
         ],
     ];
