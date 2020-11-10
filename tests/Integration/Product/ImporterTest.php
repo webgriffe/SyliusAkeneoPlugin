@@ -6,7 +6,6 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\Product;
 
 use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Fidry\AliceDataFixtures\Persistence\PurgeMode;
-use Symfony\Component\Filesystem\Filesystem;
 use Sylius\Bundle\ChannelBundle\Doctrine\ORM\ChannelRepository;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -15,6 +14,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class ImporterTest extends KernelTestCase
@@ -31,12 +31,10 @@ final class ImporterTest extends KernelTestCase
     /** @var PurgerLoader */
     private $fixtureLoader;
 
-
     /** @var ChannelRepository */
     private $channelRepository;
-    /**
-     * @var Filesystem
-     */
+
+    /** @var Filesystem */
     private $filesystem;
 
     protected function setUp(): void
