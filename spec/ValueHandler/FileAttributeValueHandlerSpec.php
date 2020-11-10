@@ -68,6 +68,20 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ->during('supports', [$productVariant, 'allegato_1', []]);
     }
 
+    function it_does_not_support_attribute_that_does_not_exist(
+        ProductVariantInterface $productVariant,
+        ApiClientInterface $apiClient
+    ) {
+        $apiClient->findAttribute('allegato_1')->willReturn(null);
+        $this
+            ->shouldThrow(
+                new \InvalidArgumentException(
+                    'This file value handler only supports akeneo file attributes. allegato_1 is not a file attribute',
+                )
+            )
+            ->during('supports', [$productVariant, 'allegato_1', []]);
+    }
+
     function it_does_not_support_any_other_type_of_subject()
     {
         $this->supports(new \stdClass(), self::AKENEO_FILE_ATTRIBUTE_CODE, [])->shouldReturn(false);

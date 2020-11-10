@@ -46,7 +46,11 @@ class FileAttributeValueHandler implements ValueHandlerInterface
             return false;
         }
         $attributeInfo = $this->apiClient->findAttribute($attribute);
-        if (!array_key_exists('type', $attributeInfo) || $attributeInfo['type'] !== self::AKENEO_ATTRIBUTE_TYPE_FILE) {
+        if (
+            $attributeInfo === null ||
+            !array_key_exists('type', $attributeInfo) ||
+            $attributeInfo['type'] !== self::AKENEO_ATTRIBUTE_TYPE_FILE
+        ) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'This file value handler only supports akeneo file attributes. %s is not a file attribute',
