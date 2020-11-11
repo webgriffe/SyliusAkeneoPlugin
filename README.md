@@ -95,6 +95,25 @@ webgriffe_sylius_akeneo:
         options:
           akeneo_attribute_code: 'price'
             # The Akeneo attribute code where prices are stored.
+      attributes:
+        type: 'generic_attribute'
+          # The 'generic_attribute' value handler will automatically handle Sylius 
+          # attributes whose attribute code matches Akeneo attribute code.
+          # You just need to create Sylius attributes with the same code as Akeneo
+          # attributes and the connector will automatically import them.
+          # Supported Sylius attributes types are textarea, text, checkbox and select.
+      attachment:
+        type: 'file_attribute'
+          # The 'file_attribute' value handler will download files from the
+          # provided Akeneo file attribute and will save them to the given
+          # destination folder.
+        options:
+          akeneo_attribute_code: 'technical_specs'
+          # The Akeneo file attribute code.
+          download_path: '%sylius_core.public_dir%/media/attachment/product'
+          # The file destination folder.
+
+            
 ```
 
 On a base Sylius installation without any customization these are the minimum required value handlers that you'll need to configure. In a real-world project you'll probably need to configure more value handlers. Every value handler must have a `type` and some `options` depending on the type itself. You can also specify a `priority` that will be used when adding that handler in the **value handlers resolver**. We'll cover **value handlers**  and its resolver later in this document.
@@ -156,7 +175,7 @@ Of course you can put this command in cron as well:
 *  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
 ```
 
-## Architecture
+## Architecture & customization
 
 This plugin has basically two main entry points:
 
@@ -165,7 +184,33 @@ This plugin has basically two main entry points:
 
 To be able to import different entities (or even only different parts of each entity), both commands use an **importer registry** which holds all the registered **importers**.
 
-An importer is a service implementing the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface` and mainly holds the logic about how to import its Akeneo entities. If you want to import from Akeneo other entities not implemented in this plugin you have "only" to implement your own importer and add it to the importer registry. You can also replace an importer provided with this plugin by decorating or replacing its service definition.
+An importer is a service implementing the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface` and mainly holds the logic about how to import its Akeneo entities. If you want to import from Akeneo other entities not implemented in this plugin you have can implement your own importer. You can also replace an importer provided with this plugin by decorating or replacing its service definition.
+
+To implement a new custom importer create a class which implements the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface`:
+
+```php
+// src/Importer/CustomImporter.php
+namespace App\Importer;
+
+use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+
+final class CustomImporter implements ImporterInterface
+{
+    // ...
+}
+```
+
+Then define the importer with the `webgriffe_sylius_akeneo.importer` tag:
+
+```yaml
+# config/services.yaml
+app.custom_importer:
+  class: App\Importer\CustomImporter
+  tags:
+    - { name: 'webgriffe_sylius_akeneo.importer' }
+```
+
+Anyway, this plugin already implement the following importers.
 
 ### Product Importer
 
@@ -206,6 +251,8 @@ By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersReso
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler` (type `immutable_slug`): it slugifies the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) and sets it on the Sylius slug product translation property.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler` (type `product_option`): it sets the value found on a given Akeneo attribute as a Sylius product option value on the product variant.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler` (type `translatable_property`): using the [Symofony's Property Access component](https://symfony.com/doc/current/components/property_access.html), it sets the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) on a given property path (`options.sylius_translation_property_path`) of both product and product variant translations.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler` (type `generic_attribute`) it will automatically handle Sylius attributes whose attribute code matches Akeneo attribute code.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler` (type `file_attribute`): it saves the file downloaded from the Akeneo file attribute (`options.akeneo_attribute_code`) to the given destination path (`options.download_path`)
 
 To add a custom value handler to the resolver you can implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface` and then tag it with the `webgriffe_sylius_akeneo.product.value_handler` tag:
 
@@ -217,9 +264,7 @@ app.my_custom_value_handler:
     - { name: 'webgriffe_sylius_akeneo.product.value_handler', priority: 42 }
 ```
 
-
-
-## Product associations importer
+### Product associations importer
 
 Another provided importer is the **product associations importer** (`Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer`). This importer imports the Akeneo products associations to the analog Sylius products associations. The association types must already exist on Sylius with the same code they have on Akeneo.
 
@@ -267,7 +312,7 @@ To be able to setup a plugin's database, remember to configure you database cred
 - Behat (non-JS scenarios)
 
   ```bash
-  vendor/bin/behat --strict --tags="~@javascript"
+  vendor/bin/behat --strict --tags="~@javascript && ~@todo && ~@cli"
   ```
 
 - Behat (JS scenarios)

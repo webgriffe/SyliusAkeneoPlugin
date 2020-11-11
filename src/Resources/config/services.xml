@@ -35,14 +35,7 @@
         <service id="webgriffe_sylius_akeneo.date_time_builder" class="Webgriffe\SyliusAkeneoPlugin\DateTimeBuilder"/>
         <service id="Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface" alias="webgriffe_sylius_akeneo.date_time_builder" />
 
-        <service id="webgriffe_sylius_akeneo.importer_registry" class="Webgriffe\SyliusAkeneoPlugin\ImporterRegistry">
-            <call method="add">
-                <argument type="service" id="webgriffe_sylius_akeneo.product.importer" />
-            </call>
-            <call method="add">
-                <argument type="service" id="webgriffe_sylius_akeneo.product_associations.importer" />
-            </call>
-        </service>
+        <service id="webgriffe_sylius_akeneo.importer_registry" class="Webgriffe\SyliusAkeneoPlugin\ImporterRegistry" />
         <service id="Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface" alias="webgriffe_sylius_akeneo.importer_registry" />
 
         <service id="webgriffe_sylius_akeneo.slugify" class="Cocur\Slugify\Slugify" />
@@ -85,6 +78,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product.status_resolver" />
             <argument type="service" id="sylius.factory.product_taxon" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.variant_status_resolver" />
+            <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
 
         <!-- Product Associations Importer -->
@@ -94,6 +88,7 @@
             <argument type="service" id="sylius.repository.product_association"/>
             <argument type="service" id="sylius.repository.product_association_type"/>
             <argument type="service" id="sylius.factory.product_association"/>
+            <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
     </services>
 </container>
