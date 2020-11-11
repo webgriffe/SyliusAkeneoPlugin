@@ -1,0 +1,5 @@
+Sylius\Component\Product\Model\ProductAttribute:
+  finitura:
+    code: 'material'
+    type: 'select'
+    storageType: 'json'
