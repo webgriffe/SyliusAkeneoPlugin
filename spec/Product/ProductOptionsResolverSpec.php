@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\Product;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\AttributeApiInterface;
+use Akeneo\Pim\ApiClient\Api\FamilyVariantApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductModelApiInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolver;
 use Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolverInterface;
 
@@ -28,20 +34,26 @@ class ProductOptionsResolverSpec extends ObjectBehavior
     private const ENGLISH_LABEL = 'English label';
 
     function let(
-        ApiClientInterface $apiClient,
+        AkeneoPimClientInterface $apiClient,
+        ProductModelApiInterface $productModelApi,
+        FamilyVariantApiInterface $familyVariantApi,
+        AttributeApiInterface $attributeApi,
         ProductOptionRepositoryInterface $productOptionRepository,
         FactoryInterface $productOptionFactory,
         ProductOptionInterface $newProductOption,
         ProductOptionTranslationInterface $englishProductOptionTranslation,
         FactoryInterface $productOptionTranslationFactory
     ) {
-        $apiClient->findProductModel(self::PRODUCT_MODEL_CODE)->willReturn(
+        $apiClient->getProductModelApi()->willReturn($productModelApi);
+        $apiClient->getFamilyVariantApi()->willReturn($familyVariantApi);
+        $apiClient->getAttributeApi()->willReturn($attributeApi);
+        $productModelApi->get(self::PRODUCT_MODEL_CODE)->willReturn(
             ['family' => self::FAMILY_CODE, 'family_variant' => self::FAMILY_VARIANT_CODE]
         );
-        $apiClient->findFamilyVariant(self::FAMILY_CODE, self::FAMILY_VARIANT_CODE)->willReturn(
+        $familyVariantApi->get(self::FAMILY_CODE, self::FAMILY_VARIANT_CODE)->willReturn(
             ['variant_attribute_sets' => [['axes' => [self::ATTRIBUTE_CODE]]]]
         );
-        $apiClient->findAttribute(self::ATTRIBUTE_CODE)->willReturn(
+        $attributeApi->get(self::ATTRIBUTE_CODE)->willReturn(
             ['labels' => ['it_IT' => self::ITALIAN_LABEL, 'en_US' => self::ENGLISH_LABEL]]
         );
         $newProductOption->getTranslation('en_US')->willReturn($englishProductOptionTranslation);
@@ -80,9 +92,11 @@ class ProductOptionsResolverSpec extends ObjectBehavior
         ;
     }
 
-    function it_throws_an_exception_if_product_model_cannot_be_found_on_akeneo(ApiClientInterface $apiClient)
+    function it_throws_an_exception_if_product_model_cannot_be_found_on_akeneo(ProductModelApiInterface $productModelApi)
     {
-        $apiClient->findProductModel('not_existent_model')->willReturn(null);
+        $productModelApi->get('not_existent_model')->willThrow(
+            new HttpException('Not found', new Request('GET', '/'), new Response(404))
+        );
 
         $this
             ->shouldThrow(
@@ -92,13 +106,17 @@ class ProductOptionsResolverSpec extends ObjectBehavior
         ;
     }
 
-    function it_throws_an_exception_if_family_variant_cannot_be_found_on_akeneo(ApiClientInterface $apiClient)
-    {
-        $apiClient
-            ->findProductModel('model_with_not_existent_family_variant')
+    function it_throws_an_exception_if_family_variant_cannot_be_found_on_akeneo(
+        ProductModelApiInterface $productModelApi,
+        FamilyVariantApiInterface $familyVariantApi
+    ) {
+        $productModelApi
+            ->get('model_with_not_existent_family_variant')
             ->willReturn(['family' => 'not_existent', 'family_variant' => 'not_existent'])
         ;
-        $apiClient->findFamilyVariant('not_existent', 'not_existent')->willReturn(null);
+        $familyVariantApi->get('not_existent', 'not_existent')->willThrow(
+            new HttpException('Not found', new Request('GET', '/'), new Response(404))
+        );
         $this
             ->shouldThrow(
                 new \RuntimeException(
@@ -128,11 +146,13 @@ class ProductOptionsResolverSpec extends ObjectBehavior
         ProductOptionRepositoryInterface $productOptionRepository,
         FactoryInterface $productOptionFactory,
         ProductOptionInterface $newProductOption,
-        ApiClientInterface $apiClient
+        AttributeApiInterface $attributeApi
     ) {
         $productOptionRepository->findOneBy(['code' => self::ATTRIBUTE_CODE])->willReturn(null);
         $productOptionFactory->createNew()->willReturn($newProductOption);
-        $apiClient->findAttribute(self::ATTRIBUTE_CODE)->willReturn(null);
+        $attributeApi->get(self::ATTRIBUTE_CODE)->willThrow(
+            new HttpException('Not found', new Request('GET', '/'), new Response(404))
+        );
 
         $this
             ->shouldThrow(
