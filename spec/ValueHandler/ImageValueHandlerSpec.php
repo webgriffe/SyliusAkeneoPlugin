@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\MediaFileApiInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
 
 class ImageValueHandlerSpec extends ObjectBehavior
@@ -34,12 +37,18 @@ class ImageValueHandlerSpec extends ObjectBehavior
         FactoryInterface $productImageFactory,
         RepositoryInterface $productImageRepository,
         ProductImageInterface $productImage,
-        ApiClientInterface $apiClient,
-        \SplFileInfo $imageFile,
+        AkeneoPimClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
+        ResponseInterface $downloadResponse,
+        StreamInterface $responseBody,
         ProductInterface $product
     ) {
         $productImageFactory->createNew()->willReturn($productImage);
-        $apiClient->downloadFile(Argument::type('string'))->willReturn($imageFile);
+        $apiClient->getProductMediaFileApi()->willReturn($productMediaFileApi);
+        $productMediaFileApi->download(Argument::type('string'))->willReturn($downloadResponse);
+        $downloadResponse->getStatusCode()->willReturn(200);
+        $downloadResponse->getBody()->willReturn($responseBody);
+        $responseBody->getContents()->willReturn('__FILE_CONTENT__');
         $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([]));
         $product->addImage($productImage)->hasReturnVoid();
         $productImageRepository
@@ -127,26 +136,25 @@ class ImageValueHandlerSpec extends ObjectBehavior
     function it_should_download_image_from_akeneo_when_handling(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
-        ApiClientInterface $apiClient
+        MediaFileApiInterface $productMediaFileApi
     ) {
         $productVariant->getProduct()->willReturn($product);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
     }
 
     function it_sets_downloaded_image_to_product_image_when_handling(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
-        ProductImageInterface $productImage,
-        \SplFileInfo $imageFile
+        ProductImageInterface $productImage
     ) {
         $productVariant->getProduct()->willReturn($product);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
-        $productImage->setFile($imageFile)->shouldHaveBeenCalled();
+        $productImage->setFile(Argument::type(\SplFileInfo::class))->shouldHaveBeenCalled();
     }
 
     function it_sets_provided_product_image_type_when_handling(
