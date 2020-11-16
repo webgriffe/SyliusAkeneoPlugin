@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\AttributeOptionApiInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
 use Doctrine\Common\Collections\ArrayCollection;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -14,7 +19,6 @@ use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
@@ -36,7 +40,8 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductOptionInterface $productOption,
-        ApiClientInterface $apiClient,
+        AkeneoPimClientInterface $apiClient,
+        AttributeOptionApiInterface $attributeOptionApi,
         ProductOptionRepositoryInterface $productOptionRepository,
         FactoryInterface $productOptionValueFactory,
         FactoryInterface $productOptionValueTranslationFactory,
@@ -47,8 +52,9 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $product->getCode()->willReturn(self::PRODUCT_CODE);
         $product->getOptions()->willReturn(new ArrayCollection([$productOption->getWrappedObject()]));
         $productOption->getCode()->willReturn(self::OPTION_CODE);
-        $apiClient
-            ->findAttributeOption(self::OPTION_CODE, self::VALUE_CODE)
+        $apiClient->getAttributeOptionApi()->willReturn($attributeOptionApi);
+        $attributeOptionApi
+            ->get(self::OPTION_CODE, self::VALUE_CODE)
             ->willReturn(
                 [
                     'code' => self::VALUE_CODE,
@@ -145,7 +151,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
 
     function it_throws_an_exception_during_handle_if_attribute_option_does_not_exists_on_akeneo(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient
+        AttributeOptionApiInterface $attributeOptionApi
     ) {
         $value = [
             [
@@ -154,7 +160,9 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
                 'data' => self::VALUE_CODE,
             ],
         ];
-        $apiClient->findAttributeOption(self::OPTION_CODE, self::VALUE_CODE)->willReturn(null);
+        $attributeOptionApi->get(self::OPTION_CODE, self::VALUE_CODE)->willThrow(
+            new HttpException('Not found', new Request('GET', '/'), new Response(404))
+        );
 
         $this->shouldThrow(
             new \RuntimeException(
