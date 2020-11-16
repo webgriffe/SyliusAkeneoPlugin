@@ -1,8 +1,6 @@
-# Put your Behat suites definitions here
-
 default:
     suites:
-        importing_products:
+        cli_importing_products:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
@@ -17,9 +15,9 @@ default:
                 - webgriffe_sylius_akeneo.context.db.queue
 
             filters:
-                tags: "@importing_products"
+                tags: "@importing_products && @cli"
 
-        importing_product_associations:
+        cli_importing_product_associations:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
@@ -34,9 +32,9 @@ default:
                 - webgriffe_sylius_akeneo.context.db.queue
 
             filters:
-                tags: "@importing_product_associations"
+                tags: "@importing_product_associations && @cli"
 
-        enqueuing:
+        cli_enqueuing_generic_items:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
@@ -53,4 +51,43 @@ default:
                 - webgriffe_sylius_akeneo.context.system.datetime
 
             filters:
-                tags: "@enqueuing"
+                tags: "@enqueuing_generic_items && @cli"
+
+        cli_enqueuing_products:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.transform.date_time
+
+                - webgriffe_sylius_akeneo.context.setup.akeneo
+                - webgriffe_sylius_akeneo.context.setup.queue
+
+                - webgriffe_sylius_akeneo.context.cli.enqueue_command
+
+                - webgriffe_sylius_akeneo.context.db.queue
+
+                - webgriffe_sylius_akeneo.context.system.filesystem
+                - webgriffe_sylius_akeneo.context.system.datetime
+
+            filters:
+                tags: "@enqueuing_products && @cli"
+
+        cli_enqueuing_products_associations:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.transform.date_time
+
+                - webgriffe_sylius_akeneo.context.setup.akeneo
+                - webgriffe_sylius_akeneo.context.setup.queue
+
+                - webgriffe_sylius_akeneo.context.cli.enqueue_command
+
+                - webgriffe_sylius_akeneo.context.db.queue
+
+                - webgriffe_sylius_akeneo.context.system.filesystem
+                - webgriffe_sylius_akeneo.context.system.datetime
+
+            filters:
+                tags: "@enqueuing_products_associations && @cli"
+

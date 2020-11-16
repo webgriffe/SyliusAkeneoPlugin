@@ -39,13 +39,4 @@ final class FilesystemContext implements Context
         $actualFileContent = file_get_contents($file);
         Assert::same($actualFileContent, $content);
     }
-
-    /**
-     * @Given /^there is no file with name "([^"]+)"$/
-     */
-    public function thereIsNoFileWithName($filename)
-    {
-        $file = vfsStream::url('root/' . $filename);
-        Assert::false(file_exists($file));
-    }
 }

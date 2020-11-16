@@ -21,105 +21,70 @@ final class QueueContext implements Context
     }
 
     /**
-     * @Given /^the queue item for product with identifier "([^"]*)" has been marked as imported$/
+     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has been marked as imported$/
      */
-    public function theQueueItemForProductWithIdentifierHasBeenMarkedAsImported(string $identifier)
+    public function theQueueItemForProductWithIdentifierHasBeenMarkedAsImported(string $identifier, string $importer)
     {
-        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
+        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
         Assert::notNull($queueItem->getImportedAt());
     }
 
     /**
-     * @Given /^the queue item for product with identifier "([^"]*)" has not been marked as imported$/
+     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has not been marked as imported$/
      */
-    public function theQueueItemForProductWithIdentifierHasNotBeenMarkedAsImported(string $identifier)
+    public function theQueueItemForProductWithIdentifierHasNotBeenMarkedAsImported(string $identifier, string $importer)
     {
-        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
+        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
         Assert::null($queueItem->getImportedAt());
     }
 
     /**
-     * @Given /^the queue item for product with identifier "([^"]*)" has an error message$/
+     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has an error message$/
      */
-    public function theQueueItemHasAnErrorMessage(string $identifier)
+    public function theQueueItemHasAnErrorMessage(string $identifier, string $importer)
     {
-        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
+        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
         Assert::notNull($queueItem->getErrorMessage());
     }
 
     /**
-     * @Given /^the queue item for product with identifier "([^"]*)" has an error message containing "([^"]*)"$/
+     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has an error message containing "([^"]*)"$/
      */
-    public function theQueueItemHasAnErrorMessageContaining(string $identifier, string $message)
+    public function theQueueItemHasAnErrorMessageContaining(string $identifier, string $importer, string $message)
     {
-        $queueItem = $this->getQueueItemByProductIdentifier($identifier);
+        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
         Assert::contains($queueItem->getErrorMessage(), $message);
     }
 
     /**
-     * @Then /^the product "([^"]*)" should not be in the Akeneo queue$/
+     * @Then /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer should not be in the Akeneo queue$/
      */
-    public function theProductShouldNotBeInTheAkeneoQueue(string $identifier)
+    public function theProductShouldNotBeInTheAkeneoQueue(string $identifier, string $importer)
     {
         Assert::null(
-            $this->queueItemRepository->findOneBy(
-                ['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]
-            )
+            $this->queueItemRepository->findOneBy(['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier])
         );
     }
 
     /**
-     * @Then /^the product associations for product "([^"]*)" should not be in the Akeneo queue$/
+     * @Then /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer should be in the Akeneo queue$/
      */
-    public function theProductAssociationsForProductShouldNotBeInTheAkeneoQueue(string $identifier)
-    {
-        Assert::null(
-            $this->queueItemRepository->findOneBy(
-                ['akeneoEntity' => 'ProductAssociations', 'akeneoIdentifier' => $identifier]
-            )
-        );
-    }
-
-    /**
-     * @Then /^the product "([^"]*)" should be in the Akeneo queue$/
-     */
-    public function theProductShouldBeInTheAkeneoQueue(string $identifier)
+    public function theProductShouldBeInTheAkeneoQueue(string $identifier, string $importer)
     {
         Assert::isInstanceOf(
             $this->queueItemRepository->findOneBy(
-                ['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]
+                ['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier]
             ),
             QueueItemInterface::class
         );
     }
 
     /**
-     * @Then /^the product associations for product "([^"]*)" should be in the Akeneo queue$/
+     * @Then /^there should be no item in the queue for the "([^"]*)" importer/
      */
-    public function theProductAssociationsForProductShouldBeInTheAkeneoQueue(string $identifier)
+    public function thereShouldBeNoProductInTheAkeneoQueue(string $importer)
     {
-        Assert::isInstanceOf(
-            $this->queueItemRepository->findOneBy(
-                ['akeneoEntity' => 'ProductAssociations', 'akeneoIdentifier' => $identifier]
-            ),
-            QueueItemInterface::class
-        );
-    }
-
-    /**
-     * @Then /^there should be no product in the Akeneo queue$/
-     */
-    public function thereShouldBeNoProductInTheAkeneoQueue()
-    {
-        Assert::isEmpty($this->queueItemRepository->findBy(['akeneoEntity' => 'Product']));
-    }
-
-    /**
-     * @Then /^there should be no product associations in the Akeneo queue$/
-     */
-    public function thereShouldBeNoProductAssociationsInTheAkeneoQueue()
-    {
-        Assert::isEmpty($this->queueItemRepository->findBy(['akeneoEntity' => 'ProductAssociations']));
+        Assert::isEmpty($this->queueItemRepository->findBy(['akeneoEntity' => $importer]));
     }
 
     /**
@@ -131,20 +96,38 @@ final class QueueContext implements Context
     }
 
     /**
-     * @Then /^there should be only one product queue item for "([^"]*)" in the Akeneo queue$/
+     * @Then /^there should be only one queue item with identifier "([^"]*)" for the "([^"]*)" importer in the Akeneo queue$/
      */
-    public function thereShouldBeOnlyOneProductQueueItemForInTheAkeneoQueue(string $identifier)
+    public function thereShouldBeOnlyOneProductQueueItemForInTheAkeneoQueue(string $identifier, string $importer)
     {
         $items = $this->queueItemRepository->findBy(
-            ['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]
+            ['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier]
         );
         Assert::count($items, 1);
     }
 
-    private function getQueueItemByProductIdentifier(string $identifier): QueueItemInterface
+    /**
+     * @Then /^there should be (\d+) items for the "([^"]*)" importer in the Akeneo queue$/
+     */
+    public function thereShouldBeItemsForTheImporterInTheAkeneoQueue(int $count, string $importer)
+    {
+        $items = $this->queueItemRepository->findBy(['akeneoEntity' => $importer]);
+        Assert::count($items, $count);
+    }
+
+    /**
+     * @Then /^there should be items for the "([^"]*)" importer only in the Akeneo queue$/
+     */
+    public function thereShouldBeItemsForTheImporterOnlyInTheAkeneoQueue(string $importer)
+    {
+        $importerItems = $this->queueItemRepository->findBy(['akeneoEntity' => $importer]);
+        Assert::count($this->queueItemRepository->findAll(), count($importerItems));
+    }
+
+    private function getQueueItemByImporterAndIdentifier(string $importer, string $identifier): QueueItemInterface
     {
         /** @var QueueItemInterface $item */
-        $item = $this->queueItemRepository->findOneBy(['akeneoEntity' => 'Product', 'akeneoIdentifier' => $identifier]);
+        $item = $this->queueItemRepository->findOneBy(['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier]);
         Assert::isInstanceOf($item, QueueItemInterface::class);
 
         return $item;

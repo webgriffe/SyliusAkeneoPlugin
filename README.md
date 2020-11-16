@@ -147,6 +147,18 @@ When run with the since file, the enqueue command will write the current date/ti
 
 This way the enqueue command is run repeatedly enqueing only producs modified since the last command execution.
 
+You can also enqueue items only for specific importers:
+
+```bash
+bin/console webgriffe:akeneno:enqueue --importer="Product" --importer="MyImporter" --since="2020-01-30"
+```
+
+You can also enqueue items regardless their last update date:
+
+```bash
+bin/console webgriffe:akeneno:enqueue --all
+```
+
 ### Consume command
 
 To import the Akeneo entities that are in the queue you can use the `webgriffe:akeneo:consume` console command:
