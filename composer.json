@@ -6,8 +6,11 @@
     "license": "MIT",
     "require": {
         "php": "^7.3",
+        "akeneo/api-php-client": "^6.0",
         "cocur/slugify": "^4.0",
         "guzzlehttp/guzzle": "^6.5",
+        "http-interop/http-factory-guzzle": "^1.0",
+        "php-http/guzzle6-adapter": "^2.0",
         "sylius/sylius": "^1.8",
         "symfony/deprecation-contracts": "^2.2"
     },
