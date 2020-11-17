@@ -12,7 +12,7 @@ final class FamilyVariantApiMock implements FamilyVariantApiInterface
 {
     public function get($familyCode, $familyVariantCode): array
     {
-        return OfficialApiClientMock::jsonFileOrHttpNotFoundException(
+        return ApiClientMock::jsonFileOrHttpNotFoundException(
             __DIR__ . '/../DataFixtures/ApiClientMock/FamilyVariant/' . $familyCode . '/' . $familyVariantCode . '.json'
         );
     }

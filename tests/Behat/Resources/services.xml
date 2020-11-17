@@ -10,7 +10,7 @@
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
-            <argument type="service" id="webgriffe_sylius_akeneo.api_client_official" />
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.context.cli.consume_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ConsumeCommandContext">
