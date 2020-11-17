@@ -92,4 +92,23 @@ final class ImporterTest extends KernelTestCase
             $configuration['choices']
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_all_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes(): void
+    {
+        // todo make this pass
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductAttribute/material.yaml',
+            ]
+        );
+
+        $identifiers = $this->importer->getIdentifiersModifiedSince(new \DateTime());
+
+        $this->assertEquals(['material'], $identifiers);
+    }
 }
