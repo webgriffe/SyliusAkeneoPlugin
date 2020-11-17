@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -21,7 +22,7 @@ final class ImageValueHandler implements ValueHandlerInterface
     /** @var RepositoryInterface */
     private $productImageRepository;
 
-    /** @var ApiClientInterface */
+    /** @var AkeneoPimClientInterface */
     private $apiClient;
 
     /** @var string */
@@ -33,7 +34,7 @@ final class ImageValueHandler implements ValueHandlerInterface
     public function __construct(
         FactoryInterface $productImageFactory,
         RepositoryInterface $productImageRepository,
-        ApiClientInterface $apiClient,
+        AkeneoPimClientInterface $apiClient,
         string $akeneoAttributeCode,
         string $syliusImageType
     ) {
@@ -70,7 +71,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         if (!is_string($mediaCode)) {
             throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.');
         }
-        $imageFile = $this->apiClient->downloadFile($mediaCode);
+        $imageFile = $this->downloadFile($mediaCode);
 
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
@@ -103,5 +104,22 @@ final class ImageValueHandler implements ValueHandlerInterface
         }
 
         return null;
+    }
+
+    private function downloadFile(string $mediaCode): \SplFileInfo
+    {
+        $response = $this->apiClient->getProductMediaFileApi()->download($mediaCode);
+        $statusClass = (int) ($response->getStatusCode() / 100);
+        $bodyContents = $response->getBody()->getContents();
+        if ($statusClass !== 2) {
+            $responseResult = json_decode($bodyContents, true);
+
+            throw new \HttpException($responseResult['message'], $responseResult['code']);
+        }
+        $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
+        Assert::string($tempName);
+        file_put_contents($tempName, $bodyContents);
+
+        return new File($tempName);
     }
 }

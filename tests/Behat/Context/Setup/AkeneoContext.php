@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Behat\Behat\Context\Context;
 use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webmozart\Assert\Assert;
 
 final class AkeneoContext implements Context
 {
-    /** @var ApiClientInterface|ApiClientMock */
+    /** @var AkeneoPimClientInterface|ApiClientMock */
     private $apiClient;
 
-    public function __construct(ApiClientInterface $apiClient)
+    public function __construct(AkeneoPimClientInterface $apiClient)
     {
         $this->apiClient = $apiClient;
     }
@@ -33,6 +33,7 @@ final class AkeneoContext implements Context
      */
     public function thereAreProductsOnAkeneo(int $count)
     {
+        Assert::isInstanceOf($this->apiClient, ApiClientMock::class);
         for ($i = 1; $i <= $count; ++$i) {
             $this->apiClient->addProductUpdatedAt('product-' . $i, new \DateTime());
         }

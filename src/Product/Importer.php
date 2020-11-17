@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Search\SearchBuilder;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTaxonInterface;
@@ -15,7 +17,6 @@ use Sylius\Component\Product\Factory\ProductVariantFactoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
 use Webmozart\Assert\Assert;
@@ -33,7 +34,7 @@ final class Importer implements ImporterInterface
     /** @var ProductRepositoryInterface */
     private $productRepository;
 
-    /** @var ApiClientInterface */
+    /** @var AkeneoPimClientInterface */
     private $apiClient;
 
     /** @var ValueHandlersResolverInterface */
@@ -67,7 +68,7 @@ final class Importer implements ImporterInterface
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
         ProductRepositoryInterface $productRepository,
-        ApiClientInterface $apiClient,
+        AkeneoPimClientInterface $apiClient,
         ValueHandlersResolverInterface $valueHandlerResolver,
         ProductFactoryInterface $productFactory,
         TaxonsResolverInterface $taxonsResolver,
@@ -113,7 +114,7 @@ final class Importer implements ImporterInterface
 
     public function import(string $identifier): void
     {
-        $productVariantResponse = $this->apiClient->findProduct($identifier);
+        $productVariantResponse = $this->apiClient->getProductApi()->get($identifier);
         if (!$productVariantResponse) {
             throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
         }
@@ -156,7 +157,9 @@ final class Importer implements ImporterInterface
      */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
     {
-        $products = $this->apiClient->findProductsModifiedSince($sinceDate);
+        $searchBuilder = new SearchBuilder();
+        $searchBuilder->addFilter('updated_at', '>', $sinceDate->format('Y-m-d H:i:s'));
+        $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {
             $identifiers[] = $product['identifier'];

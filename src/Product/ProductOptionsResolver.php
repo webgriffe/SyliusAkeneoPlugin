@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webmozart\Assert\Assert;
 
 final class ProductOptionsResolver implements ProductOptionsResolverInterface
 {
-    /** @var ApiClientInterface */
+    /** @var AkeneoPimClientInterface */
     private $apiClient;
 
     /** @var ProductOptionRepositoryInterface */
@@ -26,7 +27,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
     private $productOptionTranslationFactory;
 
     public function __construct(
-        ApiClientInterface $apiClient,
+        AkeneoPimClientInterface $apiClient,
         ProductOptionRepositoryInterface $productOptionRepository,
         FactoryInterface $productOptionFactory,
         FactoryInterface $productOptionTranslationFactory
@@ -53,21 +54,33 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
                 )
             );
         }
-        $productResponse = $this->apiClient->findProductModel($parentCode);
-        if (!$productResponse) {
-            throw new \RuntimeException(sprintf('Cannot find product model "%s" on Akeneo.', $parentCode));
+
+        try {
+            $productResponse = $this->apiClient->getProductModelApi()->get($parentCode);
+        } catch (HttpException $e) {
+            if ($e->getResponse()->getStatusCode() === 404) {
+                throw new \RuntimeException(sprintf('Cannot find product model "%s" on Akeneo.', $parentCode));
+            }
+
+            throw $e;
         }
         $familyCode = $productResponse['family'];
         $familyVariantCode = $productResponse['family_variant'];
-        $familyVariantResponse = $this->apiClient->findFamilyVariant($familyCode, $familyVariantCode);
-        if (!$familyVariantResponse) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Cannot find family variant "%s" within family "%s" on Akeneo.',
-                    $familyVariantCode,
-                    $familyCode
-                )
-            );
+
+        try {
+            $familyVariantResponse = $this->apiClient->getFamilyVariantApi()->get($familyCode, $familyVariantCode);
+        } catch (HttpException $e) {
+            if ($e->getResponse()->getStatusCode() === 404) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'Cannot find family variant "%s" within family "%s" on Akeneo.',
+                        $familyVariantCode,
+                        $familyCode
+                    )
+                );
+            }
+
+            throw $e;
         }
         $productOptions = [];
         foreach ($familyVariantResponse['variant_attribute_sets'][0]['axes'] as $position => $attributeCode) {
@@ -82,16 +95,22 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
             Assert::isInstanceOf($productOption, ProductOptionInterface::class);
             $productOption->setCode($attributeCode);
             $productOption->setPosition($position);
-            $attributeResponse = $this->apiClient->findAttribute($attributeCode);
-            if (!$attributeResponse) {
-                throw new \RuntimeException(
-                    sprintf(
-                        'Cannot resolve product options for product "%s" because one of its variant attributes, ' .
-                        '"%s", cannot be found on Akeneo.',
-                        $akeneoProduct['identifier'],
-                        $attributeCode
-                    )
-                );
+
+            try {
+                $attributeResponse = $this->apiClient->getAttributeApi()->get($attributeCode);
+            } catch (HttpException $e) {
+                if ($e->getResponse()->getStatusCode() === 404) {
+                    throw new \RuntimeException(
+                        sprintf(
+                            'Cannot resolve product options for product "%s" because one of its variant attributes, ' .
+                            '"%s", cannot be found on Akeneo.',
+                            $akeneoProduct['identifier'],
+                            $attributeCode
+                        )
+                    );
+                }
+
+                throw $e;
             }
             foreach ($attributeResponse['labels'] as $locale => $label) {
                 $productOptionTranslation = $productOption->getTranslation($locale);
