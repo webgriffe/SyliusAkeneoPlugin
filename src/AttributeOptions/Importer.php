@@ -7,7 +7,6 @@ namespace Webgriffe\SyliusAkeneoPlugin\AttributeOptions;
 use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class Importer implements ImporterInterface

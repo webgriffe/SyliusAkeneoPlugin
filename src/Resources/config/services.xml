@@ -28,6 +28,7 @@
             <argument>%webgriffe_sylius_akeneo.api_client.secret%</argument>
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
 
         <service id="webgriffe_sylius_akeneo.product.value_handlers_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver" />
         <service id="Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface" alias="webgriffe_sylius_akeneo.product.value_handlers_resolver" />

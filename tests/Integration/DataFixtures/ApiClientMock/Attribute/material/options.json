@@ -1,85 +1,72 @@
-{
-    "_links": {
-        "self": {
-            "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options?page=1&limit=10&with_count=false"
+[
+    {
+        "_links": {
+            "self": {
+                "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/cotton"
+            }
         },
-        "first": {
-            "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options?page=1&limit=10&with_count=false"
+        "code": "cotton",
+        "attribute": "material",
+        "sort_order": 1,
+        "labels": {
+            "en_US": "cotton",
+            "it_IT": "cotone"
         }
     },
-    "current_page": 1,
-    "_embedded": {
-        "items": [
-            {
-                "_links": {
-                    "self": {
-                        "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/cotton"
-                    }
-                },
-                "code": "cotton",
-                "attribute": "material",
-                "sort_order": 1,
-                "labels": {
-                    "en_US": "cotton",
-                    "it_IT": "cotone"
-                }
-            },
-            {
-                "_links": {
-                    "self": {
-                        "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/leather"
-                    }
-                },
-                "code": "leather",
-                "attribute": "material",
-                "sort_order": 1,
-                "labels": {
-                    "en_US": "leather",
-                    "it_IT": "cuoio"
-                }
-            },
-            {
-                "_links": {
-                    "self": {
-                        "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/metal"
-                    }
-                },
-                "code": "metal",
-                "attribute": "material",
-                "sort_order": 1,
-                "labels": {
-                    "en_US": "metal",
-                    "it_IT": "metallo"
-                }
-            },
-            {
-                "_links": {
-                    "self": {
-                        "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/polyester"
-                    }
-                },
-                "code": "polyester",
-                "attribute": "material",
-                "sort_order": 1,
-                "labels": {
-                    "en_US": "polyester",
-                    "it_IT": "poliestere"
-                }
-            },
-            {
-                "_links": {
-                    "self": {
-                        "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/wool"
-                    }
-                },
-                "code": "wool",
-                "attribute": "material",
-                "sort_order": 1,
-                "labels": {
-                    "en_US": "wool",
-                    "it_IT": "lana"
-                }
+    {
+        "_links": {
+            "self": {
+                "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/leather"
             }
-        ]
+        },
+        "code": "leather",
+        "attribute": "material",
+        "sort_order": 1,
+        "labels": {
+            "en_US": "leather",
+            "it_IT": "cuoio"
+        }
+    },
+    {
+        "_links": {
+            "self": {
+                "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/metal"
+            }
+        },
+        "code": "metal",
+        "attribute": "material",
+        "sort_order": 1,
+        "labels": {
+            "en_US": "metal",
+            "it_IT": "metallo"
+        }
+    },
+    {
+        "_links": {
+            "self": {
+                "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/polyester"
+            }
+        },
+        "code": "polyester",
+        "attribute": "material",
+        "sort_order": 1,
+        "labels": {
+            "en_US": "polyester",
+            "it_IT": "poliestere"
+        }
+    },
+    {
+        "_links": {
+            "self": {
+                "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/attributes\/material\/options\/wool"
+            }
+        },
+        "code": "wool",
+        "attribute": "material",
+        "sort_order": 1,
+        "labels": {
+            "en_US": "wool",
+            "it_IT": "lana"
+        }
     }
-}
+]
