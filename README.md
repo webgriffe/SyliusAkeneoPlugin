@@ -180,12 +180,10 @@ Of course you can put this command in cron as well:
 To make all importers work automatically the following is the suggested crontab:
 
 ```
-0    *  *  *  *  /usr/bin/flock -w 0 /tmp/akeneo-options-enqueue.lock /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --all --importer="AttributeOptions"
-*    *  *  *  *  /usr/bin/flock -w 0 /tmp/akeneo-product-enqueue.lock /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt --importer="Product" --importer="ProductAssociations"
-*    *  *  *  *  /usr/bin/flock -w 0 /tmp/akeneo-consume.lock /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
+0    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --all --importer="AttributeOptions"
+*    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt --importer="Product" --importer="ProductAssociations"
+*    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
 ```
-
-This crontab makes use of [flock](https://linux.die.net/man/2/flock) to not overlap cron executions.
 
 It will enqueue the update of all attribute options every hour and it will import, every minute, all products that have been modified since the last execution, along with their associations.
 
