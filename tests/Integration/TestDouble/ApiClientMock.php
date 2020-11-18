@@ -92,6 +92,12 @@ final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClie
 
     public function findAllAttributes(): array
     {
-        // TODO: Implement findAllAttributes() method.
+        $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/*.json');
+        $attributes = [];
+        foreach ($files as $file) {
+            $attributes[] = json_decode(file_get_contents($file), true);
+        }
+
+        return $attributes;
     }
 }

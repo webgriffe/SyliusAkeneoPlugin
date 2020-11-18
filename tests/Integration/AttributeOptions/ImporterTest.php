@@ -98,7 +98,6 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_returns_all_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes(): void
     {
-        // todo make this pass
         $this->fixtureLoader->load(
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',

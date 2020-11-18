@@ -56,13 +56,24 @@ final class Importer implements ImporterInterface
     {
         // It's not possible to fetch only attributes or attribute options modified since a given date with the Akeneo
         // REST API. So, the $sinceDate argument it's not used.
-        $attributes = $this->apiClient->findAllAttributes();
+        $akeneoAttributes = $this->apiClient->findAllAttributes();
+        /** @var ProductAttributeInterface[] $syliusSelectAttributes */
+        $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);
+        $syliusSelectAttributes = array_map(
+            function (ProductAttributeInterface $attribute) {
+                return $attribute->getCode();
+            },
+            $syliusSelectAttributes
+        );
         $identifiers = [];
-        foreach ($attributes as $attribute) {
-            if ($attribute['type'] !== self::SIMPLESELECT_TYPE && $attribute['type'] !== self::MULTISELECT_TYPE) {
+        foreach ($akeneoAttributes as $akeneoAttribute) {
+            if (!in_array($akeneoAttribute['code'], $syliusSelectAttributes, true)) {
                 continue;
             }
-            $identifiers[] = $attribute['code'];
+            if ($akeneoAttribute['type'] !== self::SIMPLESELECT_TYPE && $akeneoAttribute['type'] !== self::MULTISELECT_TYPE) {
+                continue;
+            }
+            $identifiers[] = $akeneoAttribute['code'];
         }
 
         return $identifiers;
