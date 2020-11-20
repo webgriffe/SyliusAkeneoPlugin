@@ -6,8 +6,9 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 
 use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
 
-final class ApiClientMock implements ApiClientInterface
+final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface
 {
     private $productsUpdatedAt = [];
 
@@ -80,5 +81,23 @@ final class ApiClientMock implements ApiClientInterface
         }
 
         return $products;
+    }
+
+    public function findAllAttributeOptions(string $attributeCode): array
+    {
+        return $this->jsonDecodeOrNull(
+            __DIR__ . '/../DataFixtures/ApiClientMock/Attribute/' . $attributeCode . '/options.json'
+        );
+    }
+
+    public function findAllAttributes(): array
+    {
+        $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/*.json');
+        $attributes = [];
+        foreach ($files as $file) {
+            $attributes[] = json_decode(file_get_contents($file), true);
+        }
+
+        return $attributes;
     }
 }

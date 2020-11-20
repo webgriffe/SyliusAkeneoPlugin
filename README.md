@@ -175,6 +175,18 @@ Of course you can put this command in cron as well:
 *  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
 ```
 
+### Suggested crontab
+
+To make all importers work automatically the following is the suggested crontab:
+
+```
+0    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --all --importer="AttributeOptions"
+*    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt --importer="Product" --importer="ProductAssociations"
+*    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
+```
+
+It will enqueue the update of all attribute options every hour and it will import, every minute, all products that have been modified since the last execution, along with their associations.
+
 ## Architecture & customization
 
 This plugin has basically two main entry points:
@@ -267,6 +279,10 @@ app.my_custom_value_handler:
 ### Product associations importer
 
 Another provided importer is the **product associations importer** (`Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer`). This importer imports the Akeneo products associations to the analog Sylius products associations. The association types must already exist on Sylius with the same code they have on Akeneo.
+
+### Attribute options importer
+
+Another provided importer is the **attribute options importer** (`\Webgriffe\SyliusAkeneoPlugin\AttributeOptions\Importer`). This importer imports the Akeneo simple select and multi select attributes options into Sylius select attributes. The select attributes must already exist on Sylius with the same code they have on Akeneo.
 
 ## Contributing
 

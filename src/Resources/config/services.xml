@@ -28,6 +28,7 @@
             <argument>%webgriffe_sylius_akeneo.api_client.secret%</argument>
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
+        <service id="Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
 
         <service id="webgriffe_sylius_akeneo.product.value_handlers_resolver" class="Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver" />
         <service id="Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface" alias="webgriffe_sylius_akeneo.product.value_handlers_resolver" />
@@ -88,6 +89,13 @@
             <argument type="service" id="sylius.repository.product_association"/>
             <argument type="service" id="sylius.repository.product_association_type"/>
             <argument type="service" id="sylius.factory.product_association"/>
+            <tag name="webgriffe_sylius_akeneo.importer" />
+        </service>
+
+        <!-- Attribute Options Importer -->
+        <service id="webgriffe_sylius_akeneo.attribute_options.importer" class="Webgriffe\SyliusAkeneoPlugin\AttributeOptions\Importer">
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client"/>
+            <argument type="service" id="sylius.repository.product_attribute"/>
             <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
     </services>

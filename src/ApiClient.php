@@ -8,9 +8,10 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use Symfony\Component\HttpFoundation\File\File;
+use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
 use Webmozart\Assert\Assert;
 
-final class ApiClient implements ApiClientInterface
+final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface
 {
     /** @var string */
     private $token;
@@ -162,19 +163,20 @@ final class ApiClient implements ApiClientInterface
             '/api/rest/v1/products?search={"updated":[{"operator":">","value":"%s"}]}&limit=20&page=1',
             $date->format('Y-m-d H:i:s')
         );
-        $responseResult = $this->authenticatedRequest($endpoint, 'GET', []);
-        $products = $responseResult['_embedded']['items'];
 
-        while ($nextPageUrl = ($responseResult['_links']['next']['href'] ?? null)) {
-            Assert::string($nextPageUrl);
-            /** @var string $nextPageUrl */
-            $responseResult = $this->authenticatedRequest($nextPageUrl, 'GET', []);
+        return $this->traversePagination($this->authenticatedRequest($endpoint, 'GET', []));
+    }
 
-            /** @noinspection SlowArrayOperationsInLoopInspection */
-            $products = array_merge($products, $responseResult['_embedded']['items']);
-        }
+    public function findAllAttributeOptions(string $attributeCode): array
+    {
+        return $this->traversePagination(
+            $this->authenticatedRequest("/api/rest/v1/attributes/$attributeCode/options", 'GET', [])
+        );
+    }
 
-        return $products;
+    public function findAllAttributes(): array
+    {
+        return $this->traversePagination($this->authenticatedRequest('/api/rest/v1/attributes', 'GET', []));
     }
 
     private function login(): void
@@ -225,5 +227,20 @@ final class ApiClient implements ApiClientInterface
         }
 
         return $response;
+    }
+
+    private function traversePagination(array $responseResult): array
+    {
+        $items = $responseResult['_embedded']['items'];
+
+        while ($nextPageUrl = ($responseResult['_links']['next']['href'] ?? null)) {
+            Assert::string($nextPageUrl);
+            $responseResult = $this->authenticatedRequest($nextPageUrl, 'GET', []);
+
+            /** @noinspection SlowArrayOperationsInLoopInspection */
+            $items = array_merge($items, $responseResult['_embedded']['items']);
+        }
+
+        return $items;
     }
 }
