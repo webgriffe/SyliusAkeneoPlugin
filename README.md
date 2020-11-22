@@ -8,6 +8,44 @@
 <p align="center">Plugin allowing to import data from Akeneo PIM to your Sylius store.</p>
 <p align="center"><a href="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin"><img src="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin.svg?branch=master" alt="Build Status" /></a></p>
 
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  * [Importing product name, short description and description](#importing-product-name--short-description-and-description)
+  * [Importing product dimensions](#importing-product-dimensions)
+  * [Importing product slug](#importing-product-slug)
+  * [Importing product images](#importing-product-images)
+  * [Importing product attributes values](#importing-product-attributes-values)
+    + [Akeneo file attributes handling](#akeneo-file-attributes-handling)
+  * [Importing configurable products, product options and their values](#importing-configurable-products--product-options-and-their-values)
+  * [Importing product prices](#importing-product-prices)
+  * [Importing product-taxons associations](#importing-product-taxons-associations)
+  * [Importing product associations](#importing-product-associations)
+  * [Launch data import from CLI](#launch-data-import-from-cli)
+    + [Enqueue command](#enqueue-command)
+    + [Consume command](#consume-command)
+  * [Automatically import data with cron jobs](#automatically-import-data-with-cron-jobs)
+- [Architecture & customization](#architecture---customization)
+  * [Product Importer](#product-importer)
+    + [Taxons resolver](#taxons-resolver)
+    + [Product options resolver](#product-options-resolver)
+    + [Channels resolver](#channels-resolver)
+    + [Status resolver](#status-resolver)
+    + [Value handlers resolver](#value-handlers-resolver)
+    + [Value handlers](#value-handlers)
+  * [Product associations importer](#product-associations-importer)
+  * [Attribute options importer](#attribute-options-importer)
+- [Contributing](#contributing)
+  * [Running plugin tests](#running-plugin-tests)
+  * [Opening Sylius with your plugin](#opening-sylius-with-your-plugin)
+- [License](#license)
+- [Credits](#credits)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## Requirements
 
@@ -52,77 +90,255 @@ webgriffe_sylius_akeneo:
 
 Pay attention that among these parameters there are some sensitive configuration that you probably don't want to commit in your VCS. There are different solutions to this problem, like env configurations and secrets. Refer to [Symfony best practices doc](https://symfony.com/doc/current/best_practices.html#configuration) for more info.
 
-Then you'll need to configure the product importer **value handlers**. In the same file `config/packages/webgriffe_sylius_akeneo_plugin.yaml` add the following:
-
-```yaml
-webgriffe_sylius_akeneo:
-  # ...
-
-  value_handlers:
-    product:
-      name:
-        type: 'translatable_property'
-          # The 'translatable_property' value handler will take values from
-          # the provided Akeneo attribute and will set them to the provided
-          # Sylius property path relative to both Product and Product
-          # Variant tranlsations.
-        options:
-          akeneo_attribute_code: 'name'
-            # The Akeneo attribute code where product names are stored.
-          sylius_translation_property_path: 'name'
-            # The Sylius product (and product variant) trslations property
-            # path of property where to store the product names. It should
-            # always be set to 'name' unless you have customized Sylius.
-      slug:
-        type: 'immutable_slug'
-          # The 'immutable_slug' value handler will take values from the
-          # provided Akeneo attribute and set the sluggified version of
-          # that value on the Sylius slug property.
-        options:
-          akeneo_attribute_code: 'name'
-            # The Akeneo attribute to sluggify and set to the Sylius slug
-            # property.
-      product_option:
-        type: 'product_option'
-          # The 'product_option' value handler sets Sylius product options
-          # values for Product Variants which are part of configurable
-          # products.
-      price:
-        type: 'channel_pricing'
-          # The 'channel_pricing' value handler will take values from the
-          # provided Akeneo attribute and will set them to the Sylius
-          # product channel pricing.
-        options:
-          akeneo_attribute_code: 'price'
-            # The Akeneo attribute code where prices are stored.
-      attributes:
-        type: 'generic_attribute'
-          # The 'generic_attribute' value handler will automatically handle Sylius 
-          # attributes whose attribute code matches Akeneo attribute code.
-          # You just need to create Sylius attributes with the same code as Akeneo
-          # attributes and the connector will automatically import them.
-          # Supported Sylius attributes types are textarea, text, checkbox and select.
-      attachment:
-        type: 'file_attribute'
-          # The 'file_attribute' value handler will download files from the
-          # provided Akeneo file attribute and will save them to the given
-          # destination folder.
-        options:
-          akeneo_attribute_code: 'technical_specs'
-          # The Akeneo file attribute code.
-          download_path: '%sylius_core.public_dir%/media/attachment/product'
-          # The file destination folder.
-
-            
-```
-
-On a base Sylius installation without any customization these are the minimum required value handlers that you'll need to configure. In a real-world project you'll probably need to configure more value handlers. Every value handler must have a `type` and some `options` depending on the type itself. You can also specify a `priority` that will be used when adding that handler in the **value handlers resolver**. We'll cover **value handlers**  and its resolver later in this document.
-
 ## Usage
 
-To import data you must first create queue items with the **enqueue command** and then you can import them with the **consume command**.
+Without any further action this plugin will not import anything from Akeneo. Depending on your import needs, after the initial configuration you have to configure specific product **value handlers** and create some Akeneo-related entities on Sylius.
 
-### Enqueue command
+### Importing product name, short description and description
+
+If you want to import name, short description and description for your products you have to configure proper **translatable property value handlers** in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      name:
+        type: 'translatable_property'
+        options:
+          akeneo_attribute_code: 'name'
+          sylius_translation_property_path: 'name'
+      short_description:
+        type: 'translatable_property'
+        options:
+          akeneo_attribute_code: 'short_description'
+          sylius_translation_property_path: 'short_description'
+      description:
+        type: 'translatable_property'
+        options:
+          akeneo_attribute_code: 'description'
+          sylius_translation_property_path: 'description'
+```
+
+For each `translatable_property` value handler you have to configure, in `sylius_translation_property_path`, the Sylius product (and product variant) translation property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`.
+
+In the same way you can import other translatable properties values like meta keyword, meta description and other custom translatable properties you eventually added to your store.
+
+### Importing product dimensions
+
+If you want to import product dimensions like height, width, depth and weight you have to configure the proper **generic property value handlers** in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      weight:
+        type: 'generic_property'
+        options:
+          akeneo_attribute_code: 'weight'
+          property_path: 'weight'
+      depth:
+        type: 'generic_property'
+        options:
+          akeneo_attribute_code: 'depth'
+          property_path: 'depth'
+      width:
+        type: 'generic_property'
+        options:
+          akeneo_attribute_code: 'width'
+          property_path: 'width'
+      height:
+        type: 'generic_property'
+        options:
+          akeneo_attribute_code: 'height'
+          property_path: 'height'    	
+```
+
+For each `generic_property` value handler you have to configure, in `property_path`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`.
+
+In the same way you can import other product properties like shipping category and other custom properties you eventually added to your store.
+
+### Importing product slug
+
+This plugin is able to create a sluggified version of an Akeneo attribute value, often the product name, and import it into Sylius product slug. If the slug is already set on Sylius for a certain product it will not be changed during the import from Akeneo.
+
+To enable this behavior you have to configure the **immutable slug value handler** in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      slug:
+        type: 'immutable_slug'
+        options:
+          akeneo_attribute_code: 'name'    	
+```
+
+In the `akeneo_attribute_code` option you have to set the Akeneo attribute code that you want to sluggify and set in the Sylius product slug.
+
+Otherwise, If you have a slug attribute directly on Akeneo, you can import it like any other translatable property using a **translatable property value handler**:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      slug:
+        type: 'translatable_property'
+        options:
+          akeneo_attribute_code: 'slug'
+          sylius_translation_property_path: 'slug'
+```
+
+### Importing product images
+
+If you want to import product images from Akeneo you have to configure the **image value handler** in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      main_image:
+	      type: 'image'
+  	    options:
+    		  akeneo_attribute_code: 'main_image'
+		      sylius_image_type: 'main_image'
+      secondary_image_1:
+	      type: 'image'
+  	    options:
+    		  akeneo_attribute_code: 'secondary_image_1'
+		      sylius_image_type: 'secondary_image_1'
+      secondary_image_2:
+	      type: 'image'
+  	    options:
+    		  akeneo_attribute_code: 'secondary_image_2'
+		      sylius_image_type: 'secondary_image_2'
+```
+
+In the `akeneo_attribute_code` option you have to set the code of the Akeneo attribute where you store product images and in the `sylius_image_type` you have to configure the string to set on Sylius as product image type.
+
+### Importing product attributes values
+
+This plugin will automatically create or update Sylius product attributes values during product import. All you have to do is to **create, on Sylius, the same product attributes that you have on Akeneo** paying attention to assign the same code they have on Akeneo and to choose a compatible type considering the type they have on Akeneo. For example, if you have a simple select attribute on Akeneo you should create it as a select attribute on Sylius; similarly if you have a text attribute on Akeneo you should create it as a text attribute on Sylius.
+
+You're not forced to create on Sylius all the attributes you have on Akeneo but only those you need to be imported to your store.
+
+Then to import the actual product attributes values you have to configure the **generic attribute value handler** in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      attributes:
+        type: 'generic_attribute'    	
+```
+
+The `generic_attribute` value handler doesn't need any configuration; it must be configured only once and it will handle all the product attributes created on Sylius.
+
+Also, keep in mind that **this plugin will import Sylius select attributes options** from Akeneo automatically, no configuration is needed.
+
+#### Akeneo file attributes handling
+
+This plugin is also able to handle Akeneo file attributes even if there is no corresponding file attribute on Sylius.
+
+Suppose that you have a *Technical Sheet* file attribute on Akeneo (with code `technical_sheet`) and you want to make those technical sheets downloadable frome the Sylius product page in the frontend. To do so, just **create a Sylius text attribute with the same code** of the Akeneo *Tehcnical Sheet* attribute. Then configure a `file_attribute` for that attribute and make sure that the `generic_attribute` value handler is configured:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+			# ...
+      attributes:
+        type: 'generic_attribute'
+      technical_sheet:
+        type: 'file_attribute'
+        options:
+          akeneo_attribute_code: 'technical_sheet'
+          download_path: '%sylius_core.public_dir%/media/product_technical_sheets'
+```
+
+After a product import you'll have the products technical sheets downloaded in the `%sylius_core.public_dir%/media/product_technical_sheets` directory and the path of the techincal sheet file of each product saved in the `technical_sheet` text attribute (the path will be relative to the download path). So, in your product show template you can have the following to allow users to download technical sheets:
+
+```twig
+{# templates/SyliusShopBundle/views/Product/show.html.twig #}
+
+{% set technicalSheet = product.getAttributeByCodeAndLocale('technical_sheet', sylius.localeCode) %}
+{% if technicalSheet and technicalSheet.value is not empty %}
+  <a href="{{ asset('media/product_technical_sheet/' ~ technicalSheet.value) }}">
+    Download Techincal Sheet
+  </a>
+{% endif %}
+```
+
+### Importing configurable products, product options and their values
+
+If you have product models on Akeneo this plugin will create relative configurable products along with their variants on Sylius. To make this possible **you must create on Sylius the product options with the same code of the related Akeneo's family variant axes attributes**. You can leave the product options empty (without values) because they will be created during actual product import. To do so you must configure the **product options value handler** in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml`:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      product_option:
+        type: 'product_option'    	
+```
+
+The `product_option` value handler doesn't need any configuration; it must be configured only once and it will handle all the product options created on Sylius.
+
+### Importing product prices
+
+If you manage product prices on Akeneo you can import them on Sylius. To do so you have to configure the channel pricing value handler in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+    	# ...
+      price:
+        type: 'channel_pricing'
+        options:
+          akeneo_attribute_code: 'price'    	
+```
+
+In the `akeneo_attribute_code` option you have to set the code of the **Akeneo price attribute** where you store your products prices. Then they will be imported into Sylius for channels whose base currency is the same as the price currency on Akeneo.
+
+### Importing product-taxons associations
+
+This plugin **will not import Akeneo categories into Sylius taxons**, but **it will import Sylius product-taxons associations** based on Akeneo product-categories associations. This plugin will associate products only to those Sylius taxons which already exist on Sylius and have the same code of their related Akeneo categories. In this way, products taxons association import does not need any configuration and you can have all the categories you want on Akeneo, even those you don't want on your Sylius store. Indeed, if there are products associated to Akeneo categories which doesn't exist on Sylius, the import will succeed with no error.
+
+So, all you have to do is to **create on Sylius those taxons that you want products associated with** when importing from Akeneo, paying attention to **assign the same code** of the corresponding category on Akeneo.
+
+### Importing product associations
+
+This plugin will also import product associations. It's a zero configuration import. All you have to do is to **create on Sylius the same association types that you have on Akeneo** paying attention to assign the same association type code. If you have some association type on Akeneo that you don't need on your store, simply do not create it on Sylius and product associations importer will ignore it.
+
+### Launch data import from CLI
+
+To actually import data you must first create queue items with the **enqueue command** and then you can import them with the **consume command**.
+
+#### Enqueue command
 
 To create queue items you can use the `webgriffe:akeneo:enqueue` console command:
 
@@ -159,7 +375,7 @@ You can also enqueue items regardless their last update date:
 bin/console webgriffe:akeneno:enqueue --all
 ```
 
-### Consume command
+#### Consume command
 
 To import the Akeneo entities that are in the queue you can use the `webgriffe:akeneo:consume` console command:
 
@@ -175,7 +391,7 @@ Of course you can put this command in cron as well:
 *  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
 ```
 
-### Suggested crontab
+### Automatically import data with cron jobs
 
 To make all importers work automatically the following is the suggested crontab:
 
@@ -368,3 +584,11 @@ To be able to setup a plugin's database, remember to configure you database cred
     (cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)
     (cd tests/Application && APP_ENV=dev bin/console server:run -d public)
     ```
+
+## License
+
+This plugin is under the MIT license. See the complete license in the LICENSE file.
+
+## Credits
+
+Developed by [Webgriffe®](http://www.webgriffe.com/).
