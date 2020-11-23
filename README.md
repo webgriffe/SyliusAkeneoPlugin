@@ -104,7 +104,7 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       name:
         type: 'translatable_property'
         options:
@@ -136,7 +136,7 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       weight:
         type: 'generic_property'
         options:
@@ -156,7 +156,7 @@ webgriffe_sylius_akeneo:
         type: 'generic_property'
         options:
           akeneo_attribute_code: 'height'
-          property_path: 'height'    	
+          property_path: 'height'      
 ```
 
 For each `generic_property` value handler you have to configure, in `property_path`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`.
@@ -175,11 +175,11 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       slug:
         type: 'immutable_slug'
         options:
-          akeneo_attribute_code: 'name'    	
+          akeneo_attribute_code: 'name'      
 ```
 
 In the `akeneo_attribute_code` option you have to set the Akeneo attribute code that you want to sluggify and set in the Sylius product slug.
@@ -192,7 +192,7 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       slug:
         type: 'translatable_property'
         options:
@@ -210,22 +210,22 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       main_image:
-	      type: 'image'
-  	    options:
-    		  akeneo_attribute_code: 'main_image'
-		      sylius_image_type: 'main_image'
+        type: 'image'
+        options:
+          akeneo_attribute_code: 'main_image'
+          sylius_image_type: 'main_image'
       secondary_image_1:
-	      type: 'image'
-  	    options:
-    		  akeneo_attribute_code: 'secondary_image_1'
-		      sylius_image_type: 'secondary_image_1'
+        type: 'image'
+        options:
+          akeneo_attribute_code: 'secondary_image_1'
+          sylius_image_type: 'secondary_image_1'
       secondary_image_2:
-	      type: 'image'
-  	    options:
-    		  akeneo_attribute_code: 'secondary_image_2'
-		      sylius_image_type: 'secondary_image_2'
+        type: 'image'
+        options:
+          akeneo_attribute_code: 'secondary_image_2'
+          sylius_image_type: 'secondary_image_2'
 ```
 
 In the `akeneo_attribute_code` option you have to set the code of the Akeneo attribute where you store product images and in the `sylius_image_type` you have to configure the string to set on Sylius as product image type.
@@ -244,9 +244,9 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       attributes:
-        type: 'generic_attribute'    	
+        type: 'generic_attribute'      
 ```
 
 The `generic_attribute` value handler doesn't need any configuration; it must be configured only once and it will handle all the product attributes created on Sylius.
@@ -265,7 +265,7 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-			# ...
+      # ...
       attributes:
         type: 'generic_attribute'
       technical_sheet:
@@ -298,9 +298,9 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       product_option:
-        type: 'product_option'    	
+        type: 'product_option'      
 ```
 
 The `product_option` value handler doesn't need any configuration; it must be configured only once and it will handle all the product options created on Sylius.
@@ -315,11 +315,11 @@ webgriffe_sylius_akeneo:
   # ...
   value_handlers:
     product:
-    	# ...
+      # ...
       price:
         type: 'channel_pricing'
         options:
-          akeneo_attribute_code: 'price'    	
+          akeneo_attribute_code: 'price'      
 ```
 
 In the `akeneo_attribute_code` option you have to set the code of the **Akeneo price attribute** where you store your products prices. Then they will be imported into Sylius for channels whose base currency is the same as the price currency on Akeneo.
