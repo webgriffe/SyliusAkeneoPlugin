@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,6 +19,8 @@ use Webmozart\Assert\Assert;
 
 final class EnqueueCommand extends Command
 {
+    use LockableTrait;
+
     public const SINCE_OPTION_NAME = 'since';
 
     public const SINCE_FILE_OPTION_NAME = 'since-file';
@@ -114,6 +117,12 @@ final class EnqueueCommand extends Command
             );
         }
 
+        if (!$this->lock()) {
+            $output->writeln('The command is already running in another process.');
+
+            return 0;
+        }
+
         $runDate = $this->dateTimeBuilder->build();
         foreach ($this->getImporters($input) as $importer) {
             $identifiers = $importer->getIdentifiersModifiedSince($sinceDate);
@@ -152,6 +161,8 @@ final class EnqueueCommand extends Command
         if ($sinceFilePath) {
             $this->writeSinceDateFile($sinceFilePath, $runDate);
         }
+
+        $this->release();
 
         return 0;
     }

@@ -403,6 +403,8 @@ To make all importers work automatically the following is the suggested crontab:
 
 It will enqueue the update of all attribute options every hour and it will import, every minute, all products that have been modified since the last execution, along with their associations.
 
+Both enqueue and consume commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents to run them multiple times.
+
 ## Architecture & customization
 
 This plugin has basically two main entry points:
