@@ -35,7 +35,11 @@
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.system.filesystem" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\FilesystemContext" />
+        <service id="webgriffe_sylius_akeneo.context.system.filesystem" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\FilesystemContext">
+            <argument>%webgriffe_sylius_akeneo.temporary_directory%</argument>
+            <argument>%webgriffe_sylius_akeneo.temporary_files_prefix%</argument>
+        </service>
+
         <service id="webgriffe_sylius_akeneo.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext" />
     </services>
 </container>
