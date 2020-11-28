@@ -7,6 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
@@ -15,6 +16,8 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
 final class ConsumeCommand extends Command
 {
+    use LockableTrait;
+
     protected static $defaultName = 'webgriffe:akeneo:consume';
 
     /** @var QueueItemRepositoryInterface */
@@ -47,6 +50,12 @@ final class ConsumeCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if (!$this->lock()) {
+            $output->writeln('The command is already running in another process.');
+
+            return 0;
+        }
+
         $queueItems = $this->queueItemRepository->findAllToImport();
         foreach ($queueItems as $queueItem) {
             $akeneoIdentifier = $queueItem->getAkeneoIdentifier();
@@ -60,6 +69,8 @@ final class ConsumeCommand extends Command
                 /** @var EntityManagerInterface $objectManager */
                 $objectManager = $this->managerRegistry->getManager();
                 if (!$objectManager->isOpen()) {
+                    $this->release();
+
                     throw $t;
                 }
                 $queueItem->setErrorMessage($t->getMessage() . \PHP_EOL . $t->getTraceAsString());
@@ -83,6 +94,8 @@ final class ConsumeCommand extends Command
                 )
             );
         }
+
+        $this->release();
 
         return 0;
     }
