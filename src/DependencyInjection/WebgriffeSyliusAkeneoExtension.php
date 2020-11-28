@@ -117,6 +117,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     {
         $this->addTaggedValueHandlersToResolver($container);
         $this->addTaggedImportersToRegistry($container);
+        $this->registerTemporaryDirectoryParameter($container);
     }
 
     private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers): array
@@ -184,5 +185,14 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         foreach ($taggedImporters as $id => $tags) {
             $importerRegistryDefinition->addMethodCall('add', [new Reference($id)]);
         }
+    }
+
+    private function registerTemporaryDirectoryParameter(ContainerBuilder $container): void
+    {
+        $parameterKey = 'webgriffe_sylius_akeneo.temporary_directory';
+        if ($container->hasParameter($parameterKey)) {
+            return;
+        }
+        $container->setParameter($parameterKey, sys_get_temp_dir());
     }
 }

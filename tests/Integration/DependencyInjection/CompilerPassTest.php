@@ -65,6 +65,28 @@ final class CompilerPassTest extends AbstractCompilerPassTestCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function registers_temporary_directory_parameter(): void
+    {
+        $this->compile();
+
+        $this->assertContainerBuilderHasParameter('webgriffe_sylius_akeneo.temporary_directory', sys_get_temp_dir());
+    }
+
+    /**
+     * @test
+     */
+    public function does_not_register_temporary_directory_parameter_if_it_is_already_defined(): void
+    {
+        $this->container->setParameter('webgriffe_sylius_akeneo.temporary_directory', '/tmp/my-custom-path');
+
+        $this->compile();
+
+        $this->assertContainerBuilderHasParameter('webgriffe_sylius_akeneo.temporary_directory', '/tmp/my-custom-path');
+    }
+
     protected function registerCompilerPass(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new WebgriffeSyliusAkeneoExtension());

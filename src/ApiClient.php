@@ -34,13 +34,17 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     /** @var string */
     private $secret;
 
+    /** @var TemporaryFilesManagerInterface|null */
+    private $temporaryFilesManager;
+
     public function __construct(
         ClientInterface $httpClient,
         string $baseUrl,
         string $username,
         string $password,
         string $clientId,
-        string $secret
+        string $secret,
+        TemporaryFilesManagerInterface $temporaryFilesManager = null
     ) {
         $this->httpClient = $httpClient;
         $this->baseUrl = rtrim($baseUrl, '/');
@@ -48,6 +52,16 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         $this->password = $password;
         $this->clientId = $clientId;
         $this->secret = $secret;
+        if (null === $temporaryFilesManager) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.3',
+                'Not passing a temporary files manager to %s is deprecated and will not be possible anymore in %s',
+                __CLASS__,
+                '2.0'
+            );
+        }
+        $this->temporaryFilesManager = $temporaryFilesManager;
     }
 
     /**
@@ -128,8 +142,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
 
             throw new \HttpException($responseResult['message'], $responseResult['code']);
         }
-        $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
-        Assert::string($tempName);
+        $tempName = $this->generateTempFilePath();
         file_put_contents($tempName, $bodyContents);
 
         return new File($tempName);
@@ -242,5 +255,17 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         }
 
         return $items;
+    }
+
+    private function generateTempFilePath(): string
+    {
+        if (null === $this->temporaryFilesManager) {
+            $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
+            Assert::string($tempName);
+
+            return $tempName;
+        }
+
+        return $this->temporaryFilesManager->generateTemporaryFilePath();
     }
 }

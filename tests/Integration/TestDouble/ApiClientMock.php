@@ -7,10 +7,19 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
 final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface
 {
     private $productsUpdatedAt = [];
+
+    /** @var TemporaryFilesManagerInterface */
+    private $temporaryFilesManager;
+
+    public function __construct(TemporaryFilesManagerInterface $temporaryFilesManager)
+    {
+        $this->temporaryFilesManager = $temporaryFilesManager;
+    }
 
     public function findProductModel(string $code): ?array
     {
@@ -65,7 +74,7 @@ final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClie
         if (!file_exists($path)) {
             throw new \RuntimeException("File '$path' does not exists.");
         }
-        $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
+        $tempName = $this->temporaryFilesManager->generateTemporaryFilePath();
         file_put_contents($tempName, file_get_contents($path));
 
         return new File($tempName);

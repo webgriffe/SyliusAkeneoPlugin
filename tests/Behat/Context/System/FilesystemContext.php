@@ -14,6 +14,18 @@ final class FilesystemContext implements Context
     /** @var vfsStreamContainer */
     private $vfsStream;
 
+    /** @var string */
+    private $temporaryDirectory;
+
+    /** @var string */
+    private $temporaryFilesPrefix;
+
+    public function __construct(string $temporaryDirectory, string $temporaryFilesPrefix)
+    {
+        $this->temporaryDirectory = $temporaryDirectory;
+        $this->temporaryFilesPrefix = $temporaryFilesPrefix;
+    }
+
     /**
      * @BeforeScenario
      */
@@ -38,5 +50,13 @@ final class FilesystemContext implements Context
         $file = vfsStream::url('root/' . $filename);
         $actualFileContent = file_get_contents($file);
         Assert::same($actualFileContent, $content);
+    }
+
+    /**
+     * @Then /^there should not be any temporary file in the temporary files directory$/
+     */
+    public function thereShouldNotBeAnyTemporaryFileInTheTemporaryFilesDirectory()
+    {
+        Assert::isEmpty(glob(rtrim($this->temporaryDirectory, '/') . '/' . $this->temporaryFilesPrefix . '*'));
     }
 }

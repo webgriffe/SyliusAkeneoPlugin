@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="webgriffe_sylius_akeneo.temporary_files_prefix">akeneo-</parameter>
+    </parameters>
+
     <services>
         <!-- Commands -->
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
@@ -26,6 +30,7 @@
             <argument>%webgriffe_sylius_akeneo.api_client.password%</argument>
             <argument>%webgriffe_sylius_akeneo.api_client.client_id%</argument>
             <argument>%webgriffe_sylius_akeneo.api_client.secret%</argument>
+            <argument type="service" id="webgriffe_sylius_akeneo.temporary_file_manager" />
         </service>
         <service id="Webgriffe\SyliusAkeneoPlugin\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
         <service id="Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface" alias="webgriffe_sylius_akeneo.api_client" />
@@ -41,6 +46,20 @@
 
         <service id="webgriffe_sylius_akeneo.slugify" class="Cocur\Slugify\Slugify" />
         <service id="Cocur\Slugify\SlugifyInterface" alias="webgriffe_sylius_akeneo.slugify" />
+
+        <service id="webgriffe_sylius_akeneo.temporary_file_manager" class="Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager">
+            <argument type="service" id="filesystem" />
+            <argument type="service">
+                <service class="Symfony\Component\Finder\Finder" />
+            </argument>
+            <argument>%webgriffe_sylius_akeneo.temporary_directory%</argument>
+            <argument>%webgriffe_sylius_akeneo.temporary_files_prefix%</argument>
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.event_subscriber.command" class="Webgriffe\SyliusAkeneoPlugin\EventSubscriber\CommandEventSubscriber">
+            <argument type="service" id="webgriffe_sylius_akeneo.temporary_file_manager" />
+            <tag name="kernel.event_subscriber" />
+        </service>
 
         <!-- Product Importer -->
         <service id="webgriffe_sylius_akeneo.product.taxons_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\AlreadyExistingTaxonsResolver">

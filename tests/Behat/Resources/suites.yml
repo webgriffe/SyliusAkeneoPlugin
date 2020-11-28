@@ -13,6 +13,7 @@ default:
 
                 - webgriffe_sylius_akeneo.context.db.product
                 - webgriffe_sylius_akeneo.context.db.queue
+                - webgriffe_sylius_akeneo.context.system.filesystem
 
             filters:
                 tags: "@importing_products && @cli"
