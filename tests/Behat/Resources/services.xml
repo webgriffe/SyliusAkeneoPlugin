@@ -4,42 +4,42 @@
     <services>
         <defaults public="true" />
 
-        <service id="webgriffe_sylius_akeneo.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.cli.consume_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ConsumeCommandContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.cli.consume_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ConsumeCommandContext">
             <argument type="service" id="kernel" />
             <argument type="service" id="webgriffe_sylius_akeneo.command.consume" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.cli.enqueue_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\EnqueueCommandContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.cli.enqueue_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\EnqueueCommandContext">
             <argument type="service" id="kernel" />
             <argument type="service" id="webgriffe_sylius_akeneo.command.enqueue" />
             <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.db.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ProductContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.db.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ProductContext">
             <argument type="service" id="sylius.repository.product" />
             <argument type="service" id="sylius.repository.product_variant" />
             <argument type="service" id="sylius.repository.product_association" />
             <argument type="service" id="sylius.repository.product_association_type" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\QueueContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\QueueContext">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.system.filesystem" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\FilesystemContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.system.filesystem" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\FilesystemContext">
             <argument>%webgriffe_sylius_akeneo.temporary_directory%</argument>
             <argument>%webgriffe_sylius_akeneo.temporary_files_prefix%</argument>
         </service>
 
-        <service id="webgriffe_sylius_akeneo.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext" />
+        <service id="webgriffe_sylius_akeneo.behat.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext" />
     </services>
 </container>
