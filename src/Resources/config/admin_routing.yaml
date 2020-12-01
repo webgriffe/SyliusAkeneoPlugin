@@ -1,0 +1,15 @@
+webgriffe_sylius_akeneo_admin_queue_item:
+    resource: |
+        alias: webgriffe_sylius_akeneo.queue_item
+        section: admin
+        path: akeneo_queue_items
+        except: ['delete', 'update', 'create', 'show', 'bulkDelete']
+        templates: "@SyliusAdmin\\Crud"
+        redirect: update
+        grid: webgriffe_sylius_akeneo_admin_queue_item
+        vars:
+            all:
+                subheader: webgriffe_sylius_akeneo.ui.manage_akeneo_queue_items
+            index:
+                icon: 'cloud download'
+    type: sylius.resource

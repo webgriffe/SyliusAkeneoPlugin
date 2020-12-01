@@ -1,0 +1,3 @@
+webgriffe_sylius_akeneo_plugin_admin:
+    resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/admin_routing.yaml"
+    prefix: /admin

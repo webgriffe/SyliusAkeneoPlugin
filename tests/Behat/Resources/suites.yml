@@ -92,3 +92,14 @@ default:
             filters:
                 tags: "@enqueuing_products_associations && @cli"
 
+        ui_browsing_queue_items:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.setup.admin_security
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
+
+                - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items
+
+            filters:
+                tags: "@browsing_queue_items && @ui"

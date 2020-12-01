@@ -1,0 +1,29 @@
+sylius_resource:
+    resources:
+        webgriffe_sylius_akeneo.queue_item:
+            classes:
+                model: Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem
+                repository: Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\QueueItemRepository
+
+sylius_grid:
+    grids:
+        webgriffe_sylius_akeneo_admin_queue_item:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem
+                    repository:
+                        method: createNotImportedListQueryBuilder
+            fields:
+                akeneoEntity:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.importer
+                akeneoIdentifier:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.identifier
+                createdAt:
+                    type: datetime
+                    label: sylius.ui.created_at
+            actions:
+                main: ~
+                item: ~
