@@ -17,7 +17,7 @@ final class AdminMenuListener
         }
 
         $catalogMenu
-            ->addChild('webgriffe_sylius_akeneo.queue_item')
+            ->addChild('webgriffe_sylius_akeneo.queue_item', ['route' => 'webgriffe_sylius_akeneo_admin_queue_item_index'])
             ->setLabel('webgriffe_sylius_akeneo.ui.queue_items')
             ->setLabelAttribute('icon', 'cloud download')
         ;
