@@ -2,3 +2,8 @@ webgriffe_sylius_akeneo:
     ui:
         queue_items: Importazione da Akeneo PIM
         manage_akeneo_queue_items: Gestisci gli elementi di importazione da Akeneo PIM
+        importer: Tipo di import
+        identifier: Identificatore
+        imported: Importato
+        imported_yes: Si, il %date%
+        imported_no: No

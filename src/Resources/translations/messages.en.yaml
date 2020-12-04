@@ -4,4 +4,6 @@ webgriffe_sylius_akeneo:
         manage_akeneo_queue_items: Manage Akeneo PIM import items
         importer: Importer type
         identifier: Identifier
-        created_at: Created At
+        imported: Imported
+        imported_yes: Yes, at %date%
+        imported_no: No

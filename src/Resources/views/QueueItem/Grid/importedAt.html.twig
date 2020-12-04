@@ -1,0 +1,11 @@
+{% if data %}
+    <span class="ui green label">
+        <i class="check icon"></i>
+        {{ 'webgriffe_sylius_akeneo.ui.imported_yes'|trans({'%date%': data|date('Y-m-d H:i:s')}) }}
+    </span>
+{% else %}
+    <span class="ui red label">
+        <i class="remove icon"></i>
+        {{ 'webgriffe_sylius_akeneo.ui.imported_no'|trans }}
+    </span>
+{% endif %}

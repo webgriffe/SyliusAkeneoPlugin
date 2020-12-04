@@ -27,10 +27,13 @@ final class ManagingQueueItems implements Context
     }
 
     /**
-     * @Then /^I should see (\d+) queue items in the list$/
+     * @Then /^I should see (\d+), not imported, queue items in the list$/
      */
     public function iShouldSeeQueueItemsInTheList(int $numberOfItems): void
     {
         Assert::same($this->indexPage->countItems(), $numberOfItems);
+        foreach ($this->indexPage->getColumnFields('importedAt') as $columnField) {
+            Assert::eq($columnField, 'No');
+        }
     }
 }
