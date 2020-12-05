@@ -12,19 +12,25 @@ sylius_grid:
                 name: doctrine/orm
                 options:
                     class: Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem
+            sorting:
+                createdAt: desc
             fields:
                 akeneoEntity:
                     type: string
                     label: webgriffe_sylius_akeneo.ui.importer
+                    sortable: ~
                 akeneoIdentifier:
                     type: string
                     label: webgriffe_sylius_akeneo.ui.identifier
+                    sortable: ~
                 createdAt:
                     type: datetime
                     label: sylius.ui.created_at
+                    sortable: ~
                 importedAt:
                     type: twig
                     label: webgriffe_sylius_akeneo.ui.imported
+                    sortable: ~
                     options:
                         template: '@WebgriffeSyliusAkeneoPlugin\QueueItem\Grid\importedAt.html.twig'
             filters:
