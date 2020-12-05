@@ -28,7 +28,7 @@ sylius_grid:
                     type: twig
                     label: webgriffe_sylius_akeneo.ui.imported
                     options:
-                        template: 'WebgriffeSyliusAkeneoPlugin:QueueItem\Grid:importedAt.html.twig'
+                        template: '@WebgriffeSyliusAkeneoPlugin\QueueItem\Grid\importedAt.html.twig'
             actions:
                 main: ~
                 item: ~
