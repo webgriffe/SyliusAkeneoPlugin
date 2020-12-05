@@ -36,4 +36,31 @@ final class ManagingQueueItems implements Context
             Assert::eq($columnField, 'No');
         }
     }
+
+    /**
+     * @Given /^I choose "([^"]*)" as an imported filter$/
+     */
+    public function iChooseAsAnImportedFilter(string $imported): void
+    {
+        $this->indexPage->chooseImportedFilter($imported);
+    }
+
+    /**
+     * @When /^I filter$/
+     */
+    public function iFilter(): void
+    {
+        $this->indexPage->filter();
+    }
+
+    /**
+     * @Then /^I should see (\d+), imported, queue items? in the list$/
+     */
+    public function iShouldSeeImportedQueueItemInTheList(int $numberOfItems): void
+    {
+        Assert::same($this->indexPage->countItems(), $numberOfItems);
+        foreach ($this->indexPage->getColumnFields('importedAt') as $columnField) {
+            Assert::contains($columnField, 'Yes');
+        }
+    }
 }
