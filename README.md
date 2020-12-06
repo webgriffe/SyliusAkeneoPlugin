@@ -29,6 +29,7 @@
     + [Enqueue command](#enqueue-command)
     + [Consume command](#consume-command)
   * [Automatically import data with cron jobs](#automatically-import-data-with-cron-jobs)
+  * [Browsing queue items in the admin](#browsing-queue-items-in-the-admin)
 - [Architecture & customization](#architecture---customization)
   * [Product Importer](#product-importer)
     + [Taxons resolver](#taxons-resolver)
@@ -404,6 +405,12 @@ To make all importers work automatically the following is the suggested crontab:
 It will enqueue the update of all attribute options every hour and it will import, every minute, all products that have been modified since the last execution, along with their associations.
 
 Both enqueue and consume commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents to run them multiple times.
+
+### Browsing queue items in the admin
+
+You can examine the Akeneo import queue from the admin panel at **Catalog -> Akeneo PIM import**. You can filter and sort items and see their error message:
+
+![Akeneo queue items grid](queue_items_grid.png)
 
 ## Architecture & customization
 
