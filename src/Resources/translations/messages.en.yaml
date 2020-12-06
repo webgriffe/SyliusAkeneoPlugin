@@ -7,3 +7,4 @@ webgriffe_sylius_akeneo:
         imported: Imported
         imported_yes: Yes, at %date%
         imported_no: No
+        error_message: Error message
