@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM;
 
-use Doctrine\ORM\QueryBuilder;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
@@ -34,10 +33,5 @@ class QueueItemRepository extends EntityRepository implements QueueItemRepositor
             ->getQuery()
             ->getOneOrNullResult()
         ;
-    }
-
-    public function createNotImportedListQueryBuilder(): QueryBuilder
-    {
-        return $this->createQueryBuilder('o')->andWhere('o.importedAt IS NULL');
     }
 }
