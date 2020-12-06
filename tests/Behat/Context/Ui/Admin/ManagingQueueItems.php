@@ -73,7 +73,7 @@ final class ManagingQueueItems implements Context
     }
 
     /**
-     * @Then /^I should see (\d+) queue item in the list$/
+     * @Then /^I should see (\d+) queue items? in the list$/
      */
     public function iShouldSeeQueueItemInTheList(int $numberOfItems): void
     {

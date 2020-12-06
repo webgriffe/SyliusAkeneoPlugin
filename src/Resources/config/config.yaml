@@ -45,7 +45,6 @@ sylius_grid:
                     label: webgriffe_sylius_akeneo.ui.imported
                     options:
                         field: importedAt
-                    default_value: false
             actions:
                 main: ~
                 item: ~

@@ -11,8 +11,15 @@ Feature: Browsing queue items
     And there is an already imported item with identifier "braided-hat-s" for the "Product" importer in the Akeneo queue
 
   @ui
+  Scenario: Browsing all items
+    When I browse Akeneo queue items
+    Then I should see 3 queue items in the list
+
+  @ui
   Scenario: Browsing not imported items
     When I browse Akeneo queue items
+    And I choose "No" as an imported filter
+    And I filter
     Then I should see 2, not imported, queue items in the list
 
   @ui
