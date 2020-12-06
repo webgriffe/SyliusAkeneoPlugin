@@ -79,4 +79,12 @@ final class ManagingQueueItems implements Context
     {
         Assert::same($this->indexPage->countItems(), $numberOfItems);
     }
+
+    /**
+     * @Given /^I specify "([^"]*)" as an identifier filter$/
+     */
+    public function iSpecifyAsAnIdentifierFilter(string $identifier): void
+    {
+        $this->indexPage->specifyIdentifierFilter($identifier);
+    }
 }

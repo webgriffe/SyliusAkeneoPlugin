@@ -18,6 +18,11 @@ class IndexPage extends BaseIndexPage implements IndexPageInterface
         $this->getElement('filter_importer')->setValue($importer);
     }
 
+    public function specifyIdentifierFilter(string $identifier): void
+    {
+        $this->getElement('filter_identifier')->setValue($identifier);
+    }
+
     protected function getDefinedElements(): array
     {
         return array_merge(
@@ -25,6 +30,7 @@ class IndexPage extends BaseIndexPage implements IndexPageInterface
             [
                 'filter_imported' => '#criteria_imported',
                 'filter_importer' => '#criteria_akeneoEntity_value',
+                'filter_identifier' => '#criteria_akeneoIdentifier_value'
             ]
         );
     }

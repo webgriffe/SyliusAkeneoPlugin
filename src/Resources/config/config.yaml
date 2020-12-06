@@ -37,6 +37,9 @@ sylius_grid:
                 akeneoEntity:
                     type: string
                     label: webgriffe_sylius_akeneo.ui.importer
+                akeneoIdentifier:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.identifier
                 imported:
                     type: exists
                     label: webgriffe_sylius_akeneo.ui.imported

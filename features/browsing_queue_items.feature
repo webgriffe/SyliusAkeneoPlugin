@@ -28,3 +28,10 @@ Feature: Browsing queue items
     And I specify "Associations" as an importer filter
     And I filter
     Then I should see 1 queue item in the list
+
+  @ui
+  Scenario: Filtering items by identifier
+    When I browse Akeneo queue items
+    And I specify "hat-l" as an identifier filter
+    And I filter
+    Then I should see 1 queue item in the list

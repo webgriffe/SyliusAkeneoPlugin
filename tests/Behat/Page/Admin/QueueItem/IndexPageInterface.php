@@ -11,4 +11,6 @@ interface IndexPageInterface extends BaseIndexPageInterface
     public function chooseImportedFilter(string $imported): void;
 
     public function specifyImporterFilter(string $importer): void;
+
+    public function specifyIdentifierFilter(string $identifier): void;
 }
