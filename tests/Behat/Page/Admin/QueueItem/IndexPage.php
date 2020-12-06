@@ -13,12 +13,18 @@ class IndexPage extends BaseIndexPage implements IndexPageInterface
         $this->getElement('filter_imported')->selectOption($imported);
     }
 
+    public function specifyImporterFilter(string $importer): void
+    {
+        $this->getElement('filter_importer')->setValue($importer);
+    }
+
     protected function getDefinedElements(): array
     {
         return array_merge(
             parent::getDefinedElements(),
             [
                 'filter_imported' => '#criteria_imported',
+                'filter_importer' => '#criteria_akeneoEntity_value',
             ]
         );
     }

@@ -63,4 +63,20 @@ final class ManagingQueueItems implements Context
             Assert::contains($columnField, 'Yes');
         }
     }
+
+    /**
+     * @When /^I specify "([^"]*)" as an importer filter$/
+     */
+    public function iSpecifyAsAnImporterFilter(string $importer): void
+    {
+        $this->indexPage->specifyImporterFilter($importer);
+    }
+
+    /**
+     * @Then /^I should see (\d+) queue item in the list$/
+     */
+    public function iShouldSeeQueueItemInTheList(int $numberOfItems): void
+    {
+        Assert::same($this->indexPage->countItems(), $numberOfItems);
+    }
 }

@@ -34,6 +34,9 @@ sylius_grid:
                     options:
                         template: '@WebgriffeSyliusAkeneoPlugin\QueueItem\Grid\importedAt.html.twig'
             filters:
+                akeneoEntity:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.importer
                 imported:
                     type: exists
                     label: webgriffe_sylius_akeneo.ui.imported
