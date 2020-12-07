@@ -9,7 +9,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
-class FileAttributeValueHandler implements ValueHandlerInterface
+final class FileAttributeValueHandler implements ValueHandlerInterface
 {
     public const AKENEO_ATTRIBUTE_TYPE_FILE = 'pim_catalog_file';
 
