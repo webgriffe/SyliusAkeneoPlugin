@@ -153,7 +153,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
     {
         if ($attribute->getType() === SelectAttributeType::TYPE) {
             $attributeConfiguration = $attribute->getConfiguration();
-            $possibleOptionsCodes = array_keys($attributeConfiguration['choices']);
+            $possibleOptionsCodes = array_map('strval', array_keys($attributeConfiguration['choices']));
             if (!in_array($value, $possibleOptionsCodes, true)) {
                 throw new \InvalidArgumentException(
                     sprintf(
