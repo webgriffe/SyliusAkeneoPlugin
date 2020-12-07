@@ -65,7 +65,22 @@
     Webgriffe\SyliusAkeneoPlugin\WebgriffeSyliusAkeneoPlugin::class => ['all' => true],
     ```
 
-3. Finish the installation by updating the database schema and installing assets:
+3. Import the plugin config by creating a file in `config/packages/webgriffe_sylius_akeneo_plugin.yaml` with the following contents:
+
+    ```yaml
+    imports:
+      - { resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/config.yaml" }
+    ```
+    
+4. Import the plugin routes by creating a file in `config/routes/webgriffe_sylius_akeneo_plugin.yaml` with the follwing content:
+
+    ```yaml
+    webgriffe_sylius_akeneo_plugin_admin:
+        resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/admin_routing.yaml"
+        prefix: /admin
+    ```
+
+5. Finish the installation by updating the database schema and installing assets:
 
     ```bash
     bin/console doctrine:migrations:diff
