@@ -91,9 +91,11 @@
 
 ## Configuration
 
-First of all you must configure your Akeneo API connection parameters. Create a file in `config/packages/webgriffe_sylius_akeneo_plugin.yaml` with the following content:
+First of all you must configure your Akeneo API connection parameters. Edit the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file by adding the following content:
 
 ```yaml
+# ...
+
 webgriffe_sylius_akeneo:
   api_client:
     # These values are from the official Akeneo PIM demo, replace with yours.
