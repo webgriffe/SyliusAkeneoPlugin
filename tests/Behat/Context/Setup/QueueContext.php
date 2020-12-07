@@ -27,6 +27,7 @@ final class QueueContext implements Context
 
     /**
      * @Given /^there is one item to import with identifier "([^"]*)" for the "([^"]*)" importer in the Akeneo queue$/
+     * @Given /^there is a not imported item with identifier "([^"]*)" for the "([^"]*)" importer in the Akeneo queue$/
      */
     public function thereIsOneProductToImportWithIdentifierInTheAkeneoQueue(string $identifier, string $importer)
     {
@@ -48,6 +49,20 @@ final class QueueContext implements Context
         $queueItem->setAkeneoEntity('ProductAssociations');
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
+        $this->queueItemRepository->add($queueItem);
+    }
+
+    /**
+     * @Given /^there is an already imported item with identifier "([^"]*)" for the "([^"]*)" importer in the Akeneo queue$/
+     */
+    public function thereIsAnAlreadyImportedItemWithIdentifierForTheImporterInTheAkeneoQueue(string $identifier, string $importer)
+    {
+        /** @var QueueItemInterface $queueItem */
+        $queueItem = $this->queueItemFactory->createNew();
+        $queueItem->setAkeneoEntity($importer);
+        $queueItem->setAkeneoIdentifier($identifier);
+        $queueItem->setCreatedAt(new \DateTime());
+        $queueItem->setImportedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);
     }
 }

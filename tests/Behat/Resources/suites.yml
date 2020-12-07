@@ -7,13 +7,13 @@ default:
                 - sylius.behat.context.setup.product
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.locale
-                - webgriffe_sylius_akeneo.context.setup.queue
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.context.cli.consume_command
+                - webgriffe_sylius_akeneo.behat.context.cli.consume_command
 
-                - webgriffe_sylius_akeneo.context.db.product
-                - webgriffe_sylius_akeneo.context.db.queue
-                - webgriffe_sylius_akeneo.context.system.filesystem
+                - webgriffe_sylius_akeneo.behat.context.db.product
+                - webgriffe_sylius_akeneo.behat.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.system.filesystem
 
             filters:
                 tags: "@importing_products && @cli"
@@ -25,12 +25,12 @@ default:
                 - sylius.behat.context.setup.product
                 - sylius.behat.context.setup.product_association
                 - sylius.behat.context.setup.channel
-                - webgriffe_sylius_akeneo.context.setup.queue
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.context.cli.consume_command
+                - webgriffe_sylius_akeneo.behat.context.cli.consume_command
 
-                - webgriffe_sylius_akeneo.context.db.product
-                - webgriffe_sylius_akeneo.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.db.product
+                - webgriffe_sylius_akeneo.behat.context.db.queue
 
             filters:
                 tags: "@importing_product_associations && @cli"
@@ -41,15 +41,15 @@ default:
 
                 - sylius.behat.context.transform.date_time
 
-                - webgriffe_sylius_akeneo.context.setup.akeneo
-                - webgriffe_sylius_akeneo.context.setup.queue
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.context.cli.enqueue_command
+                - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
 
-                - webgriffe_sylius_akeneo.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.db.queue
 
-                - webgriffe_sylius_akeneo.context.system.filesystem
-                - webgriffe_sylius_akeneo.context.system.datetime
+                - webgriffe_sylius_akeneo.behat.context.system.filesystem
+                - webgriffe_sylius_akeneo.behat.context.system.datetime
 
             filters:
                 tags: "@enqueuing_generic_items && @cli"
@@ -60,15 +60,15 @@ default:
 
                 - sylius.behat.context.transform.date_time
 
-                - webgriffe_sylius_akeneo.context.setup.akeneo
-                - webgriffe_sylius_akeneo.context.setup.queue
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.context.cli.enqueue_command
+                - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
 
-                - webgriffe_sylius_akeneo.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.db.queue
 
-                - webgriffe_sylius_akeneo.context.system.filesystem
-                - webgriffe_sylius_akeneo.context.system.datetime
+                - webgriffe_sylius_akeneo.behat.context.system.filesystem
+                - webgriffe_sylius_akeneo.behat.context.system.datetime
 
             filters:
                 tags: "@enqueuing_products && @cli"
@@ -79,16 +79,27 @@ default:
 
                 - sylius.behat.context.transform.date_time
 
-                - webgriffe_sylius_akeneo.context.setup.akeneo
-                - webgriffe_sylius_akeneo.context.setup.queue
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.context.cli.enqueue_command
+                - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
 
-                - webgriffe_sylius_akeneo.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.db.queue
 
-                - webgriffe_sylius_akeneo.context.system.filesystem
-                - webgriffe_sylius_akeneo.context.system.datetime
+                - webgriffe_sylius_akeneo.behat.context.system.filesystem
+                - webgriffe_sylius_akeneo.behat.context.system.datetime
 
             filters:
                 tags: "@enqueuing_products_associations && @cli"
 
+        ui_browsing_queue_items:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.setup.admin_security
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
+
+                - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items
+
+            filters:
+                tags: "@browsing_queue_items && @ui"

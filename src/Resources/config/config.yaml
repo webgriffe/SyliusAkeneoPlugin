@@ -1,0 +1,56 @@
+sylius_resource:
+    resources:
+        webgriffe_sylius_akeneo.queue_item:
+            classes:
+                model: Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem
+                repository: Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\QueueItemRepository
+
+sylius_grid:
+    grids:
+        webgriffe_sylius_akeneo_admin_queue_item:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem
+            sorting:
+                createdAt: desc
+            fields:
+                akeneoEntity:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.importer
+                    sortable: ~
+                akeneoIdentifier:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.identifier
+                    sortable: ~
+                createdAt:
+                    type: datetime
+                    label: sylius.ui.created_at
+                    sortable: ~
+                importedAt:
+                    type: twig
+                    label: webgriffe_sylius_akeneo.ui.imported
+                    sortable: ~
+                    options:
+                        template: '@WebgriffeSyliusAkeneoPlugin\QueueItem\Grid\importedAt.html.twig'
+                errorMessage:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.error_message
+            filters:
+                akeneoEntity:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.importer
+                akeneoIdentifier:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.identifier
+                imported:
+                    type: exists
+                    label: webgriffe_sylius_akeneo.ui.imported
+                    options:
+                        field: importedAt
+                errorMessage:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.error_message
+            actions:
+                main: ~
+                item: ~

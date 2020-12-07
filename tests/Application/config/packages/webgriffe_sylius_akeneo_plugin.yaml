@@ -1,3 +1,6 @@
+imports:
+  - { resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/config.yaml" }
+
 webgriffe_sylius_akeneo:
   api_client:
     base_url: 'http://demo.akeneo.com/'
