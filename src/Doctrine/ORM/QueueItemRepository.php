@@ -36,7 +36,7 @@ class QueueItemRepository extends EntityRepository implements QueueItemRepositor
         ;
     }
 
-    public function findToDelete(DateTime $dateLimit): ?array
+    public function findToCleanup(DateTime $dateLimit): array
     {
         return $this->createQueryBuilder('o')
             ->andWhere('o.importedAt IS NOT NULL')
@@ -44,6 +44,6 @@ class QueueItemRepository extends EntityRepository implements QueueItemRepositor
             ->setParameter('dateLimit', $dateLimit->format('Y-m-d'))
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 }

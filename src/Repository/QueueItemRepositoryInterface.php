@@ -17,5 +17,5 @@ interface QueueItemRepositoryInterface extends RepositoryInterface
 
     public function findOneToImport(string $akeneoEntity, string $akeneoIdentifier): ?QueueItemInterface;
 
-    public function findToDelete(DateTime $dateLimit): ?array;
+    public function findToCleanup(DateTime $dateLimit): array;
 }

@@ -22,7 +22,7 @@
             <tag name="console.command" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.command.clear" class="Webgriffe\SyliusAkeneoPlugin\Command\ClearCommand">
+        <service id="webgriffe_sylius_akeneo.command.clear" class="Webgriffe\SyliusAkeneoPlugin\Command\QueueCleanupCommand">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item"/>
             <argument type="service" id="doctrine"/>
             <tag name="console.command" />
