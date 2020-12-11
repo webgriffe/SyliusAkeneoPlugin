@@ -6,8 +6,6 @@ namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
 use DateInterval;
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,19 +16,16 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
 final class QueueCleanupCommand extends Command
 {
-    public const SUCCESS = 0;
+    private const SUCCESS = 0;
 
-    public const FAILURE = 1;
+    private const FAILURE = 1;
 
-    public const DEFAULT_DAYS = 10;
+    private const DEFAULT_DAYS = 10;
 
-    public const DAYS_OPTION_NAME = 'days';
+    private const DAYS_ARGUMENT_NAME = 'days';
 
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
-
-    /** @var ManagerRegistry */
-    private $managerRegistry;
 
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'webgriffe:akeneo:cleanup-queue';
@@ -38,10 +33,9 @@ final class QueueCleanupCommand extends Command
     /**
      * QueueCleanupCommand constructor.
      */
-    public function __construct(QueueItemRepositoryInterface $queueItemRepository, ManagerRegistry $managerRegistry)
+    public function __construct(QueueItemRepositoryInterface $queueItemRepository)
     {
         $this->queueItemRepository = $queueItemRepository;
-        $this->managerRegistry = $managerRegistry;
         parent::__construct();
     }
 
@@ -51,8 +45,8 @@ final class QueueCleanupCommand extends Command
             ->setDescription('Clean the Akeneo\'s queue of items older than N days.')
             ->setHelp('This command allows you to clean the Akeneo\'s queue of item older than a specificed numbers of days.')
             ->addArgument(
-                self::DAYS_OPTION_NAME,
-                InputArgument::REQUIRED,
+                self::DAYS_ARGUMENT_NAME,
+                InputArgument::OPTIONAL,
                 'Number of days from which to purge the queue of previous items',
                 (string) (self::DEFAULT_DAYS)
             )
@@ -61,36 +55,27 @@ final class QueueCleanupCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $numberOfDays = self::DEFAULT_DAYS;
         // get the number of days from user
-        $numberOfDays = $input->getOption(self::DAYS_OPTION_NAME);
-        if (is_string($numberOfDays)) {
-            $numberOfDays = (int) $numberOfDays;
+        $numberOfDaysEntered = $input->getArgument(self::DAYS_ARGUMENT_NAME);
+        if (is_string($numberOfDaysEntered) && (int) $numberOfDaysEntered >= 0) {
+            $numberOfDays = (int)$numberOfDaysEntered;
         } else {
-            $numberOfDays = self::DEFAULT_DAYS;
+            $output->writeln('Sorry, the number of days entered is not valid!');
+            return self::FAILURE;
         }
 
         // get the beginning date
         $dateToDelete = $this->getPreviousDateNDays($numberOfDays);
 
         $queueItems = $this->queueItemRepository->findToCleanup($dateToDelete);
-        if (!$queueItems) {
-            $output->writeln('No items to delete found');
-
-            return self::FAILURE;
-        }
-
-        /** @var EntityManagerInterface $objectManager */
-        $objectManager = $this->managerRegistry->getManager();
 
         /** @var QueueItem $queueItem */
         foreach ($queueItems as $queueItem) {
-            $objectManager->remove($queueItem);
+            $this->queueItemRepository->remove($queueItem);
         }
 
-        // save DB edits
-        $objectManager->flush();
-
-        $output->writeln(sprintf('%c items deleted.', count($queueItems)));
+        $output->writeln(sprintf('%s items imported before %s deleted.', count($queueItems), $dateToDelete->format("Y-m-d H:i:s")));
 
         return self::SUCCESS;
     }
