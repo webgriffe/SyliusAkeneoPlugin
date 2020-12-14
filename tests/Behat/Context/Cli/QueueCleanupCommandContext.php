@@ -1,11 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli;
 
-
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -15,17 +14,13 @@ use Webmozart\Assert\Assert;
 
 final class QueueCleanupCommandContext implements Context
 {
-    /**
-     * @var KernelInterface
-     */
+    /** @var KernelInterface */
     private $kernel;
-    /**
-     * @var QueueCleanupCommand
-     */
+
+    /** @var QueueCleanupCommand */
     private $queueCleanupCommand;
-    /**
-     * @var SharedStorageInterface
-     */
+
+    /** @var SharedStorageInterface */
     private $sharedStorage;
 
     public function __construct(KernelInterface $kernel, QueueCleanupCommand $queueCleanupCommand, SharedStorageInterface $sharedStorage)
@@ -45,7 +40,7 @@ final class QueueCleanupCommandContext implements Context
         $commandTester = $this->getCommandTester();
 
         $input = ['command' => 'webgriffe:akeneo:cleanup-queue'];
-        if($days !== null) {
+        if ($days !== null) {
             $input['days'] = (string) $days;
         }
         $commandTester->execute($input);
@@ -87,5 +82,4 @@ final class QueueCleanupCommandContext implements Context
 
         return new CommandTester($command);
     }
-
 }

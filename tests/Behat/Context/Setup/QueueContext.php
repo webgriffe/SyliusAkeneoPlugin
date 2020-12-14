@@ -17,9 +17,8 @@ final class QueueContext implements Context
 
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
-    /**
-     * @var SharedStorageInterface
-     */
+
+    /** @var SharedStorageInterface */
     private $sharedStorage;
 
     public function __construct(
