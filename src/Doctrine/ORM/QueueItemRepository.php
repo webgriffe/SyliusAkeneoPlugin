@@ -41,7 +41,7 @@ class QueueItemRepository extends EntityRepository implements QueueItemRepositor
         return $this->createQueryBuilder('o')
             ->where('o.importedAt IS NOT NULL')
             ->andWhere('o.createdAt <= :dateLimit')
-            ->setParameter('dateLimit', $dateLimit->format('Y-m-d H:i:s'))
+            ->setParameter('dateLimit', $dateLimit)
             ->getQuery()
             ->getResult()
             ;

@@ -58,11 +58,12 @@ final class QueueCleanupCommand extends Command
         $numberOfDays = self::DEFAULT_DAYS;
         // get the number of days from user
         $numberOfDaysEntered = $input->getArgument(self::DAYS_ARGUMENT_NAME);
-        if (is_string($numberOfDaysEntered) && (int) $numberOfDaysEntered >= 0) {
+        if($numberOfDaysEntered) {
+            if (!is_string($numberOfDaysEntered) || (int) $numberOfDaysEntered < 0) {
+                $output->writeln('Sorry, the number of days entered is not valid!');
+                return self::FAILURE;
+            }
             $numberOfDays = (int)$numberOfDaysEntered;
-        } else {
-            $output->writeln('Sorry, the number of days entered is not valid!');
-            return self::FAILURE;
         }
 
         // get the beginning date
@@ -70,12 +71,17 @@ final class QueueCleanupCommand extends Command
 
         $queueItems = $this->queueItemRepository->findToCleanup($dateToDelete);
 
+        if(count($queueItems) === 0) {
+            $output->writeln('There are no items to clean');
+            return self::SUCCESS;
+        }
+
         /** @var QueueItem $queueItem */
         foreach ($queueItems as $queueItem) {
             $this->queueItemRepository->remove($queueItem);
         }
 
-        $output->writeln(sprintf('%s items imported before %s deleted.', count($queueItems), $dateToDelete->format("Y-m-d H:i:s")));
+        $output->writeln(sprintf('<info>%s</info> items imported before <info>%s</info> has been deleted.', count($queueItems), $dateToDelete->format("Y-m-d H:i:s")));
 
         return self::SUCCESS;
     }
