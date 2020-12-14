@@ -41,6 +41,7 @@ final class QueueCleanupCommandContext implements Context
      */
     public function iCleanTheQueue(int $days = null)
     {
+        $this->sharedStorage->set('command_input_days', $days);
         $commandTester = $this->getCommandTester();
 
         $input = ['command' => 'webgriffe:akeneo:cleanup-queue'];
@@ -67,6 +68,15 @@ final class QueueCleanupCommandContext implements Context
     {
         $output = $this->sharedStorage->get('command_display');
         Assert::regex($output, "/$count items imported before \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} has been deleted/");
+    }
+
+    /**
+     * @Then /^there shouldn\'t be any more item to clean$/
+     */
+    public function thereShouldntBeAnyMoreItemToClean()
+    {
+        $this->iCleanTheQueue($this->sharedStorage->has('command_input_days') ? $this->sharedStorage->get('command_input_days') : null);
+        $this->iShouldBeNotifiedThatThereAreNoItemsToClean();
     }
 
     private function getCommandTester(): CommandTester

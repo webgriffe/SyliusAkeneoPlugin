@@ -16,6 +16,7 @@ Feature: cleaning queue
     And this item has been imported 15 days ago
     When I clean the queue
     Then I should be notified that 1 item has been deleted
+    And there shouldn't be any more item to clean
 
   @cli
   Scenario: Cleaning the queue specifying the retention number of days
@@ -25,3 +26,4 @@ Feature: cleaning queue
     And this item has been imported 20 days ago
     When I clean the queue specifying 16 days of retention
     Then I should be notified that 1 item has been deleted
+    And there shouldn't be any more item to clean
