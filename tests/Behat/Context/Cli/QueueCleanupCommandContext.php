@@ -37,12 +37,17 @@ final class QueueCleanupCommandContext implements Context
 
     /**
      * @When I clean the queue
+     * @When /^I clean the queue specifying (\d+) days of retention$/
      */
-    public function iCleanTheQueue()
+    public function iCleanTheQueue(int $days = null)
     {
         $commandTester = $this->getCommandTester();
 
-        $commandTester->execute(['command' => 'webgriffe:akeneo:cleanup-queue']);
+        $input = ['command' => 'webgriffe:akeneo:cleanup-queue'];
+        if($days !== null) {
+            $input['days'] = (string) $days;
+        }
+        $commandTester->execute($input);
         $this->sharedStorage->set('command_display', $commandTester->getDisplay());
     }
 

@@ -16,3 +16,12 @@ Feature: cleaning queue
     And this item has been imported 15 days ago
     When I clean the queue
     Then I should be notified that 1 item has been deleted
+
+  @cli
+  Scenario: Cleaning the queue specifying the retention number of days
+    Given there is an already imported item with identifier "braided-hat-m" for the "Product" importer in the Akeneo queue
+    And this item has been imported 15 days ago
+    And there is an already imported item with identifier "braided-hat-s" for the "Product" importer in the Akeneo queue
+    And this item has been imported 20 days ago
+    When I clean the queue specifying 16 days of retention
+    Then I should be notified that 1 item has been deleted
