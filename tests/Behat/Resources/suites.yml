@@ -108,6 +108,8 @@ default:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
+                - sylius.behat.context.transform.shared_storage
+
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
                 - webgriffe_sylius_akeneo.behat.context.cli.queue_cleanup_command

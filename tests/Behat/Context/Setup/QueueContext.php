@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup;
 
 use Behat\Behat\Context\Context;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
@@ -16,13 +17,19 @@ final class QueueContext implements Context
 
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
+    /**
+     * @var SharedStorageInterface
+     */
+    private $sharedStorage;
 
     public function __construct(
         FactoryInterface $queueItemFactory,
-        QueueItemRepositoryInterface $queueItemRepository
+        QueueItemRepositoryInterface $queueItemRepository,
+        SharedStorageInterface $sharedStorage
     ) {
         $this->queueItemFactory = $queueItemFactory;
         $this->queueItemRepository = $queueItemRepository;
+        $this->sharedStorage = $sharedStorage;
     }
 
     /**
@@ -37,6 +44,7 @@ final class QueueContext implements Context
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);
+        $this->sharedStorage->set('item', $queueItem);
     }
 
     /**
@@ -50,6 +58,7 @@ final class QueueContext implements Context
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);
+        $this->sharedStorage->set('item', $queueItem);
     }
 
     /**
@@ -63,6 +72,16 @@ final class QueueContext implements Context
         $queueItem->setAkeneoIdentifier($identifier);
         $queueItem->setCreatedAt(new \DateTime());
         $queueItem->setImportedAt(new \DateTime());
+        $this->queueItemRepository->add($queueItem);
+        $this->sharedStorage->set('item', $queueItem);
+    }
+
+    /**
+     * @Given /^(this item) has been imported (\d+) days ago$/
+     */
+    public function thisItemHasBeenImportedDaysAgo(QueueItemInterface $queueItem, int $days)
+    {
+        $queueItem->setImportedAt(new \DateTime("$days days ago"));
         $this->queueItemRepository->add($queueItem);
     }
 }

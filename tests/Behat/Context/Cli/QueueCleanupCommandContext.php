@@ -55,6 +55,15 @@ final class QueueCleanupCommandContext implements Context
         Assert::contains($output, 'There are no items to clean');
     }
 
+    /**
+     * @Then /^I should be notified that (\d+) item has been deleted$/
+     */
+    public function iShouldBeNotifiedThatItemHasBeenDeleted(int $count)
+    {
+        $output = $this->sharedStorage->get('command_display');
+        Assert::regex($output, "/$count items imported before \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} has been deleted/");
+    }
+
     private function getCommandTester(): CommandTester
     {
         $application = new Application($this->kernel);

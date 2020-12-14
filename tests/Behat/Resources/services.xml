@@ -7,6 +7,7 @@
         <service id="webgriffe_sylius_akeneo.behat.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
+            <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">

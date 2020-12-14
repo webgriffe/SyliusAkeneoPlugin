@@ -10,5 +10,9 @@ Feature: cleaning queue
     When I clean the queue
     Then I should be notified that there are no items to clean
 
-
-
+  @cli
+  Scenario: Cleaning the queue when there are some imported items to clean
+    Given there is an already imported item with identifier "braided-hat-m" for the "Product" importer in the Akeneo queue
+    And this item has been imported 15 days ago
+    When I clean the queue
+    Then I should be notified that 1 item has been deleted
