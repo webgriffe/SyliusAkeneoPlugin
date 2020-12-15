@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilder;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem;
-use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
+use Webgriffe\SyliusAkeneoPlugin\Repository\CleanableQueueItemRepositoryInterface;
 
 final class QueueCleanupCommand extends Command
 {
@@ -24,7 +24,7 @@ final class QueueCleanupCommand extends Command
 
     private const DAYS_ARGUMENT_NAME = 'days';
 
-    /** @var QueueItemRepositoryInterface */
+    /** @var CleanableQueueItemRepositoryInterface */
     private $queueItemRepository;
 
     // the name of the command (the part after "bin/console")
@@ -33,7 +33,7 @@ final class QueueCleanupCommand extends Command
     /**
      * QueueCleanupCommand constructor.
      */
-    public function __construct(QueueItemRepositoryInterface $queueItemRepository)
+    public function __construct(CleanableQueueItemRepositoryInterface $queueItemRepository)
     {
         $this->queueItemRepository = $queueItemRepository;
         parent::__construct();

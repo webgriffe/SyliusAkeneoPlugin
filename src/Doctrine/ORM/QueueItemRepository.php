@@ -7,9 +7,10 @@ namespace Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM;
 use DateTime;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
+use Webgriffe\SyliusAkeneoPlugin\Repository\CleanableQueueItemRepositoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
-class QueueItemRepository extends EntityRepository implements QueueItemRepositoryInterface
+class QueueItemRepository extends EntityRepository implements QueueItemRepositoryInterface, CleanableQueueItemRepositoryInterface
 {
     /**
      * {@inheritdoc}
