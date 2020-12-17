@@ -7,14 +7,13 @@ namespace Webgriffe\SyliusAkeneoPlugin\Controller;
 use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Product\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
-final class ProductEnqueueController extends AbstractController implements ProductEnqueueControllerInterface
+final class ProductEnqueueController extends AbstractController
 {
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
@@ -47,7 +46,7 @@ final class ProductEnqueueController extends AbstractController implements Produ
                 $translator->trans('webgriffe_sylius_akeneo.ui.product_not_exist')
             );
 
-            return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));
+            return $this->redirectToRoute('sylius_admin_product_index');
         }
 
         /** @var array $productEnqueued */
@@ -62,7 +61,7 @@ final class ProductEnqueueController extends AbstractController implements Produ
                 $translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued')
             );
 
-            return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));
+            return $this->redirectToRoute('sylius_admin_product_index');
         }
 
         if ($product->getCode() === null) {
@@ -71,7 +70,7 @@ final class ProductEnqueueController extends AbstractController implements Produ
                 $translator->trans('webgriffe_sylius_akeneo.ui.product_without_code')
             );
 
-            return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));
+            return $this->redirectToRoute('sylius_admin_product_index');
         }
 
         $queueItem = new QueueItem();
@@ -85,6 +84,6 @@ final class ProductEnqueueController extends AbstractController implements Produ
             $translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success')
         );
 
-        return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));
+        return $this->redirectToRoute('sylius_admin_product_index');
     }
 }

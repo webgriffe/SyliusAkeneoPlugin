@@ -15,6 +15,5 @@ webgriffe_sylius_akeneo_admin_queue_item:
     type: sylius.resource
 
 webgriffe_sylius_akeneo_product_enqueue:
-    controller: Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController::enqueue
+    controller: webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller:enqueue
     path: product/{productId}/enqueue
-    # the controller value has the format 'controller_class::method_name'

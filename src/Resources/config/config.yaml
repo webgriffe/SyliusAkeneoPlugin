@@ -69,7 +69,6 @@ sylius_grid:
                                 route: webgriffe_sylius_akeneo_product_enqueue
                                 parameters:
                                     productId: resource.id
-                            icon: thumbtack
-                            transition: enqueue
-                            graph: sylius_product
+                            icon: cloud download
+                            color: green
 
