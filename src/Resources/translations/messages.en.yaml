@@ -9,3 +9,7 @@ webgriffe_sylius_akeneo:
         imported_no: No
         error_message: Error message
         enqueue: Add to the queue
+        enqueued_success: Product enqueued successfully
+        product_not_exist: Product not found
+        product_already_enqueued: Product already added to the queue
+        product_without_code: Product does not have code

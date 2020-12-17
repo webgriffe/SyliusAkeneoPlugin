@@ -10,10 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
-final class ProductEnqueueController extends AbstractController
+final class ProductEnqueueController extends AbstractController implements ProductEnqueueControllerInterface
 {
     /** @var QueueItemRepositoryInterface */
     private $queueItemRepository;
@@ -36,12 +37,14 @@ final class ProductEnqueueController extends AbstractController
 
     public function enqueue(int $productId): Response
     {
+        /** @var TranslatorInterface $translator */
+        $translator = $this->get('translator');
         /** @var ProductInterface|null $product */
         $product = $this->productRepository->find($productId);
         if ($product === null) {
             $this->addFlash(
-                'warning',
-                'Product not exist!'
+                'error',
+                $translator->trans('webgriffe_sylius_akeneo.ui.product_not_exist')
             );
 
             return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));
@@ -55,17 +58,17 @@ final class ProductEnqueueController extends AbstractController
         ]);
         if (count($productEnqueued) > 0) {
             $this->addFlash(
-                'warning',
-                'Product already enqueued!'
+                'error',
+                $translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued')
             );
 
             return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));
         }
 
-        if($product->getCode() === null) {
+        if ($product->getCode() === null) {
             $this->addFlash(
-                'warning',
-                'Product does not have code!'
+                'error',
+                $translator->trans('webgriffe_sylius_akeneo.ui.product_without_code')
             );
 
             return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));
@@ -79,7 +82,7 @@ final class ProductEnqueueController extends AbstractController
 
         $this->addFlash(
             'success',
-            'Product enqueued successfully!'
+            $translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success')
         );
 
         return new RedirectResponse($this->urlGenerator->generate('sylius_admin_product_index'));

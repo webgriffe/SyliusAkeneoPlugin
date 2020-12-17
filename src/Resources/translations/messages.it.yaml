@@ -9,3 +9,7 @@ webgriffe_sylius_akeneo:
         imported_no: No
         error_message: Messaggio d'errore
         enqueue: Aggiungi alla coda
+        enqueued_success: Prodotto aggiunto alla coda correttamente
+        product_not_exist: Prodotto non trovato
+        product_already_enqueued: Prodotto già aggiunto alla coda
+        product_without_code: Prodotto senza codice
