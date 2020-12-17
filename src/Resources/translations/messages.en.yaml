@@ -8,3 +8,4 @@ webgriffe_sylius_akeneo:
         imported_yes: Yes, at %date%
         imported_no: No
         error_message: Error message
+        enqueue: Add to the queue

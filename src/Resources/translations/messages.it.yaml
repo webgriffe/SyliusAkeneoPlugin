@@ -8,3 +8,4 @@ webgriffe_sylius_akeneo:
         imported_yes: Si, il %date%
         imported_no: No
         error_message: Messaggio d'errore
+        enqueue: Aggiungi alla coda

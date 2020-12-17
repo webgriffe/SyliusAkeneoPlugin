@@ -13,3 +13,8 @@ webgriffe_sylius_akeneo_admin_queue_item:
             index:
                 icon: 'cloud download'
     type: sylius.resource
+
+webgriffe_sylius_akeneo_product_enqueue:
+    controller: Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController::enqueue
+    path: product/{productId}/enqueue
+    # the controller value has the format 'controller_class::method_name'
