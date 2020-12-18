@@ -9,6 +9,17 @@
             <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\ProductContext">
+            <argument type="service" id="sylius.factory.product" />
+            <argument type="service" id="sylius.factory.product_variant" />
+            <argument type="service" id="sylius.repository.product_variant" />
+            <argument type="service" id="sylius.repository.product" />
+            <argument type="service" id="sylius.factory.product_translation" />
+            <argument type="service" id="sylius.repository.product_translation" />
+            <argument type="service" id="sylius.context.locale" />
+            <argument type="service" id="sylius.generator.slug" />
+        </service>
+
         <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
@@ -44,6 +55,10 @@
 
         <service id="webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\ManagingQueueItems">
             <argument type="service" id="webgriffe_sylius_akeneo.behat.page.admin.queue_item.index" />
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\ManagingProducts">
+            <argument type="service" id="sylius.behat.page.admin.product.index" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.page.admin.queue_item.index" parent="sylius.behat.page.admin.crud.index" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPage" public="false">
