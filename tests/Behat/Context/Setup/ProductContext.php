@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup;
-
 
 use Behat\Behat\Context\Context;
 use Sylius\Component\Core\Model\ProductInterface;
@@ -19,38 +19,28 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 final class ProductContext implements Context
 {
-    /**
-     * @var ProductFactoryInterface
-     */
+    /** @var ProductFactoryInterface */
     private $productFactory;
-    /**
-     * @var ProductRepositoryInterface
-     */
+
+    /** @var ProductRepositoryInterface */
     private $productRepository;
 
-    /**
-     * @var ProductVariantFactoryInterface
-     */
+    /** @var ProductVariantFactoryInterface */
     private $productVariantFactory;
-    /**
-     * @var ProductVariantRepositoryInterface
-     */
+
+    /** @var ProductVariantRepositoryInterface */
     private $productVariantRepository;
-    /**
-     * @var FactoryInterface
-     */
+
+    /** @var FactoryInterface */
     private $productTranslationFactory;
-    /**
-     * @var RepositoryInterface
-     */
+
+    /** @var RepositoryInterface */
     private $productTranslationRepository;
-    /**
-     * @var LocaleContextInterface
-     */
+
+    /** @var LocaleContextInterface */
     private $localeContext;
-    /**
-     * @var SlugGeneratorInterface
-     */
+
+    /** @var SlugGeneratorInterface */
     private $slugGenerator;
 
     /**
@@ -65,8 +55,7 @@ final class ProductContext implements Context
         RepositoryInterface $productTranslationRepository,
         LocaleContextInterface $localeContext,
         SlugGeneratorInterface $slugGenerator
-    )
-    {
+    ) {
         $this->productFactory = $productFactory;
         $this->productRepository = $productRepository;
         $this->productVariantFactory = $productVariantFactory;
@@ -107,5 +96,4 @@ final class ProductContext implements Context
         $productTranslation->setLocale($this->localeContext->getLocaleCode());
         $this->productTranslationRepository->add($productTranslation);
     }
-
 }
