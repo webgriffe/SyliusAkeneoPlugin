@@ -360,7 +360,7 @@ To actually import data you must first create queue items with the **enqueue com
 
 This button allows you to queue a product directly from the admin index page. Sylius Akeneo Plugin already override the product resource grid **sylius_admin_product** for you by adding the button for every item.
 If you want you can also add the button in the product's detail and edit page.
-Override Sylius template by create a new file in the folder: `templates/bundles/SyliusAdminBundle/Product/_showInShopButton.html.twig`. Copy the content from the original Sylius file and paste it in the new file. Finally, add the button to the bottom of the file.
+Override Sylius template by creater a new file in the folder: `templates/bundles/SyliusAdminBundle/Product/_showInShopButton.html.twig`. Copy the content from the original Sylius file and paste it in the new file. Finally, add the button to the bottom of the file.
     
     #...
 

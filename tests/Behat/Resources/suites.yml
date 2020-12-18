@@ -104,7 +104,7 @@ default:
             filters:
                 tags: "@browsing_queue_items && @ui"
 
-        ui_enqueuing_products_from_products_index:
+        enqueuing_products_from_route:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
@@ -114,5 +114,5 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items
             filters:
-                tags: "@enqueuing_products_from_products_index && @ui"
+                tags: "@enqueuing_products_from_route && @ui"
 
