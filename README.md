@@ -354,7 +354,20 @@ This plugin will also import product associations. It's a zero configuration imp
 
 ### Launch data import from CLI
 
-To actually import data you must first create queue items with the **enqueue command** and then you can import them with the **consume command**.
+To actually import data you must first create queue items with the **enqueue command** or from the **Schedule Akeneo PIM import** button in the product pages. Then you can import them with the **consume command**.
+
+#### Schedule Akeneo PIM import button
+
+This button allows you to queue a product directly from the admin index page. Sylius Akeneo Plugin already override the product resource grid **sylius_admin_product** for you by adding the button for every item.
+If you want you can also add the button in the product's detail and edit page.
+Override Sylius template by create a new file in the folder: `templates/bundles/SyliusAdminBundle/Product/_showInShopButton.html.twig`. Copy the content from the original Sylius file and paste it in the new file. Finally, add the button to the bottom of the file.
+    
+    #...
+
+    <a class="ui labeled icon button green" href="{{  path('webgriffe_sylius_akeneo_product_enqueue', {'productId': product.id }) }}" >  
+      <i class="icon cloud download"></i>  
+      {{ 'webgriffe_sylius_akeneo.ui.enqueue'|trans }}  
+    </a>
 
 #### Enqueue command
 
