@@ -71,7 +71,7 @@
     imports:
       - { resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/config.yaml" }
     ```
-    
+
 4. Import the plugin routes by creating a file in `config/routes/webgriffe_sylius_akeneo_plugin.yaml` with the follwing content:
 
     ```yaml
@@ -442,6 +442,19 @@ You can examine the Akeneo import queue from the admin panel at **Catalog -> Ake
 
 ![Akeneo queue items grid](queue_items_grid.png)
 
+### Queue clear
+
+Sometimes it may be a good idea to clear the queue of imported items. This can also be useful in development to keep only items not imported for errors or to be consumed.
+You can clear the queue of elements by launching the following command:
+
+```bash
+bin/console webgriffe:akeneo:cleanup-queue {days}
+```
+
+Where {days} should be replaced by the number of days back from which to start deleting the queue of items.
+If the number is not entered, the default value 10 will be used. 
+So, if for example today is 2020-12-15 and you use the parameter days = 10, all the elements imported before 2020-12-05 will be deleted.
+
 ## Architecture & customization
 
 This plugin has basically two main entry points:
@@ -556,11 +569,11 @@ To be able to setup a plugin's database, remember to configure you database cred
 
 ### Running plugin tests
 
-  - Code style
+- Code style
 
-    ```bash
-    vendor/bin/ecs check src/ spec/ tests/
-    ```
+  ```bash
+  vendor/bin/ecs check src/ spec/ tests/
+  ```
 
 - Static analysis
 
@@ -588,21 +601,21 @@ To be able to setup a plugin's database, remember to configure you database cred
 
 - Behat (JS scenarios)
 
-    1. [Install Symfony CLI command](https://symfony.com/download).
+  1. [Install Symfony CLI command](https://symfony.com/download).
 
-    2. Start Headless Chrome:
+  2. Start Headless Chrome:
 
       ```bash
       google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
       ```
-    3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:     
+  3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:
 
       ```bash
       symfony server:ca:install
       APP_ENV=test symfony server:start --port=8080 --dir=tests/Application/public --daemon
       ```
-    
-    4. Run Behat:
+
+  4. Run Behat:
 
       ```bash
       vendor/bin/behat --strict --tags="@javascript"

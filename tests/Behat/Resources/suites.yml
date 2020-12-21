@@ -104,6 +104,19 @@ default:
             filters:
                 tags: "@browsing_queue_items && @ui"
 
+        cli_cleaning_queue:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.transform.shared_storage
+
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
+
+                - webgriffe_sylius_akeneo.behat.context.cli.queue_cleanup_command
+
+            filters:
+                tags: "@cleaning_queue && @cli"
+                
         enqueuing_products_from_route:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
@@ -115,4 +128,3 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items
             filters:
                 tags: "@enqueuing_products_from_route && @ui"
-
