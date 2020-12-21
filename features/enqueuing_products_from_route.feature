@@ -19,7 +19,9 @@ Feature: Browsing products items
   Scenario: Enqueue two products
     When I browse product item
     And I click "Schedule Akeneo PIM import" button on "braided-hat-m" product
+    And I should be notified that it has been successfully enqueued
     And I click "Schedule Akeneo PIM import" button on "t-shirt-xl" product
+    And I should be notified that it has been successfully enqueued
     Then I browse Akeneo queue items
     And I should see 2, not imported, queue items in the list
 
@@ -27,6 +29,8 @@ Feature: Browsing products items
   Scenario: Enqueue two products already enqueued
     When I browse product item
     And I click "Schedule Akeneo PIM import" button on "braided-hat-m" product
+    And I should be notified that it has been already enqueued
     And I click "Schedule Akeneo PIM import" button on "t-shirt-xl" product
+    And I should be notified that it has been already enqueued
     Then I browse Akeneo queue items
     And I should see 2, not imported, queue items in the list

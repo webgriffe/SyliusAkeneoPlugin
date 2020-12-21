@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup;
 
 use Behat\Behat\Context\Context;
+use Sylius\Behat\NotificationType;
+use Sylius\Behat\Service\Helper\JavaScriptTestHelperInterface;
+use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -43,6 +46,12 @@ final class ProductContext implements Context
     /** @var SlugGeneratorInterface */
     private $slugGenerator;
 
+    /** @var JavaScriptTestHelperInterface */
+    private $testHelper;
+
+    /** @var NotificationCheckerInterface */
+    private $notificationChecker;
+
     /**
      * ProductContext constructor.
      */
@@ -54,7 +63,9 @@ final class ProductContext implements Context
         FactoryInterface $productTranslationFactory,
         RepositoryInterface $productTranslationRepository,
         LocaleContextInterface $localeContext,
-        SlugGeneratorInterface $slugGenerator
+        SlugGeneratorInterface $slugGenerator,
+        JavaScriptTestHelperInterface $testHelper,
+        NotificationCheckerInterface $notificationChecker
     ) {
         $this->productFactory = $productFactory;
         $this->productRepository = $productRepository;
@@ -64,6 +75,8 @@ final class ProductContext implements Context
         $this->productTranslationRepository = $productTranslationRepository;
         $this->localeContext = $localeContext;
         $this->slugGenerator = $slugGenerator;
+        $this->testHelper = $testHelper;
+        $this->notificationChecker = $notificationChecker;
     }
 
     /**
@@ -95,5 +108,25 @@ final class ProductContext implements Context
         $productTranslation->setTranslatable($productItem);
         $productTranslation->setLocale($this->localeContext->getLocaleCode());
         $this->productTranslationRepository->add($productTranslation);
+    }
+
+    /**
+     * @Then I should be notified that it has been successfully enqueued
+     */
+    public function iShouldBeNotifiedThatItHasBeenSuccessfullyEnqueued()
+    {
+        $this->testHelper->waitUntilNotificationPopups(
+            $this->notificationChecker, NotificationType::success(), 'Akeneo PIM product import has been successfully scheduled'
+        );
+    }
+
+    /**
+     * @Given /^I should be notified that it has been already enqueued$/
+     */
+    public function iShouldBeNotifiedThatItHasBeenAlreadyEnqueued()
+    {
+        $this->testHelper->waitUntilNotificationPopups(
+            $this->notificationChecker, NotificationType::success(), 'Akeneo PIM import for this product has been already scheduled before'
+        );
     }
 }

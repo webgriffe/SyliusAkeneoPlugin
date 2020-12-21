@@ -18,6 +18,8 @@
             <argument type="service" id="sylius.repository.product_translation" />
             <argument type="service" id="sylius.context.locale" />
             <argument type="service" id="sylius.generator.slug" />
+            <argument type="service" id="sylius.behat.java_script_test_helper" />
+            <argument type="service" id="sylius.behat.notification_checker" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
