@@ -30,7 +30,7 @@ final class TemporaryFilesManagerTest extends TestCase
      */
     public function it_generates_temporary_file_path()
     {
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '|' . vfsStream::url('root') . '/akeneo-.*|',
             $this->temporaryFileManager->generateTemporaryFilePath()
         );
@@ -47,9 +47,9 @@ final class TemporaryFilesManagerTest extends TestCase
 
         $this->temporaryFileManager->deleteAllTemporaryFiles();
 
-        $this->assertFileNotExists(vfsStream::url('root') . '/akeneo-temp1');
-        $this->assertFileNotExists(vfsStream::url('root') . '/akeneo-temp2');
-        $this->assertFileNotExists(vfsStream::url('root') . '/akeneo-temp3');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-temp1');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-temp2');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-temp3');
     }
 
     /**
