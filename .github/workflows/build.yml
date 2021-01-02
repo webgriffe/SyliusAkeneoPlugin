@@ -172,3 +172,8 @@ jobs:
                     name: Behat logs
                     path: etc/build/
                     if-no-files-found: ignore
+
+            -
+                name: Roave BC Check
+                if: success()
+                uses: docker://nyholm/roave-bc-check-ga
