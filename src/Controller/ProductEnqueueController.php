@@ -64,7 +64,10 @@ final class ProductEnqueueController extends AbstractController
             return $this->redirectToRoute('sylius_admin_product_index');
         }
 
-        if ($product->getCode() === null) {
+        /** @var ?string $codeProduct */
+        $codeProduct = $product->getCode();
+
+        if ($codeProduct === null) {
             $this->addFlash(
                 'error',
                 $translator->trans('webgriffe_sylius_akeneo.ui.product_without_code')
@@ -75,7 +78,7 @@ final class ProductEnqueueController extends AbstractController
 
         $queueItem = new QueueItem();
         $queueItem->setAkeneoEntity('Product');
-        $queueItem->setAkeneoIdentifier($product->getCode());
+        $queueItem->setAkeneoIdentifier($codeProduct);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);
 
