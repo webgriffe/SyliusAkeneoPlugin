@@ -116,13 +116,14 @@ default:
 
             filters:
                 tags: "@cleaning_queue && @cli"
-                
+
         enqueuing_products_from_route:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
                 - sylius.behat.context.setup.admin_security
                 - webgriffe_sylius_akeneo.behat.context.setup.product
+                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items

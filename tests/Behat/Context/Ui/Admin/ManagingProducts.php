@@ -11,6 +11,8 @@ use Webmozart\Assert\Assert;
 
 final class ManagingProducts implements Context
 {
+    private const SCHEDULE_AKENEO_PIM_IMPORT = 'Schedule Akeneo PIM import';
+
     /** @var IndexPageInterface */
     private $indexPage;
 
@@ -39,13 +41,13 @@ final class ManagingProducts implements Context
     }
 
     /**
-     * @When /^I click "([^"]*)" button on "([^"]*)" product$/
+     * @When /^And I schedule an Akeneo PIM import for the "([^"]*)" product$/
      */
-    public function iClickButtonOnProduct($button, $code)
+    public function andIScheduleAnAkeneoPimImportForTheProduct($code)
     {
         /** @var NodeElement $actionsNodeProduct */
         $actionsNodeProduct = $this->indexPage->getActionsForResource(['code' => $code]);
 
-        $actionsNodeProduct->clickLink($button);
+        $actionsNodeProduct->clickLink(self::SCHEDULE_AKENEO_PIM_IMPORT);
     }
 }

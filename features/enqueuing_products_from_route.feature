@@ -7,30 +7,21 @@ Feature: Browsing products items
   Background:
     Given I am logged in as an administrator
     And there is a product item with identifier "braided-hat-m"
-    And there is a product item with identifier "t-shirt-xl"
     And there is a product item with identifier "braided-hat-l"
+    And there is one item to import with identifier "braided-hat-l" for the "Product" importer in the Akeneo queue
 
   @ui
-  Scenario: Browsing all items
+  Scenario: Enqueue a product
     When I browse product item
-    Then I should see 3 products in the list
-
-  @ui
-  Scenario: Enqueue two products
-    When I browse product item
-    And I click "Schedule Akeneo PIM import" button on "braided-hat-m" product
-    And I should be notified that it has been successfully enqueued
-    And I click "Schedule Akeneo PIM import" button on "t-shirt-xl" product
+    And And I schedule an Akeneo PIM import for the "braided-hat-m" product
     And I should be notified that it has been successfully enqueued
     Then I browse Akeneo queue items
     And I should see 2, not imported, queue items in the list
 
   @ui
-  Scenario: Enqueue two products already enqueued
+  Scenario: Enqueue a product already enqueued
     When I browse product item
-    And I click "Schedule Akeneo PIM import" button on "braided-hat-m" product
-    And I should be notified that it has been already enqueued
-    And I click "Schedule Akeneo PIM import" button on "t-shirt-xl" product
+    And And I schedule an Akeneo PIM import for the "braided-hat-l" product
     And I should be notified that it has been already enqueued
     Then I browse Akeneo queue items
-    And I should see 2, not imported, queue items in the list
+    And I should see 1, not imported, queue items in the list
