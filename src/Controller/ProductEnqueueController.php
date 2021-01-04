@@ -34,7 +34,7 @@ final class ProductEnqueueController extends AbstractController
         $this->productRepository = $productRepository;
     }
 
-    public function enqueue(int $productId): Response
+    public function enqueueAction(int $productId): Response
     {
         /** @var TranslatorInterface $translator */
         $translator = $this->get('translator');
