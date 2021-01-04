@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Sylius\Component\Attribute\AttributeType\CheckboxAttributeType;
+use Sylius\Component\Attribute\AttributeType\IntegerAttributeType;
 use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextareaAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextAttributeType;
@@ -128,7 +129,8 @@ final class AttributeValueHandler implements ValueHandlerInterface
         return $attribute->getType() === TextareaAttributeType::TYPE ||
             $attribute->getType() === TextAttributeType::TYPE ||
             $attribute->getType() === CheckboxAttributeType::TYPE ||
-            $attribute->getType() === SelectAttributeType::TYPE;
+            $attribute->getType() === SelectAttributeType::TYPE ||
+            $attribute->getType() === IntegerAttributeType::TYPE;
     }
 
     private function isProductOption(ProductVariantInterface $subject, string $attributeCode): bool
@@ -145,9 +147,9 @@ final class AttributeValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * @param string|bool $value
+     * @param int|string|bool $value
      *
-     * @return array|string|bool
+     * @return array|int|string|bool
      */
     private function getAttributeValue(AttributeInterface $attribute, $value)
     {
