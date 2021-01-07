@@ -36,9 +36,9 @@ Feature: Enqueuing products
   @ui
   Scenario: Enqueue a product
     Given I am logged in as an administrator
-    And there is a product item with identifier "braided-hat-m"
+    And the store has a product "Braided hat m" with code "braided-hat-m"
     When I browse product item
-    And And I schedule an Akeneo PIM import for the "braided-hat-m" product
+    And I schedule an Akeneo PIM import for the "braided-hat-m" product
     And I should be notified that it has been successfully enqueued
     Then I browse Akeneo queue items
     And I should see 1, not imported, queue items in the list
@@ -46,10 +46,10 @@ Feature: Enqueuing products
   @ui
   Scenario: Enqueue a product already enqueued
     Given I am logged in as an administrator
-    And there is a product item with identifier "braided-hat-l"
+    And the store has a product "Braided hat l" with code "braided-hat-l"
     And there is one item to import with identifier "braided-hat-l" for the "Product" importer in the Akeneo queue
     When I browse product item
-    And And I schedule an Akeneo PIM import for the "braided-hat-l" product
+    And I schedule an Akeneo PIM import for the "braided-hat-l" product
     And I should be notified that it has been already enqueued
     Then I browse Akeneo queue items
     And I should see 1, not imported, queue items in the list

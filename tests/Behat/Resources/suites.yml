@@ -78,6 +78,7 @@ default:
                 - sylius.behat.context.hook.doctrine_orm
 
                 - sylius.behat.context.setup.admin_security
+                - sylius.behat.context.setup.product
                 - webgriffe_sylius_akeneo.behat.context.setup.product
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 

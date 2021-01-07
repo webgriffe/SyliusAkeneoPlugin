@@ -64,7 +64,7 @@ final class ProductEnqueueController extends AbstractController
         /** @var ?string $productCode */
         $productCode = $product->getCode();
 
-        if (Assert::null($productCode)) {
+        if (Assert::notNull($productCode)) {
             throw new \LogicException('Product without code');
         }
 
