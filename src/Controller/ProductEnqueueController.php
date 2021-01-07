@@ -8,10 +8,12 @@ use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Product\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem;
 use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
+use Webmozart\Assert\Assert;
 
 final class ProductEnqueueController extends AbstractController
 {
@@ -41,12 +43,7 @@ final class ProductEnqueueController extends AbstractController
         /** @var ProductInterface|null $product */
         $product = $this->productRepository->find($productId);
         if ($product === null) {
-            $this->addFlash(
-                'error',
-                $translator->trans('webgriffe_sylius_akeneo.ui.product_not_exist')
-            );
-
-            return $this->redirectToRoute('sylius_admin_product_index');
+            throw new NotFoundHttpException('Product not found');
         }
 
         /** @var array $productEnqueued */
@@ -64,21 +61,16 @@ final class ProductEnqueueController extends AbstractController
             return $this->redirectToRoute('sylius_admin_product_index');
         }
 
-        /** @var ?string $codeProduct */
-        $codeProduct = $product->getCode();
+        /** @var ?string $productCode */
+        $productCode = $product->getCode();
 
-        if ($codeProduct === null) {
-            $this->addFlash(
-                'error',
-                $translator->trans('webgriffe_sylius_akeneo.ui.product_without_code')
-            );
-
-            return $this->redirectToRoute('sylius_admin_product_index');
+        if (Assert::null($productCode)) {
+            throw new \LogicException('Product without code');
         }
 
         $queueItem = new QueueItem();
         $queueItem->setAkeneoEntity('Product');
-        $queueItem->setAkeneoIdentifier($codeProduct);
+        $queueItem->setAkeneoIdentifier($productCode);
         $queueItem->setCreatedAt(new \DateTime());
         $this->queueItemRepository->add($queueItem);
 

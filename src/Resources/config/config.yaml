@@ -70,5 +70,5 @@ sylius_grid:
                                 parameters:
                                     productId: resource.id
                             icon: cloud download
-                            color: green
+                            color: violet
 
