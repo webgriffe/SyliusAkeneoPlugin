@@ -64,9 +64,7 @@ final class ProductEnqueueController extends AbstractController
         /** @var ?string $productCode */
         $productCode = $product->getCode();
 
-        if (Assert::notNull($productCode)) {
-            throw new \LogicException('Product without code');
-        }
+        Assert::notNull($productCode);
 
         $queueItem = new QueueItem();
         $queueItem->setAkeneoEntity('Product');

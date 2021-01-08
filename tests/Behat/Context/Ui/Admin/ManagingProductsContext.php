@@ -10,7 +10,6 @@ use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Admin\Product\IndexPageInterface;
 use Sylius\Behat\Service\Helper\JavaScriptTestHelperInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
-use Webmozart\Assert\Assert;
 
 final class ManagingProductsContext implements Context
 {
@@ -18,13 +17,11 @@ final class ManagingProductsContext implements Context
 
     /** @var IndexPageInterface */
     private $indexPage;
-    /**
-     * @var JavaScriptTestHelperInterface
-     */
+
+    /** @var JavaScriptTestHelperInterface */
     private $testHelper;
-    /**
-     * @var NotificationCheckerInterface
-     */
+
+    /** @var NotificationCheckerInterface */
     private $notificationChecker;
 
     /**
@@ -35,14 +32,6 @@ final class ManagingProductsContext implements Context
         $this->indexPage = $indexPage;
         $this->testHelper = $testHelper;
         $this->notificationChecker = $notificationChecker;
-    }
-
-    /**
-     * @When I browse product item
-     */
-    public function iBrowseProductItem()
-    {
-        $this->indexPage->open();
     }
 
     /**

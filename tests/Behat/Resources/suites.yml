@@ -79,9 +79,9 @@ default:
 
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.product
-                - webgriffe_sylius_akeneo.behat.context.setup.product
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
+                - sylius.behat.context.ui.admin.managing_products
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items
             filters:
