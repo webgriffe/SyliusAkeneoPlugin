@@ -6,6 +6,9 @@ sylius_resource:
                 repository: Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\QueueItemRepository
 
 sylius_grid:
+    templates:
+        action:
+            enqueueProduct: '@WebgriffeSyliusAkeneoPlugin\Product\Grid\Action\enqueue.html.twig'
     grids:
         webgriffe_sylius_akeneo_admin_queue_item:
             driver:
@@ -54,3 +57,18 @@ sylius_grid:
             actions:
                 main: ~
                 item: ~
+
+        sylius_admin_product:
+            actions:
+                item:
+                    enqueue:
+                        type: enqueueProduct
+                        label: webgriffe_sylius_akeneo.ui.enqueue
+                        options:
+                            link:
+                                route: webgriffe_sylius_akeneo_product_enqueue
+                                parameters:
+                                    productId: resource.id
+                            icon: cloud download
+                            color: violet
+
