@@ -181,5 +181,5 @@ jobs:
             - name: fetch tags
               run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
             - name: Roave BC Check
-              uses: docker://nyholm/roave-bc-check-ga
+              uses: ./.github/actions/roave-bc-check
 

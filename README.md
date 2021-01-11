@@ -6,7 +6,7 @@
 
 <h1 align="center">Akeneo Plugin</h1>
 <p align="center">Plugin allowing to import data from Akeneo PIM to your Sylius store.</p>
-<p align="center"><a href="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin"><img src="https://travis-ci.org/webgriffe/SyliusAkeneoPlugin.svg?branch=master" alt="Build Status" /></a></p>
+<p align="center"><a href="https://github.com/webgriffe/SyliusAkeneoPlugin/actions"><img src="https://github.com/webgriffe/SyliusAkeneoPlugin/workflows/Build/badge.svg" alt="Build Status" /></a></p>
 
 ## Table of Contents
 
@@ -88,6 +88,16 @@
     bin/console assets:install
     bin/console sylius:theme:assets:install
     ```
+
+6. _Optional_. If you want you can also add the Schedule Akeneo PIM import button in the product's detail and edit page.
+Override Sylius template by create a new file in the folder: `templates/bundles/SyliusAdminBundle/Product/_showInShopButton.html.twig`. Copy the content from the original Sylius file and paste it in the new file. Finally, add the button to the bottom of the file.
+
+        # ...
+
+        <a class="ui labeled icon button green" href="{{  path('webgriffe_sylius_akeneo_product_enqueue', {'productId': product.id }) }}" >  
+          <i class="icon cloud download"></i>  
+          {{ 'webgriffe_sylius_akeneo.ui.enqueue'|trans }}  
+        </a>
 
 ## Configuration
 
@@ -355,6 +365,12 @@ This plugin will also import product associations. It's a zero configuration imp
 ### Launch data import from CLI
 
 To actually import data you must first create queue items with the **enqueue command** and then you can import them with the **consume command**.
+
+#### Schedule Akeneo PIM import button
+
+This button allows you to queue a product directly from the admin index page. By adding the product to the queue, it will be updated by the Akeneo PIM at the next consume run.
+
+![Schedule Akeneo PIM import button](schedule-akeneo-import-button.png)
 
 #### Enqueue command
 
