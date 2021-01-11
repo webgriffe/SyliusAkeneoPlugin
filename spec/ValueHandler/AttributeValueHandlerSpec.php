@@ -25,9 +25,11 @@ class AttributeValueHandlerSpec extends ObjectBehavior
 
     private const TEXTAREA_ATTRIBUTE_CODE = 'causale';
 
-    private const INTEGER_ATTRIBUTE_CODE = 'integer';
+    private const INTEGER_ATTRIBUTE_CODE = 'position';
 
     private const SELECT_ATTRIBUTE_CODE = 'select';
+
+    private const DATETIME_ATTRIBUTE_CODE = 'created_at';
 
     private const NOT_EXISTING_ATTRIBUTE_CODE = 'not-existing';
 
@@ -39,6 +41,7 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeInterface $textareaProductAttribute,
         ProductAttributeInterface $integerProductAttribute,
         ProductAttributeInterface $selectProductAttribute,
+        ProductAttributeInterface $datetimeProductAttribute,
         ProductAttributeValueInterface $attributeValue,
         RepositoryInterface $attributeRepository,
         FactoryInterface $factory,
@@ -57,6 +60,7 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $textareaProductAttribute->getType()->willReturn('textarea');
         $integerProductAttribute->getType()->willReturn('integer');
         $selectProductAttribute->getType()->willReturn('select');
+        $datetimeProductAttribute->getType()->willReturn('datetime');
         $attributeRepository->findOneBy(['code' => self::CHECKBOX_ATTRIBUTE_CODE])->willReturn($checkboxProductAttribute);
         $attributeRepository->findOneBy(['code' => self::SELECT_ATTRIBUTE_CODE])->willReturn($selectProductAttribute);
         $attributeRepository->findOneBy(['code' => self::TEXT_ATTRIBUTE_CODE])->willReturn($textProductAttribute);
@@ -65,6 +69,7 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         );
         $attributeRepository->findOneBy(['code' => self::PRODUCT_OPTION_CODE])->willReturn(null);
         $attributeRepository->findOneBy(['code' => self::INTEGER_ATTRIBUTE_CODE])->willReturn($integerProductAttribute);
+        $attributeRepository->findOneBy(['code' => self::DATETIME_ATTRIBUTE_CODE])->willReturn($datetimeProductAttribute);
         $attributeRepository->findOneBy(['code' => self::NOT_EXISTING_ATTRIBUTE_CODE])->willReturn(null);
         $factory->createNew()->willReturn($attributeValue);
         $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT', 'de_DE']);
@@ -124,9 +129,14 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $this->supports($productVariant, self::SELECT_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
+    function it_support_existing_integer_attributes(ProductVariantInterface $productVariant)
+    {
+        $this->supports($productVariant, self::INTEGER_ATTRIBUTE_CODE, [])->shouldReturn(true);
+    }
+
     function it_does_not_support_existing_attributes_of_not_supported_type(ProductVariantInterface $productVariant)
     {
-        $this->supports($productVariant, self::INTEGER_ATTRIBUTE_CODE, [])->shouldReturn(false);
+        $this->supports($productVariant, self::DATETIME_ATTRIBUTE_CODE, [])->shouldReturn(false);
     }
 
     function it_does_not_support_not_existing_attribute(ProductVariantInterface $productVariant)
@@ -354,6 +364,36 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $itAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
         $deAttributeValue->setLocaleCode('de_DE')->shouldHaveBeenCalled();
         $deAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
+        $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
+        $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
+        $product->addAttribute($deAttributeValue)->shouldHaveBeenCalled();
+    }
+
+    function it_creates_integer_product_attribute_value_with_all_locales_if_it_does_not_already_exists(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductAttributeValueInterface $enAttributeValue,
+        ProductAttributeValueInterface $itAttributeValue,
+        ProductAttributeValueInterface $deAttributeValue,
+        FactoryInterface $factory
+    ) {
+        $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue, $deAttributeValue);
+        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
+        $value = [
+            [
+                'scope' => null,
+                'locale' => null,
+                'data' => 123,
+            ],
+        ];
+        $this->handle($productVariant, self::INTEGER_ATTRIBUTE_CODE, $value);
+
+        $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
+        $enAttributeValue->setValue(123)->shouldHaveBeenCalled();
+        $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
+        $itAttributeValue->setValue(123)->shouldHaveBeenCalled();
+        $deAttributeValue->setLocaleCode('de_DE')->shouldHaveBeenCalled();
+        $deAttributeValue->setValue(123)->shouldHaveBeenCalled();
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($deAttributeValue)->shouldHaveBeenCalled();
