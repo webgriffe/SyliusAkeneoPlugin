@@ -1,0 +1,8 @@
+webgriffe_sylius_akeneo:
+  ui:
+    value_converter: >-
+      {unit, select,
+          KILOGRAM {{amount} kg}
+          INCH   {{amount}"}
+          other  {{amount} {unit}}
+      }

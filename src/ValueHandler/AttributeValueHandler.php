@@ -17,6 +17,8 @@ use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
+use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter;
+use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -31,14 +33,29 @@ final class AttributeValueHandler implements ValueHandlerInterface
     /** @var TranslationLocaleProviderInterface */
     private $localeProvider;
 
+    /** @var ValueConverterInterface */
+    private $valueConverter;
+
     public function __construct(
         RepositoryInterface $attributeRepository,
         FactoryInterface $factory,
-        TranslationLocaleProviderInterface $localeProvider
+        TranslationLocaleProviderInterface $localeProvider,
+        ValueConverterInterface $valueConverter = null
     ) {
         $this->attributeRepository = $attributeRepository;
         $this->factory = $factory;
         $this->localeProvider = $localeProvider;
+        if ($valueConverter === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.5',
+                'Not passing a value converter to "%s" is deprecated and will be removed in %s.',
+                __CLASS__,
+                '2.0'
+            );
+            $valueConverter = new ValueConverter();
+        }
+        $this->valueConverter = $valueConverter;
     }
 
     /**
@@ -118,7 +135,8 @@ final class AttributeValueHandler implements ValueHandlerInterface
         }
 
         $attributeValue->setAttribute($attribute);
-        $attributeValue->setValue($this->getAttributeValue($attribute, $value));
+        $attributeValue->setValue($this->valueConverter->convert($attribute, $value, $localeCode));
+//        $attributeValue->setValue($this->getAttributeValue($attribute, $value));
         $attributeValue->setLocaleCode($localeCode);
 
         $product->addAttribute($attributeValue);
@@ -144,31 +162,5 @@ final class AttributeValueHandler implements ValueHandlerInterface
         });
 
         return !$productOptions->isEmpty();
-    }
-
-    /**
-     * @param int|string|bool $value
-     *
-     * @return array|int|string|bool
-     */
-    private function getAttributeValue(AttributeInterface $attribute, $value)
-    {
-        if ($attribute->getType() === SelectAttributeType::TYPE) {
-            $attributeConfiguration = $attribute->getConfiguration();
-            $possibleOptionsCodes = array_map('strval', array_keys($attributeConfiguration['choices']));
-            if (!in_array($value, $possibleOptionsCodes, true)) {
-                throw new \InvalidArgumentException(
-                    sprintf(
-                        'This select attribute can only save existing attribute options. ' .
-                        'Attribute option with the given %s code does not exist.',
-                        $value
-                    )
-                );
-            }
-
-            return [$value];
-        }
-
-        return $value;
     }
 }

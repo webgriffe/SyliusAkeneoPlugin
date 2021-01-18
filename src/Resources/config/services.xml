@@ -144,5 +144,9 @@
             <argument type="service" id="sylius.repository.product_attribute"/>
             <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
+
+        <service id="webgriffe_sylius_akeneo.converter.value" class="Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter" >
+            <argument type="service" id="translator" />
+        </service>
     </services>
 </container>
