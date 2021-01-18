@@ -83,6 +83,9 @@ final class ConsumeCommand extends Command
                         $t->getMessage()
                     )
                 );
+                if ($output->isVeryVerbose()) {
+                    $output->writeln((string) $t);
+                }
             }
 
             $this->queueItemRepository->add($queueItem);
