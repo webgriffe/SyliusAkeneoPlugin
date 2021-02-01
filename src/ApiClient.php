@@ -14,7 +14,10 @@ use Webmozart\Assert\Assert;
 final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface
 {
     /** @var string */
-    private $token;
+    private $accessToken;
+
+    /** @var string */
+    private $refreshToken;
 
     /** @var ClientInterface */
     private $httpClient;
@@ -74,7 +77,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             $uri = $this->baseUrl . $uri;
         }
 
-        if (!(bool) $this->token) {
+        if (!(bool) $this->accessToken) {
             $this->login();
         }
 
@@ -82,13 +85,22 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             $headers,
             [
                 'Content-Type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->token),
+                'Authorization' => sprintf('Bearer %s', $this->accessToken),
             ]
         );
         $request = new Request($method, $uri, $headers);
         $response = $this->httpClient->send($request);
         $statusClass = (int) ($response->getStatusCode() / 100);
         $responseResult = json_decode($response->getBody()->getContents(), true);
+
+        $accessTokenHasExpired = $response->getStatusCode() === 401
+            && (string) $responseResult['message'] === 'The access token provided has expired.';
+        if ($accessTokenHasExpired) {
+            $this->refreshAccessToken();
+
+            return $this->authenticatedRequest($uri, $method, $headers);
+        }
+
         if ($statusClass !== 2) {
             throw new \HttpException($responseResult['message'], $responseResult['code']);
         }
@@ -132,7 +144,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     public function downloadFile(string $code): \SplFileInfo
     {
         $endpoint = sprintf('/api/rest/v1/media-files/%s/download', $code);
-        $headers = ['Authorization' => sprintf('Bearer %s', $this->token)];
+        $headers = ['Authorization' => sprintf('Bearer %s', $this->accessToken)];
         $request = new Request('GET', $this->baseUrl . $endpoint, $headers);
         $response = $this->httpClient->send($request);
         $statusClass = (int) ($response->getStatusCode() / 100);
@@ -202,25 +214,25 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             ]
         );
         Assert::string($body);
-        $headers = [
-            'Content-Type' => 'application/json',
-        ];
-        $request = new Request(
-            'POST',
-            $this->baseUrl . '/api/oauth/v1/token',
-            $headers,
-            $body
-        );
-        $options = [
-            'auth' => [
-                $this->clientId,
-                $this->secret,
-            ],
-        ];
-        $rawResponse = $this->httpClient->send($request, $options);
-        $responseResult = json_decode($rawResponse->getBody()->getContents(), true);
+        $responseResult = $this->makeOauthRequest($body);
 
-        $this->token = $responseResult['access_token'];
+        $this->accessToken = $responseResult['access_token'];
+        $this->refreshToken = $responseResult['refresh_token'];
+    }
+
+    private function refreshAccessToken(): void
+    {
+        $body = json_encode(
+            [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $this->refreshToken,
+            ]
+        );
+        Assert::string($body);
+        $responseResult = $this->makeOauthRequest($body);
+
+        $this->accessToken = $responseResult['access_token'];
+        $this->refreshToken = $responseResult['refresh_token'];
     }
 
     /**
@@ -267,5 +279,34 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         }
 
         return $this->temporaryFilesManager->generateTemporaryFilePath();
+    }
+
+    /**
+     * @param bool $body
+     *
+     * @return mixed
+     *
+     * @throws GuzzleException
+     */
+    private function makeOauthRequest(string $body)
+    {
+        $headers = [
+            'Content-Type' => 'application/json',
+        ];
+        $request = new Request(
+            'POST',
+            $this->baseUrl . '/api/oauth/v1/token',
+            $headers,
+            $body
+        );
+        $options = [
+            'auth' => [
+                $this->clientId,
+                $this->secret,
+            ],
+        ];
+        $rawResponse = $this->httpClient->send($request, $options);
+
+        return  json_decode($rawResponse->getBody()->getContents(), true);
     }
 }
