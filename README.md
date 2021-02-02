@@ -142,7 +142,7 @@ webgriffe_sylius_akeneo:
         type: 'translatable_property'
         options:
           akeneo_attribute_code: 'short_description'
-          sylius_translation_property_path: 'short_description'
+          sylius_translation_property_path: 'shortDescription'
       description:
         type: 'translatable_property'
         options:
