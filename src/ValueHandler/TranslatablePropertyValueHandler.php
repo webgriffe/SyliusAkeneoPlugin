@@ -79,6 +79,11 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 
                 continue;
             }
+
+            if (!in_array($localeCode, $this->localeProvider->getDefinedLocalesCodes())) {
+                continue;
+            }
+
             $variantTranslation = $this->getOrCreateNewProductVariantTranslation($subject, $localeCode);
             $this->setValueOnProductVariantAndProductTranslation($variantTranslation, $item['data']);
         }
