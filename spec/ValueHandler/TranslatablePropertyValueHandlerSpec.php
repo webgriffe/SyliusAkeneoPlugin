@@ -155,6 +155,18 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
+    function it_skips_locales_not_specified_in_sylius(
+        ProductVariantInterface $productVariant,
+        ProductTranslationInterface $productTranslation,
+        ProductVariantTranslationInterface $productVariantTranslation,
+        PropertyAccessorInterface $propertyAccessor
+    ) {
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
+
+        $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
+    }
+
     function it_sets_value_on_all_product_translations_when_locale_not_specified(
         ProductVariantInterface $productVariant,
         ProductVariantTranslationInterface $englishProductVariantTranslation,
