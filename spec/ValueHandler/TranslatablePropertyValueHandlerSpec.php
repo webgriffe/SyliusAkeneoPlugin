@@ -157,20 +157,10 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
 
     function it_skips_locales_not_specified_in_sylius(
         ProductVariantInterface $productVariant,
-        ProductInterface $product,
         ProductTranslationInterface $productTranslation,
         ProductVariantTranslationInterface $productVariantTranslation,
         PropertyAccessorInterface $propertyAccessor
     ) {
-        $productVariant->getProduct()->willReturn($product);
-        $productVariant->getTranslation('en_US')->willReturn($productVariantTranslation);
-        $productVariantTranslation->getLocale()->willReturn('en_US');
-        $productVariantTranslation->getTranslatable()->willReturn($productVariant);
-        $product->getTranslation('en_US')->shouldBeCalled()->willReturn($productTranslation);
-        $productTranslation->getLocale()->willReturn('en_US');
-        $propertyAccessor->isWritable($productTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
-        $propertyAccessor->isWritable($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
-
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
 
         $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
