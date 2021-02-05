@@ -100,7 +100,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * @param bool|string $value
+     * @param array|int|string|bool $value
      */
     private function addAttributeValue(
         AttributeInterface $attribute,
@@ -147,26 +147,27 @@ final class AttributeValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * @param int|string|bool $value
+     * @param array|int|string|bool $value
      *
      * @return array|int|string|bool
      */
     private function getAttributeValue(AttributeInterface $attribute, $value)
     {
         if ($attribute->getType() === SelectAttributeType::TYPE) {
+            $value = (array) $value;
             $attributeConfiguration = $attribute->getConfiguration();
             $possibleOptionsCodes = array_map('strval', array_keys($attributeConfiguration['choices']));
-            if (!in_array($value, $possibleOptionsCodes, true)) {
+            $invalid = array_diff($value, $possibleOptionsCodes);
+
+            if (!empty($invalid)) {
                 throw new \InvalidArgumentException(
                     sprintf(
                         'This select attribute can only save existing attribute options. ' .
-                        'Attribute option with the given %s code does not exist.',
-                        $value
+                        'Attribute option codes [%s] do not exist.',
+                        implode(', ', $invalid)
                     )
                 );
             }
-
-            return [$value];
         }
 
         return $value;
