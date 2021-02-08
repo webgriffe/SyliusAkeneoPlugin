@@ -35,5 +35,5 @@ Feature: cleaning queue
     And there is an already imported item with identifier "braided-hat-s" for the "Product" importer in the Akeneo queue
     And this item has been imported 20 days ago
     When I clean the queue specifying 0 days of retention
-    Then I should be notified that 2 item has been deleted
-    And there shouldn't be any more item to clean
+    Then I should be notified that 2 items have been deleted
+    And there shouldn't be any more items to clean
