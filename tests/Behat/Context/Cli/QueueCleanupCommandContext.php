@@ -57,7 +57,7 @@ final class QueueCleanupCommandContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that (\d+) item has been deleted$/
+     * @Then /^I should be notified that (\d+) item[s]? (has|have) been deleted$/
      */
     public function iShouldBeNotifiedThatItemHasBeenDeleted(int $count)
     {
@@ -66,7 +66,7 @@ final class QueueCleanupCommandContext implements Context
     }
 
     /**
-     * @Then /^there shouldn\'t be any more item to clean$/
+     * @Then /^there shouldn\'t be any more item[s]? to clean$/
      */
     public function thereShouldntBeAnyMoreItemToClean()
     {
