@@ -83,4 +83,13 @@ final class QueueContext implements Context
         $queueItem->setImportedAt(new \DateTime("$days days ago"));
         $this->queueItemRepository->add($queueItem);
     }
+
+    /**
+     * @Given /^(this item) has been imported now$/
+     */
+    public function thisItemHasBeenImportedNow(QueueItemInterface $queueItem)
+    {
+        $queueItem->setImportedAt(new \DateTime());
+        $this->queueItemRepository->add($queueItem);
+    }
 }
