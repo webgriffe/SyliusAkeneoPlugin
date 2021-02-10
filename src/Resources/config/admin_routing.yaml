@@ -15,5 +15,5 @@ webgriffe_sylius_akeneo_admin_queue_item:
     type: sylius.resource
 
 webgriffe_sylius_akeneo_product_enqueue:
-    controller: webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller:enqueueAction
+    controller: webgriffe_sylius_akeneo.controller.product_enqueue_controller:enqueueAction
     path: product/{productId}/enqueue
