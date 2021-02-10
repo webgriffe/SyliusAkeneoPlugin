@@ -16,9 +16,6 @@
                 </service>
             </argument>
         </service>
-        <!-- The following alias is for backward compatibility. It could be removed in 2.x -->
-        <service id="webgriffe_sylius_akeneo_plugin.repository.cleanable_queue_item" alias="webgriffe_sylius_akeneo.repository.cleanable_queue_item" />
-
 
         <!-- Commands -->
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
@@ -72,8 +69,6 @@
             <argument type="service" id="sylius.repository.product" />
             <argument type="service" id="router.default" />
         </service>
-        <!-- The following alias is for backward compatibility. It could be removed in 2.x -->
-        <service id="webgriffe_sylius_akeneo_plugin.repository.cleanable_queue_item" alias="webgriffe_sylius_akeneo.controller.product_enqueue_controller" />
 
         <service id="webgriffe_sylius_akeneo.temporary_file_manager" class="Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager">
             <argument type="service" id="filesystem" />
