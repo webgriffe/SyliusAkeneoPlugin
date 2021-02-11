@@ -19,6 +19,7 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler;
+use Webmozart\Assert\Assert;
 
 final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension implements CompilerPassInterface
 {
@@ -102,6 +103,8 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+
+        Assert::isArray($config['resources']);
 
         $this->registerResources('webgriffe_sylius_akeneo', 'doctrine/orm', $config['resources'], $container);
         // The following registers plugin resources again with a different prefix. This is only for BC compatibility

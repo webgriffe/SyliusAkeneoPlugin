@@ -209,9 +209,8 @@
     </PossiblyUndefinedMethod>
   </file>
   <file src="src/DependencyInjection/WebgriffeSyliusAkeneoExtension.php">
-    <MixedArgument occurrences="6">
+    <MixedArgument occurrences="5">
       <code>$config['api_client']</code>
-      <code>$config['resources']</code>
       <code>$config['value_handlers']['product'] ?? []</code>
       <code>$options</code>
       <code>self::$valueHandlersTypesDefinitions[$type]['arguments']</code>
@@ -397,9 +396,6 @@
       <code>$attribute</code>
       <code>$attribute</code>
     </ArgumentTypeCoercion>
-    <InvalidScalarArgument occurrences="1">
-      <code>$value</code>
-    </InvalidScalarArgument>
     <MixedArgument occurrences="4">
       <code>$attributeConfiguration['choices']</code>
       <code>$valueData['data']</code>
