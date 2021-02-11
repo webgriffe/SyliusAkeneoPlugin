@@ -104,6 +104,9 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
         $this->registerResources('webgriffe_sylius_akeneo', 'doctrine/orm', $config['resources'], $container);
+        // The following registers plugin resources again with a different prefix. This is only for BC compatibility
+        // and could be removed in 2.x.
+        $this->registerResources('webgriffe_sylius_akeneo_plugin', 'doctrine/orm', $config['resources'], $container);
         $this->registerApiClientParameters($config['api_client'], $container);
 
         $loader->load('services.xml');
