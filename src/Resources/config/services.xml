@@ -7,7 +7,7 @@
 
     <services>
 
-        <service id="webgriffe_sylius_akeneo_plugin.repository.cleanable_queue_item" class="Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\QueueItemRepository">
+        <service id="webgriffe_sylius_akeneo.repository.cleanable_queue_item" class="Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\QueueItemRepository">
             <argument type="service" id="webgriffe_sylius_akeneo.manager.queue_item" />
             <argument type="service">
                 <service class="Doctrine\ORM\Mapping\ClassMetadata" public="false" >
@@ -16,25 +16,27 @@
                 </service>
             </argument>
         </service>
+        <!-- The following alias is for BC compatibility and could be removed in 2.x. -->
+        <service id="webgriffe_sylius_akeneo_plugin.repository.cleanable_queue_item" alias="webgriffe_sylius_akeneo.repository.cleanable_queue_item" />
 
         <!-- Commands -->
         <service id="webgriffe_sylius_akeneo.command.consume" class="Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand">
-            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item" />
+            <argument type="service" id="webgriffe_sylius_akeneo.repository.queue_item" />
             <argument type="service" id="webgriffe_sylius_akeneo.importer_registry"/>
             <argument type="service" id="doctrine"/>
             <tag name="console.command" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.command.enqueue" class="Webgriffe\SyliusAkeneoPlugin\Command\EnqueueCommand">
-            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.queue_item"/>
-            <argument type="service" id="webgriffe_sylius_akeneo_plugin.factory.queue_item"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.repository.queue_item"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.factory.queue_item"/>
             <argument type="service" id="webgriffe_sylius_akeneo.date_time_builder"/>
             <argument type="service" id="webgriffe_sylius_akeneo.importer_registry"/>
             <tag name="console.command" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.command.queue_cleanup" class="Webgriffe\SyliusAkeneoPlugin\Command\QueueCleanupCommand">
-            <argument type="service" id="webgriffe_sylius_akeneo_plugin.repository.cleanable_queue_item"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.repository.cleanable_queue_item"/>
             <tag name="console.command" />
         </service>
 
@@ -63,12 +65,14 @@
         <service id="webgriffe_sylius_akeneo.slugify" class="Cocur\Slugify\Slugify" />
         <service id="Cocur\Slugify\SlugifyInterface" alias="webgriffe_sylius_akeneo.slugify" />
 
-        <service id="webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller" class="Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController" >
+        <service id="webgriffe_sylius_akeneo.controller.product_enqueue_controller" class="Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController" >
             <tag name="controller.service_arguments"/>
-            <argument type="service" id='webgriffe_sylius_akeneo_plugin.repository.queue_item' />
+            <argument type="service" id='webgriffe_sylius_akeneo.repository.queue_item' />
             <argument type="service" id="sylius.repository.product" />
             <argument type="service" id="router.default" />
         </service>
+        <!-- The following alias is for BC compatibility and could be removed in 2.x. -->
+        <service id="webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller" alias="webgriffe_sylius_akeneo.controller.product_enqueue_controller" />
 
         <service id="webgriffe_sylius_akeneo.temporary_file_manager" class="Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager">
             <argument type="service" id="filesystem" />
