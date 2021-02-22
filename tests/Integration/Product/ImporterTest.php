@@ -537,4 +537,30 @@ final class ImporterTest extends KernelTestCase
             )
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_sets_product_taxa_from_akeneo_discarding_those_set_on_sylius()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/10627329-with-taxa.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('10627329');
+
+        /** @var ProductInterface[] $allProducts */
+        $allProducts = $this->productRepository->findAll();
+        $this->assertCount(1, $allProducts);
+        $product = $allProducts[0];
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals('10627329', $product->getCode());
+        $this->assertCount(3, $product->getTaxons());
+    }
 }

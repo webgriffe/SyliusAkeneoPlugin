@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTaxonInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
@@ -220,15 +222,29 @@ final class Importer implements ImporterInterface
 
     private function handleTaxons(ProductInterface $product, array $akeneoProduct): void
     {
-        $taxons = $this->taxonsResolver->resolve($akeneoProduct);
-        foreach ($taxons as $taxon) {
-            if ($product->hasTaxon($taxon)) {
-                continue;
+        $akeneoTaxons = new ArrayCollection($this->taxonsResolver->resolve($akeneoProduct));
+        $syliusTaxons = $product->getTaxons();
+        $akeneoTaxonsCodes = $akeneoTaxons->map(function (TaxonInterface $taxon) {return $taxon->getCode(); })->toArray();
+        $syliusTaxonsCodes = $syliusTaxons->map(function (TaxonInterface $taxon) {return $taxon->getCode(); })->toArray();
+        $toAddTaxons = $akeneoTaxons->filter(
+            function (TaxonInterface $taxon) use ($syliusTaxonsCodes) {
+                return !in_array($taxon->getCode(), $syliusTaxonsCodes, true);
             }
-            $productTaxon = $this->productTaxonFactory->createNew();
-            Assert::isInstanceOf($productTaxon, ProductTaxonInterface::class);
+        );
+        $toRemoveTaxonsCodes = array_diff($syliusTaxonsCodes, $akeneoTaxonsCodes);
+
+        foreach ($product->getProductTaxons() as $productTaxon) {
+            $taxon = $productTaxon->getTaxon();
+            Assert::isInstanceOf($taxon, TaxonInterface::class);
+            if (in_array($taxon->getCode(), $toRemoveTaxonsCodes, true)) {
+                $product->getProductTaxons()->removeElement($productTaxon);
+            }
+        }
+        foreach ($toAddTaxons as $toAddTaxon) {
             /** @var ProductTaxonInterface $productTaxon */
-            $productTaxon->setTaxon($taxon);
+            $productTaxon = $this->productTaxonFactory->createNew();
+            $productTaxon->setProduct($product);
+            $productTaxon->setTaxon($toAddTaxon);
             $productTaxon->setPosition(0);
             $product->addProductTaxon($productTaxon);
         }
