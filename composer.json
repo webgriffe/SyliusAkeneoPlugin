@@ -43,7 +43,7 @@
         "symfony/web-profiler-bundle": "^4.4|^5.0",
         "symfony/web-server-bundle": "^4.4|^5.0",
         "theofidry/alice-data-fixtures": "^1.1",
-        "vimeo/psalm": "4.3.2"
+        "vimeo/psalm": "4.4.1"
     },
     "conflict": {
         "symfony/doctrine-bridge": "4.4.16",
