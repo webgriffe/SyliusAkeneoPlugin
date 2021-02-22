@@ -13,10 +13,10 @@ use Webmozart\Assert\Assert;
 
 final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface
 {
-    /** @var string */
+    /** @var string|null */
     private $accessToken;
 
-    /** @var string */
+    /** @var string|null */
     private $refreshToken;
 
     /** @var ClientInterface */
@@ -71,7 +71,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      * @throws GuzzleException
      * @throws \HttpException
      */
-    public function authenticatedRequest(string $uri, string $method, array $headers): array
+    public function authenticatedRequest(string $uri, string $method, array $headers, bool $withRefresh = false): array
     {
         if (strpos($uri, '/') === 0) {
             $uri = $this->baseUrl . $uri;
@@ -79,6 +79,10 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
 
         if (!(bool) $this->accessToken) {
             $this->login();
+        }
+
+        if ($withRefresh) {
+            $this->refreshAccessToken();
         }
 
         $headers = array_merge(
@@ -93,12 +97,9 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         $statusClass = (int) ($response->getStatusCode() / 100);
         $responseResult = json_decode($response->getBody()->getContents(), true);
 
-        $accessTokenHasExpired = $response->getStatusCode() === 401
-            && (string) $responseResult['message'] === 'The access token provided has expired.';
-        if ($accessTokenHasExpired) {
-            $this->refreshAccessToken();
-
-            return $this->authenticatedRequest($uri, $method, $headers);
+        $accessTokenHasExpired = $response->getStatusCode() === 401;
+        if ($accessTokenHasExpired && !$withRefresh) {
+            return $this->authenticatedRequest($uri, $method, $headers, true);
         }
 
         if ($statusClass !== 2) {
@@ -144,6 +145,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     public function downloadFile(string $code): \SplFileInfo
     {
         $endpoint = sprintf('/api/rest/v1/media-files/%s/download', $code);
+        Assert::string($this->accessToken);
         $headers = ['Authorization' => sprintf('Bearer %s', $this->accessToken)];
         $request = new Request('GET', $this->baseUrl . $endpoint, $headers);
         $response = $this->httpClient->send($request);
@@ -281,11 +283,10 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         return $this->temporaryFilesManager->generateTemporaryFilePath();
     }
 
+
     /**
-     * @param bool $body
-     *
-     * @return mixed
-     *
+     * @param string $body
+     * @return array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null}
      * @throws GuzzleException
      */
     private function makeOauthRequest(string $body)
@@ -307,6 +308,8 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         ];
         $rawResponse = $this->httpClient->send($request, $options);
 
-        return  json_decode($rawResponse->getBody()->getContents(), true);
+        /** @var array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null} $result */
+        $result = json_decode($rawResponse->getBody()->getContents(), true);
+        return $result;
     }
 }
