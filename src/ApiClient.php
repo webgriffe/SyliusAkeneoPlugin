@@ -289,7 +289,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      * @return array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null}
      * @throws GuzzleException
      */
-    private function makeOauthRequest(string $body)
+    private function makeOauthRequest(string $body): array
     {
         $headers = [
             'Content-Type' => 'application/json',
