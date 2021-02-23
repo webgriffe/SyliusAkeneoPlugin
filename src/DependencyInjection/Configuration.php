@@ -40,9 +40,7 @@ final class Configuration implements ConfigurationInterface
                                 ->addDefaultsIfNotSet()
                                 ->children()
                                     ->enumNode('type')
-                                        ->values(
-                                            array_keys(WebgriffeSyliusAkeneoExtension::$valueHandlersTypesDefinitions)
-                                        )
+                                        ->values(WebgriffeSyliusAkeneoExtension::getAllowedValueHandlersTypes())
                                         ->isRequired()
                                     ->end()
                                     ->arrayNode('options')
