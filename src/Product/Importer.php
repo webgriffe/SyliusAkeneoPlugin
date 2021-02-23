@@ -194,6 +194,7 @@ final class Importer implements ImporterInterface
     private function dispatchPreEvent(ResourceInterface $product, string $eventName): ResourceControllerEvent
     {
         $event = new ResourceControllerEvent($product);
+        $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
         $this->eventDispatcher->dispatch(sprintf('sylius.product.pre_%s', $eventName), $event);
 
         return $event;
@@ -202,6 +203,7 @@ final class Importer implements ImporterInterface
     private function dispatchPostEvent(ResourceInterface $product, string $eventName): ResourceControllerEvent
     {
         $event = new ResourceControllerEvent($product);
+        $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
         $this->eventDispatcher->dispatch(sprintf('sylius.product.post_%s', $eventName), $event);
 
         return $event;
