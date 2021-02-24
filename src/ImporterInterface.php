@@ -6,6 +6,8 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 interface ImporterInterface
 {
+    public const EVENT_AKENEO_IMPORT = 'akeneo-import';
+
     /**
      * A string used to identify the Akeneo resource managed by this importer (for example: Product, Category, ecc...)
      */
