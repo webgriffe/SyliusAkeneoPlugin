@@ -14,6 +14,7 @@ use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
@@ -40,7 +41,11 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         ProductOptionRepositoryInterface $productOptionRepository,
         FactoryInterface $productOptionValueFactory,
         FactoryInterface $productOptionValueTranslationFactory,
-        RepositoryInterface $productOptionValueRepository
+        RepositoryInterface $productOptionValueRepository,
+        ProductOptionValueInterface $productOptionValue,
+        ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
+        ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
+        TranslationLocaleProviderInterface $translationLocaleProvider
     ) {
         $productVariant->getCode()->willReturn(self::VARIANT_CODE);
         $productVariant->getProduct()->willReturn($product);
@@ -58,12 +63,22 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
                 ]
             );
         $productOptionRepository->findOneBy(['code' => self::OPTION_CODE])->willReturn($productOption);
+        $productOptionValueFactory->createNew()->willReturn($productOptionValue);
+        $productOptionValue->getTranslation('en_US')->willReturn($englishProductOptionValueTranslation);
+        $productOptionValue->getTranslation('it_IT')->willReturn($englishProductOptionValueTranslation);
+        $productOptionValueTranslationFactory->createNew()->willReturn($italianProductOptionValueTranslation);
+        $productOptionValue->hasTranslation($englishProductOptionValueTranslation)->willReturn(false);
+        $productOptionValue->hasTranslation($italianProductOptionValueTranslation)->willReturn(false);
+        $englishProductOptionValueTranslation->getLocale()->willReturn('en_US');
+        $translationLocaleProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
+
         $this->beConstructedWith(
             $apiClient,
             $productOptionRepository,
             $productOptionValueFactory,
             $productOptionValueTranslationFactory,
-            $productOptionValueRepository
+            $productOptionValueRepository,
+            $translationLocaleProvider
         );
     }
 
@@ -198,8 +213,6 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
     function it_creates_product_option_value_from_factory_with_all_translations_if_does_not_already_exists(
         ProductVariantInterface $productVariant,
         ProductOptionValueInterface $productOptionValue,
-        FactoryInterface $productOptionValueFactory,
-        FactoryInterface $productOptionValueTranslationFactory,
         ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
         ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
         ProductOptionInterface $productOption,
@@ -212,13 +225,6 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
                 'data' => self::VALUE_CODE,
             ],
         ];
-        $productOptionValueFactory->createNew()->willReturn($productOptionValue);
-        $englishProductOptionValueTranslation->getLocale()->willReturn('en_US');
-        $productOptionValue->getTranslation('en_US')->willReturn($englishProductOptionValueTranslation);
-        $productOptionValue->getTranslation('it_IT')->willReturn($englishProductOptionValueTranslation);
-        $productOptionValueTranslationFactory->createNew()->willReturn($italianProductOptionValueTranslation);
-        $productOptionValue->hasTranslation($englishProductOptionValueTranslation)->willReturn(false);
-        $productOptionValue->hasTranslation($italianProductOptionValueTranslation)->willReturn(false);
         $productVariant->hasOptionValue($productOptionValue)->willReturn(false);
 
         $this->handle($productVariant, self::OPTION_CODE, $value);
@@ -263,5 +269,51 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $englishProductOptionValue->setValue(self::EN_LABEL)->shouldHaveBeenCalled();
         $italianProductOptionValue->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
         $productOptionValueRepository->add($existentProductOptionValue)->shouldHaveBeenCalled();
+    }
+
+    function it_skips_locale_not_defined_on_sylius(
+        ProductVariantInterface $productVariant,
+        ProductOptionValueInterface $productOptionValue,
+        ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
+        ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
+        ProductOptionInterface $productOption,
+        RepositoryInterface $productOptionValueRepository,
+        ApiClientInterface $apiClient,
+        FactoryInterface $productOptionValueTranslationFactory
+    ) {
+        $value = [
+            [
+                'scope' => null,
+                'locale' => null,
+                'data' => self::VALUE_CODE,
+            ],
+        ];
+        $productVariant->hasOptionValue($productOptionValue)->willReturn(false);
+        $apiClient
+            ->findAttributeOption(self::OPTION_CODE, self::VALUE_CODE)
+            ->willReturn(
+                [
+                    'code' => self::VALUE_CODE,
+                    'attribute' => self::OPTION_CODE,
+                    'sort_order' => 4,
+                    'labels' => ['en_US' => self::EN_LABEL, 'it_IT' => self::IT_LABEL, 'de_DE' => 'German Label'],
+                ]
+            )
+        ;
+        $productOptionValue->getTranslation('de_DE')->willReturn($englishProductOptionValueTranslation);
+
+        $this->handle($productVariant, self::OPTION_CODE, $value);
+
+        $productOptionValue->setCode('option-code_value-code')->shouldHaveBeenCalled();
+        $productOptionValue->setOption($productOption)->shouldHaveBeenCalled();
+        $productOption->addValue($productOptionValue)->shouldHaveBeenCalled();
+        $englishProductOptionValueTranslation->setValue(self::EN_LABEL)->shouldHaveBeenCalled();
+        $italianProductOptionValueTranslation->setLocale('it_IT')->shouldHaveBeenCalled();
+        $italianProductOptionValueTranslation->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($englishProductOptionValueTranslation)->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($italianProductOptionValueTranslation)->shouldHaveBeenCalled();
+        $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
+        $productOptionValueRepository->add($productOptionValue)->shouldHaveBeenCalled();
+        $productOptionValueTranslationFactory->createNew()->shouldHaveBeenCalledOnce();
     }
 }
