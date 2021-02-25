@@ -115,7 +115,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function findProductModel(string $code): ?array
     {
-        return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', $code));
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', urlencode($code)));
     }
 
     /**
@@ -144,7 +144,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function downloadFile(string $code): \SplFileInfo
     {
-        $endpoint = sprintf('/api/rest/v1/media-files/%s/download', $code);
+        $endpoint = sprintf('/api/rest/v1/media-files/%s/download', urlencode($code));
         Assert::string($this->accessToken);
         $headers = ['Authorization' => sprintf('Bearer %s', $this->accessToken)];
         $request = new Request('GET', $this->baseUrl . $endpoint, $headers);
@@ -168,7 +168,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function findProduct(string $code): ?array
     {
-        return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', $code));
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', urlencode($code)));
     }
 
     /**
