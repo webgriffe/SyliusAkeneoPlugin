@@ -196,8 +196,7 @@ final class Importer implements ImporterInterface
     {
         $event = new ResourceControllerEvent($product);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
-        /** @psalm-suppress InvalidArgument */
-        $this->eventDispatcher->dispatch(sprintf('sylius.product.pre_%s', $eventName), $event); /** @phpstan-ignore-line */
+        $this->eventDispatcher->dispatch($event, sprintf('sylius.product.pre_%s', $eventName));
 
         return $event;
     }
@@ -207,7 +206,7 @@ final class Importer implements ImporterInterface
         $event = new ResourceControllerEvent($product);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
         /** @psalm-suppress InvalidArgument */
-        $this->eventDispatcher->dispatch(sprintf('sylius.product.post_%s', $eventName), $event); /** @phpstan-ignore-line */
+        $this->eventDispatcher->dispatch($event, sprintf('sylius.product.post_%s', $eventName));
 
         return $event;
     }
