@@ -80,6 +80,7 @@ final class Importer implements ImporterInterface
         /** @var ProductInterface $product */
         $associations = $productVariantResponse['associations'];
         foreach ($associations as $associationTypeCode => $associationInfo) {
+            /** @var ProductAssociationTypeInterface|null $productAssociationType */
             $productAssociationType = $this->productAssociationTypeRepository->findOneBy(
                 ['code' => $associationTypeCode]
             );
@@ -119,6 +120,8 @@ final class Importer implements ImporterInterface
                 $productsToAssociate[] = $productToAssociate;
             }
 
+
+            /** @var ProductAssociationInterface|null $productAssociation */
             $productAssociation = $this->productAssociationRepository->findOneBy(
                 ['owner' => $product, 'type' => $productAssociationType]
             );

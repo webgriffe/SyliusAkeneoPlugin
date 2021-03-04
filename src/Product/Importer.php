@@ -126,6 +126,7 @@ final class Importer implements ImporterInterface
 
         $this->handleTaxons($product, $productVariantResponse);
 
+        /** @var ProductVariantInterface|null $productVariant */
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
         if (!$productVariant instanceof ProductVariantInterface) {
             /** @var ProductVariantInterface $productVariant */
@@ -195,7 +196,8 @@ final class Importer implements ImporterInterface
     {
         $event = new ResourceControllerEvent($product);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
-        $this->eventDispatcher->dispatch(sprintf('sylius.product.pre_%s', $eventName), $event);
+        /** @psalm-suppress InvalidArgument */
+        $this->eventDispatcher->dispatch(sprintf('sylius.product.pre_%s', $eventName), $event); /** @phpstan-ignore-line */
 
         return $event;
     }
@@ -204,7 +206,8 @@ final class Importer implements ImporterInterface
     {
         $event = new ResourceControllerEvent($product);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
-        $this->eventDispatcher->dispatch(sprintf('sylius.product.post_%s', $eventName), $event);
+        /** @psalm-suppress InvalidArgument */
+        $this->eventDispatcher->dispatch(sprintf('sylius.product.post_%s', $eventName), $event); /** @phpstan-ignore-line */
 
         return $event;
     }

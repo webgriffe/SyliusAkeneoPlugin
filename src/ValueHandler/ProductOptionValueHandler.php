@@ -114,6 +114,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 )
             );
         }
+        /** @var ProductOptionInterface|null $productOption */
         $productOption = $this->productOptionRepository->findOneBy(['code' => $optionCode]);
         // TODO productOptionRepository could be removed by getting product option from product with something like:
         //        $productOption = $product->getOptions()->filter(
@@ -131,8 +132,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        Assert::isInstanceOf($productOption, ProductOptionInterface::class);
-        /** @var ProductOptionInterface $productOption */
+        /** @var ProductOptionValueInterface|null $optionValue */
         $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $fullValueCode]);
         if (!$optionValue instanceof ProductOptionValueInterface) {
             /** @var ProductOptionValueInterface $optionValue */

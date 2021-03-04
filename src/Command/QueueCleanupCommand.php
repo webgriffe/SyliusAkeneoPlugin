@@ -16,9 +16,9 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\CleanableQueueItemRepositoryInterfac
 
 final class QueueCleanupCommand extends Command
 {
-    private const SUCCESS = 0;
+    public const SUCCESS = 0;
 
-    private const FAILURE = 1;
+    public const FAILURE = 1;
 
     private const DEFAULT_DAYS = 10;
 
