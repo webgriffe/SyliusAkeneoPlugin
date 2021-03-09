@@ -65,7 +65,7 @@
         <service id="webgriffe_sylius_akeneo.slugify" class="Cocur\Slugify\Slugify" />
         <service id="Cocur\Slugify\SlugifyInterface" alias="webgriffe_sylius_akeneo.slugify" />
 
-        <service id="webgriffe_sylius_akeneo.controller.product_enqueue_controller" class="Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController" >
+        <service id="webgriffe_sylius_akeneo.controller.product_enqueue_controller" class="Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController" autowire="true">
             <tag name="controller.service_arguments"/>
             <argument type="service" id='webgriffe_sylius_akeneo.repository.queue_item' />
             <argument type="service" id="sylius.repository.product" />
