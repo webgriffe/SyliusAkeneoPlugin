@@ -1,0 +1,22 @@
+Sylius\Component\Core\Model\ChannelPricing:
+  braided-hat-m-italy:
+    price: 2099
+    channelCode: 'italy'
+  braided-hat-m-usa:
+    price: 1099
+    channelCode: 'usa'
+  braided-hat-m-europe:
+    price: 2599
+    channelCode: 'europe'
+
+Sylius\Component\Core\Model\ProductVariant:
+  braided-hat-m:
+    code: 'braided-hat-m'
+    product: '@model-braided-hat'
+    optionValues:
+      - '@size_m'
+    channelPricings:
+      - "@braided-hat-m-italy"
+      - "@braided-hat-m-usa"
+      - "@braided-hat-m-europe"
+
