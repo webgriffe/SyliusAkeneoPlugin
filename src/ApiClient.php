@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
@@ -93,20 +94,19 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             ]
         );
         $request = new Request($method, $uri, $headers);
-        $response = $this->httpClient->send($request);
-        $statusClass = (int) ($response->getStatusCode() / 100);
-        $responseResult = json_decode($response->getBody()->getContents(), true);
 
-        $accessTokenHasExpired = $response->getStatusCode() === 401;
-        if ($accessTokenHasExpired && !$withRefresh) {
-            return $this->authenticatedRequest($uri, $method, $headers, true);
+        try {
+            $response = $this->httpClient->send($request);
+            return (array) json_decode($response->getBody()->getContents(), true);
+        } catch (RequestException $requestException) {
+            $erroredResponse = $requestException->getResponse();
+            Assert::notNull($erroredResponse);
+            $accessTokenHasExpired = $erroredResponse->getStatusCode() === 401;
+            if ($accessTokenHasExpired && !$withRefresh) {
+                return $this->authenticatedRequest($uri, $method, $headers, true);
+            }
+            throw $requestException;
         }
-
-        if ($statusClass !== 2) {
-            throw new \HttpException($responseResult['message'], $responseResult['code']);
-        }
-
-        return $responseResult;
     }
 
     /**
