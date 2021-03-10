@@ -97,7 +97,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
 
         try {
             $response = $this->httpClient->send($request);
-            return json_decode($response->getBody()->getContents(), true);
+            return (array) json_decode($response->getBody()->getContents(), true);
         } catch (RequestException $requestException) {
             $erroredResponse = $requestException->getResponse();
             Assert::notNull($erroredResponse);
