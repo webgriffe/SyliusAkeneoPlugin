@@ -29,11 +29,11 @@ final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
         }
         $taxons = [];
         foreach ($categories as $categoryCode) {
+            /** @var TaxonInterface|null $taxon */
             $taxon = $this->taxonRepository->findOneBy(['code' => $categoryCode]);
-            if (!$taxon) {
+            if ($taxon === null) {
                 continue;
             }
-            Assert::isInstanceOf($taxon, TaxonInterface::class);
             $taxons[] = $taxon;
         }
 

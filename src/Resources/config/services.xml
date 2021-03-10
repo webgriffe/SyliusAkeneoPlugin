@@ -70,6 +70,9 @@
             <argument type="service" id='webgriffe_sylius_akeneo.repository.queue_item' />
             <argument type="service" id="sylius.repository.product" />
             <argument type="service" id="router.default" />
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
         </service>
         <!-- The following alias is for BC compatibility and could be removed in 2.x. -->
         <service id="webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller" alias="webgriffe_sylius_akeneo.controller.product_enqueue_controller" />

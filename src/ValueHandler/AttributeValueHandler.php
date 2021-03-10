@@ -54,6 +54,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
             return false;
         }
 
+        /** @var AttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
 
         return $attribute && $this->hasSupportedType($attribute);
@@ -74,6 +75,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
             );
         }
 
+        /** @var AttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
 
         if ($attribute === null) {

@@ -13,6 +13,7 @@ use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
+use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
@@ -119,7 +120,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -149,7 +149,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -178,7 +177,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -261,7 +259,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
@@ -300,14 +297,12 @@ final class ImporterTest extends KernelTestCase
                 __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ChannelPricing/braided-hat-m-italy.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m/with-channel-pricings.yaml',
             ],
             [],
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
