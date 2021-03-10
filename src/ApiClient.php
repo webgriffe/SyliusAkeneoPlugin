@@ -144,7 +144,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function downloadFile(string $code): \SplFileInfo
     {
-        $endpoint = sprintf('/api/rest/v1/media-files/%s/download', urlencode($code));
+        $endpoint = sprintf('/api/rest/v1/media-files/%s/download', $code);
         Assert::string($this->accessToken);
         $headers = ['Authorization' => sprintf('Bearer %s', $this->accessToken)];
         $request = new Request('GET', $this->baseUrl . $endpoint, $headers);
