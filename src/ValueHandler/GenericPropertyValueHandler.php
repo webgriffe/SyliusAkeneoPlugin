@@ -59,14 +59,18 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
         $productVariant = $subject;
         Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
         if ($this->propertyAccessor->isWritable($productVariant, $this->propertyPath)) {
-            $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $value[0]['data']);
+            /** @psalm-suppress MixedArgument */
+            $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $this->getValue($value));
+            Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
             $hasBeenSet = true;
         }
 
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
         if ($this->propertyAccessor->isWritable($product, $this->propertyPath)) {
-            $this->propertyAccessor->setValue($product, $this->propertyPath, $value[0]['data']);
+            /** @psalm-suppress MixedArgument */
+            $this->propertyAccessor->setValue($product, $this->propertyPath, $this->getValue($value));
+            Assert::isInstanceOf($product, ProductInterface::class);
             $hasBeenSet = true;
         }
 
@@ -80,5 +84,21 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                 )
             );
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getValue(array $value)
+    {
+        Assert::keyExists($value, 0);
+        /** @psalm-suppress MixedAssignment */
+        $value = $value[0];
+        Assert::isArray($value);
+        Assert::keyExists($value, 'data');
+        /** @psalm-suppress MixedAssignment */
+        $value = $value['data'];
+
+        return $value;
     }
 }
