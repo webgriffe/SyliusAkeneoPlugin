@@ -558,4 +558,28 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals('10627329', $product->getCode());
         $this->assertCount(3, $product->getTaxons());
     }
+
+    /**
+     * @test
+     */
+    public function it_removes_product_images_removed_on_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat-with-variation-image.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertCount(1, $product->getImages());
+    }
 }

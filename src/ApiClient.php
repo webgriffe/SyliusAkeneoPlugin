@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
 use Webmozart\Assert\Assert;
 
-final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface
+final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface
 {
     /** @var string|null */
     private $accessToken;
@@ -204,6 +204,16 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     public function findAllAttributes(): array
     {
         return $this->traversePagination($this->authenticatedRequest('/api/rest/v1/attributes', 'GET', []));
+    }
+
+    public function findAllFamilies(): array
+    {
+        return $this->traversePagination($this->authenticatedRequest('/api/rest/v1/families', 'GET', []));
+    }
+
+    public function findFamily(string $code): ?array
+    {
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/families/%s', $code));
     }
 
     private function login(): void

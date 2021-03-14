@@ -7,9 +7,10 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
-final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface
+final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface
 {
     private $productsUpdatedAt = [];
 
@@ -108,5 +109,21 @@ final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClie
         }
 
         return $attributes;
+    }
+
+    public function findAllFamilies(): array
+    {
+        $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Family/*.json');
+        $attributes = [];
+        foreach ($files as $file) {
+            $attributes[] = json_decode(file_get_contents($file), true);
+        }
+
+        return $attributes;
+    }
+
+    public function findFamily(string $code): ?array
+    {
+        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Family/' . $code . '.json');
     }
 }

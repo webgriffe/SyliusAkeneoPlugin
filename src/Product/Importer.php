@@ -18,6 +18,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
 use Webmozart\Assert\Assert;
@@ -139,7 +140,12 @@ final class Importer implements ImporterInterface
         $product->setEnabled($this->statusResolver->resolve($productVariantResponse));
         $productVariant->setEnabled($this->variantStatusResolver->resolve($productVariantResponse));
 
-        foreach ($productVariantResponse['values'] as $attribute => $value) {
+        /** @var array<string, array> $attributesValues */
+        $attributesValues = $productVariantResponse['values'];
+        /** @var string $familyCode */
+        $familyCode = $productVariantResponse['family'];
+        $attributesValues = $this->addMissingAttributes($attributesValues, $familyCode);
+        foreach ($attributesValues as $attribute => $value) {
             $valueHandlers = $this->valueHandlersResolver->resolve($productVariant, $attribute, $value);
             foreach ($valueHandlers as $valueHandler) {
                 $valueHandler->handle($productVariant, $attribute, $value);
@@ -266,5 +272,36 @@ final class Importer implements ImporterInterface
         }
 
         return $product;
+    }
+
+    /**
+     * @param array<string, array> $attributesValues
+     * @return array<string, array>
+     */
+    private function addMissingAttributes(array $attributesValues, string $familyCode): array
+    {
+        if (!$this->apiClient instanceof FamilyAwareApiClientInterface) {
+            return $attributesValues;
+        }
+
+        $family = $this->apiClient->findFamily($familyCode);
+
+        if (null === $family) {
+            throw new \RuntimeException(sprintf('Cannot find "%s" family on Akeneo.', $familyCode));
+        }
+
+        /** @var string[] $allFamilyAttributes */
+        $allFamilyAttributes = $family['attributes'] ?? [];
+        /** @var string[] $productAttributes */
+        $productAttributes = array_keys($attributesValues);
+        $missingAttributes = array_diff($allFamilyAttributes, $productAttributes);
+        $emptyAttributeValue = [
+            ['locale' => null, 'scope' => null, 'data' => null]
+        ];
+        foreach ($missingAttributes as $missingAttribute) {
+            $attributesValues[$missingAttribute] = $emptyAttributeValue;
+        }
+
+        return $attributesValues;
     }
 }
