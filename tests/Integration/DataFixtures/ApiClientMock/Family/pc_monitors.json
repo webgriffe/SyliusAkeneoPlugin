@@ -12,7 +12,8 @@
         "release_date",
         "response_time",
         "sku",
-        "weight"
+        "weight",
+        "attachment"
     ],
     "attribute_as_label": "name",
     "attribute_as_image": "picture",

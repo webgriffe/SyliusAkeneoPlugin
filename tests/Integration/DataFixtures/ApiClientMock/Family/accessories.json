@@ -21,7 +21,8 @@
         "supplier",
         "variation_image",
         "variation_name",
-        "weight"
+        "weight",
+        "attachment"
     ],
     "attribute_as_label": "name",
     "attribute_as_image": "image",
