@@ -1,0 +1,60 @@
+{
+    "identifier": "127469",
+    "enabled": true,
+    "family": "laser_led_printers",
+    "categories": [
+        "hp",
+        "laser_led_printers",
+        "print_scan_sales"
+    ],
+    "groups": [],
+    "parent": null,
+    "values": {
+        "name": [
+            {
+                "locale": "en_US",
+                "scope": null,
+                "data": "HP LaserJet 1160 Printer"
+            }
+        ],
+        "power_requirements": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "110 - 127 VAC (+\/- 10%), 50\/60 Hz (+\/- 2 Hz); 220 to 240 VAC (+\/- 10%), 50\/60 Hz (+\/- 2 Hz)"
+            }
+        ],
+        "release_date": [
+            {
+                "locale": null,
+                "scope": "ecommerce",
+                "data": "2005-09-16T00:00:00+00:00"
+            }
+        ]
+    },
+    "created": "2021-03-09T10:43:38+00:00",
+    "updated": "2021-03-09T10:43:39+00:00",
+    "associations": {
+        "PACK": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "UPSELL": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "X_SELL": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "SUBSTITUTION": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        }
+    },
+    "quantified_associations": {}
+}

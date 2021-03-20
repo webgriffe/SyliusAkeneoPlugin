@@ -582,4 +582,26 @@ final class ImporterTest extends KernelTestCase
         $product = $this->productRepository->findOneByCode('model-braided-hat');
         $this->assertCount(1, $product->getImages());
     }
+
+    /**
+     * @test
+     */
+    public function it_does_not_fail_with_empty_translations()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml'
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        // Product 127469 in fixture does not have a value for the "description" attribute.
+        $this->importer->import('127469');
+
+        $product = $this->productRepository->findOneByCode('127469');
+        $this->assertNotNull($product);
+    }
 }

@@ -84,16 +84,14 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
 
-            $variantTranslation = $this->getOrCreateNewProductVariantTranslation($subject, $localeCode);
-            $this->setValueOnProductVariantAndProductTranslation($variantTranslation, $item['data']);
+            $this->setValueOnProductVariantAndProductTranslation($subject, $localeCode, $item['data']);
         }
     }
 
     private function setValueOnAllTranslations(ProductVariantInterface $subject, array $value): void
     {
         foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
-            $variantTranslation = $this->getOrCreateNewProductVariantTranslation($subject, $localeCode);
-            $this->setValueOnProductVariantAndProductTranslation($variantTranslation, $value['data']);
+            $this->setValueOnProductVariantAndProductTranslation($subject, $localeCode, $value['data']);
         }
     }
 
@@ -101,13 +99,18 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
      * @param mixed $value
      */
     private function setValueOnProductVariantAndProductTranslation(
-        ProductVariantTranslationInterface $variantTranslation,
+        ProductVariantInterface $variant,
+        string $localeCode,
         $value
     ): void {
+        if ($value === null) {
+            $this->setNullOnExistingProductVariantAndProductTranslation($variant, $localeCode);
+            return;
+        }
+
         $hasBeenSet = false;
 
-        $variant = $variantTranslation->getTranslatable();
-        Assert::isInstanceOf($variant, ProductVariantInterface::class);
+        $variantTranslation = $this->getOrCreateNewProductVariantTranslation($variant, $localeCode);
         if ($this->propertyAccessor->isWritable($variantTranslation, $this->translationPropertyPath)) {
             $this->propertyAccessor->setValue(
                 $variantTranslation,
@@ -170,5 +173,28 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         }
 
         return $translation;
+    }
+
+    private function setNullOnExistingProductVariantAndProductTranslation(
+        ProductVariantInterface $variant,
+        string $localeCode
+    ): void {
+        /** @var ProductVariantTranslationInterface|null $variantTranslation */
+        $variantTranslation = $variant->getTranslations()->get($localeCode);
+        if ($variantTranslation !== null) {
+            if ($this->propertyAccessor->isWritable($variantTranslation, $this->translationPropertyPath)) {
+                $this->propertyAccessor->setValue($variantTranslation, $this->translationPropertyPath, null);
+            }
+        }
+
+        $product = $variant->getProduct();
+        Assert::isInstanceOf($product, ProductInterface::class);
+        /** @var ProductTranslationInterface|null $productTranslation */
+        $productTranslation = $product->getTranslations()->get($localeCode);
+        if ($productTranslation !== null) {
+            if ($this->propertyAccessor->isWritable($productTranslation, $this->translationPropertyPath)) {
+                $this->propertyAccessor->setValue($productTranslation, $this->translationPropertyPath, null);
+            }
+        }
     }
 }
