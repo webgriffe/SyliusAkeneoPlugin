@@ -18,6 +18,11 @@ webgriffe_sylius_akeneo:
         options:
           akeneo_attribute_code: 'name'
           sylius_translation_property_path: 'name'
+      description:
+        type: 'translatable_property'
+        options:
+          akeneo_attribute_code: 'description'
+          sylius_translation_property_path: 'description'
       slug:
         type: 'immutable_slug'
         options:

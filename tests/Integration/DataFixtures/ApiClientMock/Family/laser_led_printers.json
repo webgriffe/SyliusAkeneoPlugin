@@ -1,0 +1,44 @@
+{
+    "code": "laser_led_printers",
+    "attributes": [
+        "description",
+        "maximum_print_size",
+        "name",
+        "picture",
+        "power_requirements",
+        "price",
+        "release_date",
+        "sku",
+        "weight"
+    ],
+    "attribute_as_label": "name",
+    "attribute_as_image": "picture",
+    "attribute_requirements": {
+        "ecommerce": [
+            "description",
+            "maximum_print_size",
+            "name",
+            "price",
+            "sku"
+        ],
+        "mobile": [
+            "description",
+            "maximum_print_size",
+            "name",
+            "price",
+            "sku"
+        ],
+        "print": [
+            "description",
+            "maximum_print_size",
+            "name",
+            "price",
+            "sku"
+        ]
+    },
+    "labels": {
+        "en_US": "Laser and LED printers",
+        "fr_FR": "Imprimantes laser et LED",
+        "de_DE": "Laserdrucker"
+    }
+}
