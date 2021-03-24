@@ -486,7 +486,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_custom_attributes()
+    public function it_updates_existing_product_attribute_value()
     {
         $this->fixtureLoader->load(
             [
@@ -603,5 +603,29 @@ final class ImporterTest extends KernelTestCase
 
         $product = $this->productRepository->findOneByCode('127469');
         $this->assertNotNull($product);
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_existing_product_attributes_values_if_they_are_empty_on_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'it_IT'));
+        $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'en_US'));
     }
 }
