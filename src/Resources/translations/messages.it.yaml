@@ -9,7 +9,7 @@ webgriffe_sylius_akeneo:
         imported_no: No
         error_message: Messaggio d'errore
         enqueue: Programma importazione da Akeneo PIM
-        enqueued_success: L'importazione del prodotto da Akeneo PIM è stata correttamente programmata
+        enqueued_success: L'importazione del prodotto "{code}" da Akeneo PIM è stata correttamente programmata
         product_not_exist: Prodotto non trovato
-        product_already_enqueued: L'importazione del prodotto da Akeneo PIM è già stata programmata precedentemente
+        product_already_enqueued: L'importazione del prodotto "{code}" da Akeneo PIM è già stata programmata precedentemente
         product_without_code: Prodotto senza codice
