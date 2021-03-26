@@ -563,4 +563,28 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $itAttributeValue->setValue('Agape')->shouldHaveBeenCalledOnce();
         $itAttributeValue->setValue('Agape Plus')->shouldHaveBeenCalledOnce();
     }
+
+    function it_removes_existing_product_attribute_value_if_value_is_null(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductAttributeValueInterface $itAttributeValue,
+        ProductAttributeValueInterface $enAttributeValue
+    ) {
+        $product->getAttributeByCodeAndLocale(self::TEXT_ATTRIBUTE_CODE, 'it_IT')->willReturn($itAttributeValue);
+        $product->getAttributeByCodeAndLocale(self::TEXT_ATTRIBUTE_CODE, 'en_US')->willReturn($enAttributeValue);
+        $product->getAttributeByCodeAndLocale(self::TEXT_ATTRIBUTE_CODE, 'de_DE')->willReturn(null);
+        $value = [
+            [
+                'scope' => null,
+                'locale' => null,
+                'data' => null,
+            ],
+        ];
+
+        $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $value);
+
+        $product->removeAttribute($itAttributeValue)->shouldHaveBeenCalled();
+        $product->removeAttribute($enAttributeValue)->shouldHaveBeenCalled();
+        $product->addAttribute(Argument::any())->shouldNotHaveBeenCalled();
+    }
 }

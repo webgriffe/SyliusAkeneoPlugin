@@ -44,6 +44,10 @@ Sylius\Component\Product\Model\ProductAttribute:
     code: "material"
     type: "text"
     storage_type: "text"
+  supplier:
+    code: "supplier"
+    type: "text"
+    storage_type: "text"
 
 Sylius\Component\Product\Model\ProductAttributeValue:
   material_it_IT:
@@ -56,4 +60,14 @@ Sylius\Component\Product\Model\ProductAttributeValue:
     product: "@model-braided-hat"
     locale_code: "en_US"
     value: "wool"
+  supplier_it_IT:
+    attribute: "@supplier"
+    product: "@model-braided-hat"
+    locale_code: "it_IT"
+    value: "Gucci"
+  supplier_en_US:
+    attribute: "@supplier"
+    product: "@model-braided-hat"
+    locale_code: "en_US"
+    value: "Gucci"
 

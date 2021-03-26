@@ -92,19 +92,19 @@ final class AttributeValueHandler implements ValueHandlerInterface
         Assert::isInstanceOf($product, ProductInterface::class);
         foreach ($value as $valueData) {
             if ($valueData['locale']) {
-                $this->addAttributeValue($attribute, $valueData['data'], $valueData['locale'], $product);
+                $this->handleAttributeValue($attribute, $valueData['data'], $valueData['locale'], $product);
             } else {
                 foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
-                    $this->addAttributeValue($attribute, $valueData['data'], $localeCode, $product);
+                    $this->handleAttributeValue($attribute, $valueData['data'], $localeCode, $product);
                 }
             }
         }
     }
 
     /**
-     * @param array|int|string|bool $value
+     * @param array|int|string|bool|null $value
      */
-    private function addAttributeValue(
+    private function handleAttributeValue(
         AttributeInterface $attribute,
         $value,
         string $localeCode,
@@ -114,7 +114,14 @@ final class AttributeValueHandler implements ValueHandlerInterface
         Assert::notNull($attributeCode);
         $attributeValue = $product->getAttributeByCodeAndLocale($attributeCode, $localeCode);
 
-        if (!$attributeValue) {
+        if ($value === null) {
+            if ($attributeValue !== null) {
+                $product->removeAttribute($attributeValue);
+            }
+            return;
+        }
+
+        if ($attributeValue === null) {
             /** @var ProductAttributeValueInterface $attributeValue */
             $attributeValue = $this->factory->createNew();
         }
