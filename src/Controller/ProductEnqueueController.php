@@ -46,36 +46,46 @@ final class ProductEnqueueController extends AbstractController
             throw new NotFoundHttpException('Product not found');
         }
 
-        /** @var array $productEnqueued */
-        $productEnqueued = $this->queueItemRepository->findBy([
-            'akeneoIdentifier' => $product->getCode(),
-            'akeneoEntity' => 'Product',
-            'importedAt' => null,
-        ]);
-        if (count($productEnqueued) > 0) {
-            $this->addFlash(
-                'error',
-                $translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued')
-            );
+        $alreadyEnqueued = [];
+        $enqueued = [];
+        foreach ($product->getVariants() as $productVariant) {
+            /** @var ?string $productVariantCode */
+            $productVariantCode = $productVariant->getCode();
+            Assert::notNull($productVariantCode);
 
-            return $this->redirectToRoute('sylius_admin_product_index');
+            /** @var array $productEnqueued */
+            $productEnqueued = $this->queueItemRepository->findBy([
+                'akeneoIdentifier' => $productVariantCode,
+                'akeneoEntity' => 'Product',
+                'importedAt' => null,
+            ]);
+            if (count($productEnqueued) > 0) {
+                $alreadyEnqueued[] = $productVariantCode;
+
+                continue;
+            }
+
+            $queueItem = new QueueItem();
+            $queueItem->setAkeneoEntity('Product');
+            $queueItem->setAkeneoIdentifier($productVariantCode);
+            $queueItem->setCreatedAt(new \DateTime());
+            $this->queueItemRepository->add($queueItem);
+
+            $enqueued[] = $productVariantCode;
         }
 
-        /** @var ?string $productCode */
-        $productCode = $product->getCode();
-
-        Assert::notNull($productCode);
-
-        $queueItem = new QueueItem();
-        $queueItem->setAkeneoEntity('Product');
-        $queueItem->setAkeneoIdentifier($productCode);
-        $queueItem->setCreatedAt(new \DateTime());
-        $this->queueItemRepository->add($queueItem);
-
-        $this->addFlash(
-            'success',
-            $translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success')
-        );
+        foreach ($alreadyEnqueued as $code) {
+            $this->addFlash(
+                'error',
+                $translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued', ['code' => $code])
+            );
+        }
+        foreach ($enqueued as $code) {
+            $this->addFlash(
+                'success',
+                $translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['code' => $code])
+            );
+        }
 
         return $this->redirectToRoute('sylius_admin_product_index');
     }

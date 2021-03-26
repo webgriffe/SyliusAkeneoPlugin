@@ -34,22 +34,34 @@ Feature: Enqueuing products
     And there is a file with name "last-date" that contains "2020-01-25T12:00:00+01:00"
 
   @ui
-  Scenario: Enqueue a product
+  Scenario: Enqueuing a simple product
     Given I am logged in as an administrator
-    And the store has a product "Braided hat m" with code "braided-hat-m"
+    And the store has a product "Braided hat m"
     When I browse products
-    And I schedule an Akeneo PIM import for the "braided-hat-m" product
+    And I schedule an Akeneo PIM import for the "Braided hat m" product
     Then I should be notified that it has been successfully enqueued
     When I browse Akeneo queue items
     Then I should see 1, not imported, queue items in the list
 
   @ui
-  Scenario: Enqueue a product already enqueued
+  Scenario: Enqueuing a product already enqueued
     Given I am logged in as an administrator
-    And the store has a product "Braided hat l" with code "braided-hat-l"
-    And there is one item to import with identifier "braided-hat-l" for the "Product" importer in the Akeneo queue
+    And the store has a product "Braided hat l"
+    And there is one item to import with identifier "BRAIDED_HAT_L" for the "Product" importer in the Akeneo queue
     When I browse products
-    And I schedule an Akeneo PIM import for the "braided-hat-l" product
+    And I schedule an Akeneo PIM import for the "Braided hat l" product
     Then I should be notified that it has been already enqueued
     When I browse Akeneo queue items
     Then I should see 1, not imported, queue items in the list
+
+  @ui
+  Scenario: Enqueuing a configurable product
+    Given the store operates on a single channel
+    And the store has a "Braided hat" configurable product
+    And this product has "Small", "Medium" and "Large" variants
+    And I am logged in as an administrator
+    When I browse products
+    And I schedule an Akeneo PIM import for the "Braided hat" product
+    Then I should be notified that it has been successfully enqueued
+    When I browse Akeneo queue items
+    Then I should see 3, not imported, queue items in the list

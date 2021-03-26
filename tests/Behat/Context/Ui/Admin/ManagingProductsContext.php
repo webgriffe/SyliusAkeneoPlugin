@@ -10,6 +10,7 @@ use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Admin\Product\IndexPageInterface;
 use Sylius\Behat\Service\Helper\JavaScriptTestHelperInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
+use Sylius\Component\Core\Model\ProductInterface;
 
 final class ManagingProductsContext implements Context
 {
@@ -35,12 +36,12 @@ final class ManagingProductsContext implements Context
     }
 
     /**
-     * @When /^I schedule an Akeneo PIM import for the "([^"]*)" product$/
+     * @When /^I schedule an Akeneo PIM import for the ("[^"]*" product)$/
      */
-    public function scheduleAnAkeneoPimImportForTheProduct($code)
+    public function scheduleAnAkeneoPimImportForTheProduct(ProductInterface $product)
     {
         /** @var NodeElement $actionsNodeProduct */
-        $actionsNodeProduct = $this->indexPage->getActionsForResource(['code' => $code]);
+        $actionsNodeProduct = $this->indexPage->getActionsForResource(['code' => $product->getCode()]);
 
         $actionsNodeProduct->clickLink(self::SCHEDULE_AKENEO_PIM_IMPORT);
     }
