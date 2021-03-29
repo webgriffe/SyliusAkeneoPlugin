@@ -85,7 +85,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_does_not_fail_when_the_product_association_type_does_not_exists_and_it_has_products()
+    public function it_does_not_fail_when_the_product_association_type_does_not_exists()
     {
         $this->fixtureLoader->load(
             [
