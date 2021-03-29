@@ -107,6 +107,7 @@ final class Importer implements ImporterInterface
                 );
             }
             /** @var ProductAssociationTypeInterface $productAssociationType */
+            /** @var Collection<int|string, BaseProductInterface> $productsToAssociate */
             $productsToAssociate = new ArrayCollection();
             foreach ($productAssociationIdentifiers as $productToAssociateIdentifier) {
                 $productToAssociate = $this->productRepository->findOneByCode($productToAssociateIdentifier);
