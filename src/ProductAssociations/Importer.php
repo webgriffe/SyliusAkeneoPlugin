@@ -88,38 +88,23 @@ final class Importer implements ImporterInterface
                 ['code' => $associationTypeCode]
             );
 
+            if ($productAssociationType === null) {
+                continue;
+            }
+
             $productsToAssociateIdentifiers = $associationInfo['products'] ?? [];
             $productModelsToAssociateIdentifiers = $associationInfo['product_models'] ?? [];
             $productAssociationIdentifiers = array_merge(
                 $productsToAssociateIdentifiers,
                 $productModelsToAssociateIdentifiers
             );
-            if ($productAssociationType === null) {
-                if (count($productAssociationIdentifiers) === 0) {
-                    continue;
-                }
-
-                throw new \RuntimeException(
-                    sprintf(
-                        'There are products for the association type "%s" but it does not exists on Sylius.',
-                        $associationTypeCode
-                    )
-                );
-            }
             /** @var ProductAssociationTypeInterface $productAssociationType */
             /** @var Collection<int|string, BaseProductInterface> $productsToAssociate */
             $productsToAssociate = new ArrayCollection();
             foreach ($productAssociationIdentifiers as $productToAssociateIdentifier) {
                 $productToAssociate = $this->productRepository->findOneByCode($productToAssociateIdentifier);
                 if ($productToAssociate === null) {
-                    throw new \RuntimeException(
-                        sprintf(
-                            'Cannot associate the product "%s" to product "%s" because the former does not exists' .
-                            ' on Sylius',
-                            $productToAssociateIdentifier,
-                            $productCode
-                        )
-                    );
+                    continue;
                 }
                 $productsToAssociate->add($productToAssociate);
             }
