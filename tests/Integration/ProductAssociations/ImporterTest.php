@@ -156,11 +156,9 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals('UPSELL', $association->getType()->getCode());
 
         $associatedProducts = $association->getAssociatedProducts();
-        $this->assertCount(2, $associatedProducts);
+        $this->assertCount(1, $associatedProducts);
         $productMugSw = $this->productRepository->findOneBy(['code' => 'MUG_SW']);
         $this->assertTrue($associatedProducts->contains($productMugSw));
-        $productMugAnother = $this->productRepository->findOneBy(['code' => 'MUG_ANOTHER']);
-        $this->assertTrue($associatedProducts->contains($productMugAnother));
     }
 
     /**
