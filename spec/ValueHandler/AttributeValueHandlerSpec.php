@@ -587,4 +587,13 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $product->removeAttribute($enAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute(Argument::any())->shouldNotHaveBeenCalled();
     }
+
+    function it_skips_locales_not_specified_in_sylius(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
+    ) {
+        $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
+
+        $product->addAttribute(Argument::type(ProductAttributeValueInterface::class))->shouldNotHaveBeenCalled();
+    }
 }

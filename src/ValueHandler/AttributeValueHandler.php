@@ -90,13 +90,17 @@ final class AttributeValueHandler implements ValueHandlerInterface
 
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
+        $availableLocalesCodes = $this->localeProvider->getDefinedLocalesCodes();
         foreach ($value as $valueData) {
-            if ($valueData['locale']) {
-                $this->handleAttributeValue($attribute, $valueData['data'], $valueData['locale'], $product);
-            } else {
-                foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
-                    $this->handleAttributeValue($attribute, $valueData['data'], $localeCode, $product);
-                }
+            $localeCodesToSet = $availableLocalesCodes;
+            /** @var string|null $valueLocaleCode */
+            $valueLocaleCode = $valueData['locale'];
+            if ($valueLocaleCode !== null) {
+                $localeCodesToSet = in_array($valueLocaleCode, $availableLocalesCodes, true) ? [$valueLocaleCode] : [];
+            }
+
+            foreach ($localeCodesToSet as $localeCode) {
+                $this->handleAttributeValue($attribute, $valueData['data'], $localeCode, $product);
             }
         }
     }
