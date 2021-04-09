@@ -63,15 +63,16 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
             );
         }
 
-        foreach ($value[0]['data'] as $currencyPrice) {
+        /** @var array<array-key, array{currency: string, amount: float}> $currenciesPrices */
+        $currenciesPrices = $value[0]['data'] ?? [];
+        foreach ($currenciesPrices as $currencyPrice) {
             $currencyCode = $currencyPrice['currency'];
             $price = $currencyPrice['amount'];
+            /** @var CurrencyInterface|null $currency */
             $currency = $this->currencyRepository->findOneBy(['code' => $currencyCode]);
             if ($currency === null) {
                 continue;
             }
-            Assert::isInstanceOf($currency, CurrencyInterface::class);
-            /** @var CurrencyInterface $currency */
 
             /** @var ChannelInterface[] $channels */
             $channels = $this->channelRepository->findBy(['baseCurrency' => $currency]);

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -155,6 +157,18 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
+    function it_skips_locales_not_specified_in_sylius(
+        ProductVariantInterface $productVariant,
+        ProductTranslationInterface $productTranslation,
+        ProductVariantTranslationInterface $productVariantTranslation,
+        PropertyAccessorInterface $propertyAccessor
+    ) {
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
+
+        $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
+    }
+
     function it_sets_value_on_all_product_translations_when_locale_not_specified(
         ProductVariantInterface $productVariant,
         ProductVariantTranslationInterface $englishProductVariantTranslation,
@@ -222,5 +236,22 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
                     [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']],
                 ]
             );
+    }
+
+    function it_does_not_create_translations_for_null_values(
+        ProductVariantInterface $productVariant,
+        ProductVariantTranslationInterface $englishVariantTranslation,
+        ProductInterface $product,
+        ProductVariantTranslationInterface $englishProductTranslation
+    ) {
+        $productVariant->getTranslations()->willReturn(new ArrayCollection(['en_US' => $englishVariantTranslation->getWrappedObject()]));
+        $englishVariantTranslation->getLocale()->willReturn('en_US');
+        $productVariant->getProduct()->willReturn($product);
+        $product->getTranslations()->willReturn(new ArrayCollection(['en_US' => $englishProductTranslation->getWrappedObject()]));
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => null]]);
+
+        $productVariant->addTranslation(Argument::any())->shouldNotHaveBeenCalled();
+        $product->addTranslation(Argument::any())->shouldNotHaveBeenCalled();
     }
 }

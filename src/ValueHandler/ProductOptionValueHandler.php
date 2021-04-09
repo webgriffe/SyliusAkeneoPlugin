@@ -12,6 +12,7 @@ use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
@@ -33,18 +34,32 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     /** @var RepositoryInterface */
     private $productOptionValueRepository;
 
+    /** @var TranslationLocaleProviderInterface|null */
+    private $translationLocaleProvider;
+
     public function __construct(
         ApiClientInterface $apiClient,
         ProductOptionRepositoryInterface $productOptionRepository,
         FactoryInterface $productOptionValueFactory,
         FactoryInterface $productOptionValueTranslationFactory,
-        RepositoryInterface $productOptionValueRepository
+        RepositoryInterface $productOptionValueRepository,
+        TranslationLocaleProviderInterface $translationLocaleProvider = null
     ) {
         $this->apiClient = $apiClient;
         $this->productOptionRepository = $productOptionRepository;
         $this->productOptionValueFactory = $productOptionValueFactory;
         $this->productOptionValueTranslationFactory = $productOptionValueTranslationFactory;
         $this->productOptionValueRepository = $productOptionValueRepository;
+        if ($translationLocaleProvider === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.6',
+                'Not passing a translation locale provider to %s is deprecated and will not be possible anymore in %s',
+                __CLASS__,
+                '2.0'
+            );
+        }
+        $this->translationLocaleProvider = $translationLocaleProvider;
     }
 
     /**
@@ -99,6 +114,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 )
             );
         }
+        /** @var ProductOptionInterface|null $productOption */
         $productOption = $this->productOptionRepository->findOneBy(['code' => $optionCode]);
         // TODO productOptionRepository could be removed by getting product option from product with something like:
         //        $productOption = $product->getOptions()->filter(
@@ -116,8 +132,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        Assert::isInstanceOf($productOption, ProductOptionInterface::class);
-        /** @var ProductOptionInterface $productOption */
+        /** @var ProductOptionValueInterface|null $optionValue */
         $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $fullValueCode]);
         if (!$optionValue instanceof ProductOptionValueInterface) {
             /** @var ProductOptionValueInterface $optionValue */
@@ -127,6 +142,10 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             $productOption->addValue($optionValue);
         }
         foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
+            if ($this->translationLocaleProvider !== null &&
+                !in_array($localeCode, $this->translationLocaleProvider->getDefinedLocalesCodes(), true)) {
+                continue;
+            }
             $optionValueTranslation = $optionValue->getTranslation($localeCode);
             if ($optionValueTranslation->getLocale() !== $localeCode) {
                 /** @var ProductOptionValueTranslationInterface $optionValueTranslation */

@@ -1,16 +1,22 @@
 {
     "name": "webgriffe/sylius-akeneo-plugin",
     "type": "sylius-plugin",
-    "keywords": ["sylius", "sylius-plugin"],
+    "keywords": [
+        "sylius",
+        "sylius-plugin"
+    ],
     "description": "Plugin allowing to import products data from Akeneo PIM to your Sylius store.",
     "license": "MIT",
     "require": {
         "php": "^7.3",
         "cocur/slugify": "^4.0",
         "guzzlehttp/guzzle": "^6.5",
-        "sylius/sylius": "^1.8",
+        "sylius/sylius": "~1.8.0 || ~1.9.0",
         "symfony/deprecation-contracts": "^2.2",
         "symfony/lock": "^4.4|^5.0"
+    },
+    "conflict": {
+        "api-platform/core": "^2.6"
     },
     "require-dev": {
         "ext-json": "*",
@@ -25,29 +31,33 @@
         "friends-of-behat/suite-settings-extension": "^1.0",
         "friends-of-behat/symfony-extension": "^2.1",
         "friends-of-behat/variadic-extension": "^1.3",
+        "friendsofsymfony/oauth-server-bundle": "^1.6 || >2.0.0-alpha.0 ^2.0@dev",
         "lakion/mink-debug-extension": "^2.0.0",
         "matthiasnoback/symfony-dependency-injection-test": "^4.2",
         "mikey179/vfsstream": "^1.6",
         "phpspec/phpspec": "^7.0",
         "phpstan/extension-installer": "^1.0",
-        "phpstan/phpstan": "0.12.64",
-        "phpstan/phpstan-doctrine": "0.12.26",
-        "phpstan/phpstan-webmozart-assert": "0.12.8",
+        "phpstan/phpstan": "0.12.74",
+        "phpstan/phpstan-doctrine": "0.12.31",
+        "phpstan/phpstan-webmozart-assert": "0.12.12",
         "phpunit/phpunit": "^9.5",
         "sensiolabs/security-checker": "^6.0",
         "sylius-labs/coding-standard": "^3.1",
-        "symfony/browser-kit": "^4.4",
-        "symfony/debug-bundle": "^4.4|^5.0",
-        "symfony/dotenv": "^4.4|^5.0",
-        "symfony/intl": "^4.4|^5.0",
-        "symfony/web-profiler-bundle": "^4.4|^5.0",
-        "symfony/web-server-bundle": "^4.4|^5.0",
+        "symfony/browser-kit": "^4.4 || ^5.2",
+        "symfony/debug-bundle": "^4.4 || ^5.2",
+        "symfony/dotenv": "^4.4 || ^5.2",
+        "symfony/intl": "^4.4 || ^5.2",
+        "symfony/web-profiler-bundle": "^4.4 || ^5.2",
         "theofidry/alice-data-fixtures": "^1.1",
-        "vimeo/psalm": "4.3.2"
+        "vimeo/psalm": "4.4.1"
     },
-    "conflict": {
-        "symfony/doctrine-bridge": "4.4.16",
-        "symplify/package-builder": "^8.3.25"
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.9-dev"
+        }
     },
     "autoload": {
         "psr-4": {
@@ -56,15 +66,9 @@
         }
     },
     "autoload-dev": {
-        "classmap": ["tests/Application/Kernel.php"]
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.7-dev"
-        }
-    },
-    "config": {
-        "sort-packages": true
+        "classmap": [
+            "tests/Application/Kernel.php"
+        ]
     },
     "scripts": {
         "post-install-cmd": [

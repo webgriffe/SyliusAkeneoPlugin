@@ -13,6 +13,7 @@ use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
+use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
@@ -119,7 +120,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -149,7 +149,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -178,7 +177,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
 
         $this->importer->import('braided-hat-m');
 
@@ -261,7 +259,6 @@ final class ImporterTest extends KernelTestCase
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
@@ -300,14 +297,12 @@ final class ImporterTest extends KernelTestCase
                 __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ChannelPricing/braided-hat-m-italy.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m/with-channel-pricings.yaml',
             ],
             [],
             [],
             PurgeMode::createDeleteMode()
         );
-        self::$kernel->getContainer()->get('doctrine')->resetManager(); // Hack to get rid of weird collection keys loading
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
@@ -491,7 +486,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_custom_attributes()
+    public function it_updates_existing_product_attribute_value()
     {
         $this->fixtureLoader->load(
             [
@@ -536,5 +531,101 @@ final class ImporterTest extends KernelTestCase
                 ) . '/media/attachment/product/1/3/9/e/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg'
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_product_taxa_from_akeneo_discarding_those_set_on_sylius()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/10627329-with-taxa.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('10627329');
+
+        /** @var ProductInterface[] $allProducts */
+        $allProducts = $this->productRepository->findAll();
+        $this->assertCount(1, $allProducts);
+        $product = $allProducts[0];
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals('10627329', $product->getCode());
+        $this->assertCount(3, $product->getTaxons());
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_product_images_removed_on_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat-with-variation-image.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertCount(1, $product->getImages());
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_fail_with_empty_translations()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml'
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        // Product 127469 in fixture does not have a value for the "description" attribute.
+        $this->importer->import('127469');
+
+        $product = $this->productRepository->findOneByCode('127469');
+        $this->assertNotNull($product);
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_existing_product_attributes_values_if_they_are_empty_on_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-m');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'it_IT'));
+        $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'en_US'));
     }
 }

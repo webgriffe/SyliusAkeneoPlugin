@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ProductAssociations;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Product\Model\ProductInterface as BaseProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Product\Model\ProductAssociationInterface;
 use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
@@ -80,9 +83,14 @@ final class Importer implements ImporterInterface
         /** @var ProductInterface $product */
         $associations = $productVariantResponse['associations'];
         foreach ($associations as $associationTypeCode => $associationInfo) {
+            /** @var ProductAssociationTypeInterface|null $productAssociationType */
             $productAssociationType = $this->productAssociationTypeRepository->findOneBy(
                 ['code' => $associationTypeCode]
             );
+
+            if ($productAssociationType === null) {
+                continue;
+            }
 
             $productsToAssociateIdentifiers = $associationInfo['products'] ?? [];
             $productModelsToAssociateIdentifiers = $associationInfo['product_models'] ?? [];
@@ -90,49 +98,38 @@ final class Importer implements ImporterInterface
                 $productsToAssociateIdentifiers,
                 $productModelsToAssociateIdentifiers
             );
-            if ($productAssociationType === null) {
-                if (count($productAssociationIdentifiers) === 0) {
-                    continue;
-                }
-
-                throw new \RuntimeException(
-                    sprintf(
-                        'There are products for the association type "%s" but it does not exists on Sylius.',
-                        $associationTypeCode
-                    )
-                );
-            }
             /** @var ProductAssociationTypeInterface $productAssociationType */
-            $productsToAssociate = [];
+            /** @var Collection<int|string, BaseProductInterface> $productsToAssociate */
+            $productsToAssociate = new ArrayCollection();
             foreach ($productAssociationIdentifiers as $productToAssociateIdentifier) {
                 $productToAssociate = $this->productRepository->findOneByCode($productToAssociateIdentifier);
                 if ($productToAssociate === null) {
-                    throw new \RuntimeException(
-                        sprintf(
-                            'Cannot associate the product "%s" to product "%s" because the former does not exists' .
-                            ' on Sylius',
-                            $productToAssociateIdentifier,
-                            $productCode
-                        )
-                    );
+                    continue;
                 }
-                $productsToAssociate[] = $productToAssociate;
+                $productsToAssociate->add($productToAssociate);
             }
 
+
+            /** @var ProductAssociationInterface|null $productAssociation */
             $productAssociation = $this->productAssociationRepository->findOneBy(
                 ['owner' => $product, 'type' => $productAssociationType]
             );
             if ($productAssociation === null) {
+                /** @var ProductAssociationInterface|object $productAssociation */
                 $productAssociation = $this->productAssociationFactory->createNew();
                 Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
+                $productAssociation->setOwner($product);
+                $productAssociation->setType($productAssociationType);
             }
-            /** @var ProductAssociationInterface $productAssociation */
-            $productAssociation->setOwner($product);
-            $productAssociation->setType($productAssociationType);
-            foreach ($productsToAssociate as $productToAssociate) {
-                if (!$productAssociation->hasAssociatedProduct($productToAssociate)) {
-                    $productAssociation->addAssociatedProduct($productToAssociate);
-                }
+
+            $productsToAdd = $this->getProductsToAdd($productAssociation->getAssociatedProducts(), $productsToAssociate);
+            $productsToRemove = $this->getProductsToRemove($productAssociation->getAssociatedProducts(), $productsToAssociate);
+
+            foreach ($productsToAdd as $productToAdd) {
+                $productAssociation->addAssociatedProduct($productToAdd);
+            }
+            foreach ($productsToRemove as $productToRemove) {
+                $productAssociation->removeAssociatedProduct($productToRemove);
             }
 
             $product->addAssociation($productAssociation);
@@ -152,5 +149,33 @@ final class Importer implements ImporterInterface
         }
 
         return $identifiers;
+    }
+
+    /**
+     * @param Collection<int|string, BaseProductInterface> $syliusAssociations
+     * @param Collection<int|string, BaseProductInterface> $akeneoAssociations
+     * @return Collection<int|string, BaseProductInterface>
+     */
+    private function getProductsToAdd(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
+    {
+        return $akeneoAssociations->filter(
+            static function (BaseProductInterface $productToAssociate) use ($syliusAssociations) {
+                return !$syliusAssociations->contains($productToAssociate);
+            }
+        );
+    }
+
+    /**
+     * @param Collection<int|string, BaseProductInterface> $syliusAssociations
+     * @param Collection<int|string, BaseProductInterface> $akeneoAssociations
+     * @return Collection<int|string, BaseProductInterface>
+     */
+    private function getProductsToRemove(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
+    {
+        return $syliusAssociations->filter(
+            static function (BaseProductInterface $productToAssociate) use ($akeneoAssociations) {
+                return !$akeneoAssociations->contains($productToAssociate);
+            }
+        );
     }
 }

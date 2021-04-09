@@ -212,4 +212,21 @@ class ImageValueHandlerSpec extends ObjectBehavior
             ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.'))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [['malformed' => 'data']]]);
     }
+
+    function it_removes_existing_image_on_sylius_if_empty_on_akeneo(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductImageInterface $existentProductImage,
+        RepositoryInterface $productImageRepository
+    ) {
+        $productVariant->getProduct()->willReturn($product);
+        $productImageRepository
+            ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
+        ;
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => null]]);
+
+        $product->removeImage($existentProductImage)->shouldHaveBeenCalled();
+    }
 }

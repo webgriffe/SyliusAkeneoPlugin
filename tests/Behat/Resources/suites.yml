@@ -77,6 +77,10 @@ default:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
+                - sylius.behat.context.transform.shared_storage
+                - sylius.behat.context.transform.product
+
+                - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.product
                 - webgriffe_sylius_akeneo.behat.context.setup.queue

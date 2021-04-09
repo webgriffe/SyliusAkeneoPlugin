@@ -71,6 +71,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
             return false;
         }
 
+        /** @var AttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
 
         return $attribute && $this->hasSupportedType($attribute);
@@ -91,6 +92,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
             );
         }
 
+        /** @var AttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
 
         if ($attribute === null) {
@@ -105,21 +107,25 @@ final class AttributeValueHandler implements ValueHandlerInterface
 
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
+        $availableLocalesCodes = $this->localeProvider->getDefinedLocalesCodes();
         foreach ($value as $valueData) {
-            if ($valueData['locale']) {
-                $this->addAttributeValue($attribute, $valueData['data'], $valueData['locale'], $product);
-            } else {
-                foreach ($this->localeProvider->getDefinedLocalesCodes() as $localeCode) {
-                    $this->addAttributeValue($attribute, $valueData['data'], $localeCode, $product);
-                }
+            $localeCodesToSet = $availableLocalesCodes;
+            /** @var string|null $valueLocaleCode */
+            $valueLocaleCode = $valueData['locale'];
+            if ($valueLocaleCode !== null) {
+                $localeCodesToSet = in_array($valueLocaleCode, $availableLocalesCodes, true) ? [$valueLocaleCode] : [];
+            }
+
+            foreach ($localeCodesToSet as $localeCode) {
+                $this->handleAttributeValue($attribute, $valueData['data'], $localeCode, $product);
             }
         }
     }
 
     /**
-     * @param bool|string $value
+     * @param array|int|string|bool|null $value
      */
-    private function addAttributeValue(
+    private function handleAttributeValue(
         AttributeInterface $attribute,
         $value,
         string $localeCode,
@@ -129,14 +135,20 @@ final class AttributeValueHandler implements ValueHandlerInterface
         Assert::notNull($attributeCode);
         $attributeValue = $product->getAttributeByCodeAndLocale($attributeCode, $localeCode);
 
-        if (!$attributeValue) {
+        if ($value === null) {
+            if ($attributeValue !== null) {
+                $product->removeAttribute($attributeValue);
+            }
+            return;
+        }
+
+        if ($attributeValue === null) {
             /** @var ProductAttributeValueInterface $attributeValue */
             $attributeValue = $this->factory->createNew();
         }
 
         $attributeValue->setAttribute($attribute);
         $attributeValue->setValue($this->valueConverter->convert($attribute, $value, $localeCode));
-//        $attributeValue->setValue($this->getAttributeValue($attribute, $value));
         $attributeValue->setLocaleCode($localeCode);
 
         $product->addAttribute($attributeValue);

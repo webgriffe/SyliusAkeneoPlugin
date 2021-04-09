@@ -48,16 +48,17 @@ final class ValueConverter implements ValueConverterInterface
             return $value;
         }
         if ($attribute->getType() === SelectAttributeType::TYPE && !is_bool($value)) {
+            $value = (array) $value;
             $attributeConfiguration = $attribute->getConfiguration();
-            /** @var array $choices */
-            $choices = $attributeConfiguration['choices'];
-            $possibleOptionsCodes = array_map('strval', array_keys($choices));
-            if (!in_array($value, $possibleOptionsCodes, true)) {
+            $possibleOptionsCodes = array_map('strval', array_keys($attributeConfiguration['choices']));
+            $invalid = array_diff($value, $possibleOptionsCodes);
+
+            if (!empty($invalid)) {
                 throw new \InvalidArgumentException(
                     sprintf(
                         'This select attribute can only save existing attribute options. ' .
-                        'Attribute option with the given %s code does not exist.',
-                        $value
+                        'Attribute option codes [%s] do not exist.',
+                        implode(', ', $invalid)
                     )
                 );
             }

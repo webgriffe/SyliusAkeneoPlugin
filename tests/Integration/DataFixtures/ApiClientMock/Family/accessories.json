@@ -1,0 +1,61 @@
+{
+    "code": "accessories",
+    "attributes": [
+        "brand",
+        "collection",
+        "color",
+        "composition",
+        "description",
+        "ean",
+        "erp_name",
+        "image",
+        "keywords",
+        "material",
+        "meta_description",
+        "meta_title",
+        "name",
+        "notice",
+        "price",
+        "size",
+        "sku",
+        "supplier",
+        "variation_image",
+        "variation_name",
+        "weight",
+        "attachment"
+    ],
+    "attribute_as_label": "name",
+    "attribute_as_image": "image",
+    "attribute_requirements": {
+        "ecommerce": [
+            "collection",
+            "description",
+            "ean",
+            "image",
+            "name",
+            "sku",
+            "variation_name"
+        ],
+        "mobile": [
+            "collection",
+            "ean",
+            "image",
+            "name",
+            "sku",
+            "variation_name"
+        ],
+        "print": [
+            "collection",
+            "ean",
+            "image",
+            "name",
+            "sku",
+            "variation_name"
+        ]
+    },
+    "labels": {
+        "en_US": "Accessories",
+        "fr_FR": "Accessories",
+        "de_DE": "Accessories"
+    }
+}

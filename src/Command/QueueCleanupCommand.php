@@ -16,9 +16,9 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\CleanableQueueItemRepositoryInterfac
 
 final class QueueCleanupCommand extends Command
 {
-    private const SUCCESS = 0;
+    public const SUCCESS = 0;
 
-    private const FAILURE = 1;
+    public const FAILURE = 1;
 
     private const DEFAULT_DAYS = 10;
 
@@ -58,7 +58,7 @@ final class QueueCleanupCommand extends Command
         $numberOfDays = self::DEFAULT_DAYS;
         // get the number of days from user
         $numberOfDaysEntered = $input->getArgument(self::DAYS_ARGUMENT_NAME);
-        if ($numberOfDaysEntered) {
+        if ($numberOfDaysEntered !== null) {
             if (!is_string($numberOfDaysEntered) || (int) $numberOfDaysEntered < 0) {
                 $output->writeln('Sorry, the number of days entered is not valid!');
 

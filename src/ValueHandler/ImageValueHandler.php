@@ -66,15 +66,23 @@ final class ImageValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        $mediaCode = $value[0]['data'] ?? null;
-        if (!is_string($mediaCode)) {
+        if (!array_key_exists(0, $value) || !is_array($value[0]) || !array_key_exists('data', $value[0])) {
             throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.');
         }
-        $imageFile = $this->apiClient->downloadFile($mediaCode);
 
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
         /** @var ProductInterface $product */
+
+        if ($value[0]['data'] === null) {
+            $this->removeAlreadyExistentImages($product);
+            return;
+        }
+
+        /** @var string $mediaCode */
+        $mediaCode = $value[0]['data'];
+        $imageFile = $this->apiClient->downloadFile($mediaCode);
+
         $productImage = $this->getExistentProductVariantImage($subject, $product);
         if (!$productImage) {
             $productImage = $this->productImageFactory->createNew();
@@ -91,11 +99,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         ProductVariantInterface $subject,
         ProductInterface $product
     ): ?ProductImageInterface {
-        $existentProductImages = $this->productImageRepository->findBy(
-            ['owner' => $product, 'type' => $this->syliusImageType]
-        );
-        Assert::allIsInstanceOf($existentProductImages, ProductImageInterface::class);
-        /** @var ProductImageInterface $existentProductImage */
+        $existentProductImages = $this->getExistentProductImages($product);
         foreach ($existentProductImages as $existentProductImage) {
             if ($existentProductImage->hasProductVariant($subject)) {
                 return $existentProductImage;
@@ -103,5 +107,26 @@ final class ImageValueHandler implements ValueHandlerInterface
         }
 
         return null;
+    }
+
+    /**
+     * @return ProductImageInterface[]
+     */
+    private function getExistentProductImages(ProductInterface $product): iterable
+    {
+        $existentProductImages = $this->productImageRepository->findBy(
+            ['owner' => $product, 'type' => $this->syliusImageType]
+        );
+        Assert::allIsInstanceOf($existentProductImages, ProductImageInterface::class);
+
+        return $existentProductImages;
+    }
+
+    private function removeAlreadyExistentImages(ProductInterface $product): void
+    {
+        $alreadyExistentImages = $this->getExistentProductImages($product);
+        foreach ($alreadyExistentImages as $alreadyExistentImage) {
+            $product->removeImage($alreadyExistentImage);
+        }
     }
 }

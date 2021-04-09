@@ -1,14 +1,15 @@
 Sylius\Component\Product\Model\ProductOption:
   size:
     code: "size"
+    translations:
+      - "@size_en_US"
+      - "@size_it_IT"
 
 Sylius\Component\Product\Model\ProductOptionTranslation:
   size_en_US:
-    translatable: "@size"
     locale: "en_US"
     name: "Size"
   size_it_IT:
-    translatable: "@size"
     locale: "it_IT"
     name: "Taglia"
 
@@ -18,13 +19,11 @@ Sylius\Component\Core\Model\ProductTranslation:
     name: "Braided Hat"
     slug: "braided-hat"
     description: <paragraph(2)>
-    translatable: "@model-braided-hat"
   model-braided-hat_it_IT:
     locale: "it_IT"
     name: "Cappello Intrecciato"
     slug: "cappello-intrecciato"
     description: <paragraph(2)>
-    translatable: "@model-braided-hat"
 
 Sylius\Component\Core\Model\Product:
   model-braided-hat:
@@ -45,6 +44,10 @@ Sylius\Component\Product\Model\ProductAttribute:
     code: "material"
     type: "text"
     storage_type: "text"
+  supplier:
+    code: "supplier"
+    type: "text"
+    storage_type: "text"
 
 Sylius\Component\Product\Model\ProductAttributeValue:
   material_it_IT:
@@ -57,4 +60,14 @@ Sylius\Component\Product\Model\ProductAttributeValue:
     product: "@model-braided-hat"
     locale_code: "en_US"
     value: "wool"
+  supplier_it_IT:
+    attribute: "@supplier"
+    product: "@model-braided-hat"
+    locale_code: "it_IT"
+    value: "Gucci"
+  supplier_en_US:
+    attribute: "@supplier"
+    product: "@model-braided-hat"
+    locale_code: "en_US"
+    value: "Gucci"
 

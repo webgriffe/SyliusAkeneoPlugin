@@ -142,7 +142,7 @@ webgriffe_sylius_akeneo:
         type: 'translatable_property'
         options:
           akeneo_attribute_code: 'short_description'
-          sylius_translation_property_path: 'short_description'
+          sylius_translation_property_path: 'shortDescription'
       description:
         type: 'translatable_property'
         options:
@@ -152,7 +152,7 @@ webgriffe_sylius_akeneo:
 
 For each `translatable_property` value handler you have to configure, in `sylius_translation_property_path`, the Sylius product (and product variant) translation property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`.
 
-In the same way you can import other translatable properties values like meta keyword, meta description and other custom translatable properties you eventually added to your store.
+In the same way you can import other translatable properties values like meta keyword, meta description and other custom translatable properties you possibly added to your store.
 
 ### Importing product dimensions
 
@@ -189,7 +189,7 @@ webgriffe_sylius_akeneo:
 
 For each `generic_property` value handler you have to configure, in `property_path`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`.
 
-In the same way you can import other product properties like shipping category and other custom properties you eventually added to your store.
+In the same way you can import other product properties like shipping category and other custom properties you possibly added to your store.
 
 ### Importing product slug
 
@@ -285,7 +285,7 @@ Also, keep in mind that **this plugin will import Sylius select attributes optio
 
 This plugin is also able to handle Akeneo file attributes even if there is no corresponding file attribute on Sylius.
 
-Suppose that you have a *Technical Sheet* file attribute on Akeneo (with code `technical_sheet`) and you want to make those technical sheets downloadable frome the Sylius product page in the frontend. To do so, just **create a Sylius text attribute with the same code** of the Akeneo *Tehcnical Sheet* attribute. Then configure a `file_attribute` for that attribute and make sure that the `generic_attribute` value handler is configured:
+Suppose that you have a *Technical Sheet* file attribute on Akeneo (with code `technical_sheet`) and you want to make those technical sheets downloadable from the Sylius product page in the frontend. To do so, just **create a Sylius text attribute with the same code** of the Akeneo *Tehcnical Sheet* attribute. Then configure a `file_attribute` for that attribute and make sure that the `generic_attribute` value handler is configured:
 
 ```yaml
 # config/packages/webgriffe_sylius_akeneo_plugin.yaml
@@ -354,7 +354,7 @@ In the `akeneo_attribute_code` option you have to set the code of the **Akeneo p
 
 ### Importing product-taxons associations
 
-This plugin **will not import Akeneo categories into Sylius taxons**, but **it will import Sylius product-taxons associations** based on Akeneo product-categories associations. This plugin will associate products only to those Sylius taxons which already exist on Sylius and have the same code of their related Akeneo categories. In this way, products taxons association import does not need any configuration and you can have all the categories you want on Akeneo, even those you don't want on your Sylius store. Indeed, if there are products associated to Akeneo categories which doesn't exist on Sylius, the import will succeed with no error.
+This plugin **will not import Akeneo categories into Sylius taxons**, but **it will associate Sylius products to existing taxons** based on Akeneo product-categories associations. This plugin will associate products only to those Sylius taxons which already exist on Sylius and have the same code of their related Akeneo categories. In this way, products taxons association import does not need any configuration and you can have all the categories you want on Akeneo, even those you don't want on your Sylius store. Indeed, if there are products associated to Akeneo categories which doesn't exist on Sylius, the import will succeed with no error.
 
 So, all you have to do is to **create on Sylius those taxons that you want products associated with** when importing from Akeneo, paying attention to **assign the same code** of the corresponding category on Akeneo.
 
@@ -395,7 +395,7 @@ When run with the since file, the enqueue command will write the current date/ti
 *  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt
 ```
 
-This way the enqueue command is run repeatedly enqueing only producs modified since the last command execution.
+This way the enqueue command is run repeatedly enqueuing only producs modified since the last command execution.
 
 You can also enqueue items only for specific importers:
 
@@ -403,7 +403,7 @@ You can also enqueue items only for specific importers:
 bin/console webgriffe:akeneno:enqueue --importer="Product" --importer="MyImporter" --since="2020-01-30"
 ```
 
-You can also enqueue items regardless their last update date:
+You can also enqueue items regardless of their last update date:
 
 ```bash
 bin/console webgriffe:akeneno:enqueue --all
@@ -437,7 +437,7 @@ To make all importers work automatically the following is the suggested crontab:
 
 It will enqueue the update of all attribute options every hour and it will import, every minute, all products that have been modified since the last execution, along with their associations.
 
-Both enqueue and consume commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents to run them multiple times.
+Both enqueue and consume commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents running them multiple times.
 
 ### Browsing queue items in the admin
 
@@ -447,7 +447,7 @@ You can examine the Akeneo import queue from the admin panel at **Catalog -> Ake
 
 ### Queue clear
 
-Sometimes it may be a good idea to clear the queue of imported items. This can also be useful in development to keep only items not imported for errors or to be consumed.
+Sometimes it may be a good idea to clear the queue of imported items. This can also be useful in development to keep only items not imported due to errors or yet to be consumed.
 You can clear the queue of elements by launching the following command:
 
 ```bash
@@ -467,7 +467,7 @@ This plugin has basically two main entry points:
 
 To be able to import different entities (or even only different parts of each entity), both commands use an **importer registry** which holds all the registered **importers**.
 
-An importer is a service implementing the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface` and mainly holds the logic about how to import its Akeneo entities. If you want to import from Akeneo other entities not implemented in this plugin you have can implement your own importer. You can also replace an importer provided with this plugin by decorating or replacing its service definition.
+An importer is a service implementing the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface` and that mainly holds the logic about how to import its Akeneo entities. If you want to import from Akeneo other entities not implemented in this plugin you have can implement your own importer. You can also replace an importer provided with this plugin by decorating or replacing its service definition.
 
 To implement a new custom importer create a class which implements the `Webgriffe\SyliusAkeneoPlugin\ImporterInterface`:
 
@@ -497,9 +497,9 @@ Anyway, this plugin already implement the following importers.
 
 ### Product Importer
 
-Akeneo is a Product Information Management system so its job is to manage product data. For this reason, this Sylius Akeneo plugin it's focused on importing products and provides a **product importer** (`\Webgriffe\SyliusAkeneoPlugin\Product\Importer`).
+Akeneo is a Product Information Management system so its job is to manage product data. For this reason, this Sylius Akeneo plugin is focused on importing products and provides a **product importer** (`\Webgriffe\SyliusAkeneoPlugin\Product\Importer`).
 
-This product importer process Akeneo product data through the following several components.
+This product importer processes Akeneo product data through the following components:
 
 #### Taxons resolver
 
@@ -507,15 +507,15 @@ A **taxons resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\TaxonsResolverInter
 
 #### Product options resolver
 
-A **product options resolve** (`Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolverInterface`) which is responsible to return the related Sylius's **product option(s)** when the product being imported is part of a parent product model. The provided implementation of the product options resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolver` class, which returns already existend product options but also create new ones if needed.
+A **product options resolve** (`Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolverInterface`) which is responsible to return the related Sylius's **product option(s)** when the product being imported is part of a parent product model. The provided implementation of the product options resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\ProductOptionsResolver` class, which returns already existend product options but also creates new ones if needed.
 
 #### Channels resolver
 
-A **channels resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\ChannelsResolverInterface`) which si responsible to return the list of Sylius channels where the products should be enabled. The provided implementation of the channels resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\AllChannelsResolver` class which simply enables the product to all available Sylius channels.
+A **channels resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\ChannelsResolverInterface`) which is responsible to return the list of Sylius channels where the products should be enabled. The provided implementation of the channels resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\AllChannelsResolver` class which simply enables the product in all available Sylius channels.
 
 #### Status resolver
 
-A **status resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\StatusResolverInterface`) which is responsible to return the Sylius product status (enabled or disabled, true or false). The provided implementation of the status resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\StatusResolver` which returns the same produc status of the related Akeneo product but only if this doesn't belong to a parent product model, otherwise it will always return true (enabled). This is because  in Sylius the product status is at product level and not (also) at product variant level; instead in Akeneo the status is only at product level and not at product model level. So, in Akeneo, you could have only one disabled product variant for a parent product which have several other variants enabled. This situation couldn't be mapped currently on Sylius.
+A **status resolver** (`Webgriffe\SyliusAkeneoPlugin\Product\StatusResolverInterface`) which is responsible to return the Sylius product status (enabled or disabled, true or false). The provided implementation of the status resolver is the `Webgriffe\SyliusAkeneoPlugin\Product\StatusResolver` which returns the same product status of the related Akeneo product, but only if this doesn't belong to a parent product model, otherwise it will always return true (enabled). This is because in Sylius the product status is at product level and not (also) at product variant level; instead, in Akeneo the status is only at product level and not at product model level. So, in Akeneo, you could have only one disabled product variant for a parent product which have several other variants enabled. This situation can't be mapped on Sylius at present.
 
 #### Value handlers resolver
 
@@ -529,8 +529,8 @@ For more detail on how the Product importer works look at the code of the `Webgr
 
 By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` is configured with value handlers specified in the `webgriffe_sylius_akeneo.value_handlers.product` array as explained in the configuration paragraph. This plugin already provides some value handler implementations that are:
 
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler` (type `channel_pricing`): it sets  the value found on a given Akeneo price attribute (`options.akeneo_attribute_code`) as the Sylius product's channels price for channels which the base currency is the price currency of the Akeneo price.
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler` (type `image`): it downloads  the image found on a given Akeneo image attribute (`options.akeneo_attribute_code`) and sets it as a Sylius product image with a provided type string (`options.sylius_image_type`).
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler` (type `channel_pricing`): it sets the value found on a given Akeneo price attribute (`options.akeneo_attribute_code`) as the Sylius product's channels price for channels whose base currency is the price currency of the Akeneo price.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler` (type `image`): it downloads the image found on a given Akeneo image attribute (`options.akeneo_attribute_code`) and sets it as a Sylius product image with a provided type string (`options.sylius_image_type`).
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler` (type `immutable_slug`): it slugifies the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) and sets it on the Sylius slug product translation property.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler` (type `product_option`): it sets the value found on a given Akeneo attribute as a Sylius product option value on the product variant.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler` (type `translatable_property`): using the [Symofony's Property Access component](https://symfony.com/doc/current/components/property_access.html), it sets the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) on a given property path (`options.sylius_translation_property_path`) of both product and product variant translations.
@@ -549,7 +549,7 @@ app.my_custom_value_handler:
 
 ### Product associations importer
 
-Another provided importer is the **product associations importer** (`Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer`). This importer imports the Akeneo products associations to the analog Sylius products associations. The association types must already exist on Sylius with the same code they have on Akeneo.
+Another provided importer is the **product associations importer** (`Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer`). This importer imports the Akeneo products associations to the corresponding Sylius products associations. The association types must already exist on Sylius with the same code they have on Akeneo.
 
 ### Attribute options importer
 

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTaxonInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
@@ -16,6 +18,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
 use Webmozart\Assert\Assert;
@@ -124,6 +127,7 @@ final class Importer implements ImporterInterface
 
         $this->handleTaxons($product, $productVariantResponse);
 
+        /** @var ProductVariantInterface|null $productVariant */
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
         if (!$productVariant instanceof ProductVariantInterface) {
             /** @var ProductVariantInterface $productVariant */
@@ -136,7 +140,12 @@ final class Importer implements ImporterInterface
         $product->setEnabled($this->statusResolver->resolve($productVariantResponse));
         $productVariant->setEnabled($this->variantStatusResolver->resolve($productVariantResponse));
 
-        foreach ($productVariantResponse['values'] as $attribute => $value) {
+        /** @var array<string, array> $attributesValues */
+        $attributesValues = $productVariantResponse['values'];
+        /** @var string $familyCode */
+        $familyCode = $productVariantResponse['family'];
+        $attributesValues = $this->addMissingAttributes($attributesValues, $familyCode);
+        foreach ($attributesValues as $attribute => $value) {
             $valueHandlers = $this->valueHandlersResolver->resolve($productVariant, $attribute, $value);
             foreach ($valueHandlers as $valueHandler) {
                 $valueHandler->handle($productVariant, $attribute, $value);
@@ -192,7 +201,8 @@ final class Importer implements ImporterInterface
     private function dispatchPreEvent(ResourceInterface $product, string $eventName): ResourceControllerEvent
     {
         $event = new ResourceControllerEvent($product);
-        $this->eventDispatcher->dispatch(sprintf('sylius.product.pre_%s', $eventName), $event);
+        $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
+        $this->eventDispatcher->dispatch($event, sprintf('sylius.product.pre_%s', $eventName));
 
         return $event;
     }
@@ -200,7 +210,9 @@ final class Importer implements ImporterInterface
     private function dispatchPostEvent(ResourceInterface $product, string $eventName): ResourceControllerEvent
     {
         $event = new ResourceControllerEvent($product);
-        $this->eventDispatcher->dispatch(sprintf('sylius.product.post_%s', $eventName), $event);
+        $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
+        /** @psalm-suppress InvalidArgument */
+        $this->eventDispatcher->dispatch($event, sprintf('sylius.product.post_%s', $eventName));
 
         return $event;
     }
@@ -220,15 +232,29 @@ final class Importer implements ImporterInterface
 
     private function handleTaxons(ProductInterface $product, array $akeneoProduct): void
     {
-        $taxons = $this->taxonsResolver->resolve($akeneoProduct);
-        foreach ($taxons as $taxon) {
-            if ($product->hasTaxon($taxon)) {
-                continue;
+        $akeneoTaxons = new ArrayCollection($this->taxonsResolver->resolve($akeneoProduct));
+        $syliusTaxons = $product->getTaxons();
+        $akeneoTaxonsCodes = $akeneoTaxons->map(function (TaxonInterface $taxon) {return $taxon->getCode(); })->toArray();
+        $syliusTaxonsCodes = $syliusTaxons->map(function (TaxonInterface $taxon) {return $taxon->getCode(); })->toArray();
+        $toAddTaxons = $akeneoTaxons->filter(
+            function (TaxonInterface $taxon) use ($syliusTaxonsCodes) {
+                return !in_array($taxon->getCode(), $syliusTaxonsCodes, true);
             }
-            $productTaxon = $this->productTaxonFactory->createNew();
-            Assert::isInstanceOf($productTaxon, ProductTaxonInterface::class);
+        );
+        $toRemoveTaxonsCodes = array_diff($syliusTaxonsCodes, $akeneoTaxonsCodes);
+
+        foreach ($product->getProductTaxons() as $productTaxon) {
+            $taxon = $productTaxon->getTaxon();
+            Assert::isInstanceOf($taxon, TaxonInterface::class);
+            if (in_array($taxon->getCode(), $toRemoveTaxonsCodes, true)) {
+                $product->getProductTaxons()->removeElement($productTaxon);
+            }
+        }
+        foreach ($toAddTaxons as $toAddTaxon) {
             /** @var ProductTaxonInterface $productTaxon */
-            $productTaxon->setTaxon($taxon);
+            $productTaxon = $this->productTaxonFactory->createNew();
+            $productTaxon->setProduct($product);
+            $productTaxon->setTaxon($toAddTaxon);
             $productTaxon->setPosition(0);
             $product->addProductTaxon($productTaxon);
         }
@@ -246,5 +272,36 @@ final class Importer implements ImporterInterface
         }
 
         return $product;
+    }
+
+    /**
+     * @param array<string, array> $attributesValues
+     * @return array<string, array>
+     */
+    private function addMissingAttributes(array $attributesValues, string $familyCode): array
+    {
+        if (!$this->apiClient instanceof FamilyAwareApiClientInterface) {
+            return $attributesValues;
+        }
+
+        $family = $this->apiClient->findFamily($familyCode);
+
+        if (null === $family) {
+            throw new \RuntimeException(sprintf('Cannot find "%s" family on Akeneo.', $familyCode));
+        }
+
+        /** @var string[] $allFamilyAttributes */
+        $allFamilyAttributes = $family['attributes'] ?? [];
+        /** @var string[] $productAttributes */
+        $productAttributes = array_keys($attributesValues);
+        $missingAttributes = array_diff($allFamilyAttributes, $productAttributes);
+        $emptyAttributeValue = [
+            ['locale' => null, 'scope' => null, 'data' => null]
+        ];
+        foreach ($missingAttributes as $missingAttribute) {
+            $attributesValues[$missingAttribute] = $emptyAttributeValue;
+        }
+
+        return $attributesValues;
     }
 }

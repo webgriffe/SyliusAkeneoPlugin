@@ -6,15 +6,19 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
 use Webmozart\Assert\Assert;
 
-final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface
+final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface
 {
-    /** @var string */
-    private $token;
+    /** @var string|null */
+    private $accessToken;
+
+    /** @var string|null */
+    private $refreshToken;
 
     /** @var ClientInterface */
     private $httpClient;
@@ -68,32 +72,41 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      * @throws GuzzleException
      * @throws \HttpException
      */
-    public function authenticatedRequest(string $uri, string $method, array $headers): array
+    public function authenticatedRequest(string $uri, string $method, array $headers, bool $withRefresh = false): array
     {
         if (strpos($uri, '/') === 0) {
             $uri = $this->baseUrl . $uri;
         }
 
-        if (!(bool) $this->token) {
+        if (!(bool) $this->accessToken) {
             $this->login();
+        }
+
+        if ($withRefresh) {
+            $this->refreshAccessToken();
         }
 
         $headers = array_merge(
             $headers,
             [
                 'Content-Type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->token),
+                'Authorization' => sprintf('Bearer %s', $this->accessToken),
             ]
         );
         $request = new Request($method, $uri, $headers);
-        $response = $this->httpClient->send($request);
-        $statusClass = (int) ($response->getStatusCode() / 100);
-        $responseResult = json_decode($response->getBody()->getContents(), true);
-        if ($statusClass !== 2) {
-            throw new \HttpException($responseResult['message'], $responseResult['code']);
-        }
 
-        return $responseResult;
+        try {
+            $response = $this->httpClient->send($request);
+            return (array) json_decode($response->getBody()->getContents(), true);
+        } catch (RequestException $requestException) {
+            $erroredResponse = $requestException->getResponse();
+            Assert::notNull($erroredResponse);
+            $accessTokenHasExpired = $erroredResponse->getStatusCode() === 401;
+            if ($accessTokenHasExpired && !$withRefresh) {
+                return $this->authenticatedRequest($uri, $method, $headers, true);
+            }
+            throw $requestException;
+        }
     }
 
     /**
@@ -102,7 +115,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function findProductModel(string $code): ?array
     {
-        return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', $code));
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', urlencode($code)));
     }
 
     /**
@@ -132,7 +145,8 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     public function downloadFile(string $code): \SplFileInfo
     {
         $endpoint = sprintf('/api/rest/v1/media-files/%s/download', $code);
-        $headers = ['Authorization' => sprintf('Bearer %s', $this->token)];
+        Assert::string($this->accessToken);
+        $headers = ['Authorization' => sprintf('Bearer %s', $this->accessToken)];
         $request = new Request('GET', $this->baseUrl . $endpoint, $headers);
         $response = $this->httpClient->send($request);
         $statusClass = (int) ($response->getStatusCode() / 100);
@@ -154,7 +168,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function findProduct(string $code): ?array
     {
-        return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', $code));
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', urlencode($code)));
     }
 
     /**
@@ -192,6 +206,16 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         return $this->traversePagination($this->authenticatedRequest('/api/rest/v1/attributes', 'GET', []));
     }
 
+    public function findAllFamilies(): array
+    {
+        return $this->traversePagination($this->authenticatedRequest('/api/rest/v1/families', 'GET', []));
+    }
+
+    public function findFamily(string $code): ?array
+    {
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/families/%s', $code));
+    }
+
     private function login(): void
     {
         $body = json_encode(
@@ -202,25 +226,25 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             ]
         );
         Assert::string($body);
-        $headers = [
-            'Content-Type' => 'application/json',
-        ];
-        $request = new Request(
-            'POST',
-            $this->baseUrl . '/api/oauth/v1/token',
-            $headers,
-            $body
-        );
-        $options = [
-            'auth' => [
-                $this->clientId,
-                $this->secret,
-            ],
-        ];
-        $rawResponse = $this->httpClient->send($request, $options);
-        $responseResult = json_decode($rawResponse->getBody()->getContents(), true);
+        $responseResult = $this->makeOauthRequest($body);
 
-        $this->token = $responseResult['access_token'];
+        $this->accessToken = $responseResult['access_token'];
+        $this->refreshToken = $responseResult['refresh_token'];
+    }
+
+    private function refreshAccessToken(): void
+    {
+        $body = json_encode(
+            [
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $this->refreshToken,
+            ]
+        );
+        Assert::string($body);
+        $responseResult = $this->makeOauthRequest($body);
+
+        $this->accessToken = $responseResult['access_token'];
+        $this->refreshToken = $responseResult['refresh_token'];
     }
 
     /**
@@ -267,5 +291,35 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         }
 
         return $this->temporaryFilesManager->generateTemporaryFilePath();
+    }
+
+
+    /**
+     * @param string $body
+     * @return array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null}
+     * @throws GuzzleException
+     */
+    private function makeOauthRequest(string $body): array
+    {
+        $headers = [
+            'Content-Type' => 'application/json',
+        ];
+        $request = new Request(
+            'POST',
+            $this->baseUrl . '/api/oauth/v1/token',
+            $headers,
+            $body
+        );
+        $options = [
+            'auth' => [
+                $this->clientId,
+                $this->secret,
+            ],
+        ];
+        $rawResponse = $this->httpClient->send($request, $options);
+
+        /** @var array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null} $result */
+        $result = json_decode($rawResponse->getBody()->getContents(), true);
+        return $result;
     }
 }

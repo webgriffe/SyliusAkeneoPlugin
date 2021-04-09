@@ -73,10 +73,18 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        $mediaCode = $value[0]['data'] ?? null;
-        if (!is_string($mediaCode)) {
+
+        if (!array_key_exists(0, $value) || !is_array($value[0]) || !array_key_exists('data', $value[0])) {
             throw new \InvalidArgumentException('Invalid Akeneo attachment data. Cannot find the media code.');
         }
+
+        if ($value[0]['data'] === null) {
+            // TODO remove existing image? See https://github.com/webgriffe/SyliusAkeneoPlugin/issues/61
+            return;
+        }
+
+        /** @var string $mediaCode */
+        $mediaCode = $value[0]['data'];
         $downloadedFile = $this->apiClient->downloadFile($mediaCode);
 
         $relativeFilePath = $mediaCode;

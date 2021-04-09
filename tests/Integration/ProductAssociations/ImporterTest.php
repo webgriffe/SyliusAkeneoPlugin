@@ -85,7 +85,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_the_product_association_type_does_not_exists_and_it_has_products()
+    public function it_does_not_fail_when_the_product_association_type_does_not_exists()
     {
         $this->fixtureLoader->load(
             [
@@ -96,18 +96,17 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode()
         );
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage(
-            'There are products for the association type "PACK" but it does not exists on Sylius.'
-        );
-
         $this->importer->import('MUG_SW');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneBy(['code' => 'MUG_SW']);
+        $this->assertEmpty($product->getAssociations());
     }
 
     /**
      * @test
      */
-    public function it_throws_exception_when_a_product_to_associate_does_not_exists_on_the_store()
+    public function it_does_not_fail_when_a_product_to_associate_does_not_exists_on_the_store()
     {
         $this->fixtureLoader->load(
             [
@@ -119,12 +118,16 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode()
         );
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage(
-            'Cannot associate the product "MUG_SW" to product "MUG_DW" because the former does not exists on Sylius'
-        );
-
         $this->importer->import('MUG_DW');
+
+        /** @var ProductInterface $product */
+        $product = $this->productRepository->findOneBy(['code' => 'MUG_DW']);
+        $associations = $product->getAssociations();
+        $this->assertCount(1, $associations);
+        $association = $associations[0];
+        $this->assertEquals($product->getId(), $association->getOwner()->getId());
+        $this->assertEquals('UPSELL', $association->getType()->getCode());
+        $this->assertEmpty($association->getAssociatedProducts());
     }
 
     /**
@@ -156,11 +159,9 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals('UPSELL', $association->getType()->getCode());
 
         $associatedProducts = $association->getAssociatedProducts();
-        $this->assertCount(2, $associatedProducts);
+        $this->assertCount(1, $associatedProducts);
         $productMugSw = $this->productRepository->findOneBy(['code' => 'MUG_SW']);
         $this->assertTrue($associatedProducts->contains($productMugSw));
-        $productMugAnother = $this->productRepository->findOneBy(['code' => 'MUG_ANOTHER']);
-        $this->assertTrue($associatedProducts->contains($productMugAnother));
     }
 
     /**
