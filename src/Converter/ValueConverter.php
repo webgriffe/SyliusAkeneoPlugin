@@ -28,7 +28,7 @@ final class ValueConverter implements ValueConverterInterface
      */
     public function convert(AttributeInterface $attribute, $value, string $localeCode)
     {
-        if (is_array($value)) {
+        if (is_array($value) && $attribute->getType() !== SelectAttributeType::TYPE) {
             if ($attribute->getType() === TextAttributeType::TYPE) {
                 if (!array_key_exists('amount', $value)) {
                     throw new \LogicException('Amount key not found');

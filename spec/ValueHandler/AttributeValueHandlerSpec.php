@@ -414,7 +414,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductInterface $product,
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $itAttributeValue,
-        FactoryInterface $factory
+        FactoryInterface $factory,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $selectProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -430,6 +432,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => ['brand_agape_IT', 'brand_agape', 'brand_agape_plus'],
             ],
         ];
+        $valueConverter->convert($selectProductAttribute, ['brand_agape_US', 'brand_agape', 'brand_agape_plus'], 'en_US')->willReturn(['brand_agape_US', 'brand_agape', 'brand_agape_plus']);
+        $valueConverter->convert($selectProductAttribute, ['brand_agape_IT', 'brand_agape', 'brand_agape_plus'], 'it_IT')->willReturn(['brand_agape_IT', 'brand_agape', 'brand_agape_plus']);
+
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
@@ -446,7 +451,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $itAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
-        FactoryInterface $factory
+        FactoryInterface $factory,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $selectProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue, $deAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -457,6 +464,10 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => ['brand_agape', 'brand_agape_plus'],
             ],
         ];
+        $valueConverter->convert($selectProductAttribute, ['brand_agape', 'brand_agape_plus'], 'en_US')->willReturn(['brand_agape', 'brand_agape_plus']);
+        $valueConverter->convert($selectProductAttribute, ['brand_agape', 'brand_agape_plus'], 'it_IT')->willReturn(['brand_agape', 'brand_agape_plus']);
+        $valueConverter->convert($selectProductAttribute, ['brand_agape', 'brand_agape_plus'], 'de_DE')->willReturn(['brand_agape', 'brand_agape_plus']);
+
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
@@ -505,75 +516,6 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($deAttributeValue)->shouldHaveBeenCalled();
-    }
-
-    function it_throws_error_when_select_value_is_not_an_existing_option(
-        ProductVariantInterface $productVariant,
-        ProductInterface $product
-    ) {
-        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
-        $value = [
-            [
-                'scope' => null,
-                'locale' => null,
-                'data' => 'brand_not_existing',
-            ],
-        ];
-
-        $this
-            ->shouldThrow(
-                new \InvalidArgumentException(
-                    'This select attribute can only save existing attribute options. ' .
-                    'Attribute option codes [brand_not_existing] do not exist.',
-                )
-            )
-            ->during('handle', [$productVariant, self::SELECT_ATTRIBUTE_CODE, $value]);
-    }
-
-    function it_throws_error_when_select_values_are_not_existing_options(
-        ProductVariantInterface $productVariant,
-        ProductInterface $product
-    ) {
-        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
-        $value = [
-            [
-                'scope' => null,
-                'locale' => null,
-                'data' => ['brand_not_existing'],
-            ],
-        ];
-
-        $this
-            ->shouldThrow(
-                new \InvalidArgumentException(
-                    'This select attribute can only save existing attribute options. ' .
-                    'Attribute option codes [brand_not_existing] do not exist.',
-                )
-            )
-            ->during('handle', [$productVariant, self::SELECT_ATTRIBUTE_CODE, $value]);
-    }
-
-    function it_throws_error_when_select_values_are_not_all_existing_options(
-        ProductVariantInterface $productVariant,
-        ProductInterface $product
-    ) {
-        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
-        $value = [
-            [
-                'scope' => null,
-                'locale' => null,
-                'data' => ['brand_agape', 'brand_not_existing'],
-            ],
-        ];
-
-        $this
-            ->shouldThrow(
-                new \InvalidArgumentException(
-                    'This select attribute can only save existing attribute options. ' .
-                    'Attribute option codes [brand_not_existing] do not exist.',
-                )
-            )
-            ->during('handle', [$productVariant, self::SELECT_ATTRIBUTE_CODE, $value]);
     }
 
     function it_does_not_create_the_same_attribute_value_more_than_once(

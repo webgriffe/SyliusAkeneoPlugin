@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace spec\Webgriffe\SyliusAkeneoPlugin\Converter;
 
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 use Sylius\Component\Attribute\AttributeType\CheckboxAttributeType;
 use Sylius\Component\Attribute\AttributeType\DatetimeAttributeType;
 use Sylius\Component\Attribute\AttributeType\IntegerAttributeType;
@@ -12,6 +13,8 @@ use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextareaAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextAttributeType;
 use Sylius\Component\Attribute\Model\AttributeInterface;
+use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter;
 use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface;
@@ -164,7 +167,7 @@ class ValueConverterSpec extends ObjectBehavior
     function it_converts_select_value_from_akeneo_to_select_value(
         AttributeInterface $selectAttribute
     ) {
-        $value = 'brand_agape_IT';
+        $value = ['brand_agape_IT'];
         $this->convert($selectAttribute, $value, self::IT_LOCALE_CODE)->shouldReturn([$value]);
     }
 
@@ -177,7 +180,37 @@ class ValueConverterSpec extends ObjectBehavior
             ->shouldThrow(
                 new \InvalidArgumentException(
                     'This select attribute can only save existing attribute options. ' .
-                    'Attribute option with the given brand_not_existing code does not exist.',
+                    'Attribute option codes [brand_not_existing] do not exist.',
+                )
+            )
+            ->during('convert', [$selectAttribute, $value, self::IT_LOCALE_CODE]);
+    }
+
+    function it_throws_error_when_select_values_are_not_existing_options(
+        AttributeInterface $selectAttribute
+    ) {
+        $value = ['brand_not_existing'];
+
+        $this
+            ->shouldThrow(
+                new \InvalidArgumentException(
+                    'This select attribute can only save existing attribute options. ' .
+                    'Attribute option codes [brand_not_existing] do not exist.',
+                )
+            )
+            ->during('convert', [$selectAttribute, $value, self::IT_LOCALE_CODE]);
+    }
+
+    function it_throws_error_when_select_values_are_not_all_existing_options(
+        AttributeInterface $selectAttribute
+    ) {
+        $value = ['brand_agape', 'brand_not_existing'];
+
+        $this
+            ->shouldThrow(
+                new \InvalidArgumentException(
+                    'This select attribute can only save existing attribute options. ' .
+                    'Attribute option codes [brand_not_existing] do not exist.',
                 )
             )
             ->during('convert', [$selectAttribute, $value, self::IT_LOCALE_CODE]);
