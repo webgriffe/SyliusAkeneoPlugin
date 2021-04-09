@@ -50,7 +50,9 @@ final class ValueConverter implements ValueConverterInterface
         if ($attribute->getType() === SelectAttributeType::TYPE && !is_bool($value)) {
             $value = (array) $value;
             $attributeConfiguration = $attribute->getConfiguration();
-            $possibleOptionsCodes = array_map('strval', array_keys($attributeConfiguration['choices']));
+            /** @var array $choices */
+            $choices = $attributeConfiguration['choices'];
+            $possibleOptionsCodes = array_map('strval', array_keys($choices));
             $invalid = array_diff($value, $possibleOptionsCodes);
 
             if (!empty($invalid)) {
