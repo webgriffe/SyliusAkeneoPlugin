@@ -20,11 +20,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
-use Webgriffe\SyliusAkeneoPlugin\ReconciliationInterface;
+use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
 use Webmozart\Assert\Assert;
 
-final class Importer implements ImporterInterface, ReconciliationInterface
+final class Importer implements ImporterInterface, ReconcilerInterface
 {
     private const AKENEO_ENTITY = 'Product';
 
