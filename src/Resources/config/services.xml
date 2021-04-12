@@ -40,6 +40,10 @@
             <tag name="console.command" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.command.reconciliate" class="Webgriffe\SyliusAkeneoPlugin\Command\ReconciliateCommand">
+            <argument type="service" id="webgriffe_sylius_akeneo.reconciler_registry" />
+        </service>
+
         <!-- General -->
         <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" >
             <argument type="service" id="sylius.http_client"/>

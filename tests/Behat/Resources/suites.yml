@@ -110,6 +110,16 @@ default:
             filters:
                 tags: "@enqueuing_products_associations && @cli"
 
+        cli_reconciliate_products:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+
+                - webgriffe_sylius_akeneo.behat.context.cli.reconciliate_command
+            filters:
+                tags: "@reconciliate_products && @cli"
+
         ui_browsing_queue_items:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
