@@ -46,7 +46,7 @@ class ValueConverterSpec extends ObjectBehavior
         AttributeInterface $selectAttribute,
         AttributeInterface $datetimeAttribute
     ) {
-        $translator->trans('webgriffe_sylius_akeneo.ui.value_converter', ['unit' => 'INCH', 'amount' => '23'], null, 'it')->willReturn('23"');
+        $translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => 'INCH', 'amount' => '23'], null, 'it')->willReturn('23"');
 
         $textAttribute->getType()->willReturn(TextAttributeType::TYPE);
         $integerAttribute->getType()->willReturn(IntegerAttributeType::TYPE);
@@ -74,7 +74,7 @@ class ValueConverterSpec extends ObjectBehavior
         $this->shouldHaveType(ValueConverter::class);
     }
 
-    function it_implements_value_handler_interface()
+    function it_implements_value_converter_interface()
     {
         $this->shouldHaveType(ValueConverterInterface::class);
     }
@@ -144,17 +144,17 @@ class ValueConverterSpec extends ObjectBehavior
     }
 
     function it_converts_integer_value_from_akeneo_to_integer_value(
-        AttributeInterface $integerValue
+        AttributeInterface $integerAttribute
     ) {
         $value = 123;
-        $this->convert($integerValue, $value, self::IT_LOCALE_CODE)->shouldReturn($value);
+        $this->convert($integerAttribute, $value, self::IT_LOCALE_CODE)->shouldReturn($value);
     }
 
     function it_converts_textarea_value_from_akeneo_to_textarea_value(
-        AttributeInterface $textareaValue
+        AttributeInterface $textareaAttribute
     ) {
         $value = 'Lorem ipsum dolor sit amet';
-        $this->convert($textareaValue, $value, self::IT_LOCALE_CODE)->shouldReturn($value);
+        $this->convert($textareaAttribute, $value, self::IT_LOCALE_CODE)->shouldReturn($value);
     }
 
     function it_converts_boolean_value_from_akeneo_to_checkbox_value(

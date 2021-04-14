@@ -1,6 +1,6 @@
 webgriffe_sylius_akeneo:
   ui:
-    value_converter: >-
+    metric_amount_unit: >-
       {unit, select,
           SQUARE_MILLIMETER {{amount} mm²}
           SQUARE_CENTIMETER {{amount} cm²}

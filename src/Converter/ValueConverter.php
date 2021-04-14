@@ -42,7 +42,7 @@ final class ValueConverter implements ValueConverterInterface
                     return $amount . ' ' . $unit;
                 }
 
-                return $this->translator->trans('webgriffe_sylius_akeneo.ui.value_converter', ['unit' => $unit, 'amount' => $amount], null, $localeCode);
+                return $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $amount], null, $localeCode);
             }
 
             return $value;
