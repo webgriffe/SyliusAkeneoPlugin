@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace spec\Webgriffe\SyliusAkeneoPlugin\Converter;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Sylius\Component\Attribute\AttributeType\CheckboxAttributeType;
 use Sylius\Component\Attribute\AttributeType\DatetimeAttributeType;
 use Sylius\Component\Attribute\AttributeType\IntegerAttributeType;
@@ -13,29 +12,13 @@ use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextareaAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextAttributeType;
 use Sylius\Component\Attribute\Model\AttributeInterface;
-use Sylius\Component\Core\Model\ProductInterface;
-use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter;
 use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface;
 
 class ValueConverterSpec extends ObjectBehavior
 {
-    private const TEXT_ATTRIBUTE_CODE = 'brand';
-
-    private const CHECKBOX_ATTRIBUTE_CODE = 'outlet';
-
-    private const TEXTAREA_ATTRIBUTE_CODE = 'causale';
-
-    private const INTEGER_ATTRIBUTE_CODE = 'position';
-
-    private const SELECT_ATTRIBUTE_CODE = 'select';
-
-    private const DATETIME_ATTRIBUTE_CODE = 'created_at';
-
-    private const PRODUCT_OPTION_CODE = 'finitura';
-
-    const IT_LOCALE_CODE = 'it_IT';
+    private const IT_LOCALE_CODE = 'it_IT';
 
     public function let(
         TranslatorInterface $translator,
@@ -168,13 +151,13 @@ class ValueConverterSpec extends ObjectBehavior
         AttributeInterface $selectAttribute
     ) {
         $value = ['brand_agape_IT'];
-        $this->convert($selectAttribute, $value, self::IT_LOCALE_CODE)->shouldReturn([$value]);
+        $this->convert($selectAttribute, $value, self::IT_LOCALE_CODE)->shouldReturn($value);
     }
 
     function it_throws_error_when_select_value_is_not_an_existing_option(
         AttributeInterface $selectAttribute
     ) {
-        $value = 'brand_not_existing';
+        $value = ['brand_not_existing'];
 
         $this
             ->shouldThrow(
@@ -189,13 +172,13 @@ class ValueConverterSpec extends ObjectBehavior
     function it_throws_error_when_select_values_are_not_existing_options(
         AttributeInterface $selectAttribute
     ) {
-        $value = ['brand_not_existing'];
+        $value = ['brand_not_existing', 'brand_not_existing_2'];
 
         $this
             ->shouldThrow(
                 new \InvalidArgumentException(
                     'This select attribute can only save existing attribute options. ' .
-                    'Attribute option codes [brand_not_existing] do not exist.',
+                    'Attribute option codes [brand_not_existing, brand_not_existing_2] do not exist.',
                 )
             )
             ->during('convert', [$selectAttribute, $value, self::IT_LOCALE_CODE]);

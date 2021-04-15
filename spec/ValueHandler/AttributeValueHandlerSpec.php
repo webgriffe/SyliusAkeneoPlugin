@@ -359,17 +359,17 @@ class AttributeValueHandlerSpec extends ObjectBehavior
             ],
         ];
 
-        $valueConverter->convert($selectProductAttribute, 'brand_agape_US', 'en_US')->willReturn(['brand_agape_US']);
-        $valueConverter->convert($selectProductAttribute, 'brand_agape_IT', 'it_IT')->willReturn(['brand_agape_IT']);
+        $valueConverter->convert($selectProductAttribute, 'brand_agape_US', 'en_US')->willReturn('brand_agape_US');
+        $valueConverter->convert($selectProductAttribute, 'brand_agape_IT', 'it_IT')->willReturn('brand_agape_IT');
 
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
         $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
-        $enAttributeValue->setValue(['brand_agape_US'])->shouldHaveBeenCalled();
+        $enAttributeValue->setValue('brand_agape_US')->shouldHaveBeenCalled();
         $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
-        $itAttributeValue->setValue(['brand_agape_IT'])->shouldHaveBeenCalled();
+        $itAttributeValue->setValue('brand_agape_IT')->shouldHaveBeenCalled();
     }
 
     function it_creates_select_product_attribute_value_with_all_locales_if_it_does_not_already_exist(
@@ -392,18 +392,18 @@ class AttributeValueHandlerSpec extends ObjectBehavior
             ],
         ];
 
-        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'en_US')->willReturn(['brand_agape']);
-        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'it_IT')->willReturn(['brand_agape']);
-        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'de_DE')->willReturn(['brand_agape']);
+        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'en_US')->willReturn('brand_agape');
+        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'it_IT')->willReturn('brand_agape');
+        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'de_DE')->willReturn('brand_agape');
 
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
-        $enAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
+        $enAttributeValue->setValue('brand_agape')->shouldHaveBeenCalled();
         $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
-        $itAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
+        $itAttributeValue->setValue('brand_agape')->shouldHaveBeenCalled();
         $deAttributeValue->setLocaleCode('de_DE')->shouldHaveBeenCalled();
-        $deAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
+        $deAttributeValue->setValue('brand_agape')->shouldHaveBeenCalled();
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($deAttributeValue)->shouldHaveBeenCalled();
