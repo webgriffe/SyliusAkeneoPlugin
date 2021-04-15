@@ -20,6 +20,15 @@ final class ValueConverter implements ValueConverterInterface
     public function __construct(
         TranslatorInterface $translator = null
     ) {
+        if ($translator === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.8',
+                'Not passing a translator to "%s" is deprecated and will be removed in %s.',
+                __CLASS__,
+                '2.0'
+            );
+        }
         $this->translator = $translator;
     }
 

@@ -48,7 +48,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         if ($valueConverter === null) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
-                '1.5',
+                '1.8',
                 'Not passing a value converter to "%s" is deprecated and will be removed in %s.',
                 __CLASS__,
                 '2.0'
