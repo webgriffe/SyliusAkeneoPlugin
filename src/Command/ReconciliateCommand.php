@@ -14,6 +14,9 @@ use Webgriffe\SyliusAkeneoPlugin\ReconcilerRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 use Webmozart\Assert\Assert;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor $lock
+ */
 final class ReconciliateCommand extends Command
 {
     use LockableTrait;
