@@ -486,7 +486,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_custom_attributes()
+    public function it_updates_existing_product_attribute_value()
     {
         $this->fixtureLoader->load(
             [
