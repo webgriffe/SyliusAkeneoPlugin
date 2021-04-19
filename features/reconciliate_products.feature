@@ -5,6 +5,10 @@ Feature: Reconciliation products
   I want to reconciliate them
 
   @cli
-  Scenario: Reconciliate products
-    Given there are 2 products on Akeneo
+  Scenario: Reconciliate simple products
+    Given there is 1 product on Akeneo
+    And the store has a product "product-1"
+    And the store has a product "product-2"
     When I reconciliate items
+    Then the "product-1" product is enabled
+    And the "product-2" product is disabled

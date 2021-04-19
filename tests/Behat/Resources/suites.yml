@@ -114,8 +114,10 @@ default:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
 
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - sylius.behat.context.transform.product
 
+                - sylius.behat.context.setup.product
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
                 - webgriffe_sylius_akeneo.behat.context.cli.reconciliate_command
             filters:
                 tags: "@reconciliate_products && @cli"
