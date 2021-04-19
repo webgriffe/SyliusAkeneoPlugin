@@ -95,8 +95,8 @@ final class ReconciliateCommand extends Command
             throw new \RuntimeException('There are no reconcilers in registry.');
         }
         $reconcilersCodes = array_map(
-            static function (ImporterInterface $importer) {
-                return $importer->getAkeneoEntity();
+            static function (ReconcilerInterface $reconciler) {
+                return $reconciler->getAkeneoEntity();
             },
             $allReconcilers
         );

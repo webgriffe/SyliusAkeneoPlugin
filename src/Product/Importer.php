@@ -165,12 +165,14 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
     /**
      * {@inheritdoc}
+     * @psalm-return array<array-key, string>
      */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
     {
         $products = $this->apiClient->findProductsModifiedSince($sinceDate);
         $identifiers = [];
         foreach ($products as $product) {
+            Assert::string($product['identifier']);
             $identifiers[] = $product['identifier'];
         }
 
