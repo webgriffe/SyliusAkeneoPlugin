@@ -31,9 +31,9 @@
             <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.behat.context.cli.reconciliate_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ReconcileCommandContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.cli.reconcile_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ReconcileCommandContext">
             <argument type="service" id="kernel" />
-            <argument type="service" id="webgriffe_sylius_akeneo.command.reconciliate" />
+            <argument type="service" id="webgriffe_sylius_akeneo.command.reconcile" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.db.product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ProductContext">

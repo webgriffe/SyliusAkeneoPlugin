@@ -16,23 +16,23 @@ final class ReconcileCommandContext implements Context
     private $kernel;
 
     /** @var ReconcileCommand */
-    private $reconciliateCommand;
+    private $reconcileCommand;
 
     public function __construct(
         KernelInterface $kernel,
-        ReconcileCommand $reconciliateCommand
+        ReconcileCommand $reconcileCommand
     ) {
         $this->kernel = $kernel;
-        $this->reconciliateCommand = $reconciliateCommand;
+        $this->reconcileCommand = $reconcileCommand;
     }
 
     /**
-     * @When /^I reconciliate items$/
+     * @When /^I reconcile items$/
      */
-    public function iReconciliateItems()
+    public function iReconcileItems()
     {
         $application = new Application($this->kernel);
-        $application->add($this->reconciliateCommand);
+        $application->add($this->reconcileCommand);
         $command = $application->find('webgriffe:akeneo:reconcile');
 
         $commandTester = new CommandTester($command);
