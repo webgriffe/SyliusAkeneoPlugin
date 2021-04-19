@@ -18,9 +18,9 @@ final class ReconciliateCommand extends Command
 {
     use LockableTrait;
 
-    private const SUCCESS = 0;
+    public const SUCCESS = 0;
 
-    private const FAILURE = 1;
+    public const FAILURE = 1;
 
     private const IMPORTER_OPTION_NAME = 'importer';
 
