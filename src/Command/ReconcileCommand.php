@@ -17,7 +17,7 @@ use Webmozart\Assert\Assert;
 /**
  * @psalm-suppress PropertyNotSetInConstructor $lock
  */
-final class ReconciliateCommand extends Command
+final class ReconcileCommand extends Command
 {
     use LockableTrait;
 
@@ -27,7 +27,7 @@ final class ReconciliateCommand extends Command
 
     private const IMPORTER_OPTION_NAME = 'importer';
 
-    protected static $defaultName = 'webgriffe:akeneo:reconciliate';
+    protected static $defaultName = 'webgriffe:akeneo:reconcile';
 
     /**
      * @var ReconcilerRegistryInterface
@@ -35,7 +35,7 @@ final class ReconciliateCommand extends Command
     private $reconciliationRegistry;
 
     /**
-     * ReconciliateCommand constructor.
+     * ReconcileCommand constructor.
      * @param ReconcilerRegistryInterface $reconciliationRegistry
      */
     public function __construct(ReconcilerRegistryInterface $reconciliationRegistry)
@@ -48,12 +48,12 @@ final class ReconciliateCommand extends Command
     {
         $this
             ->setDescription('Replicates the status of Akeneo products on Sylius.')
-            ->setHelp('This command allows you to reconciliate the Akeneo\'s products status with the current on Sylius.')
+            ->setHelp('This command allows you to reconcile the Akeneo\'s products status with the current on Sylius.')
             ->addOption(
                 self::IMPORTER_OPTION_NAME,
                 'i',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Reconciliate items only for specified importers'
+                'Reconcile items only for specified importers'
             )
         ;
     }

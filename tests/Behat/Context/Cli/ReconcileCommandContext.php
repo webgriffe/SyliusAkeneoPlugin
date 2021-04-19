@@ -8,19 +8,19 @@ use Behat\Behat\Context\Context;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Webgriffe\SyliusAkeneoPlugin\Command\ReconciliateCommand;
+use Webgriffe\SyliusAkeneoPlugin\Command\ReconcileCommand;
 
-final class ReconciliateCommandContext implements Context
+final class ReconcileCommandContext implements Context
 {
     /** @var KernelInterface */
     private $kernel;
 
-    /** @var ReconciliateCommand */
+    /** @var ReconcileCommand */
     private $reconciliateCommand;
 
     public function __construct(
         KernelInterface $kernel,
-        ReconciliateCommand $reconciliateCommand
+        ReconcileCommand $reconciliateCommand
     ) {
         $this->kernel = $kernel;
         $this->reconciliateCommand = $reconciliateCommand;
@@ -33,10 +33,10 @@ final class ReconciliateCommandContext implements Context
     {
         $application = new Application($this->kernel);
         $application->add($this->reconciliateCommand);
-        $command = $application->find('webgriffe:akeneo:reconciliate');
+        $command = $application->find('webgriffe:akeneo:reconcile');
 
         $commandTester = new CommandTester($command);
 
-        $commandTester->execute(['command' => 'webgriffe:akeneo:reconciliate']);
+        $commandTester->execute(['command' => 'webgriffe:akeneo:reconcile']);
     }
 }
