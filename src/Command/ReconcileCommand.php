@@ -25,7 +25,7 @@ final class ReconcileCommand extends Command
 
     public const FAILURE = 1;
 
-    private const IMPORTER_OPTION_NAME = 'importer';
+    private const RECONCILER_OPTION_NAME = 'reconciler';
 
     protected static $defaultName = 'webgriffe:akeneo:reconcile';
 
