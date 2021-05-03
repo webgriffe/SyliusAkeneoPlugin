@@ -9,7 +9,7 @@ Feature: Reconcile products
 
   @cli
   Scenario: Reconcile simple products
-    Given there is 1 product on Akeneo
+    Given there is a product "product-1" updated at "2021-01-01" on Akeneo
     And the store has a product "product-1"
     And the store has a product "product-2"
     When I reconcile items
