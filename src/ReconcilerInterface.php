@@ -7,7 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 interface ReconcilerInterface
 {
     /**
-     * A string used to identify the Akeneo resource managed by this importer (for example: Product, Category, ecc...)
+     * A string used to identify the Akeneo resource managed by this reconciler (for example: Product, Category, ecc...)
      */
     public function getAkeneoEntity(): string;
 
