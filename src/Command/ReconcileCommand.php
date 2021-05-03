@@ -52,7 +52,7 @@ final class ReconcileCommand extends Command
                 self::IMPORTER_OPTION_NAME,
                 'i',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Reconcile items only for specified importers'
+                'Reconcile items only for specified reconcilers'
             )
         ;
     }
