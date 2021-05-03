@@ -49,7 +49,7 @@ final class ReconcileCommand extends Command
         $this
             ->setDescription('Reconciles Akeneo entities on Sylius.')
             ->addOption(
-                self::IMPORTER_OPTION_NAME,
+                self::RECONCILER_OPTION_NAME,
                 'i',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Reconcile items only for specified reconcilers'
@@ -66,20 +66,7 @@ final class ReconcileCommand extends Command
         }
 
         foreach ($this->getReconcilers($input) as $reconciler) {
-            $sinceDate = (new \DateTime())->setTimestamp(0);
-            $akeneoItemsToReconcile = $reconciler->getIdentifiersModifiedSince($sinceDate);
-            if (count($akeneoItemsToReconcile) === 0) {
-                $output->writeln(
-                    sprintf(
-                        'There are no <info>%s</info> entities since <info>%s</info>',
-                        $reconciler->getAkeneoEntity(),
-                        $sinceDate->format('Y-m-d H:i:s')
-                    )
-                );
-
-                continue;
-            }
-
+            $akeneoItemsToReconcile = $reconciler->getAllIdentifiers();
             $reconciler->reconcile($akeneoItemsToReconcile);
         }
 
@@ -94,7 +81,7 @@ final class ReconcileCommand extends Command
     {
         $allReconcilers = $this->reconciliationRegistry->all();
         if (count($allReconcilers) === 0) {
-            throw new \RuntimeException('There are no reconcilers in registry.');
+            return [];
         }
         $reconcilersCodes = array_map(
             static function (ReconcilerInterface $reconciler) {
@@ -103,7 +90,7 @@ final class ReconcileCommand extends Command
             $allReconcilers
         );
 
-        $reconcilersToUse = $input->getOption(self::IMPORTER_OPTION_NAME);
+        $reconcilersToUse = $input->getOption(self::RECONCILER_OPTION_NAME);
         Assert::isArray($reconcilersToUse);
 
         if (count($reconcilersToUse) === 0) {

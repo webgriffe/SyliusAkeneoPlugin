@@ -12,12 +12,11 @@ interface ReconcilerInterface
     public function getAkeneoEntity(): string;
 
     /**
-     * Must return the list of Akeneo identifiers of entities managed by this importer modified after the given
-     * date/time.
+     * Must return the list of Akeneo identifiers of all entities managed by this reconciler.
      *
      * @return string[]
      */
-    public function getIdentifiersModifiedSince(\DateTime $sinceDate): array;
+    public function getAllIdentifiers(): array;
 
     /**
      * Must implement the reconciliation logic for the Akeneo resource managed by this reconciler.

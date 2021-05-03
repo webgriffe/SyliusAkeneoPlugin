@@ -179,6 +179,23 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         return $identifiers;
     }
 
+    /**
+     * {@inheritdoc}
+     * @psalm-return array<array-key, string>
+     */
+    public function getAllIdentifiers(): array
+    {
+        $products = $this->apiClient->findProductsModifiedSince((new \DateTime())->setTimestamp(0));
+        $identifiers = [];
+        foreach ($products as $product) {
+            Assert::string($product['identifier']);
+            $identifiers[] = $product['identifier'];
+        }
+
+        return $identifiers;
+    }
+
+
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
     {
         $identifier = $productVariantResponse['identifier'];
