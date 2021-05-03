@@ -47,8 +47,7 @@ final class ReconcileCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Replicates the status of Akeneo products on Sylius.')
-            ->setHelp('This command allows you to reconcile the Akeneo\'s products status with the current on Sylius.')
+            ->setDescription('Reconciles Akeneo entities on Sylius.')
             ->addOption(
                 self::IMPORTER_OPTION_NAME,
                 'i',
