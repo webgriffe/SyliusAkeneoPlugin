@@ -185,15 +185,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
      */
     public function getAllIdentifiers(): array
     {
-        /** @var array<array-key, array> $products */
-        $products = $this->apiClient->findProductsModifiedSince((new \DateTime())->setTimestamp(0));
-        $identifiers = [];
-        foreach ($products as $product) {
-            Assert::string($product['identifier']);
-            $identifiers[] = $product['identifier'];
-        }
-
-        return $identifiers;
+        return $this->getIdentifiersModifiedSince((new \DateTime())->setTimestamp(0));
     }
 
 
