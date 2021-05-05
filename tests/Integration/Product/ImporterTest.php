@@ -628,4 +628,25 @@ final class ImporterTest extends KernelTestCase
         $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'it_IT'));
         $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'en_US'));
     }
+
+    /**
+     * @test
+     */
+    public function it_imports_product_without_family()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml'
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('no-family-product');
+
+        $product = $this->productRepository->findOneByCode('no-family-product');
+        $this->assertNotNull($product);
+    }
 }

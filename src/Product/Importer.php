@@ -142,9 +142,11 @@ final class Importer implements ImporterInterface
 
         /** @var array<string, array> $attributesValues */
         $attributesValues = $productVariantResponse['values'];
-        /** @var string $familyCode */
+        /** @var string|null $familyCode */
         $familyCode = $productVariantResponse['family'];
-        $attributesValues = $this->addMissingAttributes($attributesValues, $familyCode);
+        if ($familyCode !== null) {
+            $attributesValues = $this->addMissingAttributes($attributesValues, $familyCode);
+        }
         foreach ($attributesValues as $attribute => $value) {
             $valueHandlers = $this->valueHandlersResolver->resolve($productVariant, $attribute, $value);
             foreach ($valueHandlers as $valueHandler) {
