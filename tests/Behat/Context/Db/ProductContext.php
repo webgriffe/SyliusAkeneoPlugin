@@ -93,4 +93,36 @@ final class ProductContext implements Context
         $associatedProducts = $productAssociation->getAssociatedProducts();
         Assert::true($associatedProducts->contains($associatedProduct));
     }
+
+    /**
+     * @Then /^the ("[^"]+" product) should be enabled$/
+     */
+    public function theProductShouldBeEnabled(ProductInterface $product)
+    {
+        Assert::true($product->isEnabled());
+    }
+
+    /**
+     * @Given /^the ("[^"]+" product variant) should be enabled$/
+     */
+    public function theProductVariantShouldBeEnabled(ProductVariantInterface $productVariant)
+    {
+        Assert::true($productVariant->isEnabled());
+    }
+
+    /**
+     * @Then /^the ("[^"]+" product) should be disabled/
+     */
+    public function theProductShouldBeDisabled(ProductInterface $product)
+    {
+        Assert::false($product->isEnabled());
+    }
+
+    /**
+     * @Given /^the ("[^"]+" product variant) should be disabled/
+     */
+    public function theProductVariantShouldBeDisabled(ProductVariantInterface $productVariant)
+    {
+        Assert::false($productVariant->isEnabled());
+    }
 }

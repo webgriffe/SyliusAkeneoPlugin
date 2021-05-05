@@ -123,6 +123,9 @@ default:
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.product
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+
+                - webgriffe_sylius_akeneo.behat.context.db.product
+
                 - webgriffe_sylius_akeneo.behat.context.cli.reconcile_command
             filters:
                 tags: "@reconcile_products && @cli"
