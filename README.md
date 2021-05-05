@@ -94,7 +94,7 @@ Override Sylius template by create a new file in the folder: `templates/bundles/
 
         # ...
 
-        <a class="ui labeled icon button green" href="{{  path('webgriffe_sylius_akeneo_product_enqueue', {'productId': product.id }) }}" >  
+        <a class="ui labeled icon button violet" href="{{  path('webgriffe_sylius_akeneo_product_enqueue', {'productId': product.id }) }}" >  
           <i class="icon cloud download"></i>  
           {{ 'webgriffe_sylius_akeneo.ui.enqueue'|trans }}  
         </a>
