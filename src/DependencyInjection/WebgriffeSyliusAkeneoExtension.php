@@ -158,6 +158,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 'sylius.repository.product_attribute',
                 'sylius.factory.product_attribute_value',
                 'sylius.translation_locale_provider.admin',
+                'webgriffe_sylius_akeneo.converter.value',
             ],
         ],
         'file_attribute' => [

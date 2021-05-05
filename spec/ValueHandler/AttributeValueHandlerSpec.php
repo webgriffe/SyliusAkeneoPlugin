@@ -15,6 +15,7 @@ use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
+use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
 class AttributeValueHandlerSpec extends ObjectBehavior
@@ -48,7 +49,8 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         TranslationLocaleProviderInterface $localeProvider,
         ProductVariantInterface $productVariant,
         ProductInterface $product,
-        ProductOptionInterface $productOption
+        ProductOptionInterface $productOption,
+        ValueConverterInterface $valueConverter
     ) {
         $checkboxProductAttribute->getCode()->willReturn(self::CHECKBOX_ATTRIBUTE_CODE);
         $textProductAttribute->getCode()->willReturn(self::TEXT_ATTRIBUTE_CODE);
@@ -86,7 +88,7 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 ],
             ]
         );
-        $this->beConstructedWith($attributeRepository, $factory, $localeProvider);
+        $this->beConstructedWith($attributeRepository, $factory, $localeProvider, $valueConverter);
     }
 
     function it_is_initializable()
@@ -182,7 +184,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
         FactoryInterface $factory,
-        ProductInterface $product
+        ProductInterface $product,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $textProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue, $deAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -194,6 +198,10 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => 'Agape',
             ],
         ];
+        $valueConverter->convert($textProductAttribute, 'Agape', 'en_US')->willReturn('Agape');
+        $valueConverter->convert($textProductAttribute, 'Agape', 'it_IT')->willReturn('Agape');
+        $valueConverter->convert($textProductAttribute, 'Agape', 'de_DE')->willReturn('Agape');
+
         $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
@@ -213,7 +221,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
         FactoryInterface $factory,
-        ProductInterface $product
+        ProductInterface $product,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $textProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -230,6 +240,10 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => 'Legno',
             ],
         ];
+
+        $valueConverter->convert($textProductAttribute, 'Wood', 'en_US')->willReturn('Wood');
+        $valueConverter->convert($textProductAttribute, 'Legno', 'it_IT')->willReturn('Legno');
+
         $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
@@ -248,7 +262,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
         FactoryInterface $factory,
-        ProductInterface $product
+        ProductInterface $product,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $checkboxProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue, $deAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -260,6 +276,11 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => true,
             ],
         ];
+
+        $valueConverter->convert($checkboxProductAttribute, true, 'en_US')->willReturn(true);
+        $valueConverter->convert($checkboxProductAttribute, true, 'it_IT')->willReturn(true);
+        $valueConverter->convert($checkboxProductAttribute, true, 'de_DE')->willReturn(true);
+
         $this->handle($productVariant, self::CHECKBOX_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
@@ -279,7 +300,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
         FactoryInterface $factory,
-        ProductInterface $product
+        ProductInterface $product,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $checkboxProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -296,6 +319,10 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => false,
             ],
         ];
+
+        $valueConverter->convert($checkboxProductAttribute, false, 'en_US')->willReturn(false);
+        $valueConverter->convert($checkboxProductAttribute, false, 'it_IT')->willReturn(false);
+
         $this->handle($productVariant, self::CHECKBOX_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
@@ -313,7 +340,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductInterface $product,
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $itAttributeValue,
-        FactoryInterface $factory
+        FactoryInterface $factory,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $selectProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -329,14 +358,18 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => 'brand_agape_IT',
             ],
         ];
+
+        $valueConverter->convert($selectProductAttribute, 'brand_agape_US', 'en_US')->willReturn('brand_agape_US');
+        $valueConverter->convert($selectProductAttribute, 'brand_agape_IT', 'it_IT')->willReturn('brand_agape_IT');
+
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
         $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
-        $enAttributeValue->setValue(['brand_agape_US'])->shouldHaveBeenCalled();
+        $enAttributeValue->setValue('brand_agape_US')->shouldHaveBeenCalled();
         $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
-        $itAttributeValue->setValue(['brand_agape_IT'])->shouldHaveBeenCalled();
+        $itAttributeValue->setValue('brand_agape_IT')->shouldHaveBeenCalled();
     }
 
     function it_creates_select_product_attribute_value_with_all_locales_if_it_does_not_already_exist(
@@ -345,7 +378,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $itAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
-        FactoryInterface $factory
+        FactoryInterface $factory,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $selectProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue, $deAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -356,14 +391,19 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => 'brand_agape',
             ],
         ];
+
+        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'en_US')->willReturn('brand_agape');
+        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'it_IT')->willReturn('brand_agape');
+        $valueConverter->convert($selectProductAttribute, 'brand_agape', 'de_DE')->willReturn('brand_agape');
+
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
-        $enAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
+        $enAttributeValue->setValue('brand_agape')->shouldHaveBeenCalled();
         $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
-        $itAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
+        $itAttributeValue->setValue('brand_agape')->shouldHaveBeenCalled();
         $deAttributeValue->setLocaleCode('de_DE')->shouldHaveBeenCalled();
-        $deAttributeValue->setValue(['brand_agape'])->shouldHaveBeenCalled();
+        $deAttributeValue->setValue('brand_agape')->shouldHaveBeenCalled();
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
         $product->addAttribute($deAttributeValue)->shouldHaveBeenCalled();
@@ -374,7 +414,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductInterface $product,
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $itAttributeValue,
-        FactoryInterface $factory
+        FactoryInterface $factory,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $selectProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -390,6 +432,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => ['brand_agape_IT', 'brand_agape', 'brand_agape_plus'],
             ],
         ];
+        $valueConverter->convert($selectProductAttribute, ['brand_agape_US', 'brand_agape', 'brand_agape_plus'], 'en_US')->willReturn(['brand_agape_US', 'brand_agape', 'brand_agape_plus']);
+        $valueConverter->convert($selectProductAttribute, ['brand_agape_IT', 'brand_agape', 'brand_agape_plus'], 'it_IT')->willReturn(['brand_agape_IT', 'brand_agape', 'brand_agape_plus']);
+
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
@@ -406,7 +451,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $itAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
-        FactoryInterface $factory
+        FactoryInterface $factory,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $selectProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue, $deAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -417,6 +464,10 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => ['brand_agape', 'brand_agape_plus'],
             ],
         ];
+        $valueConverter->convert($selectProductAttribute, ['brand_agape', 'brand_agape_plus'], 'en_US')->willReturn(['brand_agape', 'brand_agape_plus']);
+        $valueConverter->convert($selectProductAttribute, ['brand_agape', 'brand_agape_plus'], 'it_IT')->willReturn(['brand_agape', 'brand_agape_plus']);
+        $valueConverter->convert($selectProductAttribute, ['brand_agape', 'brand_agape_plus'], 'de_DE')->willReturn(['brand_agape', 'brand_agape_plus']);
+
         $this->handle($productVariant, self::SELECT_ATTRIBUTE_CODE, $value);
 
         $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
@@ -436,7 +487,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         ProductAttributeValueInterface $enAttributeValue,
         ProductAttributeValueInterface $itAttributeValue,
         ProductAttributeValueInterface $deAttributeValue,
-        FactoryInterface $factory
+        FactoryInterface $factory,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $integerProductAttribute
     ) {
         $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue, $deAttributeValue);
         $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
@@ -447,6 +500,11 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => 123,
             ],
         ];
+
+        $valueConverter->convert($integerProductAttribute, 123, 'en_US')->willReturn(123);
+        $valueConverter->convert($integerProductAttribute, 123, 'it_IT')->willReturn(123);
+        $valueConverter->convert($integerProductAttribute, 123, 'de_DE')->willReturn(123);
+
         $this->handle($productVariant, self::INTEGER_ATTRIBUTE_CODE, $value);
 
         $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
@@ -460,80 +518,13 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $product->addAttribute($deAttributeValue)->shouldHaveBeenCalled();
     }
 
-    function it_throws_error_when_select_value_is_not_an_existing_option(
-        ProductVariantInterface $productVariant,
-        ProductInterface $product
-    ) {
-        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
-        $value = [
-            [
-                'scope' => null,
-                'locale' => null,
-                'data' => 'brand_not_existing',
-            ],
-        ];
-
-        $this
-            ->shouldThrow(
-                new \InvalidArgumentException(
-                    'This select attribute can only save existing attribute options. ' .
-                    'Attribute option codes [brand_not_existing] do not exist.',
-                )
-            )
-            ->during('handle', [$productVariant, self::SELECT_ATTRIBUTE_CODE, $value]);
-    }
-
-    function it_throws_error_when_select_values_are_not_existing_options(
-        ProductVariantInterface $productVariant,
-        ProductInterface $product
-    ) {
-        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
-        $value = [
-            [
-                'scope' => null,
-                'locale' => null,
-                'data' => ['brand_not_existing'],
-            ],
-        ];
-
-        $this
-            ->shouldThrow(
-                new \InvalidArgumentException(
-                    'This select attribute can only save existing attribute options. ' .
-                    'Attribute option codes [brand_not_existing] do not exist.',
-                )
-            )
-            ->during('handle', [$productVariant, self::SELECT_ATTRIBUTE_CODE, $value]);
-    }
-
-    function it_throws_error_when_select_values_are_not_all_existing_options(
-        ProductVariantInterface $productVariant,
-        ProductInterface $product
-    ) {
-        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
-        $value = [
-            [
-                'scope' => null,
-                'locale' => null,
-                'data' => ['brand_agape', 'brand_not_existing'],
-            ],
-        ];
-
-        $this
-            ->shouldThrow(
-                new \InvalidArgumentException(
-                    'This select attribute can only save existing attribute options. ' .
-                    'Attribute option codes [brand_not_existing] do not exist.',
-                )
-            )
-            ->during('handle', [$productVariant, self::SELECT_ATTRIBUTE_CODE, $value]);
-    }
-
     function it_does_not_create_the_same_attribute_value_more_than_once(
         ProductVariantInterface $productVariant,
         ProductAttributeValueInterface $itAttributeValue,
         FactoryInterface $factory,
-        ProductInterface $product
+        ProductInterface $product,
+        ProductAttributeInterface $textProductAttribute,
+        ValueConverterInterface $valueConverter
     ) {
         $factory->createNew()->willReturn($itAttributeValue);
         $product->getAttributeByCodeAndLocale(self::TEXT_ATTRIBUTE_CODE, 'it_IT')->willReturn(null, $itAttributeValue);
@@ -553,6 +544,9 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 'data' => 'Agape Plus',
             ],
         ];
+
+        $valueConverter->convert($textProductAttribute, 'Agape', 'it_IT')->willReturn('Agape');
+        $valueConverter->convert($textProductAttribute, 'Agape Plus', 'it_IT')->willReturn('Agape Plus');
 
         $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $firstValue);
         $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $secondValue);
