@@ -165,7 +165,9 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
         ProductTranslationInterface $productTranslation,
         RepositoryInterface $productTranslationRepository,
         ProductTranslationInterface $anotherProductTranslation,
-        ProductInterface $anotherProduct
+        ProductTranslationInterface $aThirdProductTranslation,
+        ProductInterface $anotherProduct,
+        ProductInterface $aThirdProduct
     ) {
         $productVariant->getProduct()->willReturn($product);
         $product->getTranslation('en_US')->willReturn($productTranslation);
@@ -179,10 +181,15 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
         $anotherProduct->getId()->willReturn(2);
         $productTranslationRepository
             ->findOneBy(['slug' => self::SLUGIFIED_VALUE . '-1', 'locale' => 'en_US'])
+            ->willReturn($aThirdProductTranslation);
+        $aThirdProductTranslation->getTranslatable()->willReturn($aThirdProduct);
+        $aThirdProduct->getId()->willReturn(3);
+        $productTranslationRepository
+            ->findOneBy(['slug' => self::SLUGIFIED_VALUE . '-2', 'locale' => 'en_US'])
             ->willReturn(null);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, [['locale' => 'en_US', 'scope' => null, 'data' => self::VALUE_TO_SLUGIFY]]);
 
-        $productTranslation->setSlug(self::SLUGIFIED_VALUE . '-1')->shouldHaveBeenCalled();
+        $productTranslation->setSlug(self::SLUGIFIED_VALUE . '-2')->shouldHaveBeenCalled();
     }
 }
