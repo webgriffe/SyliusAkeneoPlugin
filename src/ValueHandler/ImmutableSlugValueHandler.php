@@ -131,14 +131,14 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         if ($increment > self::MAX_DEDUPLICATION_INCREMENT) {
             throw new \RuntimeException('Maximum slug deduplication increment reached.');
         }
-        $incrementalSlug = $slug;
+        $deduplicatedSlug = $slug;
         if ($increment > 0) {
-            $incrementalSlug .= '-' . $increment;
+            $deduplicatedSlug .= '-' . $increment;
         }
 
         /** @var ProductTranslationInterface|null $anotherProductTranslation */
         $anotherProductTranslation = $this->productTranslationRepository->findOneBy(
-            ['slug' => $incrementalSlug, 'locale' => $localeCode]
+            ['slug' => $deduplicatedSlug, 'locale' => $localeCode]
         );
         if ($anotherProductTranslation &&
             $anotherProductTranslation->getTranslatable() instanceof ProductInterface &&
@@ -146,6 +146,6 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             return $this->getDeduplicatedSlug($slug, $localeCode, $product, ++$increment);
         }
 
-        return $incrementalSlug;
+        return $deduplicatedSlug;
     }
 }
