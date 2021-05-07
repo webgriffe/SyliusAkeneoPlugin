@@ -53,5 +53,8 @@ webgriffe_sylius_akeneo:
           options:
             akeneo_attribute_code: 'attachment'
             download_path: '%sylius_core.public_dir%/media/attachment/product'
-
-
+      weight:
+        type: 'metric_property'
+        options:
+          akeneo_attribute_code: 'weight'
+          sylius_property_code: 'weight'
