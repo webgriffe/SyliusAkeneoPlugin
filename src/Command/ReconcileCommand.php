@@ -70,6 +70,8 @@ final class ReconcileCommand extends Command
             $reconciler->reconcile($akeneoItemsToReconcile);
         }
 
+        $this->release();
+
         return self::SUCCESS;
     }
 
