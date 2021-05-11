@@ -58,3 +58,4 @@ webgriffe_sylius_akeneo:
         options:
           akeneo_attribute_code: 'weight'
           sylius_property_code: 'weight'
+          default_unit_measurement: 'KILOGRAM'

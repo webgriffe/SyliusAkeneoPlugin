@@ -8,9 +8,10 @@ use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
-final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface
+final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface, MeasurementFamiliesApiClientInterface
 {
     private $productsUpdatedAt = [];
 
@@ -125,5 +126,10 @@ final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClie
     public function findFamily(string $code): ?array
     {
         return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Family/' . $code . '.json');
+    }
+
+    public function getMeasurementFamilies(): array
+    {
+        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/MeasurementFamilies/MeasurementFamilies.json');
     }
 }
