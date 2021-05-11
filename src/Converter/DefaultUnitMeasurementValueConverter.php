@@ -5,6 +5,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\Converter;
 
 
 use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
+use Webmozart\Assert\Assert;
 
 final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasurementValueConverterInterface
 {
@@ -28,6 +29,16 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
     public function convert(string $amount, string $unitMeasurementCode, ?string $defaultAkeneoUnitMeasurementCode): float
     {
         $unitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($unitMeasurementCode);
+        if ($defaultAkeneoUnitMeasurementCode !== null) {
+            $defaultUnitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($defaultAkeneoUnitMeasurementCode);
+            Assert::eq($defaultUnitMeasurementFamily, $unitMeasurementFamily, sprintf(
+                'The "%s" unit measurement family (%s) is not the same of the provided "%s" unit measurement (%s)',
+                $defaultAkeneoUnitMeasurementCode,
+                $defaultUnitMeasurementFamily['code'],
+                $unitMeasurementCode,
+                $unitMeasurementFamily['code']
+            ));
+        }
         $operationsToDefaultUnitMeasurement = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $unitMeasurementCode);
 
         $value = (float)$amount;
