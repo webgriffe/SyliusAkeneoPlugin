@@ -30,6 +30,7 @@ final class AkeneoContext implements Context
 
     /**
      * @Given /^there are (\d+) products on Akeneo$/
+     * @Given /^there is (\d+) product on Akeneo$/
      */
     public function thereAreProductsOnAkeneo(int $count)
     {

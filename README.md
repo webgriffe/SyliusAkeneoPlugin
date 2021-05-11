@@ -458,6 +458,20 @@ Where {days} should be replaced by the number of days back from which to start d
 If the number is not entered, the default value 10 will be used. 
 So, if for example today is 2020-12-15 and you use the parameter days = 10, all the elements imported before 2020-12-05 will be deleted.
 
+### Products reconciliation
+
+Product reconciliation can be useful when one or more products are deleted on Akeneo. By default, reconciliation does not delete products on Sylius but places them in a deactivated state.
+This is because the Sylius structure does not allow you to delete products if they are associated with any order.
+To reconcile the products you can use the webgriffe:akeneo:reconcile console command:
+
+    bin/console webgriffe:akeneo:reconcile
+
+It could be useful to add also this command to your scheduler to run automatically every day or whatever you want.
+
+```bash
+0  0  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
+```
+
 ## Architecture & customization
 
 This plugin has basically two main entry points:

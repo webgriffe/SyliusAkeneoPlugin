@@ -20,10 +20,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
 use Webmozart\Assert\Assert;
 
-final class Importer implements ImporterInterface
+final class Importer implements ImporterInterface, ReconcilerInterface
 {
     private const AKENEO_ENTITY = 'Product';
 
@@ -164,17 +165,29 @@ final class Importer implements ImporterInterface
 
     /**
      * {@inheritdoc}
+     * @psalm-return array<array-key, string>
      */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
     {
         $products = $this->apiClient->findProductsModifiedSince($sinceDate);
         $identifiers = [];
         foreach ($products as $product) {
+            Assert::string($product['identifier']);
             $identifiers[] = $product['identifier'];
         }
 
         return $identifiers;
     }
+
+    /**
+     * {@inheritdoc}
+     * @psalm-return array<array-key, string>
+     */
+    public function getAllIdentifiers(): array
+    {
+        return $this->getIdentifiersModifiedSince((new \DateTime())->setTimestamp(0));
+    }
+
 
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
     {
@@ -305,5 +318,43 @@ final class Importer implements ImporterInterface
         }
 
         return $attributesValues;
+    }
+
+    public function reconcile(array $identifiersToReconcileWith): void
+    {
+        /** @var ProductVariantInterface[] $productVariantsToReconcile */
+        $productVariantsToReconcile = $this->productVariantRepository->findAll();
+        /** @var string[] $identifiersToReconcile */
+        $identifiersToReconcile = array_map(function ($productVariant) {
+            return $productVariant->getCode();
+        }, $productVariantsToReconcile);
+
+        $identifiersToDisable = array_diff($identifiersToReconcile, $identifiersToReconcileWith);
+
+        foreach ($identifiersToDisable as $productVariantIdentifierToDisable) {
+            /** @var ?ProductVariantInterface $productVariantToDisable */
+            $productVariantToDisable = $this->productVariantRepository->findOneBy(['code' => $productVariantIdentifierToDisable]);
+            if (!$productVariantToDisable || !$productVariantToDisable->isEnabled()) {
+                continue;
+            }
+            $productVariantToDisable->setEnabled(false);
+
+            $this->productVariantRepository->add($productVariantToDisable);
+
+            /** @var ?ProductInterface $product */
+            $product = $productVariantToDisable->getProduct();
+            if (!$product || !$product->isEnabled() || count($product->getEnabledVariants()) > 0) {
+                continue;
+            }
+
+            $product->setEnabled(false);
+
+            $this->dispatchPreEvent($product, 'update');
+            // TODO We should handle $event->isStopped() where $event is the return value of the dispatchPreEvent method.
+            //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
+            $this->productRepository->add($product);
+            $this->dispatchPostEvent($product, 'update');
+        }
+
     }
 }

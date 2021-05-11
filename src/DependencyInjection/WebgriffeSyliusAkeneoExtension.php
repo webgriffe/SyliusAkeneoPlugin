@@ -27,6 +27,8 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
     private const IMPORTER_TAG = 'webgriffe_sylius_akeneo.importer';
 
+    private const RECONCILER_TAG = 'webgriffe_sylius_akeneo.reconciler';
+
     /**
      * @var array
      * @deprecated Do not use anymore. Use $valueHandlersTypesDefinitionsPrivate instead.
@@ -197,6 +199,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     {
         $this->addTaggedValueHandlersToResolver($container);
         $this->addTaggedImportersToRegistry($container);
+        $this->addTaggedReconcilersToRegistry($container);
         $this->registerTemporaryDirectoryParameter($container);
     }
 
@@ -272,6 +275,21 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
         $taggedImporters = $container->findTaggedServiceIds(self::IMPORTER_TAG);
         foreach ($taggedImporters as $id => $tags) {
+            $importerRegistryDefinition->addMethodCall('add', [new Reference($id)]);
+        }
+    }
+
+    private function addTaggedReconcilersToRegistry(ContainerBuilder $container): void
+    {
+        if (!$container->has('webgriffe_sylius_akeneo.reconciler_registry')) {
+            return;
+        }
+
+        $importerRegistryDefinition = $container->findDefinition('webgriffe_sylius_akeneo.reconciler_registry');
+
+        /** @var array<string, array> $taggedReconcilers */
+        $taggedReconcilers = $container->findTaggedServiceIds(self::RECONCILER_TAG);
+        foreach ($taggedReconcilers as $id => $tags) {
             $importerRegistryDefinition->addMethodCall('add', [new Reference($id)]);
         }
     }

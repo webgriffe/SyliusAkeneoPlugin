@@ -40,6 +40,10 @@
             <tag name="console.command" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.command.reconcile" class="Webgriffe\SyliusAkeneoPlugin\Command\ReconcileCommand">
+            <argument type="service" id="webgriffe_sylius_akeneo.reconciler_registry" />
+        </service>
+
         <!-- General -->
         <service id="webgriffe_sylius_akeneo.api_client" class="Webgriffe\SyliusAkeneoPlugin\ApiClient" >
             <argument type="service" id="sylius.http_client"/>
@@ -61,6 +65,8 @@
 
         <service id="webgriffe_sylius_akeneo.importer_registry" class="Webgriffe\SyliusAkeneoPlugin\ImporterRegistry" />
         <service id="Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface" alias="webgriffe_sylius_akeneo.importer_registry" />
+
+        <service id="webgriffe_sylius_akeneo.reconciler_registry" class="Webgriffe\SyliusAkeneoPlugin\ReconcilerRegistry" />
 
         <service id="webgriffe_sylius_akeneo.slugify" class="Cocur\Slugify\Slugify" />
         <service id="Cocur\Slugify\SlugifyInterface" alias="webgriffe_sylius_akeneo.slugify" />
@@ -133,6 +139,7 @@
             <argument type="service" id="sylius.factory.product_taxon" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.variant_status_resolver" />
             <tag name="webgriffe_sylius_akeneo.importer" />
+            <tag name="webgriffe_sylius_akeneo.reconciler" />
         </service>
 
         <!-- Product Associations Importer -->
