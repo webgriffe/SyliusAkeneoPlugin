@@ -61,8 +61,6 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
 
     /**
      * @param mixed $subject
-     * @param string $attribute
-     * @param array<array-key, array{scope: string, locale: string, data: array{amount: string, unit: string}, linked_data: array}> $value
      */
     public function handle($subject, string $attribute, array $value): void
     {
@@ -77,6 +75,8 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
             );
         }
         $hasBeenSet = false;
+
+        /** @var array<array-key, array{scope: string, locale: string, data: array{amount: string, unit: string}, linked_data: array}> $value */
 
         $productVariant = $subject;
         Assert::isInstanceOf($productVariant, ProductVariantInterface::class);

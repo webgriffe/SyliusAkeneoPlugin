@@ -3,7 +3,6 @@
 
 namespace Webgriffe\SyliusAkeneoPlugin\Converter;
 
-
 use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 use Webmozart\Assert\Assert;
 
@@ -22,10 +21,6 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
         $this->apiClient = $apiClient;
     }
 
-    /**
-     * @throws \HttpException
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
     public function convert(string $amount, string $unitMeasurementCode, ?string $defaultAkeneoUnitMeasurementCode): float
     {
         $unitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($unitMeasurementCode);
@@ -39,12 +34,14 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
                 $unitMeasurementFamily['code']
             ));
         }
+        /** @var array{array{operator: string, value: string}} $operationsToDefaultUnitMeasurement */
         $operationsToDefaultUnitMeasurement = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $unitMeasurementCode);
 
         $value = (float)$amount;
         $value = $this->doOperations($operationsToDefaultUnitMeasurement, $value);
 
         if ($defaultAkeneoUnitMeasurementCode !== null && $unitMeasurementFamily['standard_unit_code'] !== $defaultAkeneoUnitMeasurementCode) {
+            /** @var array{array{operator: string, value: string}} $operationsToReverse */
             $operationsToReverse = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $defaultAkeneoUnitMeasurementCode);
             $value = $this->doReverseOperations($operationsToReverse, $value);
         }
@@ -54,8 +51,6 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
 
     /**
      * @return array{code: string, labels: array{localeCode: string}, standard_unit_code: string, units: array{unitCode: array{code: string, labels: array<string, string>, convert_from_standard: array{operator: string, value: string}, symbol: string}}}
-     * @throws \HttpException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function getUnitMeasurementFamilyByUnitMeasurementCode(string $unitMeasurementCode): array
     {
