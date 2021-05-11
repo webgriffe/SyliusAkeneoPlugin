@@ -187,7 +187,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     public function findProductsModifiedSince(\DateTime $date): array
     {
         $endpoint = sprintf(
-            '/api/rest/v1/products?search={"updated":[{"operator":">","value":"%s"}]}&limit=20&page=1',
+            '/api/rest/v1/products?search={"updated":[{"operator":">","value":"%s"}]}&pagination_type=search_after&limit=20',
             $date->format('Y-m-d H:i:s')
         );
 
