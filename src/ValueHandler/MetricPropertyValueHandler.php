@@ -45,15 +45,15 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
 
     /**
      * @param mixed $subject
-     * @param string $attribute
-     * @param mixed $value
      */
-    public function supports($subject, string $attribute, $value): bool
+    public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductVariantInterface &&
             $attribute === $this->akeneoAttributeCode &&
             array_key_exists('0', $value) &&
+            is_array($value[0]) &&
             array_key_exists('data', $value[0]) &&
+            is_array($value[0]['data']) &&
             array_key_exists('amount', $value[0]['data']) &&
             array_key_exists('unit', $value[0]['data'])
         ;
