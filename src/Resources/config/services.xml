@@ -163,7 +163,7 @@
             <argument type="service" id="translator" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.converter.default_unit_measurement_value_converter" class="Webgriffe\SyliusAkeneoPlugin\Converter\DefaultUnitMeasurementValueConverter">
+        <service id="webgriffe_sylius_akeneo.converter.unit_measurement_value_converter" class="Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverter">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
     </services>

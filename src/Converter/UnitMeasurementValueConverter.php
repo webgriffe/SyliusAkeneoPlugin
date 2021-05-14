@@ -6,7 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\Converter;
 use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 use Webmozart\Assert\Assert;
 
-final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasurementValueConverterInterface
+final class UnitMeasurementValueConverter implements UnitMeasurementValueConverterInterface
 {
     public const RECOGNIZED_OPERATORS = ['add', 'sub', 'mul', 'div'];
     /**
@@ -15,22 +15,22 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
     private $apiClient;
 
     /**
-     * DefaultUnitMeasurementValueConverter constructor.
+     * UnitMeasurementValueConverter constructor.
      */
     public function __construct(MeasurementFamiliesApiClientInterface $apiClient)
     {
         $this->apiClient = $apiClient;
     }
 
-    public function convert(string $amount, string $unitMeasurementCode, ?string $defaultAkeneoUnitMeasurementCode): float
+    public function convert(string $amount, string $unitMeasurementCode, ?string $akeneoUnitMeasurementCode): float
     {
         $unitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($unitMeasurementCode);
-        if ($defaultAkeneoUnitMeasurementCode !== null) {
-            $defaultUnitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($defaultAkeneoUnitMeasurementCode);
-            Assert::eq($defaultUnitMeasurementFamily, $unitMeasurementFamily, sprintf(
+        if ($akeneoUnitMeasurementCode !== null) {
+            $unitMeasurementFamilyToUse = $this->getUnitMeasurementFamilyByUnitMeasurementCode($akeneoUnitMeasurementCode);
+            Assert::eq($unitMeasurementFamilyToUse, $unitMeasurementFamily, sprintf(
                 'The "%s" unit measurement family (%s) is not the same of the provided "%s" unit measurement (%s)',
-                $defaultAkeneoUnitMeasurementCode,
-                $defaultUnitMeasurementFamily['code'],
+                $akeneoUnitMeasurementCode,
+                $unitMeasurementFamilyToUse['code'],
                 $unitMeasurementCode,
                 $unitMeasurementFamily['code']
             ));
@@ -41,9 +41,9 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
         $value = (float)$amount;
         $value = $this->doOperations($operationsToDefaultUnitMeasurement, $value);
 
-        if ($defaultAkeneoUnitMeasurementCode !== null && $unitMeasurementFamily['standard_unit_code'] !== $defaultAkeneoUnitMeasurementCode) {
+        if ($akeneoUnitMeasurementCode !== null && $unitMeasurementFamily['standard_unit_code'] !== $akeneoUnitMeasurementCode) {
             /** @var array{array{operator: string, value: string}} $operationsToReverse */
-            $operationsToReverse = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $defaultAkeneoUnitMeasurementCode);
+            $operationsToReverse = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $akeneoUnitMeasurementCode);
             $value = $this->doReverseOperations($operationsToReverse, $value);
         }
 

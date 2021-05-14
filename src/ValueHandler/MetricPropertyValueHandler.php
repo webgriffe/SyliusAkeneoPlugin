@@ -7,7 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Webgriffe\SyliusAkeneoPlugin\Converter\DefaultUnitMeasurementValueConverterInterface;
+use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -23,24 +23,24 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
     private $propertyPath;
 
     /** @var string|null */
-    private $defaultAkeneoUnitMeasurementCode;
+    private $akeneoUnitMeasurementCode;
     /**
-     * @var DefaultUnitMeasurementValueConverterInterface
+     * @var UnitMeasurementValueConverterInterface
      */
-    private $defaultUnitMeasurementValueConverter;
+    private $unitMeasurementValueConverter;
 
     public function __construct(
         PropertyAccessorInterface $propertyAccessor,
-        DefaultUnitMeasurementValueConverterInterface $defaultUnitMeasurementValueConverter,
+        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         string $akeneoAttributeCode,
         string $propertyPath,
-        string $defaultAkeneoUnitMeasurementCode = null
+        string $akeneoUnitMeasurementCode = null
     ) {
         $this->propertyAccessor = $propertyAccessor;
-        $this->defaultUnitMeasurementValueConverter = $defaultUnitMeasurementValueConverter;
+        $this->unitMeasurementValueConverter = $unitMeasurementValueConverter;
         $this->akeneoAttributeCode = $akeneoAttributeCode;
         $this->propertyPath = $propertyPath;
-        $this->defaultAkeneoUnitMeasurementCode = $defaultAkeneoUnitMeasurementCode;
+        $this->akeneoUnitMeasurementCode = $akeneoUnitMeasurementCode;
     }
 
     /**
@@ -103,6 +103,6 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
      */
     private function getValue(array $data): float
     {
-        return $this->defaultUnitMeasurementValueConverter->convert($data['amount'], $data['unit'], $this->defaultAkeneoUnitMeasurementCode);
+        return $this->unitMeasurementValueConverter->convert($data['amount'], $data['unit'], $this->akeneoUnitMeasurementCode);
     }
 }

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\Converter;
 
-use Webgriffe\SyliusAkeneoPlugin\Converter\DefaultUnitMeasurementValueConverter;
+use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverter;
 use PhpSpec\ObjectBehavior;
-use Webgriffe\SyliusAkeneoPlugin\Converter\DefaultUnitMeasurementValueConverterInterface;
+use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 
-class DefaultUnitMeasurementValueConverterSpec extends ObjectBehavior
+class UnitMeasurementValueConverterSpec extends ObjectBehavior
 {
     public function let(
         MeasurementFamiliesApiClientInterface $apiClient
@@ -129,12 +129,12 @@ JSON;
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(DefaultUnitMeasurementValueConverter::class);
+        $this->shouldHaveType(UnitMeasurementValueConverter::class);
     }
 
-    function it_implements_default_unit_measurement_value_converter_interface()
+    function it_implements_unit_measurement_value_converter_interface()
     {
-        $this->shouldHaveType(DefaultUnitMeasurementValueConverterInterface::class);
+        $this->shouldHaveType(UnitMeasurementValueConverterInterface::class);
     }
 
     function it_throws_exception_during_convert_when_unit_measurement_code_is_not_found_on_akeneo()
@@ -151,27 +151,13 @@ JSON;
         ]);
     }
 
-    function it_throws_exception_during_convert_when_default_unit_measurement_code_is_not_found_on_akeneo()
-    {
-        $this->shouldThrow(
-            new \LogicException(sprintf(
-                'Unable to retrieve unit measurement family for the "%s" unit measurement code',
-                'NOT_EXISTING_DEFAULT_UNIT_MEASUREMENT_CODE'
-            ))
-        )->during('convert', [
-            '23.0000',
-            'KILOGRAM',
-            'NOT_EXISTING_DEFAULT_UNIT_MEASUREMENT_CODE',
-        ]);
-    }
-
     function it_throws_exception_during_convert_when_operator_is_not_recognized()
     {
         $this->shouldThrow(
             new \LogicException(sprintf(
                 'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
                 'log',
-                implode(', ', DefaultUnitMeasurementValueConverter::RECOGNIZED_OPERATORS)
+                implode(', ', UnitMeasurementValueConverter::RECOGNIZED_OPERATORS)
             ))
         )->during('convert', [
             '23.0000',
@@ -180,7 +166,7 @@ JSON;
         ]);
     }
 
-    function it_throws_exception_during_convert_when_default_unit_measurement_code_family_is_not_the_same_of_unit_code()
+    function it_throws_exception_during_convert_when_unit_measurement_code_family_is_not_the_same_of_unit_code()
     {
         $this->shouldThrow(
             new \LogicException(sprintf(

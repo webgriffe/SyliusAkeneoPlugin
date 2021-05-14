@@ -376,12 +376,12 @@ webgriffe_sylius_akeneo:
         options:
           akeneo_attribute_code: 'height'
           sylius_property_code: 'height'
-          default_unit_measurement: 'CENTIMETER'
+          unit_measurement: 'CENTIMETER'
 ```
 
 For each `metric_property` value handler you have to configure, in `sylius_property_code`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`. Be sure this is a metrical attribute on Akeneo.
 In the same way you can import other product metrical properties like height and other custom properties you possibly added to your store.
-In addition, you can decide in which unit of measure to import the value. To do this, enter the desired Akeneo unit of measurement code in the attribute `default_unit_measurement`. If this field is not specified, the plugin will import the value using Akeneo's standard unit of measure.
+In addition, you can decide in which unit of measure to import the value. To do this, enter the desired Akeneo unit of measurement code in the attribute `unit_measurement`. If this field is not specified, the plugin will import the value using Akeneo's standard unit of measure.
 For more information about Akeneo's units of measurement, consult the [documentation](https://help.akeneo.com/pim/serenity/articles/manage-your-measurements.html).
 
 ### Importing product-taxons associations

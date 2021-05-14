@@ -175,7 +175,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'class' => MetricPropertyValueHandler::class,
             'arguments' => [
                 'property_accessor',
-                'webgriffe_sylius_akeneo.converter.default_unit_measurement_value_converter'
+                'webgriffe_sylius_akeneo.converter.unit_measurement_value_converter'
             ],
         ],
     ];
