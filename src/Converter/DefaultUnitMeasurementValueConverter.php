@@ -8,6 +8,7 @@ use Webmozart\Assert\Assert;
 
 final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasurementValueConverterInterface
 {
+    public const RECOGNIZED_OPERATORS = ['add', 'sub', 'mul', 'div'];
     /**
      * @var MeasurementFamiliesApiClientInterface
      */
@@ -92,7 +93,11 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
                     $value /= (float)$operation['value'];
                     break;
                 default:
-                    break;
+                    throw new \LogicException(sprintf(
+                        'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
+                        $operation['operator'],
+                        implode(', ', self::RECOGNIZED_OPERATORS)
+                    ));
             }
         }
         return $value;
@@ -120,7 +125,11 @@ final class DefaultUnitMeasurementValueConverter implements DefaultUnitMeasureme
                     $value *= (float)$operation['value'];
                     break;
                 default:
-                    break;
+                    throw new \LogicException(sprintf(
+                        'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
+                        $operation['operator'],
+                        implode(', ', self::RECOGNIZED_OPERATORS)
+                    ));
             }
         }
         return $value;

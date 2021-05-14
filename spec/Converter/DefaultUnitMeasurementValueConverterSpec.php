@@ -90,6 +90,20 @@ class DefaultUnitMeasurementValueConverterSpec extends ObjectBehavior
         ],
         "symbol": "t"
       },
+      "FAKE_UM": {
+        "code": "FAKE_UM",
+        "labels": {
+          "en_US": "Fake",
+          "it_IT": "Falsa"
+        },
+        "convert_from_standard": [
+          {
+            "operator": "log",
+            "value": "4"
+          }
+        ],
+        "symbol": "fake"
+      },
       "LIVRE": {
         "code": "LIVRE",
         "labels": {
@@ -148,6 +162,21 @@ JSON;
             '23.0000',
             'KILOGRAM',
             'NOT_EXISTING_DEFAULT_UNIT_MEASUREMENT_CODE',
+        ]);
+    }
+
+    function it_throws_exception_during_convert_when_operator_is_not_recognized()
+    {
+        $this->shouldThrow(
+            new \LogicException(sprintf(
+                'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
+                'log',
+                implode(', ', DefaultUnitMeasurementValueConverter::RECOGNIZED_OPERATORS)
+            ))
+        )->during('convert', [
+            '23.0000',
+            'FAKE_UM',
+            null
         ]);
     }
 
