@@ -18,7 +18,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     private const AKENEO_ATTRIBUTE_CODE = 'akeneo_attribute_code';
 
     private const PROPERTY_PATH = 'property_path';
-    const KG_23_VALUE = [0 => ['data' => ['amount' => 23, 'unit' => 'KILOGRAM']]];
+    private const KG_23_VALUE = [0 => ['data' => ['amount' => 23, 'unit' => 'KILOGRAM']]];
 
     public function let(
         PropertyAccessorInterface $propertyAccessor,
