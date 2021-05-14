@@ -47,11 +47,6 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $this->supports(new ProductVariant(), 'another_attribute', self::KG_23_VALUE)->shouldReturn(false);
     }
 
-    function it_does_not_support_any_other_attribute_value_except_metrical()
-    {
-        $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, [0 => ['data' => 2]])->shouldReturn(false);
-    }
-
     function it_throws_trying_to_handle_not_supported_property()
     {
         $this
