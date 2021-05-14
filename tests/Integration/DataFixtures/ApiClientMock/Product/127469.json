@@ -30,6 +30,16 @@
                 "scope": "ecommerce",
                 "data": "2005-09-16T00:00:00+00:00"
             }
+        ],
+        "weight": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": {
+                    "amount": "230.0000",
+                    "unit": "MILLIGRAM"
+                }
+            }
         ]
     },
     "created": "2021-03-09T10:43:38+00:00",
