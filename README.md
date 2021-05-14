@@ -23,6 +23,7 @@
     + [Akeneo file attributes handling](#akeneo-file-attributes-handling)
   * [Importing configurable products, product options and their values](#importing-configurable-products--product-options-and-their-values)
   * [Importing product prices](#importing-product-prices)
+  * [Importing product metrical properties](#importing-product-metrical-properties)
   * [Importing product-taxons associations](#importing-product-taxons-associations)
   * [Importing product associations](#importing-product-associations)
   * [Launch data import from CLI](#launch-data-import-from-cli)
@@ -351,6 +352,37 @@ webgriffe_sylius_akeneo:
 ```
 
 In the `akeneo_attribute_code` option you have to set the code of the **Akeneo price attribute** where you store your products prices. Then they will be imported into Sylius for channels whose base currency is the same as the price currency on Akeneo.
+
+### Importing product metrical properties
+
+**NB. This feature is only available from Akeneo version 5**
+
+If you manage product metrical attributes on Akeneo you can import them on Sylius as product properties (like weight, length, height and depth). To do this, you have to configure the metrical properties value handler in the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+      # ...
+      weight:
+        type: 'metric_property'
+        options:
+          akeneo_attribute_code: 'weight'
+          sylius_property_code: 'weight'
+      height:
+        type: 'metric_property'
+        options:
+          akeneo_attribute_code: 'height'
+          sylius_property_code: 'height'
+          default_unit_measurement: 'CENTIMETER'
+```
+
+For each `metric_property` value handler you have to configure, in `sylius_property_code`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`. Be sure this is a metrical attribute on Akeneo.
+In the same way you can import other product metrical properties like height and other custom properties you possibly added to your store.
+In addition, you can decide in which unit of measure to import the value. To do this, enter the desired Akeneo unit of measurement code in the attribute `default_unit_measurement`. If this field is not specified, the plugin will import the value using Akeneo's standard unit of measure.
+For more information about Akeneo's units of measurement, consult the [documentation](https://help.akeneo.com/pim/serenity/articles/manage-your-measurements.html).
 
 ### Importing product-taxons associations
 
