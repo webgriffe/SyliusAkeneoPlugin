@@ -4,5 +4,5 @@ namespace Webgriffe\SyliusAkeneoPlugin\Converter;
 
 interface UnitMeasurementValueConverterInterface
 {
-    public function convert(string $amount, string $unitMeasurementCode, ?string $akeneoUnitMeasurementCode): float;
+    public function convert(string $amount, string $sourceUnitMeasurementCode, ?string $destinationUnitMeasurementCode): float;
 }

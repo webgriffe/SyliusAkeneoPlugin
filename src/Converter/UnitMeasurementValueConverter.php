@@ -8,7 +8,8 @@ use Webmozart\Assert\Assert;
 
 final class UnitMeasurementValueConverter implements UnitMeasurementValueConverterInterface
 {
-    public const RECOGNIZED_OPERATORS = ['add', 'sub', 'mul', 'div'];
+    private const RECOGNIZED_OPERATORS = ['add', 'sub', 'mul', 'div'];
+
     /**
      * @var MeasurementFamiliesApiClientInterface
      */
@@ -22,28 +23,28 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
         $this->apiClient = $apiClient;
     }
 
-    public function convert(string $amount, string $unitMeasurementCode, ?string $akeneoUnitMeasurementCode): float
+    public function convert(string $amount, string $sourceUnitMeasurementCode, ?string $destinationUnitMeasurementCode): float
     {
-        $unitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($unitMeasurementCode);
-        if ($akeneoUnitMeasurementCode !== null) {
-            $unitMeasurementFamilyToUse = $this->getUnitMeasurementFamilyByUnitMeasurementCode($akeneoUnitMeasurementCode);
+        $unitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($sourceUnitMeasurementCode);
+        if ($destinationUnitMeasurementCode !== null) {
+            $unitMeasurementFamilyToUse = $this->getUnitMeasurementFamilyByUnitMeasurementCode($destinationUnitMeasurementCode);
             Assert::eq($unitMeasurementFamilyToUse, $unitMeasurementFamily, sprintf(
-                'The "%s" unit measurement family (%s) is not the same of the provided "%s" unit measurement (%s)',
-                $akeneoUnitMeasurementCode,
+                'The "%s" destination unit measurement family (%s) is not the same of the provided "%s" source unit measurement (%s)',
+                $destinationUnitMeasurementCode,
                 $unitMeasurementFamilyToUse['code'],
-                $unitMeasurementCode,
+                $sourceUnitMeasurementCode,
                 $unitMeasurementFamily['code']
             ));
         }
         /** @var array{array{operator: string, value: string}} $operationsToDefaultUnitMeasurement */
-        $operationsToDefaultUnitMeasurement = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $unitMeasurementCode);
+        $operationsToDefaultUnitMeasurement = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $sourceUnitMeasurementCode);
 
         $value = (float)$amount;
         $value = $this->doOperations($operationsToDefaultUnitMeasurement, $value);
 
-        if ($akeneoUnitMeasurementCode !== null && $unitMeasurementFamily['standard_unit_code'] !== $akeneoUnitMeasurementCode) {
+        if ($destinationUnitMeasurementCode !== null && $unitMeasurementFamily['standard_unit_code'] !== $destinationUnitMeasurementCode) {
             /** @var array{array{operator: string, value: string}} $operationsToReverse */
-            $operationsToReverse = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $akeneoUnitMeasurementCode);
+            $operationsToReverse = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $destinationUnitMeasurementCode);
             $value = $this->doReverseOperations($operationsToReverse, $value);
         }
 
@@ -76,7 +77,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
      * @param float $value
      * @return float
      */
-    protected function doOperations($operationsToDefaultUnitMeasurement, float $value): float
+    private function doOperations($operationsToDefaultUnitMeasurement, float $value): float
     {
         foreach ($operationsToDefaultUnitMeasurement as $operation) {
             switch ($operation['operator']) {
@@ -108,7 +109,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
      * @param float $value
      * @return float
      */
-    protected function doReverseOperations($operationsToDefaultUnitMeasurement, float $value): float
+    private function doReverseOperations($operationsToDefaultUnitMeasurement, float $value): float
     {
         foreach ($operationsToDefaultUnitMeasurement as $operation) {
             switch ($operation['operator']) {
@@ -140,7 +141,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
      * @param string $unitMeasurementCode
      * @return array|array{array{operator: string, value: string}}
      */
-    protected function getOperationsForDefaultFromUnitMeasurement(array $units, string $unitMeasurementCode): array
+    private function getOperationsForDefaultFromUnitMeasurement(array $units, string $unitMeasurementCode): array
     {
         $operationsToDefaultUnitMeasurement = [];
         /** @var array{code: string, labels: array<string, string>, convert_from_standard: array{operator: string, value: string}, symbol: string} $unitMeasurement */

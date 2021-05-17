@@ -157,7 +157,7 @@ JSON;
             new \LogicException(sprintf(
                 'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
                 'log',
-                implode(', ', UnitMeasurementValueConverter::RECOGNIZED_OPERATORS)
+                implode(', ', ['add', 'sub', 'mul', 'div'])
             ))
         )->during('convert', [
             '23.0000',
@@ -170,7 +170,7 @@ JSON;
     {
         $this->shouldThrow(
             new \LogicException(sprintf(
-                'The "%s" unit measurement family (%s) is not the same of the provided "%s" unit measurement (%s)',
+                'The "%s" destination unit measurement family (%s) is not the same of the provided "%s" source unit measurement (%s)',
                 'SQUARE_METER',
                 'Area',
                 'KILOGRAM',
