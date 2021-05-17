@@ -17,6 +17,7 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\GenericPropertyValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandler\MetricPropertyValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler;
 use Webmozart\Assert\Assert;
@@ -168,6 +169,13 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'arguments' => [
                 'webgriffe_sylius_akeneo.api_client',
                 'filesystem',
+            ],
+        ],
+        'metric_property' => [
+            'class' => MetricPropertyValueHandler::class,
+            'arguments' => [
+                'property_accessor',
+                'webgriffe_sylius_akeneo.converter.unit_measurement_value'
             ],
         ],
     ];

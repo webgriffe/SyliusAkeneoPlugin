@@ -78,6 +78,16 @@
                     "unit": "INCH"
                 }
             }
+        ],
+        "weight": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": {
+                    "amount": "230.0000",
+                    "unit": "MILLIGRAM"
+                }
+            }
         ]
     },
     "created": "2020-01-10T09:33:23+00:00",

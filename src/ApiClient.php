@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
 use Webmozart\Assert\Assert;
 
-final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface
+final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface, MeasurementFamiliesApiClientInterface
 {
     /** @var string|null */
     private $accessToken;
@@ -321,5 +321,19 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         /** @var array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null} $result */
         $result = json_decode($rawResponse->getBody()->getContents(), true);
         return $result;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMeasurementFamilies(): array
+    {
+        /** @var array<array-key, array{code: string, labels: array{localeCode: string}, standard_unit_code: string, units: array{unitCode: array{code: string, labels: array<string, string>, convert_from_standard: array{operator: string, value: string}, symbol: string}}}> $unitMeasurements */
+        $unitMeasurements = $this->authenticatedRequest(
+            '/api/rest/v1/measurement-families',
+            'GET',
+            []
+        );
+        return $unitMeasurements;
     }
 }
