@@ -42,6 +42,7 @@
 
         <service id="webgriffe_sylius_akeneo.command.reconcile" class="Webgriffe\SyliusAkeneoPlugin\Command\ReconcileCommand">
             <argument type="service" id="webgriffe_sylius_akeneo.reconciler_registry" />
+            <tag name="console.command" />
         </service>
 
         <!-- General -->
