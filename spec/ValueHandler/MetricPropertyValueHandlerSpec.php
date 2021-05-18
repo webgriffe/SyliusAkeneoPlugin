@@ -114,6 +114,24 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
     }
 
+    function it_unset_value_if_value_is_null(
+        PropertyAccessorInterface $propertyAccessor,
+        ProductVariantInterface $productVariant,
+        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
+        ProductInterface $product
+    ) {
+        $productVariant->getProduct()->willReturn($product);
+        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
+        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [
+            ['locale' => null, 'scope' => null, 'data' => null]
+        ]);
+
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, null)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, null)->shouldHaveBeenCalled();
+    }
+
     function it_throws_if_provided_property_path_is_not_writeable_on_both_product_and_variant(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
