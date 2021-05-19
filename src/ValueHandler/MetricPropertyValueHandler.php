@@ -99,10 +99,13 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * @param array{amount: string, unit: string} $data
+     * @param null|array{amount: string, unit: string} $data
      */
-    private function getValue(array $data): float
+    private function getValue(?array $data): ?float
     {
+        if ($data === null) {
+            return null;
+        }
         return $this->unitMeasurementValueConverter->convert($data['amount'], $data['unit'], $this->akeneoUnitMeasurementCode);
     }
 }
