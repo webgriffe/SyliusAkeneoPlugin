@@ -115,7 +115,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function findProductModel(string $code): ?array
     {
-        return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', urlencode($code)));
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/product-models/%s', $this->getEncodedProductCode($code)));
     }
 
     /**
@@ -168,7 +168,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function findProduct(string $code): ?array
     {
-        return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', urlencode($code)));
+        return $this->getResourceOrNull(sprintf('/api/rest/v1/products/%s', $this->getEncodedProductCode($code)));
     }
 
     /**
@@ -335,5 +335,10 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             []
         );
         return $unitMeasurements;
+    }
+
+    private function getEncodedProductCode(string $code): string
+    {
+        return implode('/', array_map('urlencode', explode('/', $code)));
     }
 }
