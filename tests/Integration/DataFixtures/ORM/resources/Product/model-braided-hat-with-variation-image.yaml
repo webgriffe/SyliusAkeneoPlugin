@@ -62,5 +62,7 @@ Sylius\Component\Product\Model\ProductAttributeValue:
 Sylius\Component\Core\Model\ProductImage:
     model-braided-hat_variation_image:
         owner: '@model-braided-hat'
+        productVariants:
+          - '@braided-hat-m'
         type: variation_image
         path: path/to/file.jpg

@@ -75,7 +75,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         /** @var ProductInterface $product */
 
         if ($value[0]['data'] === null) {
-            $this->removeAlreadyExistentImages($product);
+            $this->removeAlreadyExistentVariantImages($subject, $product);
             return;
         }
 
@@ -89,7 +89,7 @@ final class ImageValueHandler implements ValueHandlerInterface
             Assert::isInstanceOf($productImage, ProductImageInterface::class);
             /** @var ProductImageInterface $productImage */
             $productImage->setType($this->syliusImageType);
-            $productImage->addProductVariant($subject);
+            $subject->addImage($productImage);
             $product->addImage($productImage);
         }
         $productImage->setFile($imageFile);
@@ -112,6 +112,25 @@ final class ImageValueHandler implements ValueHandlerInterface
     /**
      * @return ProductImageInterface[]
      */
+    private function getExistentProductVariantImages(
+        ProductVariantInterface $subject,
+        ProductInterface $product
+    ): array {
+        $images = [];
+        $existentProductImages = $this->getExistentProductImages($product);
+
+        foreach ($existentProductImages as $existentProductImage) {
+            if ($existentProductImage->hasProductVariant($subject)) {
+                $images[] = $existentProductImage;
+            }
+        }
+
+        return $images;
+    }
+
+    /**
+     * @return ProductImageInterface[]
+     */
     private function getExistentProductImages(ProductInterface $product): iterable
     {
         $existentProductImages = $this->productImageRepository->findBy(
@@ -122,11 +141,14 @@ final class ImageValueHandler implements ValueHandlerInterface
         return $existentProductImages;
     }
 
-    private function removeAlreadyExistentImages(ProductInterface $product): void
-    {
-        $alreadyExistentImages = $this->getExistentProductImages($product);
+    private function removeAlreadyExistentVariantImages(
+        ProductVariantInterface $subject,
+        ProductInterface $product
+    ): void {
+        $alreadyExistentImages = $this->getExistentProductVariantImages($subject, $product);
         foreach ($alreadyExistentImages as $alreadyExistentImage) {
             $product->removeImage($alreadyExistentImage);
+            $subject->removeImage($alreadyExistentImage);
         }
     }
 }

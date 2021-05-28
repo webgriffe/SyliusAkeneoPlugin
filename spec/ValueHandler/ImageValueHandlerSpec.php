@@ -36,12 +36,14 @@ class ImageValueHandlerSpec extends ObjectBehavior
         ProductImageInterface $productImage,
         ApiClientInterface $apiClient,
         \SplFileInfo $imageFile,
+        ProductVariantInterface $productVariant,
         ProductInterface $product
     ) {
         $productImageFactory->createNew()->willReturn($productImage);
         $apiClient->downloadFile(Argument::type('string'))->willReturn($imageFile);
         $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([]));
         $product->addImage($productImage)->hasReturnVoid();
+        $productVariant->addImage($productImage)->hasReturnVoid();
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
             ->willReturn(new ArrayCollection([]))
@@ -109,6 +111,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
+        $productVariant->addImage($productImage)->shouldHaveBeenCalled();
         $product->addImage($productImage)->shouldHaveBeenCalled();
     }
 
@@ -121,7 +124,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
-        $productImage->addProductVariant($productVariant)->shouldHaveBeenCalled();
+        $productVariant->addImage($productImage)->shouldHaveBeenCalled();
     }
 
     function it_should_download_image_from_akeneo_when_handling(
@@ -200,8 +203,8 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
         $productImageFactory->createNew()->shouldHaveBeenCalled();
-        $newProductImage->addProductVariant($productVariant)->shouldHaveBeenCalled();
         $newProductImage->setType(self::SYLIUS_IMAGE_TYPE)->shouldHaveBeenCalled();
+        $productVariant->addImage($newProductImage)->shouldHaveBeenCalled();
         $product->addImage($newProductImage)->shouldHaveBeenCalled();
         $newProductImage->setFile(Argument::type(\SplFileInfo::class))->shouldHaveBeenCalled();
     }
@@ -220,6 +223,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         RepositoryInterface $productImageRepository
     ) {
         $productVariant->getProduct()->willReturn($product);
+        $existentProductImage->hasProductVariant($productVariant)->willReturn(true);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
             ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
@@ -228,5 +232,25 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => null]]);
 
         $product->removeImage($existentProductImage)->shouldHaveBeenCalled();
+        $productVariant->removeImage($existentProductImage)->shouldHaveBeenCalled();
+    }
+
+    function it_does_not_remove_image_of_other_variant_on_sylius_if_empty_on_akeneo(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductImageInterface $existentProductImage,
+        RepositoryInterface $productImageRepository
+    ) {
+        $productVariant->getProduct()->willReturn($product);
+        $existentProductImage->hasProductVariant($productVariant)->willReturn(false);
+        $productImageRepository
+            ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
+        ;
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => null]]);
+
+        $product->removeImage($existentProductImage)->shouldNotHaveBeenCalled();
+        $productVariant->removeImage($existentProductImage)->shouldNotHaveBeenCalled();
     }
 }
