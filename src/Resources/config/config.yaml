@@ -49,7 +49,9 @@ sylius_grid:
                     label: webgriffe_sylius_akeneo.ui.error_message
             actions:
                 main: ~
-                item: ~
+                item:
+                    delete:
+                        type: delete
 
         sylius_admin_product:
             actions:
