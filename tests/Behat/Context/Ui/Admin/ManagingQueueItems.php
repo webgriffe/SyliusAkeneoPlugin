@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin;
 
 use Behat\Behat\Context\Context;
+use Sylius\Behat\Service\SharedStorageInterface;
 use Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPageInterface;
+use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webmozart\Assert\Assert;
 
 final class ManagingQueueItems implements Context
@@ -13,9 +15,13 @@ final class ManagingQueueItems implements Context
     /** @var IndexPageInterface */
     private $indexPage;
 
-    public function __construct(IndexPageInterface $indexPage)
+    /** @var SharedStorageInterface */
+    private $sharedStorage;
+
+    public function __construct(IndexPageInterface $indexPage, SharedStorageInterface $sharedStorage)
     {
         $this->indexPage = $indexPage;
+        $this->sharedStorage = $sharedStorage;
     }
 
     /**
@@ -86,5 +92,30 @@ final class ManagingQueueItems implements Context
     public function iSpecifyAsAnIdentifierFilter(string $identifier): void
     {
         $this->indexPage->specifyIdentifierFilter($identifier);
+    }
+
+    /**
+     * @When /^I delete the ("([^"]*)" queue item)$/
+     */
+    public function iDeleteTheQueueItem(QueueItemInterface $queueItem)
+    {
+        $this->indexPage->deleteResourceOnPage(['akeneoIdentifier' => $queueItem->getAkeneoIdentifier()]);
+
+        $this->sharedStorage->set('queue_item', $queueItem);
+    }
+
+    /**
+     * @Given /^(this queue item) should no longer exist in the queue$/
+     */
+    public function thisQueueItemShouldNoLongerExistInTheQueue(QueueItemInterface $queueItem)
+    {
+        Assert::false(
+            $this->indexPage->isSingleResourceOnPage(
+                [
+                    'akeneoIdentifier' => $queueItem->getAkeneoIdentifier(),
+                    'akeneoEntity' => $queueItem->getAkeneoEntity()
+                ]
+            )
+        );
     }
 }

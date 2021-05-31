@@ -1,4 +1,4 @@
-@browsing_queue_items
+@managing_queue_items
 Feature: Browsing queue items
   In order to see the status of imported and not imported items from Akeneo
   As an Administrator
