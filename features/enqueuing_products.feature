@@ -40,8 +40,7 @@ Feature: Enqueuing products
     When I browse products
     And I schedule an Akeneo PIM import for the "Braided hat m" product
     Then I should be notified that it has been successfully enqueued
-    When I browse Akeneo queue items
-    Then I should see 1, not imported, queue items in the list
+    And I should see 1, not imported, item in the Akeneo queue items list
 
   @ui
   Scenario: Enqueuing a product already enqueued
@@ -51,8 +50,7 @@ Feature: Enqueuing products
     When I browse products
     And I schedule an Akeneo PIM import for the "Braided hat l" product
     Then I should be notified that it has been already enqueued
-    When I browse Akeneo queue items
-    Then I should see 1, not imported, queue items in the list
+    And I should see 1, not imported, item in the Akeneo queue items list
 
   @ui
   Scenario: Enqueuing a configurable product
@@ -63,5 +61,4 @@ Feature: Enqueuing products
     When I browse products
     And I schedule an Akeneo PIM import for the "Braided hat" product
     Then I should be notified that it has been successfully enqueued
-    When I browse Akeneo queue items
-    Then I should see 3, not imported, queue items in the list
+    And I should see 3, not imported, items in the Akeneo queue items list

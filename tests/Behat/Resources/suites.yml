@@ -87,7 +87,6 @@ default:
 
                 - sylius.behat.context.ui.admin.managing_products
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
-                - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items
             filters:
                 tags: "@enqueuing_products && @ui"
 
