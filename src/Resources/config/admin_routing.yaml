@@ -3,7 +3,7 @@ webgriffe_sylius_akeneo_admin_queue_item:
         alias: webgriffe_sylius_akeneo.queue_item
         section: admin
         path: akeneo_queue_items
-        except: ['update', 'create', 'show', 'bulkDelete']
+        except: ['update', 'create', 'show']
         templates: "@SyliusAdmin\\Crud"
         redirect: update
         grid: webgriffe_sylius_akeneo_admin_queue_item

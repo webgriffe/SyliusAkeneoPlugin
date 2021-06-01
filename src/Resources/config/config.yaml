@@ -52,6 +52,9 @@ sylius_grid:
                 item:
                     delete:
                         type: delete
+                bulk:
+                    delete:
+                        type: delete
 
         sylius_admin_product:
             actions:
