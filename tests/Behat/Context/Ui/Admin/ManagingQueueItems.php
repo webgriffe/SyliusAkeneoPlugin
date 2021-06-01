@@ -97,7 +97,7 @@ final class ManagingQueueItems implements Context
     /**
      * @When /^I delete the ("([^"]*)" queue item)$/
      */
-    public function iDeleteTheQueueItem(QueueItemInterface $queueItem)
+    public function iDeleteTheQueueItem(QueueItemInterface $queueItem): void
     {
         $this->indexPage->deleteResourceOnPage(['akeneoIdentifier' => $queueItem->getAkeneoIdentifier()]);
 
@@ -107,7 +107,7 @@ final class ManagingQueueItems implements Context
     /**
      * @Given /^(this queue item) should no longer exist in the queue$/
      */
-    public function thisQueueItemShouldNoLongerExistInTheQueue(QueueItemInterface $queueItem)
+    public function thisQueueItemShouldNoLongerExistInTheQueue(QueueItemInterface $queueItem): void
     {
         Assert::false(
             $this->indexPage->isSingleResourceOnPage(
@@ -117,5 +117,38 @@ final class ManagingQueueItems implements Context
                 ]
             )
         );
+    }
+
+    /**
+     * @Given /^I check the ("([^"]*)" queue item)$/
+     * @Given /^I check also the ("([^"]*)" queue item)$/
+     */
+    public function iCheckAlsoTheQueueItem(QueueItemInterface $queueItem): void
+    {
+        $this->indexPage->checkResourceOnPage(['akeneoIdentifier' => $queueItem->getAkeneoIdentifier()]);
+    }
+
+    /**
+     * @When I delete them
+     */
+    public function iDeleteThem(): void
+    {
+        $this->indexPage->bulkDelete();
+    }
+
+    /**
+     * @Given /^I should see a single queue item in the list$/
+     */
+    public function iShouldSeeASingleQueueItemInTheList(): void
+    {
+        Assert::eq($this->indexPage->countItems(), 1);
+    }
+
+    /**
+     * @Given /^I should see the ("([^"]*)" queue item) in the list$/
+     */
+    public function iShouldSeeTheQueueItemInTheList(QueueItemInterface $queueItem): void
+    {
+        Assert::true($this->indexPage->isSingleResourceOnPage(['akeneoIdentifier' => $queueItem->getAkeneoIdentifier()]));
     }
 }
