@@ -367,7 +367,7 @@ final class ImporterTest extends KernelTestCase
         );
 
         $this->importer->import('braided-hat-m');
-        $this->importer->import('Braided-hat-l');
+        $this->importer->import('braided-hat-l');
 
         /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
@@ -570,7 +570,9 @@ final class ImporterTest extends KernelTestCase
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat-with-variation-image.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_l.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-l.yaml',
             ],
             [],
             [],
@@ -581,6 +583,32 @@ final class ImporterTest extends KernelTestCase
 
         $product = $this->productRepository->findOneByCode('model-braided-hat');
         $this->assertCount(1, $product->getImages());
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_remove_product_images_of_other_variants_removed_on_akeneo()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat-with-variation-image.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_l.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-l.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('braided-hat-l');
+
+        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $this->assertCount(2, $product->getImages());
     }
 
     /**
