@@ -238,7 +238,6 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $productOptionValue->addTranslation($englishProductOptionValueTranslation)->shouldHaveBeenCalled();
         $productOptionValue->addTranslation($italianProductOptionValueTranslation)->shouldHaveBeenCalled();
         $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
-        $productOptionValueRepository->add($productOptionValue)->shouldHaveBeenCalled();
     }
 
     function it_updates_existing_product_option_value_and_all_translations(
@@ -268,7 +267,6 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
 
         $englishProductOptionValue->setValue(self::EN_LABEL)->shouldHaveBeenCalled();
         $italianProductOptionValue->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
-        $productOptionValueRepository->add($existentProductOptionValue)->shouldHaveBeenCalled();
     }
 
     function it_skips_locale_not_defined_on_sylius(
@@ -313,7 +311,6 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $productOptionValue->addTranslation($englishProductOptionValueTranslation)->shouldHaveBeenCalled();
         $productOptionValue->addTranslation($italianProductOptionValueTranslation)->shouldHaveBeenCalled();
         $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
-        $productOptionValueRepository->add($productOptionValue)->shouldHaveBeenCalled();
         $productOptionValueTranslationFactory->createNew()->shouldHaveBeenCalledOnce();
     }
 }
