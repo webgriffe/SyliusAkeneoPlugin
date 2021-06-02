@@ -160,7 +160,6 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         if (!$productVariant->hasOptionValue($optionValue)) {
             $productVariant->addOptionValue($optionValue);
         }
-        $this->productOptionValueRepository->add($optionValue);
     }
 
     private function isVariantOption(ProductVariantInterface $productVariant, string $attribute): bool
