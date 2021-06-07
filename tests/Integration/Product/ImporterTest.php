@@ -14,6 +14,7 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Product\Model\ProductOptionValueInterface;
+use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
@@ -38,6 +39,9 @@ final class ImporterTest extends KernelTestCase
     /** @var Filesystem */
     private $filesystem;
 
+    /** @var TaxonRepositoryInterface */
+    private $taxonRepository;
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -45,6 +49,7 @@ final class ImporterTest extends KernelTestCase
         $this->productRepository = self::$container->get('sylius.repository.product');
         $this->productVariantRepository = self::$container->get('sylius.repository.product_variant');
         $this->channelRepository = self::$container->get('sylius.repository.channel');
+        $this->taxonRepository = self::$container->get('sylius.repository.taxon');
         $this->fixtureLoader = self::$container->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->filesystem = self::$container->get('filesystem');
         $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
@@ -676,5 +681,36 @@ final class ImporterTest extends KernelTestCase
 
         $product = $this->productRepository->findOneByCode('no-family-product');
         $this->assertNotNull($product);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_product_main_taxon_when_enabled()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/34534532-with-taxa-with-different-levels.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('34534532');
+
+        /** @var ProductInterface[] $allProducts */
+        $allProducts = $this->productRepository->findAll();
+        $this->assertCount(1, $allProducts);
+        $product = $allProducts[0];
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals('34534532', $product->getCode());
+        $this->assertCount(3, $product->getTaxons());
+
+        $pcTaxon = $this->taxonRepository->findOneBySlug('pc', 'en_US');
+        $this->assertNotNull($pcTaxon);
+
+        $this->assertEquals($pcTaxon, $product->getMainTaxon());
     }
 }

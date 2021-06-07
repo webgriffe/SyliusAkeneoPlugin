@@ -1,0 +1,69 @@
+Sylius\Component\Core\Model\ProductTranslation:
+  product-34534532_en_US:
+    locale: "en_US"
+    name: "NEC EX201W 123"
+    slug: "34534532"
+    description: <paragraph(2)>
+    translatable: "@product-34534532"
+
+Sylius\Component\Core\Model\Product:
+  product-34534532:
+    fallbackLocale: "en_US"
+    currentLocale: "en_US"
+    code: "34534532"
+    translations:
+      - "@product-34534532_en_US"
+    variants:
+      - "@product-variant-34534532"
+    productTaxons:
+      - "@product-taxon-34534532-electronics"
+      - "@product-taxon-34534532-pc_monitors"
+
+Sylius\Component\Core\Model\ProductVariant:
+  product-variant-34534532:
+    code: "34534532"
+    product: "@product-34534532"
+
+Sylius\Component\Core\Model\Taxon:
+  taxon-electronics:
+    code: "electronics"
+    fallbackLocale: "en_US"
+    currentLocale: "en_US"
+    translations:
+      - "@taxon-electronics-en_US"
+  taxon-pc_monitors:
+    code: "pc_monitors"
+    fallbackLocale: "en_US"
+    currentLocale: "en_US"
+    translations:
+      - "@taxon-pc_monitors-en_US"
+    parent: '@taxon-electronics'
+  taxon-pc:
+    code: "pc"
+    fallbackLocale: "en_US"
+    currentLocale: "en_US"
+    translations:
+      - "@taxon-pc-en_US"
+    parent: '@taxon-pc_monitors'
+
+Sylius\Component\Taxonomy\Model\TaxonTranslation:
+  taxon-electronics-en_US:
+    name: "Electronics"
+    slug: "electronics"
+    locale: "en_US"
+  taxon-pc_monitors-en_US:
+    name: "PC Monitors"
+    slug: "pc-monitors"
+    locale: "en_US"
+  taxon-pc-en_US:
+    name: "PC"
+    slug: "pc"
+    locale: "en_US"
+
+Sylius\Component\Core\Model\ProductTaxon:
+  product-taxon-34534532-electronics:
+    product: "@product-34534532"
+    taxon: "@taxon-electronics"
+  product-taxon-34534532-pc_monitors:
+    product: "@product-34534532"
+    taxon: "@taxon-pc_monitors"

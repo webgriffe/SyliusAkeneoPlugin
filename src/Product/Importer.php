@@ -128,6 +128,8 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
         $this->handleTaxons($product, $productVariantResponse);
 
+        $this->handleMainTaxon($product, $productVariantResponse);
+
         /** @var ProductVariantInterface|null $productVariant */
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
         if (!$productVariant instanceof ProductVariantInterface) {
@@ -356,5 +358,21 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             $this->dispatchPostEvent($product, 'update');
         }
 
+    }
+
+    private function handleMainTaxon(ProductInterface $product, array $productVariantResponse): void
+    {
+        $mainTaxon = array_reduce(
+            $product->getTaxons()->toArray(),
+            static function (?TaxonInterface $carry, ?TaxonInterface $item) {
+                $itemLevel = $item !== null ? $item->getLevel() : 0;
+                $carryLevel = $carry !== null ? $carry->getLevel() : 0;
+
+                return $itemLevel >= $carryLevel ? $item : $carry;
+            }
+        );
+        if ($mainTaxon) {
+            $product->setMainTaxon($mainTaxon);
+        }
     }
 }

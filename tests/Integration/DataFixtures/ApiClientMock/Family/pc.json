@@ -1,0 +1,47 @@
+{
+    "code": "pc",
+    "attributes": [
+        "description",
+        "display_color",
+        "display_diagonal",
+        "display_srgb",
+        "name",
+        "picture",
+        "power_requirements",
+        "price",
+        "release_date",
+        "response_time",
+        "sku",
+        "weight",
+        "attachment"
+    ],
+    "attribute_as_label": "name",
+    "attribute_as_image": "picture",
+    "attribute_requirements": {
+        "ecommerce": [
+            "description",
+            "display_diagonal",
+            "name",
+            "price",
+            "sku"
+        ],
+        "mobile": [
+            "description",
+            "display_diagonal",
+            "name",
+            "price",
+            "sku"
+        ],
+        "print": [
+            "description",
+            "display_diagonal",
+            "name",
+            "sku"
+        ]
+    },
+    "labels": {
+        "en_US": "PC",
+        "fr_FR": "PC",
+        "de_DE": "PC"
+    }
+}
