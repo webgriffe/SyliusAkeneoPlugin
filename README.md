@@ -390,6 +390,16 @@ This plugin **will not import Akeneo categories into Sylius taxons**, but **it w
 
 So, all you have to do is to **create on Sylius those taxons that you want products associated with** when importing from Akeneo, paying attention to **assign the same code** of the corresponding category on Akeneo.
 
+#### Assign product main taxon
+
+The plugin will automatically associate the product with the deeper leaf category. If you want to disable this logic you have to override the *webgriffe_sylius_akeneo.handle_main_taxon* parameter and set it to false value.
+
+```yaml
+# config/services.yaml
+parameters:
+  webgriffe_sylius_akeneo.handle_main_taxon: false
+```
+
 ### Importing product associations
 
 This plugin will also import product associations. It's a zero configuration import. All you have to do is to **create on Sylius the same association types that you have on Akeneo** paying attention to assign the same association type code. If you have some association type on Akeneo that you don't need on your store, simply do not create it on Sylius and product associations importer will ignore it.
