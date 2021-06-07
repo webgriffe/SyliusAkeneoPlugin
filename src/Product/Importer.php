@@ -67,6 +67,9 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     /** @var StatusResolverInterface */
     private $variantStatusResolver;
 
+    /** @var bool */
+    private $handleMainTaxon;
+
     public function __construct(
         ProductVariantFactoryInterface $productVariantFactory,
         ProductVariantRepositoryInterface $productVariantRepository,
@@ -80,7 +83,8 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         ChannelsResolverInterface $channelsResolver,
         StatusResolverInterface $statusResolver,
         FactoryInterface $productTaxonFactory,
-        StatusResolverInterface $variantStatusResolver = null
+        StatusResolverInterface $variantStatusResolver = null,
+        bool $handleMainTaxon = null
     ) {
         $this->productVariantFactory = $productVariantFactory;
         $this->productVariantRepository = $productVariantRepository;
@@ -105,6 +109,17 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             $variantStatusResolver = new VariantStatusResolver();
         }
         $this->variantStatusResolver = $variantStatusResolver;
+        if (null === $handleMainTaxon) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.12',
+                'Not passing a handle main taxon to "%s" is deprecated and will be removed in %s.',
+                __CLASS__,
+                '2.0'
+            );
+            $handleMainTaxon = false;
+        }
+        $this->handleMainTaxon = $handleMainTaxon;
     }
 
     /**
@@ -128,7 +143,9 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
         $this->handleTaxons($product, $productVariantResponse);
 
-        $this->handleMainTaxon($product, $productVariantResponse);
+        if ($this->handleMainTaxon) {
+            $this->handleMainTaxon($product, $productVariantResponse);
+        }
 
         /** @var ProductVariantInterface|null $productVariant */
         $productVariant = $this->productVariantRepository->findOneBy(['code' => $identifier]);
