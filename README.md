@@ -59,6 +59,8 @@ Override Sylius template by create a new file in the folder: `templates/bundles/
           {{ 'webgriffe_sylius_akeneo.ui.enqueue'|trans }}  
         </a>
 
+7. _Optional (usually only on production or pre-production environments)_. Install the [suggested crontab](https://github.com/webgriffe/SyliusAkeneoPlugin#suggested-crontab).
+
 ## Configuration
 
 First of all you must configure your Akeneo API connection parameters. Edit the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file by adding the following content:
@@ -416,20 +418,6 @@ Of course you can put this command in cron as well:
 *  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
 ```
 
-### Automatically import data with cron jobs
-
-To make all importers work automatically the following is the suggested crontab:
-
-```
-0    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --all --importer="AttributeOptions"
-*    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt --importer="Product" --importer="ProductAssociations"
-*    *  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
-```
-
-It will enqueue the update of all attribute options every hour and it will import, every minute, all products that have been modified since the last execution, along with their associations.
-
-Both enqueue and consume commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents running them multiple times.
-
 ### Browsing queue items in the admin
 
 You can examine the Akeneo import queue from the admin panel at **Catalog -> Akeneo PIM import**. You can filter and sort items and see their error message:
@@ -459,9 +447,25 @@ To reconcile the products you can use the webgriffe:akeneo:reconcile console com
 
 It could be useful to add also this command to your scheduler to run automatically every day or whatever you want.
 
-```bash
-0  0  *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
+### Suggested crontab
+
+To make all importers and other plugin features work automatically the following is the suggested crontab:
+
 ```
+0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --all --importer="AttributeOptions"
+*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt --importer="Product" --importer="ProductAssociations"
+*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
+0   0   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:cleanup-queue
+0   */6 *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
+```
+
+This will:
+* Enqueue the update of all attribute options every hour
+* Import, every minute, all products that have been modified since the last execution, along with their associations
+* Clean the imported items queue older than 10 days, every day at midnight
+* Reconcile Akeneo deleted products every 6 hours
+
+Enqueue, Consume and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents running them if another instance of the same command is already running.
 
 ## Architecture & customization
 
