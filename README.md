@@ -8,47 +8,6 @@
 <p align="center">Plugin allowing to import data from Akeneo PIM to your Sylius store.</p>
 <p align="center"><a href="https://github.com/webgriffe/SyliusAkeneoPlugin/actions"><img src="https://github.com/webgriffe/SyliusAkeneoPlugin/workflows/Build/badge.svg" alt="Build Status" /></a></p>
 
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-  * [Importing product name, short description and description](#importing-product-name--short-description-and-description)
-  * [Importing product dimensions](#importing-product-dimensions)
-  * [Importing product slug](#importing-product-slug)
-  * [Importing product images](#importing-product-images)
-  * [Importing product attributes values](#importing-product-attributes-values)
-    + [Akeneo file attributes handling](#akeneo-file-attributes-handling)
-  * [Importing configurable products, product options and their values](#importing-configurable-products--product-options-and-their-values)
-  * [Importing product prices](#importing-product-prices)
-  * [Importing product metrical properties](#importing-product-metrical-properties)
-  * [Importing product-taxons associations](#importing-product-taxons-associations)
-  * [Importing product associations](#importing-product-associations)
-  * [Launch data import from CLI](#launch-data-import-from-cli)
-    + [Enqueue command](#enqueue-command)
-    + [Consume command](#consume-command)
-  * [Automatically import data with cron jobs](#automatically-import-data-with-cron-jobs)
-  * [Browsing queue items in the admin](#browsing-queue-items-in-the-admin)
-- [Architecture & customization](#architecture---customization)
-  * [Product Importer](#product-importer)
-    + [Taxons resolver](#taxons-resolver)
-    + [Product options resolver](#product-options-resolver)
-    + [Channels resolver](#channels-resolver)
-    + [Status resolver](#status-resolver)
-    + [Value handlers resolver](#value-handlers-resolver)
-    + [Value handlers](#value-handlers)
-  * [Product associations importer](#product-associations-importer)
-  * [Attribute options importer](#attribute-options-importer)
-- [Contributing](#contributing)
-  * [Running plugin tests](#running-plugin-tests)
-  * [Opening Sylius with your plugin](#opening-sylius-with-your-plugin)
-- [License](#license)
-- [Credits](#credits)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 ## Requirements
 
 * PHP `^7.3`
