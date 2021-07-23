@@ -83,6 +83,11 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
 
                 continue;
             }
+
+            if (!in_array($localeCode, $this->translationLocaleProvider->getDefinedLocalesCodes(), true)) {
+                continue;
+            }
+
             $productTranslation = $this->getOrCreateNewProductTranslation($product, $localeCode);
             if ($productTranslation->getSlug()) {
                 continue;

@@ -192,4 +192,16 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
 
         $productTranslation->setSlug(self::SLUGIFIED_VALUE . '-2')->shouldHaveBeenCalled();
     }
+
+    function it_skips_locales_not_specified_in_sylius(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductTranslationInterface $productTranslation
+    ) {
+        $productVariant->getProduct()->willReturn($product);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
+
+        $productTranslation->setSlug(Argument::type('string'))->shouldNotHaveBeenCalled();
+    }
 }
