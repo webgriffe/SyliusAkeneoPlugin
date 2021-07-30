@@ -44,6 +44,7 @@ final class Importer implements ImporterInterface
             return;
         }
 
+        /** @var array[] $attributeOptions */
         $attributeOptions = $this->apiClient->findAllAttributeOptions($identifier);
         usort(
             $attributeOptions,
