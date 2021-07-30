@@ -90,19 +90,15 @@ final class EnqueueCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $sinceFilePath = null;
-        if ($sinceOptionValue = $input->getOption(self::SINCE_OPTION_NAME)) {
+        if ($sinceOptionValue = (string)$input->getOption(self::SINCE_OPTION_NAME)) {
             try {
-                Assert::string($sinceOptionValue);
-                /** @var string $sinceOptionValue */
                 $sinceDate = new \DateTime($sinceOptionValue);
             } catch (\Throwable $t) {
                 throw new \InvalidArgumentException(
                     sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME)
                 );
             }
-        } elseif ($sinceFilePath = $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
-            Assert::string($sinceFilePath);
-            /** @var string $sinceFilePath */
+        } elseif ($sinceFilePath = (string)$input->getOption(self::SINCE_FILE_OPTION_NAME)) {
             $sinceDate = $this->getSinceDateByFile($sinceFilePath);
         } elseif ($input->getOption(self::ALL_OPTION_NAME) === true) {
             $sinceDate = (new \DateTime())->setTimestamp(0);
@@ -230,6 +226,7 @@ final class EnqueueCommand extends Command
 
         $importersToUse = $input->getOption(self::IMPORTER_OPTION_NAME);
         Assert::isArray($importersToUse);
+        Assert::allString($importersToUse);
 
         if (count($importersToUse) === 0) {
             return $allImporters;

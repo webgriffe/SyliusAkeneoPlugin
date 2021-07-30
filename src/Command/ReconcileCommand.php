@@ -94,6 +94,7 @@ final class ReconcileCommand extends Command
 
         $reconcilersToUse = $input->getOption(self::RECONCILER_OPTION_NAME);
         Assert::isArray($reconcilersToUse);
+        Assert::allString($reconcilersToUse);
 
         if (count($reconcilersToUse) === 0) {
             return $allReconcilers;
