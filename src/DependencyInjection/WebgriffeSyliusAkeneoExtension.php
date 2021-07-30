@@ -246,9 +246,11 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         return $definitions;
     }
 
+    /**
+     * @param array<array-key, string|null> $apiClient
+     */
     private function registerApiClientParameters(array $apiClient, ContainerBuilder $container): void
     {
-        Assert::allString($apiClient);
         foreach ($apiClient as $key => $value) {
             $container->setParameter(sprintf('webgriffe_sylius_akeneo.api_client.%s', $key), $value);
         }
