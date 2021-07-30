@@ -45,6 +45,16 @@ final class Importer implements ImporterInterface
         }
 
         $attributeOptions = $this->apiClient->findAllAttributeOptions($identifier);
+        usort(
+            $attributeOptions,
+            static function (array $option1, array $option2): int {
+                if (($option1['sort_order'] ?? 0) === ($option2['sort_order'] ?? 0)) {
+                    return 0;
+                }
+
+                return ($option1['sort_order'] ?? 0) > ($option2['sort_order'] ?? 0) ? 1 : -1;
+            }
+        );
         $configuration = $attribute->getConfiguration();
         $configuration['choices'] = $this->convertAkeneoAttributeOptionsIntoSyliusChoices($attributeOptions);
         $attribute->setConfiguration($configuration);
