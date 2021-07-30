@@ -65,7 +65,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_import_all_options_from_akeneo(): void
+    public function it_import_all_options_from_akeneo_retaining_sort_order(): void
     {
         $this->fixtureLoader->load(
             [
@@ -81,13 +81,13 @@ final class ImporterTest extends KernelTestCase
         $attribute = $this->attributeRepository->findOneBy(['code' => 'material']);
         $configuration = $attribute->getConfiguration();
         $this->assertCount(5, $configuration['choices']);
-        $this->assertEquals(
+        $this->assertSame(
             [
-                'cotton' => ['it_IT' => 'cotone', 'en_US' => 'cotton'],
-                'leather' => ['it_IT' => 'cuoio', 'en_US' => 'leather'],
-                'metal' => ['it_IT' => 'metallo', 'en_US' => 'metal'],
-                'polyester' => ['it_IT' => 'poliestere', 'en_US' => 'polyester'],
-                'wool' => ['it_IT' => 'lana', 'en_US' => 'wool'],
+                'metal' => ['en_US' => 'metal', 'it_IT' => 'metallo'],
+                'leather' => ['en_US' => 'leather', 'it_IT' => 'cuoio'],
+                'polyester' => ['en_US' => 'polyester', 'it_IT' => 'poliestere'],
+                'wool' => ['en_US' => 'wool', 'it_IT' => 'lana'],
+                'cotton' => ['en_US' => 'cotton', 'it_IT' => 'cotone'],
             ],
             $configuration['choices']
         );

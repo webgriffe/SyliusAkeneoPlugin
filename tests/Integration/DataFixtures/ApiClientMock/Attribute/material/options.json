@@ -7,7 +7,7 @@
         },
         "code": "cotton",
         "attribute": "material",
-        "sort_order": 1,
+        "sort_order": 5,
         "labels": {
             "en_US": "cotton",
             "it_IT": "cotone"
@@ -21,7 +21,7 @@
         },
         "code": "leather",
         "attribute": "material",
-        "sort_order": 1,
+        "sort_order": 2,
         "labels": {
             "en_US": "leather",
             "it_IT": "cuoio"
@@ -49,7 +49,7 @@
         },
         "code": "polyester",
         "attribute": "material",
-        "sort_order": 1,
+        "sort_order": 3,
         "labels": {
             "en_US": "polyester",
             "it_IT": "poliestere"
@@ -63,7 +63,7 @@
         },
         "code": "wool",
         "attribute": "material",
-        "sort_order": 1,
+        "sort_order": 4,
         "labels": {
             "en_US": "wool",
             "it_IT": "lana"
