@@ -314,6 +314,21 @@ webgriffe_sylius_akeneo:
 
 In the `akeneo_attribute_code` option you have to set the code of the **Akeneo price attribute** where you store your products prices. Then they will be imported into Sylius for channels whose base currency is the same as the price currency on Akeneo.
 
+There's also a handler managing the "original price" field:
+
+```yaml
+# config/packages/webgriffe_sylius_akeneo_plugin.yaml
+webgriffe_sylius_akeneo:
+  # ...
+  value_handlers:
+    product:
+      # ...
+      price:
+        type: 'channel_original_pricing'
+        options:
+          akeneo_attribute_code: 'original_price'      
+```
+
 ### Importing product metrical properties
 
 **NB. This feature is only available from Akeneo version 5**

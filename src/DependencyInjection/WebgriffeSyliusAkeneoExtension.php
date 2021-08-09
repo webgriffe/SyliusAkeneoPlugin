@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelOriginalPricingValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\GenericPropertyValueHandler;
@@ -106,6 +107,14 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     private static $valueHandlersTypesDefinitionsPrivate = [
         'channel_pricing' => [
             'class' => ChannelPricingValueHandler::class,
+            'arguments' => [
+                'sylius.factory.channel_pricing',
+                'sylius.repository.channel',
+                'sylius.repository.currency',
+            ],
+        ],
+        'channel_original_pricing' => [
+            'class' => ChannelOriginalPricingValueHandler::class,
             'arguments' => [
                 'sylius.factory.channel_pricing',
                 'sylius.repository.channel',
