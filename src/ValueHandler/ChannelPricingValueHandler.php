@@ -28,16 +28,21 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
     /** @var string */
     private $akeneoAttribute;
 
+    /** @var string */
+    private $syliusPropertyPath;
+
     public function __construct(
         FactoryInterface $channelPricingFactory,
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $currencyRepository,
-        string $akeneoAttribute
+        string $akeneoAttribute,
+        string $syliusPropertyPath = 'price'
     ) {
         $this->channelPricingFactory = $channelPricingFactory;
         $this->channelRepository = $channelRepository;
         $this->currencyRepository = $currencyRepository;
         $this->akeneoAttribute = $akeneoAttribute;
+        $this->syliusPropertyPath = $syliusPropertyPath;
     }
 
     /**
@@ -85,11 +90,27 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                     $channelPricing = $this->channelPricingFactory->createNew();
                     $channelPricing->setChannelCode($channel->getCode());
                 }
-                $channelPricing->setPrice((int) round($price * 100));
+                $setterMethod = $this->getPriceSetterMethod();
+                $channelPricing->$setterMethod((int) round($price * 100));
                 if ($isNewChannelPricing) {
                     $subject->addChannelPricing($channelPricing);
                 }
             }
+        }
+    }
+
+    private function getPriceSetterMethod(): string
+    {
+        switch ($this->syliusPropertyPath) {
+            case 'price':
+                return 'setPrice';
+            case 'original_price':
+                return 'setOriginalPrice';
+            default:
+                throw new \InvalidArgumentException(sprintf(
+                    "Sylius property path not allowed. Expected 'price' or 'original_price', received: %s",
+                    $this->syliusPropertyPath
+                ));
         }
     }
 }

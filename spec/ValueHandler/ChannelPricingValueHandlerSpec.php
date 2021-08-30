@@ -162,8 +162,10 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         $productVariant->addChannelPricing($italianChannelPricing)->shouldHaveBeenCalled();
         $productVariant->addChannelPricing($usChannelPricing)->shouldHaveBeenCalled();
         $italianChannelPricing->setPrice(2999)->shouldHaveBeenCalled();
+        $italianChannelPricing->setOriginalPrice(2999)->shouldNotHaveBeenCalled();
         $italianChannelPricing->setChannelCode(self::ITALY_CHANNEL_CODE)->shouldHaveBeenCalled();
         $usChannelPricing->setPrice(3199)->shouldHaveBeenCalled();
+        $usChannelPricing->setOriginalPrice(3199)->shouldNotHaveBeenCalled();
         $usChannelPricing->setChannelCode(self::US_CHANNEL_CODE)->shouldHaveBeenCalled();
     }
 
@@ -203,9 +205,156 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
 
         $channelPricingFactory->createNew()->shouldNotHaveBeenCalled();
         $italianChannelPricing->setPrice(2999)->shouldHaveBeenCalled();
+        $italianChannelPricing->setOriginalPrice(2999)->shouldNotHaveBeenCalled();
         /** @noinspection PhpStrictTypeCheckingInspection */
         $italianChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
         $usChannelPricing->setPrice(3199)->shouldHaveBeenCalled();
+        $usChannelPricing->setOriginalPrice(3199)->shouldNotHaveBeenCalled();
+        /** @noinspection PhpStrictTypeCheckingInspection */
+        $usChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
+    }
+
+    function it_throws_exception_during_handle_when_sylius_property_path_is_not_valid(
+        FactoryInterface $channelPricingFactory,
+        ChannelRepositoryInterface $channelRepository,
+        ProductVariantInterface $productVariant,
+        CurrencyInterface $eurCurrency,
+        ChannelPricingInterface $italianChannelPricing,
+        RepositoryInterface $currencyRepository
+    ) {
+        $this->beConstructedWith(
+            $channelPricingFactory,
+            $channelRepository,
+            $currencyRepository,
+            self::AKENEO_ATTRIBUTE,
+            'fake'
+        );
+
+        $value = [
+            [
+                'locale' => null,
+                'scope' => null,
+                'data' => [
+                    [
+                        'amount' => '29.99',
+                        'currency' => 'EUR',
+                    ],
+                ],
+            ],
+        ];
+        $currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($eurCurrency);
+        $channelPricingFactory->createNew()->willReturn($italianChannelPricing);
+        /** @noinspection PhpParamsInspection */
+        $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
+
+        $this
+            ->shouldThrow(new \InvalidArgumentException("Sylius property path not allowed. Expected 'price' or 'original_price', received: fake"))
+            ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE, $value]);
+    }
+
+    function it_creates_new_channel_original_prices_for_the_matching_currency_channels(
+        ProductVariantInterface $productVariant,
+        ChannelRepositoryInterface $channelRepository,
+        ChannelPricingInterface $italianChannelPricing,
+        ChannelPricingInterface $usChannelPricing,
+        FactoryInterface $channelPricingFactory,
+        CurrencyInterface $eurCurrency,
+        CurrencyInterface $usdCurrency,
+        RepositoryInterface $currencyRepository
+    ) {
+        $this->beConstructedWith(
+            $channelPricingFactory,
+            $channelRepository,
+            $currencyRepository,
+            self::AKENEO_ATTRIBUTE,
+            'original_price'
+        );
+
+        $value = [
+            [
+                'locale' => null,
+                'scope' => null,
+                'data' => [
+                    [
+                        'amount' => '29.99',
+                        'currency' => 'EUR',
+                    ],
+                    [
+                        'amount' => '31.99',
+                        'currency' => 'USD',
+                    ],
+                ],
+            ],
+        ];
+        $currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($eurCurrency);
+        $currencyRepository->findOneBy(['code' => 'USD'])->willReturn($usdCurrency);
+        $channelPricingFactory->createNew()->willReturn($italianChannelPricing, $usChannelPricing);
+        /** @noinspection PhpParamsInspection */
+        $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
+
+        $channelPricingFactory->createNew()->shouldHaveBeenCalledTimes(2);
+        $productVariant->addChannelPricing($italianChannelPricing)->shouldHaveBeenCalled();
+        $productVariant->addChannelPricing($usChannelPricing)->shouldHaveBeenCalled();
+        $italianChannelPricing->setOriginalPrice(2999)->shouldHaveBeenCalled();
+        $italianChannelPricing->setPrice(2999)->shouldNotHaveBeenCalled();
+        $italianChannelPricing->setChannelCode(self::ITALY_CHANNEL_CODE)->shouldHaveBeenCalled();
+        $usChannelPricing->setOriginalPrice(3199)->shouldHaveBeenCalled();
+        $usChannelPricing->setPrice(3199)->shouldNotHaveBeenCalled();
+        $usChannelPricing->setChannelCode(self::US_CHANNEL_CODE)->shouldHaveBeenCalled();
+    }
+
+    function it_updates_existent_channel_original_prices_for_the_matching_currency_channels(
+        ProductVariantInterface $productVariant,
+        ChannelRepositoryInterface $channelRepository,
+        ChannelPricingInterface $italianChannelPricing,
+        ChannelPricingInterface $usChannelPricing,
+        FactoryInterface $channelPricingFactory,
+        CurrencyInterface $eurCurrency,
+        CurrencyInterface $usdCurrency,
+        ChannelInterface $italyChannel,
+        ChannelInterface $usChannel,
+        RepositoryInterface $currencyRepository
+    ) {
+        $this->beConstructedWith(
+            $channelPricingFactory,
+            $channelRepository,
+            $currencyRepository,
+            self::AKENEO_ATTRIBUTE,
+            'original_price'
+        );
+
+        $value = [
+            [
+                'locale' => null,
+                'scope' => null,
+                'data' => [
+                    [
+                        'amount' => '29.99',
+                        'currency' => 'EUR',
+                    ],
+                    [
+                        'amount' => '31.99',
+                        'currency' => 'USD',
+                    ],
+                ],
+            ],
+        ];
+        $currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($eurCurrency);
+        $currencyRepository->findOneBy(['code' => 'USD'])->willReturn($usdCurrency);
+        $productVariant->getChannelPricingForChannel($italyChannel)->willReturn($italianChannelPricing);
+        $productVariant->getChannelPricingForChannel($usChannel)->willReturn($usChannelPricing);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
+
+        $channelPricingFactory->createNew()->shouldNotHaveBeenCalled();
+        $italianChannelPricing->setOriginalPrice(2999)->shouldHaveBeenCalled();
+        $italianChannelPricing->setPrice(2999)->shouldNotHaveBeenCalled();
+        /** @noinspection PhpStrictTypeCheckingInspection */
+        $italianChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
+        $usChannelPricing->setOriginalPrice(3199)->shouldHaveBeenCalled();
+        $usChannelPricing->setPrice(3199)->shouldNotHaveBeenCalled();
         /** @noinspection PhpStrictTypeCheckingInspection */
         $usChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
     }
