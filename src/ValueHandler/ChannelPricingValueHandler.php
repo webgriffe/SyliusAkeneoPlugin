@@ -7,12 +7,13 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
-use Webmozart\Assert\Assert;
 
 final class ChannelPricingValueHandler implements ValueHandlerInterface
 {
@@ -31,10 +32,14 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
     /** @var string */
     private $syliusPropertyPath;
 
+    /** @var PropertyAccessorInterface */
+    private $propertyAccessor;
+
     public function __construct(
         FactoryInterface $channelPricingFactory,
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $currencyRepository,
+        PropertyAccessorInterface $propertyAccessor = null,
         string $akeneoAttribute,
         string $syliusPropertyPath = 'price'
     ) {
@@ -43,6 +48,17 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
         $this->currencyRepository = $currencyRepository;
         $this->akeneoAttribute = $akeneoAttribute;
         $this->syliusPropertyPath = $syliusPropertyPath;
+        if ($propertyAccessor === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.12',
+                'Not passing a property accessor to "%s" is deprecated and will be removed in %s.',
+                __CLASS__,
+                '2.0'
+            );
+            $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        }
+        $this->propertyAccessor = $propertyAccessor;
     }
 
     /**
@@ -90,27 +106,22 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                     $channelPricing = $this->channelPricingFactory->createNew();
                     $channelPricing->setChannelCode($channel->getCode());
                 }
-                $setterMethod = $this->getPriceSetterMethod();
-                $channelPricing->$setterMethod((int) round($price * 100));
+
+                if (!$this->propertyAccessor->isWritable($channelPricing, $this->syliusPropertyPath)) {
+                    throw new \RuntimeException(
+                        sprintf(
+                            'Property path "%s" is not writable on %s.',
+                            $this->syliusPropertyPath,
+                            get_class($channelPricing)
+                        )
+                    );
+                }
+
+                $this->propertyAccessor->setValue($channelPricing, $this->syliusPropertyPath, (int) round($price * 100));
                 if ($isNewChannelPricing) {
                     $subject->addChannelPricing($channelPricing);
                 }
             }
-        }
-    }
-
-    private function getPriceSetterMethod(): string
-    {
-        switch ($this->syliusPropertyPath) {
-            case 'price':
-                return 'setPrice';
-            case 'original_price':
-                return 'setOriginalPrice';
-            default:
-                throw new \InvalidArgumentException(sprintf(
-                    "Sylius property path not allowed. Expected 'price' or 'original_price', received: %s",
-                    $this->syliusPropertyPath
-                ));
         }
     }
 }

@@ -110,6 +110,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 'sylius.factory.channel_pricing',
                 'sylius.repository.channel',
                 'sylius.repository.currency',
+                'property_accessor',
             ],
         ],
         'generic_property' => [
