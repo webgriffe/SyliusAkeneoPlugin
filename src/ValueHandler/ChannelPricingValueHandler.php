@@ -14,6 +14,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
+use Webmozart\Assert\Assert;
 
 final class ChannelPricingValueHandler implements ValueHandlerInterface
 {
@@ -118,6 +119,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                 }
 
                 $this->propertyAccessor->setValue($channelPricing, $this->syliusPropertyPath, (int) round($price * 100));
+                Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
                 if ($isNewChannelPricing) {
                     $subject->addChannelPricing($channelPricing);
                 }
