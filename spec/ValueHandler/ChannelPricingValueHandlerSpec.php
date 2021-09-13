@@ -14,6 +14,7 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
@@ -32,7 +33,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         ChannelInterface $italyChannel,
         CurrencyInterface $usdCurrency,
         ChannelInterface $usChannel,
-        RepositoryInterface $currencyRepository
+        RepositoryInterface $currencyRepository,
+        PropertyAccessorInterface $propertyAccessor
     ) {
         $channelRepository
             ->findBy(['baseCurrency' => $eurCurrency])
@@ -47,6 +49,7 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
             $channelPricingFactory,
             $channelRepository,
             $currencyRepository,
+            $propertyAccessor,
             self::AKENEO_ATTRIBUTE
         );
     }
@@ -132,7 +135,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         FactoryInterface $channelPricingFactory,
         CurrencyInterface $eurCurrency,
         CurrencyInterface $usdCurrency,
-        RepositoryInterface $currencyRepository
+        RepositoryInterface $currencyRepository,
+        PropertyAccessorInterface $propertyAccessor
     ) {
         $value = [
             [
@@ -155,17 +159,19 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         $channelPricingFactory->createNew()->willReturn($italianChannelPricing, $usChannelPricing);
         /** @noinspection PhpParamsInspection */
         $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
+        $propertyAccessor->isWritable($italianChannelPricing, 'price')->willReturn(true);
+        $propertyAccessor->isWritable($usChannelPricing, 'price')->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
 
         $channelPricingFactory->createNew()->shouldHaveBeenCalledTimes(2);
         $productVariant->addChannelPricing($italianChannelPricing)->shouldHaveBeenCalled();
         $productVariant->addChannelPricing($usChannelPricing)->shouldHaveBeenCalled();
-        $italianChannelPricing->setPrice(2999)->shouldHaveBeenCalled();
-        $italianChannelPricing->setOriginalPrice(2999)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'price', 2999)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'original_price', 2999)->shouldNotHaveBeenCalled();
         $italianChannelPricing->setChannelCode(self::ITALY_CHANNEL_CODE)->shouldHaveBeenCalled();
-        $usChannelPricing->setPrice(3199)->shouldHaveBeenCalled();
-        $usChannelPricing->setOriginalPrice(3199)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'price', 3199)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'original_price', 3199)->shouldNotHaveBeenCalled();
         $usChannelPricing->setChannelCode(self::US_CHANNEL_CODE)->shouldHaveBeenCalled();
     }
 
@@ -178,7 +184,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         CurrencyInterface $usdCurrency,
         ChannelInterface $italyChannel,
         ChannelInterface $usChannel,
-        RepositoryInterface $currencyRepository
+        RepositoryInterface $currencyRepository,
+        PropertyAccessorInterface $propertyAccessor
     ) {
         $value = [
             [
@@ -200,16 +207,18 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         $currencyRepository->findOneBy(['code' => 'USD'])->willReturn($usdCurrency);
         $productVariant->getChannelPricingForChannel($italyChannel)->willReturn($italianChannelPricing);
         $productVariant->getChannelPricingForChannel($usChannel)->willReturn($usChannelPricing);
+        $propertyAccessor->isWritable($italianChannelPricing, 'price')->willReturn(true);
+        $propertyAccessor->isWritable($usChannelPricing, 'price')->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
 
         $channelPricingFactory->createNew()->shouldNotHaveBeenCalled();
-        $italianChannelPricing->setPrice(2999)->shouldHaveBeenCalled();
-        $italianChannelPricing->setOriginalPrice(2999)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'price', 2999)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'original_price', 2999)->shouldNotHaveBeenCalled();
         /** @noinspection PhpStrictTypeCheckingInspection */
         $italianChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
-        $usChannelPricing->setPrice(3199)->shouldHaveBeenCalled();
-        $usChannelPricing->setOriginalPrice(3199)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'price', 3199)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'original_price', 3199)->shouldNotHaveBeenCalled();
         /** @noinspection PhpStrictTypeCheckingInspection */
         $usChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
     }
@@ -220,12 +229,14 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         ProductVariantInterface $productVariant,
         CurrencyInterface $eurCurrency,
         ChannelPricingInterface $italianChannelPricing,
-        RepositoryInterface $currencyRepository
+        RepositoryInterface $currencyRepository,
+        PropertyAccessorInterface $propertyAccessor
     ) {
         $this->beConstructedWith(
             $channelPricingFactory,
             $channelRepository,
             $currencyRepository,
+            $propertyAccessor,
             self::AKENEO_ATTRIBUTE,
             'fake'
         );
@@ -247,8 +258,10 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         /** @noinspection PhpParamsInspection */
         $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
 
+        $propertyAccessor->isWritable($italianChannelPricing, 'fake')->willReturn(false);
+
         $this
-            ->shouldThrow(new \InvalidArgumentException("Sylius property path not allowed. Expected 'price' or 'original_price', received: fake"))
+            ->shouldThrow(new \RuntimeException(sprintf('Property path "%s" is not writable on %s.', 'fake', get_class($italianChannelPricing->getWrappedObject()))))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE, $value]);
     }
 
@@ -260,12 +273,14 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         FactoryInterface $channelPricingFactory,
         CurrencyInterface $eurCurrency,
         CurrencyInterface $usdCurrency,
-        RepositoryInterface $currencyRepository
+        RepositoryInterface $currencyRepository,
+        PropertyAccessorInterface $propertyAccessor
     ) {
         $this->beConstructedWith(
             $channelPricingFactory,
             $channelRepository,
             $currencyRepository,
+            $propertyAccessor,
             self::AKENEO_ATTRIBUTE,
             'original_price'
         );
@@ -291,17 +306,19 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         $channelPricingFactory->createNew()->willReturn($italianChannelPricing, $usChannelPricing);
         /** @noinspection PhpParamsInspection */
         $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
+        $propertyAccessor->isWritable($italianChannelPricing, 'original_price')->willReturn(true);
+        $propertyAccessor->isWritable($usChannelPricing, 'original_price')->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
 
         $channelPricingFactory->createNew()->shouldHaveBeenCalledTimes(2);
         $productVariant->addChannelPricing($italianChannelPricing)->shouldHaveBeenCalled();
         $productVariant->addChannelPricing($usChannelPricing)->shouldHaveBeenCalled();
-        $italianChannelPricing->setOriginalPrice(2999)->shouldHaveBeenCalled();
-        $italianChannelPricing->setPrice(2999)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'original_price', 2999)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'price', 2999)->shouldNotHaveBeenCalled();
         $italianChannelPricing->setChannelCode(self::ITALY_CHANNEL_CODE)->shouldHaveBeenCalled();
-        $usChannelPricing->setOriginalPrice(3199)->shouldHaveBeenCalled();
-        $usChannelPricing->setPrice(3199)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'original_price', 3199)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'price', 3199)->shouldNotHaveBeenCalled();
         $usChannelPricing->setChannelCode(self::US_CHANNEL_CODE)->shouldHaveBeenCalled();
     }
 
@@ -315,12 +332,14 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         CurrencyInterface $usdCurrency,
         ChannelInterface $italyChannel,
         ChannelInterface $usChannel,
-        RepositoryInterface $currencyRepository
+        RepositoryInterface $currencyRepository,
+        PropertyAccessorInterface $propertyAccessor
     ) {
         $this->beConstructedWith(
             $channelPricingFactory,
             $channelRepository,
             $currencyRepository,
+            $propertyAccessor,
             self::AKENEO_ATTRIBUTE,
             'original_price'
         );
@@ -346,15 +365,18 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         $productVariant->getChannelPricingForChannel($italyChannel)->willReturn($italianChannelPricing);
         $productVariant->getChannelPricingForChannel($usChannel)->willReturn($usChannelPricing);
 
+        $propertyAccessor->isWritable($italianChannelPricing, 'original_price')->willReturn(true);
+        $propertyAccessor->isWritable($usChannelPricing, 'original_price')->willReturn(true);
+
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, $value);
 
         $channelPricingFactory->createNew()->shouldNotHaveBeenCalled();
-        $italianChannelPricing->setOriginalPrice(2999)->shouldHaveBeenCalled();
-        $italianChannelPricing->setPrice(2999)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'original_price', 2999)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($italianChannelPricing, 'price', 2999)->shouldNotHaveBeenCalled();
         /** @noinspection PhpStrictTypeCheckingInspection */
         $italianChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
-        $usChannelPricing->setOriginalPrice(3199)->shouldHaveBeenCalled();
-        $usChannelPricing->setPrice(3199)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'original_price', 3199)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($usChannelPricing, 'price', 3199)->shouldNotHaveBeenCalled();
         /** @noinspection PhpStrictTypeCheckingInspection */
         $usChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
     }
