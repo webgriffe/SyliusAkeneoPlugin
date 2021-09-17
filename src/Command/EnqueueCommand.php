@@ -90,7 +90,7 @@ final class EnqueueCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $sinceFilePath = null;
-        if ($sinceOptionValue = (string)$input->getOption(self::SINCE_OPTION_NAME)) {
+        if ('' !== $sinceOptionValue = (string)$input->getOption(self::SINCE_OPTION_NAME)) {
             try {
                 $sinceDate = new \DateTime($sinceOptionValue);
             } catch (\Throwable $t) {
@@ -98,7 +98,7 @@ final class EnqueueCommand extends Command
                     sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME)
                 );
             }
-        } elseif ($sinceFilePath = (string)$input->getOption(self::SINCE_FILE_OPTION_NAME)) {
+        } elseif ('' !== $sinceFilePath = (string)$input->getOption(self::SINCE_FILE_OPTION_NAME)) {
             $sinceDate = $this->getSinceDateByFile($sinceFilePath);
         } elseif ($input->getOption(self::ALL_OPTION_NAME) === true) {
             $sinceDate = (new \DateTime())->setTimestamp(0);
@@ -154,7 +154,7 @@ final class EnqueueCommand extends Command
             }
         }
 
-        if ($sinceFilePath) {
+        if ($sinceFilePath !== null) {
             $this->writeSinceDateFile($sinceFilePath, $runDate);
         }
 
@@ -201,7 +201,7 @@ final class EnqueueCommand extends Command
     private function isEntityAlreadyQueuedToImport(string $akeneoEntity, string $akeneoIdentifier): bool
     {
         $queueItem = $this->queueItemRepository->findOneToImport($akeneoEntity, $akeneoIdentifier);
-        if ($queueItem) {
+        if ($queueItem !== null) {
             return true;
         }
 
@@ -218,7 +218,7 @@ final class EnqueueCommand extends Command
             throw new \RuntimeException('There are no importers in registry.');
         }
         $importersCodes = array_map(
-            static function (ImporterInterface $importer) {
+            static function (ImporterInterface $importer): string {
                 return $importer->getAkeneoEntity();
             },
             $allImporters
@@ -233,7 +233,6 @@ final class EnqueueCommand extends Command
         }
 
         $allImporters = array_combine($importersCodes, $allImporters);
-        Assert::isArray($allImporters);
 
         $importers = [];
         foreach ($importersToUse as $importerToUse) {

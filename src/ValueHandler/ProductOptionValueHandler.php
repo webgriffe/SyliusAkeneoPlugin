@@ -102,7 +102,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         $partialValueCode = $akeneoValue[0]['data'];
         $fullValueCode = $optionCode . '_' . $partialValueCode;
         $akeneoAttributeOption = $this->apiClient->findAttributeOption($optionCode, $partialValueCode);
-        if (!$akeneoAttributeOption) {
+        if ($akeneoAttributeOption === null) {
             throw new \RuntimeException(
                 sprintf(
                     'Cannot handle option value on Akeneo product "%s", the option of the parent product "%s" is ' .
@@ -122,7 +122,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         //                return $productOption->getCode() === $optionCode;
         //            }
         //        )->first();
-        if (!$productOption) {
+        if ($productOption === null) {
             throw new \RuntimeException(
                 sprintf(
                     'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',

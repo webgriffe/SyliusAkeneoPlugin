@@ -89,7 +89,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             }
 
             $productTranslation = $this->getOrCreateNewProductTranslation($product, $localeCode);
-            if ($productTranslation->getSlug()) {
+            if ($productTranslation->getSlug() !== null) {
                 continue;
             }
             $slug = $this->slugify->slugify($valueToSlugify);
@@ -118,7 +118,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
     {
         foreach ($this->translationLocaleProvider->getDefinedLocalesCodes() as $localeCode) {
             $productTranslation = $this->getOrCreateNewProductTranslation($product, $localeCode);
-            if ($productTranslation->getSlug()) {
+            if ($productTranslation->getSlug() !== null) {
                 continue;
             }
             $slug = $this->slugify->slugify($valueToSlugify);
@@ -145,7 +145,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         $anotherProductTranslation = $this->productTranslationRepository->findOneBy(
             ['slug' => $deduplicatedSlug, 'locale' => $localeCode]
         );
-        if ($anotherProductTranslation &&
+        if ($anotherProductTranslation !== null &&
             $anotherProductTranslation->getTranslatable() instanceof ProductInterface &&
             $anotherProductTranslation->getTranslatable()->getId() !== $product->getId()) {
             return $this->getDeduplicatedSlug($slug, $localeCode, $product, ++$increment);

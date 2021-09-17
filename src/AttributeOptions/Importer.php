@@ -72,7 +72,7 @@ final class Importer implements ImporterInterface
         $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);
         $syliusSelectAttributes = array_filter(
             array_map(
-                function (ProductAttributeInterface $attribute) {
+                static function (ProductAttributeInterface $attribute): ?string {
                     return $attribute->getCode();
                 },
                 $syliusSelectAttributes

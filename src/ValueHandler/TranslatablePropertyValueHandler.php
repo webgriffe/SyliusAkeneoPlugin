@@ -80,7 +80,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
 
-            if (!in_array($localeCode, $this->localeProvider->getDefinedLocalesCodes())) {
+            if (!in_array($localeCode, $this->localeProvider->getDefinedLocalesCodes(), true)) {
                 continue;
             }
 
