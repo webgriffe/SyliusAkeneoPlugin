@@ -33,7 +33,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
     /** @var string */
     private $syliusPropertyPath;
 
-    /** @var PropertyAccessorInterface */
+    /** @var PropertyAccessorInterface|null */
     private $propertyAccessor;
 
     public function __construct(
