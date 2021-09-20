@@ -40,15 +40,14 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
         FactoryInterface $channelPricingFactory,
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $currencyRepository,
-        PropertyAccessorInterface $propertyAccessor = null,
         string $akeneoAttribute,
+        PropertyAccessorInterface $propertyAccessor = null,
         string $syliusPropertyPath = 'price'
     ) {
         $this->channelPricingFactory = $channelPricingFactory;
         $this->channelRepository = $channelRepository;
         $this->currencyRepository = $currencyRepository;
         $this->akeneoAttribute = $akeneoAttribute;
-        $this->syliusPropertyPath = $syliusPropertyPath;
         if ($propertyAccessor === null) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
@@ -57,9 +56,8 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                 __CLASS__,
                 '2.0'
             );
-            $propertyAccessor = PropertyAccess::createPropertyAccessor();
         }
-        $this->propertyAccessor = $propertyAccessor;
+        $this->syliusPropertyPath = $syliusPropertyPath;
     }
 
     /**
@@ -108,18 +106,12 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                     $channelPricing->setChannelCode($channel->getCode());
                 }
 
-                if (!$this->propertyAccessor->isWritable($channelPricing, $this->syliusPropertyPath)) {
-                    throw new \RuntimeException(
-                        sprintf(
-                            'Property path "%s" is not writable on %s.',
-                            $this->syliusPropertyPath,
-                            get_class($channelPricing)
-                        )
-                    );
-                }
-
-                $this->propertyAccessor->setValue($channelPricing, $this->syliusPropertyPath, (int) round($price * 100));
-                Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
+                if ($this->propertyAccessor === null) {
+                    $channelPricing->setPrice((int) round($price * 100));
+                } else {
+                    $this->propertyAccessor->setValue($channelPricing, $this->syliusPropertyPath, (int) round($price * 100));
+                    Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
+                }                    
                 if ($isNewChannelPricing) {
                     $subject->addChannelPricing($channelPricing);
                 }
