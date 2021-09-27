@@ -49,8 +49,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
             $channelPricingFactory,
             $channelRepository,
             $currencyRepository,
+            self::AKENEO_ATTRIBUTE,
             $propertyAccessor,
-            self::AKENEO_ATTRIBUTE
         );
     }
 
@@ -223,48 +223,6 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
         $usChannelPricing->setChannelCode(Argument::type('string'))->shouldNotHaveBeenCalled();
     }
 
-    function it_throws_exception_during_handle_when_sylius_property_path_is_not_valid(
-        FactoryInterface $channelPricingFactory,
-        ChannelRepositoryInterface $channelRepository,
-        ProductVariantInterface $productVariant,
-        CurrencyInterface $eurCurrency,
-        ChannelPricingInterface $italianChannelPricing,
-        RepositoryInterface $currencyRepository,
-        PropertyAccessorInterface $propertyAccessor
-    ) {
-        $this->beConstructedWith(
-            $channelPricingFactory,
-            $channelRepository,
-            $currencyRepository,
-            $propertyAccessor,
-            self::AKENEO_ATTRIBUTE,
-            'fake'
-        );
-
-        $value = [
-            [
-                'locale' => null,
-                'scope' => null,
-                'data' => [
-                    [
-                        'amount' => '29.99',
-                        'currency' => 'EUR',
-                    ],
-                ],
-            ],
-        ];
-        $currencyRepository->findOneBy(['code' => 'EUR'])->willReturn($eurCurrency);
-        $channelPricingFactory->createNew()->willReturn($italianChannelPricing);
-        /** @noinspection PhpParamsInspection */
-        $productVariant->getChannelPricingForChannel(Argument::any())->willReturn(null);
-
-        $propertyAccessor->isWritable($italianChannelPricing, 'fake')->willReturn(false);
-
-        $this
-            ->shouldThrow(new \RuntimeException(sprintf('Property path "%s" is not writable on %s.', 'fake', get_class($italianChannelPricing->getWrappedObject()))))
-            ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE, $value]);
-    }
-
     function it_creates_new_channel_original_prices_for_the_matching_currency_channels(
         ProductVariantInterface $productVariant,
         ChannelRepositoryInterface $channelRepository,
@@ -280,8 +238,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
             $channelPricingFactory,
             $channelRepository,
             $currencyRepository,
-            $propertyAccessor,
             self::AKENEO_ATTRIBUTE,
+            $propertyAccessor,
             'original_price'
         );
 
@@ -339,8 +297,8 @@ class ChannelPricingValueHandlerSpec extends ObjectBehavior
             $channelPricingFactory,
             $channelRepository,
             $currencyRepository,
-            $propertyAccessor,
             self::AKENEO_ATTRIBUTE,
+            $propertyAccessor,
             'original_price'
         );
 

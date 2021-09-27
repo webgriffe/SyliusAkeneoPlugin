@@ -57,6 +57,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                 '2.0'
             );
         }
+        $this->propertyAccessor = $propertyAccessor;
         $this->syliusPropertyPath = $syliusPropertyPath;
     }
 
@@ -111,7 +112,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                 } else {
                     $this->propertyAccessor->setValue($channelPricing, $this->syliusPropertyPath, (int) round($price * 100));
                     Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
-                }                    
+                }
                 if ($isNewChannelPricing) {
                     $subject->addChannelPricing($channelPricing);
                 }
