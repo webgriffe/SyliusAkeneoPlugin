@@ -107,10 +107,10 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         'channel_pricing' => [
             'class' => ChannelPricingValueHandler::class,
             'arguments' => [
-                'sylius.factory.channel_pricing',
-                'sylius.repository.channel',
-                'sylius.repository.currency',
-                'property_accessor',
+                '$channelPricingFactory' => 'sylius.factory.channel_pricing',
+                '$channelRepository' => 'sylius.repository.channel',
+                '$currencyRepository' => 'sylius.repository.currency',
+                '$propertyAccessor' => 'property_accessor'
             ],
         ],
         'generic_property' => [
@@ -229,6 +229,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             $options = $valueHandler['options'] ?? [];
             $priority = $valueHandler['priority'] ?? 0;
 
+            $array_values = array_values($options);
             $arguments = array_merge(
                 array_map(
                     static function (string $argument): Reference {
@@ -236,7 +237,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                     },
                     self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments']
                 ),
-                array_values($options)
+                $type === 'channel_pricing' ? $options : $array_values
             );
             $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $key);
             $definition = new Definition(self::$valueHandlersTypesDefinitionsPrivate[$type]['class'], $arguments);
