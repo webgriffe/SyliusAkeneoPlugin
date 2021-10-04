@@ -47,13 +47,13 @@ webgriffe_sylius_akeneo:
       price:
         type: 'channel_pricing'
         options:
-          akeneo_attribute_code: 'price'
-          sylius_property_path: 'price'
+          $akeneoAttribute: 'price'
+          $syliusPropertyPath: 'price'
       original_price:
         type: 'channel_pricing'
         options:
-          akeneo_attribute_code: 'price'
-          sylius_property_path: 'original_price'
+          $akeneoAttribute: 'price'
+          $syliusPropertyPath: 'original_price'
       datasheet:
           type: 'file_attribute'
           options:
