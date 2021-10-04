@@ -16,32 +16,32 @@ webgriffe_sylius_akeneo:
       name:
         type: 'translatable_property'
         options:
-          akeneo_attribute_code: 'name'
-          sylius_translation_property_path: 'name'
+          $akeneoAttributeCode: 'name'
+          $translationPropertyPath: 'name'
       description:
         type: 'translatable_property'
         options:
-          akeneo_attribute_code: 'description'
-          sylius_translation_property_path: 'description'
+          $akeneoAttributeCode: 'description'
+          $translationPropertyPath: 'description'
       slug:
         type: 'immutable_slug'
         options:
-          akeneo_attribute_code: 'name'
+          $akeneoAttributeToSlugify: 'name'
       picture:
         type: 'image'
         options:
-          akeneo_attribute_code: 'picture'
-          sylius_image_type: 'picture'
+          $akeneoAttributeCode: 'picture'
+          $syliusImageType: 'picture'
       image:
         type: 'image'
         options:
-          akeneo_attribute_code: 'image'
-          sylius_image_type: 'image'
+          $akeneoAttributeCode: 'image'
+          $syliusImageType: 'image'
       variation_image:
         type: 'image'
         options:
-          akeneo_attribute_code: 'variation_image'
-          sylius_image_type: 'variation_image'
+          $akeneoAttributeCode: 'variation_image'
+          $syliusImageType: 'variation_image'
       product_option:
         type: 'product_option'
       price:
@@ -57,11 +57,11 @@ webgriffe_sylius_akeneo:
       datasheet:
           type: 'file_attribute'
           options:
-            akeneo_attribute_code: 'attachment'
-            download_path: '%sylius_core.public_dir%/media/attachment/product'
+            $akeneoAttributeCode: 'attachment'
+            $downloadPath: '%sylius_core.public_dir%/media/attachment/product'
       weight:
         type: 'metric_property'
         options:
-          akeneo_attribute_code: 'weight'
-          sylius_property_code: 'weight'
-          unit_measurement: 'KILOGRAM'
+          $akeneoAttributeCode: 'weight'
+          $propertyPath: 'weight'
+          $akeneoUnitMeasurementCode: 'KILOGRAM'
