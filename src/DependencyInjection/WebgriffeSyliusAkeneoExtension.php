@@ -116,67 +116,67 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         'generic_property' => [
             'class' => GenericPropertyValueHandler::class,
             'arguments' => [
-                'property_accessor',
+                '$propertyAccessor' => 'property_accessor',
             ],
         ],
         'image' => [
             'class' => ImageValueHandler::class,
             'arguments' => [
-                'sylius.factory.product_image',
-                'sylius.repository.product_image',
-                'webgriffe_sylius_akeneo.api_client',
+                '$productImageFactory' => 'sylius.factory.product_image',
+                '$productImageRepository' => 'sylius.repository.product_image',
+                '$apiClient' => 'webgriffe_sylius_akeneo.api_client',
             ],
         ],
         'immutable_slug' => [
             'class' => ImmutableSlugValueHandler::class,
             'arguments' => [
-                'webgriffe_sylius_akeneo.slugify',
-                'sylius.factory.product_translation',
-                'sylius.translation_locale_provider.admin',
-                'sylius.repository.product_translation',
+                '$slugify' => 'webgriffe_sylius_akeneo.slugify',
+                '$productTranslationFactory' => 'sylius.factory.product_translation',
+                '$translationLocaleProvider' => 'sylius.translation_locale_provider.admin',
+                '$productTranslationRepository' => 'sylius.repository.product_translation',
             ],
         ],
         'product_option' => [
             'class' => ProductOptionValueHandler::class,
             'arguments' => [
-                'webgriffe_sylius_akeneo.api_client',
-                'sylius.repository.product_option',
-                'sylius.factory.product_option_value',
-                'sylius.factory.product_option_value_translation',
-                'sylius.repository.product_option_value',
-                'sylius.translation_locale_provider.admin'
+                '$apiClient' => 'webgriffe_sylius_akeneo.api_client',
+                '$productOptionRepository' => 'sylius.repository.product_option',
+                '$productOptionValueFactory' => 'sylius.factory.product_option_value',
+                '$productOptionValueTranslationFactory' => 'sylius.factory.product_option_value_translation',
+                '$productOptionValueRepository' => 'sylius.repository.product_option_value',
+                '$translationLocaleProvider' => 'sylius.translation_locale_provider.admin'
             ],
         ],
         'translatable_property' => [
             'class' => TranslatablePropertyValueHandler::class,
             'arguments' => [
-                'property_accessor',
-                'sylius.factory.product_translation',
-                'sylius.factory.product_variant_translation',
-                'sylius.translation_locale_provider.admin',
+                '$propertyAccessor' => 'property_accessor',
+                '$productTranslationFactory' => 'sylius.factory.product_translation',
+                '$productVariantTranslationFactory' => 'sylius.factory.product_variant_translation',
+                '$localeProvider' => 'sylius.translation_locale_provider.admin',
             ],
         ],
         'generic_attribute' => [
             'class' => AttributeValueHandler::class,
             'arguments' => [
-                'sylius.repository.product_attribute',
-                'sylius.factory.product_attribute_value',
-                'sylius.translation_locale_provider.admin',
-                'webgriffe_sylius_akeneo.converter.value',
+                '$attributeRepository' => 'sylius.repository.product_attribute',
+                '$factory' => 'sylius.factory.product_attribute_value',
+                '$localeProvider' => 'sylius.translation_locale_provider.admin',
+                '$valueConverter' => 'webgriffe_sylius_akeneo.converter.value',
             ],
         ],
         'file_attribute' => [
             'class' => FileAttributeValueHandler::class,
             'arguments' => [
-                'webgriffe_sylius_akeneo.api_client',
-                'filesystem',
+                '$apiClient' => 'webgriffe_sylius_akeneo.api_client',
+                '$filesystem' => 'filesystem',
             ],
         ],
         'metric_property' => [
             'class' => MetricPropertyValueHandler::class,
             'arguments' => [
-                'property_accessor',
-                'webgriffe_sylius_akeneo.converter.unit_measurement_value'
+                '$propertyAccessor' => 'property_accessor',
+                '$unitMeasurementValueConverter' => 'webgriffe_sylius_akeneo.converter.unit_measurement_value'
             ],
         ],
     ];
@@ -229,7 +229,6 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             $options = $valueHandler['options'] ?? [];
             $priority = $valueHandler['priority'] ?? 0;
 
-            $array_values = array_values($options);
             $arguments = array_merge(
                 array_map(
                     static function (string $argument): Reference {
@@ -237,7 +236,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                     },
                     self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments']
                 ),
-                $type === 'channel_pricing' ? $options : $array_values
+                $options
             );
             $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $key);
             $definition = new Definition(self::$valueHandlersTypesDefinitionsPrivate[$type]['class'], $arguments);
