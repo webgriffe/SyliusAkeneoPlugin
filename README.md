@@ -98,21 +98,21 @@ webgriffe_sylius_akeneo:
       name:
         type: 'translatable_property'
         options:
-          akeneo_attribute_code: 'name'
-          sylius_translation_property_path: 'name'
+          $akeneoAttributeCode: 'name'
+          $translationPropertyPath: 'name'
       short_description:
         type: 'translatable_property'
         options:
-          akeneo_attribute_code: 'short_description'
-          sylius_translation_property_path: 'shortDescription'
+          $akeneoAttributeCode: 'short_description'
+          $translationPropertyPath: 'shortDescription'
       description:
         type: 'translatable_property'
         options:
-          akeneo_attribute_code: 'description'
-          sylius_translation_property_path: 'description'
+          $akeneoAttributeCode: 'description'
+          $translationPropertyPath: 'description'
 ```
 
-For each `translatable_property` value handler you have to configure, in `sylius_translation_property_path`, the Sylius product (and product variant) translation property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`.
+For each `translatable_property` value handler you have to configure, in `$translationPropertyPath`, the Sylius product (and product variant) translation property path of the property where to store the value of the Akeneo attribute whose code is configured with `$akeneoAttributeCode`.
 
 In the same way you can import other translatable properties values like meta keyword, meta description and other custom translatable properties you possibly added to your store.
 
@@ -130,26 +130,26 @@ webgriffe_sylius_akeneo:
       weight:
         type: 'generic_property'
         options:
-          akeneo_attribute_code: 'weight'
-          property_path: 'weight'
+          $akeneoAttributeCode: 'weight'
+          $propertyPath: 'weight'
       depth:
         type: 'generic_property'
         options:
-          akeneo_attribute_code: 'depth'
-          property_path: 'depth'
+          $akeneoAttributeCode: 'depth'
+          $propertyPath: 'depth'
       width:
         type: 'generic_property'
         options:
-          akeneo_attribute_code: 'width'
-          property_path: 'width'
+          $akeneoAttributeCode: 'width'
+          $propertyPath: 'width'
       height:
         type: 'generic_property'
         options:
-          akeneo_attribute_code: 'height'
-          property_path: 'height'      
+          $akeneoAttributeCode: 'height'
+          $propertyPath: 'height'      
 ```
 
-For each `generic_property` value handler you have to configure, in `property_path`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`.
+For each `generic_property` value handler you have to configure, in `$propertyPath`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `$akeneoAttributeCode`.
 
 In the same way you can import other product properties like shipping category and other custom properties you possibly added to your store.
 
@@ -169,10 +169,10 @@ webgriffe_sylius_akeneo:
       slug:
         type: 'immutable_slug'
         options:
-          akeneo_attribute_code: 'name'      
+          $akeneoAttributeToSlugify: 'name'      
 ```
 
-In the `akeneo_attribute_code` option you have to set the Akeneo attribute code that you want to sluggify and set in the Sylius product slug.
+In the `$akeneoAttributeToSlugify` option you have to set the Akeneo attribute code that you want to sluggify and set in the Sylius product slug.
 
 Otherwise, If you have a slug attribute directly on Akeneo, you can import it like any other translatable property using a **translatable property value handler**:
 
@@ -186,8 +186,8 @@ webgriffe_sylius_akeneo:
       slug:
         type: 'translatable_property'
         options:
-          akeneo_attribute_code: 'slug'
-          sylius_translation_property_path: 'slug'
+          $akeneoAttributeCode: 'slug'
+          $translationPropertyPath: 'slug'
 ```
 
 ### Importing product images
@@ -204,21 +204,21 @@ webgriffe_sylius_akeneo:
       main_image:
         type: 'image'
         options:
-          akeneo_attribute_code: 'main_image'
-          sylius_image_type: 'main_image'
+          $akeneoAttributeCode: 'main_image'
+          $syliusImageType: 'main_image'
       secondary_image_1:
         type: 'image'
         options:
-          akeneo_attribute_code: 'secondary_image_1'
-          sylius_image_type: 'secondary_image_1'
+          $akeneoAttributeCode: 'secondary_image_1'
+          $syliusImageType: 'secondary_image_1'
       secondary_image_2:
         type: 'image'
         options:
-          akeneo_attribute_code: 'secondary_image_2'
-          sylius_image_type: 'secondary_image_2'
+          $akeneoAttributeCode: 'secondary_image_2'
+          $syliusImageType: 'secondary_image_2'
 ```
 
-In the `akeneo_attribute_code` option you have to set the code of the Akeneo attribute where you store product images and in the `sylius_image_type` you have to configure the string to set on Sylius as product image type.
+In the `$akeneoAttributeCode` option you have to set the code of the Akeneo attribute where you store product images and in the `$syliusImageType` you have to configure the string to set on Sylius as product image type.
 
 ### Importing product attributes values
 
@@ -261,8 +261,8 @@ webgriffe_sylius_akeneo:
       technical_sheet:
         type: 'file_attribute'
         options:
-          akeneo_attribute_code: 'technical_sheet'
-          download_path: '%sylius_core.public_dir%/media/product_technical_sheets'
+          $akeneoAttributeCode: 'technical_sheet'
+          $downloadPath: '%sylius_core.public_dir%/media/product_technical_sheets'
 ```
 
 After a product import you'll have the products technical sheets downloaded in the `%sylius_core.public_dir%/media/product_technical_sheets` directory and the path of the techincal sheet file of each product saved in the `technical_sheet` text attribute (the path will be relative to the download path). So, in your product show template you can have the following to allow users to download technical sheets:
@@ -309,13 +309,13 @@ webgriffe_sylius_akeneo:
       price:
         type: 'channel_pricing'
         options:
-          akeneo_attribute_code: 'price'      
+          $akeneoAttribute: 'price'      
 ```
 
-In the `akeneo_attribute_code` option you have to set the code of the **Akeneo price attribute** where you store your products prices. Then they will be imported into Sylius for channels whose base currency is the same as the price currency on Akeneo.
+In the `$akeneoAttribute` option you have to set the code of the **Akeneo price attribute** where you store your products prices. Then they will be imported into Sylius for channels whose base currency is the same as the price currency on Akeneo.
 
-If you also manage the original price on Akeneo, you can import it using the same channel price value handler. Add the `sylius_property_path` option to the configuration and specify which price you are importing: price (default) or original_price.
-As above use the `akeneo_attribute_code` option to specify the code of the **Akeneo original price attribute** where you store your products original prices.
+If you also manage the original price on Akeneo, you can import it using the same channel price value handler. Add the `$syliusPropertyPath` option to the configuration and specify which price you are importing: price (default) or original_price.
+As above use the `$akeneoAttribute` option to specify the code of the **Akeneo original price attribute** where you store your products original prices.
 
 ```yaml
 # config/packages/webgriffe_sylius_akeneo_plugin.yaml
@@ -327,13 +327,13 @@ webgriffe_sylius_akeneo:
       price:
         type: 'channel_pricing'
         options:
-          akeneo_attribute_code: 'price'
-          sylius_property_path: 'price' # Not required, it is the default
+          $akeneoAttribute: 'price'
+          $syliusPropertyPath: 'price' # Not required, it is the default
       original_price:
         type: 'channel_pricing'
         options:
-          akeneo_attribute_code: 'original_price'
-          sylius_property_path: 'original_price'
+          $akeneoAttribute: 'original_price'
+          $syliusPropertyPath: 'original_price'
 ```
 
 ### Importing product metrical properties
@@ -352,19 +352,19 @@ webgriffe_sylius_akeneo:
       weight:
         type: 'metric_property'
         options:
-          akeneo_attribute_code: 'weight'
-          sylius_property_code: 'weight'
+          $akeneoAttributeCode: 'weight'
+          $propertyPath: 'weight'
       height:
         type: 'metric_property'
         options:
-          akeneo_attribute_code: 'height'
-          sylius_property_code: 'height'
-          unit_measurement: 'CENTIMETER'
+          $akeneoAttributeCode: 'height'
+          $propertyPath: 'height'
+          $akeneoUnitMeasurementCode: 'CENTIMETER'
 ```
 
-For each `metric_property` value handler you have to configure, in `sylius_property_code`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `akeneo_attribute_code`. Be sure this is a metrical attribute on Akeneo.
+For each `metric_property` value handler you have to configure, in `$propertyPath`, the Sylius product property path of the property where to store the value of the Akeneo attribute whose code is configured with `$akeneoAttributeCode`. Be sure this is a metrical attribute on Akeneo.
 In the same way you can import other product metrical properties like height and other custom properties you possibly added to your store.
-In addition, you can decide in which unit of measure to import the value. To do this, enter the desired Akeneo unit of measurement code in the attribute `unit_measurement`. If this field is not specified, the plugin will import the value using Akeneo's standard unit of measure.
+In addition, you can decide in which unit of measure to import the value. To do this, enter the desired Akeneo unit of measurement code in the attribute `$akeneoUnitMeasurementCode`. If this field is not specified, the plugin will import the value using Akeneo's standard unit of measure.
 For more information about Akeneo's units of measurement, consult the [documentation](https://help.akeneo.com/pim/serenity/articles/manage-your-measurements.html).
 
 ### Importing product-taxons associations
@@ -560,13 +560,13 @@ For more detail on how the Product importer works look at the code of the `Webgr
 
 By default, the provided `Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver` is configured with value handlers specified in the `webgriffe_sylius_akeneo.value_handlers.product` array as explained in the configuration paragraph. This plugin already provides some value handler implementations that are:
 
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler` (type `channel_pricing`): it sets the value found on a given Akeneo price attribute (`options.akeneo_attribute_code`) as the Sylius product's channels price for channels whose base currency is the price currency of the Akeneo price.
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler` (type `image`): it downloads the image found on a given Akeneo image attribute (`options.akeneo_attribute_code`) and sets it as a Sylius product image with a provided type string (`options.sylius_image_type`).
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler` (type `immutable_slug`): it slugifies the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) and sets it on the Sylius slug product translation property.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler` (type `channel_pricing`): it sets the value found on a given Akeneo price attribute (`options.$akeneoAttribute`) as the Sylius product's channels price for channels whose base currency is the price currency of the Akeneo price.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler` (type `image`): it downloads the image found on a given Akeneo image attribute (`options.$akeneoAttributeCode`) and sets it as a Sylius product image with a provided type string (`options.$syliusImageType`).
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImmutableSlugValueHandler` (type `immutable_slug`): it slugifies the value found on a given Akeneo attribute (`options.$akeneoAttributeToSlugify`) and sets it on the Sylius slug product translation property.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler` (type `product_option`): it sets the value found on a given Akeneo attribute as a Sylius product option value on the product variant.
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler` (type `translatable_property`): using the [Symofony's Property Access component](https://symfony.com/doc/current/components/property_access.html), it sets the value found on a given Akeneo attribute (`options.akeneo_attribute_code`) on a given property path (`options.sylius_translation_property_path`) of both product and product variant translations.
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler` (type `translatable_property`): using the [Symofony's Property Access component](https://symfony.com/doc/current/components/property_access.html), it sets the value found on a given Akeneo attribute (`options.$akeneoAttributeCode`) on a given property path (`options.$translationPropertyPath`) of both product and product variant translations.
 * `Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler` (type `generic_attribute`) it will automatically handle Sylius attributes whose attribute code matches Akeneo attribute code.
-* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler` (type `file_attribute`): it saves the file downloaded from the Akeneo file attribute (`options.akeneo_attribute_code`) to the given destination path (`options.download_path`)
+* `Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler` (type `file_attribute`): it saves the file downloaded from the Akeneo file attribute (`options.$akeneoAttributeCode`) to the given destination path (`options.$downloadPath`)
 
 To add a custom value handler to the resolver you can implement your own by implementing the `Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface` and then tag it with the `webgriffe_sylius_akeneo.product.value_handler` tag:
 
