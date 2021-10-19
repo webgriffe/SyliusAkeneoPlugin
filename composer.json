@@ -76,5 +76,8 @@
         "post-create-project-cmd": [
             "php bin/create_node_symlink.php"
         ]
+    },
+    "conflict": {
+        "doctrine/dbal": "^3.0"
     }
 }
