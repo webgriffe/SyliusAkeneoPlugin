@@ -207,7 +207,6 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             $product = $this->productFactory->createNew();
         }
         Assert::isInstanceOf($product, ProductInterface::class);
-        /** @var ProductInterface $product */
         $product->setCode($identifier);
 
         return $product;
@@ -280,7 +279,6 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         $parentCode = $productVariantResponse['parent'];
         $product = $this->productFactory->createNew();
         Assert::isInstanceOf($product, ProductInterface::class);
-        /** @var ProductInterface $product */
         $product->setCode($parentCode);
         foreach ($this->productOptionsResolver->resolve($productVariantResponse) as $productOption) {
             $product->addOption($productOption);

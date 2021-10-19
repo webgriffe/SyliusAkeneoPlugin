@@ -57,7 +57,6 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
     private function getUnitMeasurementFamilyByUnitMeasurementCode(string $unitMeasurementCode): array
     {
         $unitMeasurementFamilies = $this->apiClient->getMeasurementFamilies();
-        /** @var array{code: string, labels: array{localeCode: string}, standard_unit_code: string, units: array{unitCode: array{code: string, labels: array<string, string>, convert_from_standard: array{operator: string, value: string}, symbol: string}}} $unitMeasurementFamily */
         foreach ($unitMeasurementFamilies as $unitMeasurementFamily) {
             if (array_key_exists($unitMeasurementCode, $unitMeasurementFamily['units'])) {
                 return $unitMeasurementFamily;
@@ -144,7 +143,6 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
     private function getOperationsForDefaultFromUnitMeasurement(array $units, string $unitMeasurementCode): array
     {
         $operationsToDefaultUnitMeasurement = [];
-        /** @var array{code: string, labels: array<string, string>, convert_from_standard: array{operator: string, value: string}, symbol: string} $unitMeasurement */
         foreach ($units as $unitMeasurement) {
             if ($unitMeasurement['code'] === $unitMeasurementCode) {
                 $operationsToDefaultUnitMeasurement = $unitMeasurement['convert_from_standard'];

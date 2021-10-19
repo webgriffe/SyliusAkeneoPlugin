@@ -72,7 +72,6 @@ final class ImageValueHandler implements ValueHandlerInterface
 
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        /** @var ProductInterface $product */
 
         if ($value[0]['data'] === null) {
             $this->removeAlreadyExistentVariantImages($subject, $product);
@@ -87,7 +86,6 @@ final class ImageValueHandler implements ValueHandlerInterface
         if ($productImage === null) {
             $productImage = $this->productImageFactory->createNew();
             Assert::isInstanceOf($productImage, ProductImageInterface::class);
-            /** @var ProductImageInterface $productImage */
             $productImage->setType($this->syliusImageType);
             $subject->addImage($productImage);
             $product->addImage($productImage);

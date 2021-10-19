@@ -137,7 +137,6 @@ final class EnqueueCommand extends Command
                 if ($this->isEntityAlreadyQueuedToImport($importer->getAkeneoEntity(), $identifier)) {
                     continue;
                 }
-                /** @var QueueItemInterface|object $queueItem */
                 $queueItem = $this->queueItemFactory->createNew();
                 Assert::isInstanceOf($queueItem, QueueItemInterface::class);
                 $queueItem->setAkeneoEntity($importer->getAkeneoEntity());
@@ -184,7 +183,6 @@ final class EnqueueCommand extends Command
         try {
             $content = file_get_contents($filepath);
             Assert::string($content);
-            /** @var string $content */
             $sinceDate = new \DateTime(trim($content));
         } catch (\Throwable $t) {
             throw new \RuntimeException(sprintf('The file "%s" must contain a valid datetime', $filepath), 0, $t);
@@ -234,11 +232,13 @@ final class EnqueueCommand extends Command
 
         $allImporters = array_combine($importersCodes, $allImporters);
 
+        /** @var ImporterInterface[] $importers */
         $importers = [];
         foreach ($importersToUse as $importerToUse) {
             if (!array_key_exists($importerToUse, $allImporters)) {
                 throw new \InvalidArgumentException(sprintf('Importer "%s" does not exists.', $importerToUse));
             }
+            Assert::isInstanceOf($allImporters[$importerToUse], ImporterInterface::class);
             $importers[] = $allImporters[$importerToUse];
         }
 

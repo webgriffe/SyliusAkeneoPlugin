@@ -80,7 +80,6 @@ final class Importer implements ImporterInterface
         if ($product === null) {
             throw new \RuntimeException(sprintf('Cannot find product "%s" on Sylius.', $productCode));
         }
-        /** @var ProductInterface $product */
         $associations = $productVariantResponse['associations'];
         foreach ($associations as $associationTypeCode => $associationInfo) {
             /** @var ProductAssociationTypeInterface|null $productAssociationType */
@@ -115,7 +114,6 @@ final class Importer implements ImporterInterface
                 ['owner' => $product, 'type' => $productAssociationType]
             );
             if ($productAssociation === null) {
-                /** @var ProductAssociationInterface|object $productAssociation */
                 $productAssociation = $this->productAssociationFactory->createNew();
                 Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
                 $productAssociation->setOwner($product);

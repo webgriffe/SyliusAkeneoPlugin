@@ -86,7 +86,6 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        /** @var ProductInterface $product */
         if (count($akeneoValue) > 1) {
             throw new \RuntimeException(
                 sprintf(

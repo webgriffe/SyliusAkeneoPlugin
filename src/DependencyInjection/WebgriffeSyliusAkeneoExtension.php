@@ -285,7 +285,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $importerRegistryDefinition = $container->findDefinition('webgriffe_sylius_akeneo.importer_registry');
 
         $taggedImporters = $container->findTaggedServiceIds(self::IMPORTER_TAG);
-        foreach ($taggedImporters as $id => $tags) {
+        foreach ($taggedImporters as $id => $_tags) {
             $importerRegistryDefinition->addMethodCall('add', [new Reference($id)]);
         }
     }
@@ -300,7 +300,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
         /** @var array<string, array> $taggedReconcilers */
         $taggedReconcilers = $container->findTaggedServiceIds(self::RECONCILER_TAG);
-        foreach ($taggedReconcilers as $id => $tags) {
+        foreach ($taggedReconcilers as $id => $_tags) {
             $importerRegistryDefinition->addMethodCall('add', [new Reference($id)]);
         }
     }
