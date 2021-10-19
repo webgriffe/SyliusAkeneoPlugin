@@ -90,7 +90,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             $headers,
             [
                 'Content-Type' => 'application/json',
-                'Authorization' => sprintf('Bearer %s', $this->accessToken),
+                'Authorization' => sprintf('Bearer %s', (string) $this->accessToken),
             ]
         );
         $request = new Request($method, $uri, $headers);

@@ -137,9 +137,9 @@ final class EnqueueCommand extends Command
                 if ($this->isEntityAlreadyQueuedToImport($importer->getAkeneoEntity(), $identifier)) {
                     continue;
                 }
+                /** @var QueueItemInterface|object $queueItem */
                 $queueItem = $this->queueItemFactory->createNew();
                 Assert::isInstanceOf($queueItem, QueueItemInterface::class);
-                /** @var QueueItemInterface $queueItem */
                 $queueItem->setAkeneoEntity($importer->getAkeneoEntity());
                 $queueItem->setAkeneoIdentifier($identifier);
                 $queueItem->setCreatedAt(new \DateTime());
