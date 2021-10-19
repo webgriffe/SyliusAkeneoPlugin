@@ -84,7 +84,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         $imageFile = $this->apiClient->downloadFile($mediaCode);
 
         $productImage = $this->getExistentProductVariantImage($subject, $product);
-        if (!$productImage) {
+        if ($productImage === null) {
             $productImage = $this->productImageFactory->createNew();
             Assert::isInstanceOf($productImage, ProductImageInterface::class);
             /** @var ProductImageInterface $productImage */

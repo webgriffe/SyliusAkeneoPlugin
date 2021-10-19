@@ -118,7 +118,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     public function import(string $identifier): void
     {
         $productVariantResponse = $this->apiClient->findProduct($identifier);
-        if (!$productVariantResponse) {
+        if ($productVariantResponse === null) {
             throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
         }
 
@@ -195,7 +195,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         $parentCode = $productVariantResponse['parent'];
         if ($parentCode !== null) {
             $product = $this->productRepository->findOneByCode($parentCode);
-            if (!$product) {
+            if ($product === null) {
                 $product = $this->createNewProductFromAkeneoProduct($productVariantResponse);
             }
 
@@ -203,7 +203,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         }
 
         $product = $this->productRepository->findOneByCode($identifier);
-        if (!$product) {
+        if ($product === null) {
             $product = $this->productFactory->createNew();
         }
         Assert::isInstanceOf($product, ProductInterface::class);
@@ -249,10 +249,10 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     {
         $akeneoTaxons = new ArrayCollection($this->taxonsResolver->resolve($akeneoProduct));
         $syliusTaxons = $product->getTaxons();
-        $akeneoTaxonsCodes = $akeneoTaxons->map(function (TaxonInterface $taxon) {return $taxon->getCode(); })->toArray();
-        $syliusTaxonsCodes = $syliusTaxons->map(function (TaxonInterface $taxon) {return $taxon->getCode(); })->toArray();
+        $akeneoTaxonsCodes = $akeneoTaxons->map(function (TaxonInterface $taxon): ?string {return $taxon->getCode(); })->toArray();
+        $syliusTaxonsCodes = $syliusTaxons->map(function (TaxonInterface $taxon): ?string {return $taxon->getCode(); })->toArray();
         $toAddTaxons = $akeneoTaxons->filter(
-            function (TaxonInterface $taxon) use ($syliusTaxonsCodes) {
+            function (TaxonInterface $taxon) use ($syliusTaxonsCodes): bool {
                 return !in_array($taxon->getCode(), $syliusTaxonsCodes, true);
             }
         );
@@ -325,7 +325,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         /** @var ProductVariantInterface[] $productVariantsToReconcile */
         $productVariantsToReconcile = $this->productVariantRepository->findAll();
         /** @var string[] $identifiersToReconcile */
-        $identifiersToReconcile = array_map(function ($productVariant) {
+        $identifiersToReconcile = array_map(static function ($productVariant): ?string {
             return $productVariant->getCode();
         }, $productVariantsToReconcile);
 
@@ -334,7 +334,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         foreach ($identifiersToDisable as $productVariantIdentifierToDisable) {
             /** @var ?ProductVariantInterface $productVariantToDisable */
             $productVariantToDisable = $this->productVariantRepository->findOneBy(['code' => $productVariantIdentifierToDisable]);
-            if (!$productVariantToDisable || !$productVariantToDisable->isEnabled()) {
+            if ($productVariantToDisable === null || !$productVariantToDisable->isEnabled()) {
                 continue;
             }
             $productVariantToDisable->setEnabled(false);
@@ -343,7 +343,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
             /** @var ?ProductInterface $product */
             $product = $productVariantToDisable->getProduct();
-            if (!$product || !$product->isEnabled() || count($product->getEnabledVariants()) > 0) {
+            if ($product === null || !$product->isEnabled() || count($product->getEnabledVariants()) > 0) {
                 continue;
             }
 

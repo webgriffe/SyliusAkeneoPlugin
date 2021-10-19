@@ -74,7 +74,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         /** @var AttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
 
-        return $attribute && $this->hasSupportedType($attribute);
+        return $attribute !== null && $this->hasSupportedType($attribute);
     }
 
     /**

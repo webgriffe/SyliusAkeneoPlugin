@@ -65,7 +65,7 @@ final class Importer implements ImporterInterface
     public function import(string $identifier): void
     {
         $productVariantResponse = $this->apiClient->findProduct($identifier);
-        if (!$productVariantResponse) {
+        if ($productVariantResponse === null) {
             throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
         }
 
@@ -159,7 +159,7 @@ final class Importer implements ImporterInterface
     private function getProductsToAdd(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
     {
         return $akeneoAssociations->filter(
-            static function (BaseProductInterface $productToAssociate) use ($syliusAssociations) {
+            static function (BaseProductInterface $productToAssociate) use ($syliusAssociations): bool {
                 return !$syliusAssociations->contains($productToAssociate);
             }
         );
@@ -173,7 +173,7 @@ final class Importer implements ImporterInterface
     private function getProductsToRemove(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
     {
         return $syliusAssociations->filter(
-            static function (BaseProductInterface $productToAssociate) use ($akeneoAssociations) {
+            static function (BaseProductInterface $productToAssociate) use ($akeneoAssociations): bool {
                 return !$akeneoAssociations->contains($productToAssociate);
             }
         );

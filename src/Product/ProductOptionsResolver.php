@@ -44,7 +44,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
     {
         /** @var string|null $parentCode */
         $parentCode = $akeneoProduct['parent'] ?? null;
-        if (!$parentCode) {
+        if ($parentCode === null) {
             throw new \RuntimeException(
                 sprintf(
                     'Cannot resolve product options for Akeneo product "%s" because it does not belong to any ' .
@@ -54,13 +54,13 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
             );
         }
         $productResponse = $this->apiClient->findProductModel($parentCode);
-        if (!$productResponse) {
+        if ($productResponse === null) {
             throw new \RuntimeException(sprintf('Cannot find product model "%s" on Akeneo.', $parentCode));
         }
         $familyCode = $productResponse['family'];
         $familyVariantCode = $productResponse['family_variant'];
         $familyVariantResponse = $this->apiClient->findFamilyVariant($familyCode, $familyVariantCode);
-        if (!$familyVariantResponse) {
+        if ($familyVariantResponse === null) {
             throw new \RuntimeException(
                 sprintf(
                     'Cannot find family variant "%s" within family "%s" on Akeneo.',
@@ -73,7 +73,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
         foreach ($familyVariantResponse['variant_attribute_sets'][0]['axes'] as $position => $attributeCode) {
             /** @var ProductOptionInterface|null $productOption */
             $productOption = $this->productOptionRepository->findOneBy(['code' => $attributeCode]);
-            if ($productOption) {
+            if ($productOption !== null) {
                 $productOptions[] = $productOption;
 
                 continue;
@@ -83,7 +83,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
             $productOption->setCode($attributeCode);
             $productOption->setPosition($position);
             $attributeResponse = $this->apiClient->findAttribute($attributeCode);
-            if (!$attributeResponse) {
+            if ($attributeResponse === null) {
                 throw new \RuntimeException(
                     sprintf(
                         'Cannot resolve product options for product "%s" because one of its variant attributes, ' .
