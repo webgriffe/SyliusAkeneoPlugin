@@ -79,6 +79,7 @@
         ]
     },
     "conflict": {
-        "doctrine/dbal": "^3.0"
+        "doctrine/dbal": "^3.0",
+        "doctrine/orm": "^2.10.0"
     }
 }
