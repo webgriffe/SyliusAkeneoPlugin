@@ -255,7 +255,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     {
         try {
             $response = $this->authenticatedRequest($endpoint, 'GET', []);
-        } catch (\HttpException $exception) {
+        } catch (\Throwable $exception) {
             if ($exception->getCode() !== 404) {
                 throw $exception;
             }
