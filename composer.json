@@ -11,9 +11,13 @@
         "php": "^7.4 || ^8.0",
         "cocur/slugify": "^4.0",
         "guzzlehttp/guzzle": "^6.5",
-        "sylius/sylius": "~1.9.0 || ~1.10.0@beta",
+        "sylius/sylius": "~1.9.0 || ~1.10.0",
         "symfony/deprecation-contracts": "^2.2",
         "symfony/lock": "^4.4|^5.0"
+    },
+    "conflict": {
+        "doctrine/dbal": "^3.0",
+        "doctrine/orm": "^2.10.0"
     },
     "require-dev": {
         "ext-json": "*",
@@ -78,9 +82,5 @@
         "post-create-project-cmd": [
             "php bin/create_node_symlink.php"
         ]
-    },
-    "conflict": {
-        "doctrine/dbal": "^3.0",
-        "doctrine/orm": "^2.10.0"
     }
 }
