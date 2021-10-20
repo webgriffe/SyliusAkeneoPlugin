@@ -153,7 +153,7 @@ final class EnqueueCommand extends Command
             }
         }
 
-        if (!empty($sinceFilePath)) {
+        if ($sinceFilePath !== null && $sinceFilePath !== '') {
             $this->writeSinceDateFile($sinceFilePath, $runDate);
         }
 
