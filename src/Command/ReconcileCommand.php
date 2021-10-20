@@ -101,6 +101,7 @@ final class ReconcileCommand extends Command
         }
 
         $allReconcilers = array_combine($reconcilersCodes, $allReconcilers);
+        Assert::isArray($allReconcilers);
 
         /** @var ReconcilerInterface[] $reconcilers */
         $reconcilers = [];

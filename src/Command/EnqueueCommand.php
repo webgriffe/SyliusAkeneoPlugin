@@ -231,6 +231,7 @@ final class EnqueueCommand extends Command
         }
 
         $allImporters = array_combine($importersCodes, $allImporters);
+        Assert::isArray($allImporters);
 
         /** @var ImporterInterface[] $importers */
         $importers = [];
