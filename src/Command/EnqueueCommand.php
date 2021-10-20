@@ -230,6 +230,7 @@ final class EnqueueCommand extends Command
             return $allImporters;
         }
 
+        /** @var ImporterInterface[]|array<string, ImporterInterface>|false $allImporters */
         $allImporters = array_combine($importersCodes, $allImporters);
         Assert::isArray($allImporters);
 
@@ -239,7 +240,6 @@ final class EnqueueCommand extends Command
             if (!array_key_exists($importerToUse, $allImporters)) {
                 throw new \InvalidArgumentException(sprintf('Importer "%s" does not exists.', $importerToUse));
             }
-            Assert::isInstanceOf($allImporters[$importerToUse], ImporterInterface::class);
             $importers[] = $allImporters[$importerToUse];
         }
 

@@ -100,8 +100,9 @@ final class ReconcileCommand extends Command
             return $allReconcilers;
         }
 
+        /** @var ReconcilerInterface[]|array<string, ReconcilerInterface>|false $allReconcilers */
         $allReconcilers = array_combine($reconcilersCodes, $allReconcilers);
-        Assert::isArray($allReconcilers);
+        Assert::notFalse($allReconcilers);
 
         /** @var ReconcilerInterface[] $reconcilers */
         $reconcilers = [];
@@ -109,7 +110,6 @@ final class ReconcileCommand extends Command
             if (!array_key_exists($reconcilerToUse, $allReconcilers)) {
                 throw new \InvalidArgumentException(sprintf('Reconciler "%s" does not exists.', $reconcilerToUse));
             }
-            Assert::isInstanceOf($allReconcilers[$reconcilerToUse], ReconcilerInterface::class);
             $reconcilers[] = $allReconcilers[$reconcilerToUse];
         }
 
