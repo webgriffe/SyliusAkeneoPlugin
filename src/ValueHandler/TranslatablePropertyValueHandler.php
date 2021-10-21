@@ -80,7 +80,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
 
-            if (!in_array($localeCode, $this->localeProvider->getDefinedLocalesCodes())) {
+            if (!in_array($localeCode, $this->localeProvider->getDefinedLocalesCodes(), true)) {
                 continue;
             }
 
@@ -151,7 +151,6 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         if ($translation->getLocale() !== $localeCode) {
             $translation = $this->productTranslationFactory->createNew();
             Assert::isInstanceOf($translation, ProductTranslationInterface::class);
-            /** @var ProductTranslationInterface $translation */
             $translation->setLocale($localeCode);
             $subject->addTranslation($translation);
         }
@@ -167,7 +166,6 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         if ($translation->getLocale() !== $localeCode) {
             $translation = $this->productVariantTranslationFactory->createNew();
             Assert::isInstanceOf($translation, ProductVariantTranslationInterface::class);
-            /** @var ProductVariantTranslationInterface $translation */
             $translation->setLocale($localeCode);
             $subject->addTranslation($translation);
         }

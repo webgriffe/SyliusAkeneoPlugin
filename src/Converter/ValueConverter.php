@@ -65,7 +65,7 @@ final class ValueConverter implements ValueConverterInterface
             $possibleOptionsCodes = array_map('strval', array_keys($choices));
             $invalid = array_diff($value, $possibleOptionsCodes);
 
-            if (!empty($invalid)) {
+            if (count($invalid) > 0) {
                 throw new \InvalidArgumentException(
                     sprintf(
                         'This select attribute can only save existing attribute options. ' .

@@ -49,11 +49,9 @@ final class ProductEnqueueController extends AbstractController
         $alreadyEnqueued = [];
         $enqueued = [];
         foreach ($product->getVariants() as $productVariant) {
-            /** @var ?string $productVariantCode */
             $productVariantCode = $productVariant->getCode();
             Assert::notNull($productVariantCode);
 
-            /** @var array $productEnqueued */
             $productEnqueued = $this->queueItemRepository->findBy([
                 'akeneoIdentifier' => $productVariantCode,
                 'akeneoEntity' => 'Product',

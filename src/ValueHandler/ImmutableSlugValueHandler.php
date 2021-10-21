@@ -73,11 +73,9 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
         foreach ($value as $item) {
-            /** @var ProductInterface $product */
             $localeCode = $item['locale'];
             $valueToSlugify = $item['data'];
             Assert::string($valueToSlugify);
-            /** @var string $valueToSlugify */
             if (!$localeCode) {
                 $this->setSlugOnAllTranslations($product, $valueToSlugify);
 
@@ -89,7 +87,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             }
 
             $productTranslation = $this->getOrCreateNewProductTranslation($product, $localeCode);
-            if ($productTranslation->getSlug()) {
+            if ($productTranslation->getSlug() !== null) {
                 continue;
             }
             $slug = $this->slugify->slugify($valueToSlugify);
@@ -106,7 +104,6 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         if ($translation->getLocale() !== $localeCode) {
             $translation = $this->productTranslationFactory->createNew();
             Assert::isInstanceOf($translation, ProductTranslationInterface::class);
-            /** @var ProductTranslationInterface $translation */
             $translation->setLocale($localeCode);
             $product->addTranslation($translation);
         }
@@ -118,7 +115,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
     {
         foreach ($this->translationLocaleProvider->getDefinedLocalesCodes() as $localeCode) {
             $productTranslation = $this->getOrCreateNewProductTranslation($product, $localeCode);
-            if ($productTranslation->getSlug()) {
+            if ($productTranslation->getSlug() !== null) {
                 continue;
             }
             $slug = $this->slugify->slugify($valueToSlugify);
@@ -131,24 +128,24 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         string $slug,
         string $localeCode,
         ProductInterface $product,
-        int $increment = 0
+        int $_increment = 0
     ): string {
-        if ($increment > self::MAX_DEDUPLICATION_INCREMENT) {
+        if ($_increment > self::MAX_DEDUPLICATION_INCREMENT) {
             throw new \RuntimeException('Maximum slug deduplication increment reached.');
         }
         $deduplicatedSlug = $slug;
-        if ($increment > 0) {
-            $deduplicatedSlug .= '-' . $increment;
+        if ($_increment > 0) {
+            $deduplicatedSlug .= '-' . $_increment;
         }
 
         /** @var ProductTranslationInterface|null $anotherProductTranslation */
         $anotherProductTranslation = $this->productTranslationRepository->findOneBy(
             ['slug' => $deduplicatedSlug, 'locale' => $localeCode]
         );
-        if ($anotherProductTranslation &&
+        if ($anotherProductTranslation !== null &&
             $anotherProductTranslation->getTranslatable() instanceof ProductInterface &&
             $anotherProductTranslation->getTranslatable()->getId() !== $product->getId()) {
-            return $this->getDeduplicatedSlug($slug, $localeCode, $product, ++$increment);
+            return $this->getDeduplicatedSlug($slug, $localeCode, $product, ++$_increment);
         }
 
         return $deduplicatedSlug;

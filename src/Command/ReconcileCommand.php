@@ -86,7 +86,7 @@ final class ReconcileCommand extends Command
             return [];
         }
         $reconcilersCodes = array_map(
-            static function (ReconcilerInterface $reconciler) {
+            static function (ReconcilerInterface $reconciler): string {
                 return $reconciler->getAkeneoEntity();
             },
             $allReconcilers
@@ -100,9 +100,11 @@ final class ReconcileCommand extends Command
             return $allReconcilers;
         }
 
+        /** @var ReconcilerInterface[]|array<string, ReconcilerInterface>|false $allReconcilers */
         $allReconcilers = array_combine($reconcilersCodes, $allReconcilers);
-        Assert::isArray($allReconcilers);
+        Assert::notFalse($allReconcilers);
 
+        /** @var ReconcilerInterface[] $reconcilers */
         $reconcilers = [];
         foreach ($reconcilersToUse as $reconcilerToUse) {
             if (!array_key_exists($reconcilerToUse, $allReconcilers)) {
