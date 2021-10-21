@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webgriffe\SyliusAkeneoPlugin;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
@@ -255,7 +256,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
     {
         try {
             $response = $this->authenticatedRequest($endpoint, 'GET', []);
-        } catch (\Throwable $exception) {
+        } catch (ClientException $exception) {
             if ($exception->getCode() !== 404) {
                 throw $exception;
             }
