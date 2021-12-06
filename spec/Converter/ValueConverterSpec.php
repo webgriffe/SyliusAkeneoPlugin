@@ -84,7 +84,7 @@ class ValueConverterSpec extends ObjectBehavior
         )->during('convert', [
             $textAttribute,
             [
-                'amount' => 23,
+                'amount' => 23.0000,
                 'key' => 'value',
             ],
             'it',
@@ -97,7 +97,7 @@ class ValueConverterSpec extends ObjectBehavior
         $this->convert(
             $textAttribute,
             [
-                'amount' => 23,
+                'amount' => 23.0000,
                 'unit' => 'INCH',
             ],
             'it'
@@ -112,7 +112,7 @@ class ValueConverterSpec extends ObjectBehavior
         $this->convert(
             $textAttribute,
             [
-                'amount' => 23,
+                'amount' => 23.0000,
                 'unit' => 'INCH',
             ],
             'it'
