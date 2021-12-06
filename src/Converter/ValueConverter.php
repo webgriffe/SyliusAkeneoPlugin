@@ -43,7 +43,7 @@ final class ValueConverter implements ValueConverterInterface
                 if (!array_key_exists('amount', $value)) {
                     throw new \LogicException('Amount key not found');
                 }
-                $amount = (string) $value['amount'];
+                $amount = number_format((float) ($value['amount']));
                 if (!array_key_exists('unit', $value)) {
                     throw new \LogicException('Unit key not found');
                 }
