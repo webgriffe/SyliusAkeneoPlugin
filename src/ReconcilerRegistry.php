@@ -15,7 +15,7 @@ final class ReconcilerRegistry implements ReconcilerRegistryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function all(): array
     {

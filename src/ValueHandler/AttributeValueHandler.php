@@ -59,7 +59,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function supports($subject, string $attributeCode, array $value): bool
     {
@@ -78,7 +78,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function handle($subject, string $attributeCode, array $value): void
     {
@@ -139,6 +139,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
             if ($attributeValue !== null) {
                 $product->removeAttribute($attributeValue);
             }
+
             return;
         }
 

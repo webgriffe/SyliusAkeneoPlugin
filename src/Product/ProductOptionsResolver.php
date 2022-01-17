@@ -38,7 +38,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function resolve(array $akeneoProduct): array
     {

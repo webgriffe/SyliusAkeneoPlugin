@@ -6,11 +6,10 @@ namespace Webgriffe\SyliusAkeneoPlugin\ProductAssociations;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Sylius\Component\Core\Model\ProductInterface;
-use Sylius\Component\Product\Model\ProductInterface as BaseProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Product\Model\ProductAssociationInterface;
 use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
+use Sylius\Component\Product\Model\ProductInterface as BaseProductInterface;
 use Sylius\Component\Product\Repository\ProductAssociationTypeRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
@@ -52,7 +51,7 @@ final class Importer implements ImporterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAkeneoEntity(): string
     {
@@ -60,7 +59,7 @@ final class Importer implements ImporterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function import(string $identifier): void
     {
@@ -97,7 +96,6 @@ final class Importer implements ImporterInterface
                 $productsToAssociateIdentifiers,
                 $productModelsToAssociateIdentifiers
             );
-            /** @var ProductAssociationTypeInterface $productAssociationType */
             /** @var Collection<int|string, BaseProductInterface> $productsToAssociate */
             $productsToAssociate = new ArrayCollection();
             foreach ($productAssociationIdentifiers as $productToAssociateIdentifier) {
@@ -107,7 +105,6 @@ final class Importer implements ImporterInterface
                 }
                 $productsToAssociate->add($productToAssociate);
             }
-
 
             /** @var ProductAssociationInterface|null $productAssociation */
             $productAssociation = $this->productAssociationRepository->findOneBy(
@@ -136,7 +133,7 @@ final class Importer implements ImporterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
     {
@@ -152,6 +149,7 @@ final class Importer implements ImporterInterface
     /**
      * @param Collection<int|string, BaseProductInterface> $syliusAssociations
      * @param Collection<int|string, BaseProductInterface> $akeneoAssociations
+     *
      * @return Collection<int|string, BaseProductInterface>
      */
     private function getProductsToAdd(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
@@ -166,6 +164,7 @@ final class Importer implements ImporterInterface
     /**
      * @param Collection<int|string, BaseProductInterface> $syliusAssociations
      * @param Collection<int|string, BaseProductInterface> $akeneoAssociations
+     *
      * @return Collection<int|string, BaseProductInterface>
      */
     private function getProductsToRemove(Collection $syliusAssociations, Collection $akeneoAssociations): Collection

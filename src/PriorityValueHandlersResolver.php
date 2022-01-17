@@ -25,7 +25,7 @@ final class PriorityValueHandlersResolver implements ValueHandlersResolverInterf
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function resolve($subject, string $attribute, array $value): array
     {

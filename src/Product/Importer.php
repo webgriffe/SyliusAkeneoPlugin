@@ -108,7 +108,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getAkeneoEntity(): string
     {
@@ -164,7 +164,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      * @psalm-return array<array-key, string>
      */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
@@ -180,14 +180,13 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      * @psalm-return array<array-key, string>
      */
     public function getAllIdentifiers(): array
     {
         return $this->getIdentifiersModifiedSince((new \DateTime())->setTimestamp(0));
     }
-
 
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
     {
@@ -289,6 +288,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
     /**
      * @param array<string, array> $attributesValues
+     *
      * @return array<string, array>
      */
     private function addMissingAttributes(array $attributesValues, string $familyCode): array
@@ -309,7 +309,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         $productAttributes = array_keys($attributesValues);
         $missingAttributes = array_diff($allFamilyAttributes, $productAttributes);
         $emptyAttributeValue = [
-            ['locale' => null, 'scope' => null, 'data' => null]
+            ['locale' => null, 'scope' => null, 'data' => null],
         ];
         foreach ($missingAttributes as $missingAttribute) {
             $attributesValues[$missingAttribute] = $emptyAttributeValue;
@@ -353,6 +353,5 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             $this->productRepository->add($product);
             $this->dispatchPostEvent($product, 'update');
         }
-
     }
 }

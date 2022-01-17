@@ -19,7 +19,7 @@ final class AllChannelsResolver implements ChannelsResolverInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function resolve(array $akeneoProduct): array
     {

@@ -1,17 +1,16 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Command;
-
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
-use Webgriffe\SyliusAkeneoPlugin\ReconcilerRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
+use Webgriffe\SyliusAkeneoPlugin\ReconcilerRegistryInterface;
 use Webmozart\Assert\Assert;
 
 /**
@@ -29,14 +28,11 @@ final class ReconcileCommand extends Command
 
     protected static $defaultName = 'webgriffe:akeneo:reconcile';
 
-    /**
-     * @var ReconcilerRegistryInterface
-     */
+    /** @var ReconcilerRegistryInterface */
     private $reconciliationRegistry;
 
     /**
      * ReconcileCommand constructor.
-     * @param ReconcilerRegistryInterface $reconciliationRegistry
      */
     public function __construct(ReconcilerRegistryInterface $reconciliationRegistry)
     {
@@ -76,7 +72,6 @@ final class ReconcileCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
      * @return ReconcilerInterface[]
      */
     private function getReconcilers(InputInterface $input): array

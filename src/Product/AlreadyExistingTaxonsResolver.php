@@ -6,7 +6,6 @@ namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
-use Webmozart\Assert\Assert;
 
 final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
 {
@@ -19,7 +18,7 @@ final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function resolve(array $akeneoProduct): array
     {

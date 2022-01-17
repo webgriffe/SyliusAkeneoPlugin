@@ -98,6 +98,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
 
         try {
             $response = $this->httpClient->send($request);
+
             return (array) json_decode($response->getBody()->getContents(), true);
         } catch (RequestException $requestException) {
             $erroredResponse = $requestException->getResponse();
@@ -106,6 +107,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             if ($accessTokenHasExpired && !$withRefresh) {
                 return $this->authenticatedRequest($uri, $method, $headers, true);
             }
+
             throw $requestException;
         }
     }
@@ -294,10 +296,9 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         return $this->temporaryFilesManager->generateTemporaryFilePath();
     }
 
-
     /**
-     * @param string $body
      * @return array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null}
+     *
      * @throws GuzzleException
      */
     private function makeOauthRequest(string $body): array
@@ -321,6 +322,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
 
         /** @var array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null} $result */
         $result = json_decode($rawResponse->getBody()->getContents(), true);
+
         return $result;
     }
 
@@ -335,6 +337,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             'GET',
             []
         );
+
         return $unitMeasurements;
     }
 

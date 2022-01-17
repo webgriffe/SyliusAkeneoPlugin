@@ -48,7 +48,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function supports($subject, string $attribute, array $value): bool
     {
@@ -56,7 +56,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function handle($subject, string $attribute, array $value): void
     {
