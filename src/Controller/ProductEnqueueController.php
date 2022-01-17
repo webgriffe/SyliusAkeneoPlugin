@@ -26,20 +26,42 @@ final class ProductEnqueueController extends AbstractController
     /** @var ProductRepositoryInterface */
     private $productRepository;
 
+    private ?TranslatorInterface $translator;
+
     /**
      * ProductEnqueueController constructor.
      */
-    public function __construct(QueueItemRepositoryInterface $queueItemRepository, ProductRepositoryInterface $productRepository, UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        QueueItemRepositoryInterface $queueItemRepository,
+        ProductRepositoryInterface $productRepository,
+        UrlGeneratorInterface $urlGenerator,
+        TranslatorInterface $translator = null
+    ) {
         $this->queueItemRepository = $queueItemRepository;
         $this->urlGenerator = $urlGenerator;
         $this->productRepository = $productRepository;
+        if ($translator === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.12',
+                'Not passing a translator to "%s" is deprecated and will be removed in %s.',
+                __CLASS__,
+                '2.0'
+            );
+        }
+        $this->translator = $translator;
     }
 
     public function enqueueAction(int $productId): Response
     {
-        /** @var TranslatorInterface $translator */
-        $translator = $this->get('translator');
+        if ($this->translator === null) {
+            /**
+             * @psalm-suppress DeprecatedMethod
+             */
+            $translator = $this->get('translator');
+            Assert::isInstanceOf($translator, TranslatorInterface::class);
+            $this->translator = $translator;
+        }
         /** @var ProductInterface|null $product */
         $product = $this->productRepository->find($productId);
         if ($product === null) {
@@ -75,13 +97,13 @@ final class ProductEnqueueController extends AbstractController
         foreach ($alreadyEnqueued as $code) {
             $this->addFlash(
                 'error',
-                $translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued', ['code' => $code])
+                $this->translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued', ['code' => $code]) // @phpstan-ignore-line
             );
         }
         foreach ($enqueued as $code) {
             $this->addFlash(
                 'success',
-                $translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['code' => $code])
+                $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['code' => $code])
             );
         }
 
