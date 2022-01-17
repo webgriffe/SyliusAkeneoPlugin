@@ -300,6 +300,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
         $taggedReconcilers = $container->findTaggedServiceIds(self::RECONCILER_TAG);
         foreach ($taggedReconcilers as $id => $_tags) {
+            /** @psalm-suppress MixedArgumentTypeCoercion */
             $importerRegistryDefinition->addMethodCall('add', [new Reference($id)]);
         }
     }
