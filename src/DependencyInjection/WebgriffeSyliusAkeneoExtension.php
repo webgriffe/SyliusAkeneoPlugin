@@ -32,6 +32,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
     /**
      * @var array
+     *
      * @deprecated Do not use anymore. Use $valueHandlersTypesDefinitionsPrivate instead.
      */
     public static $valueHandlersTypesDefinitions = [
@@ -73,7 +74,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 'sylius.repository.product_option',
                 'sylius.factory.product_option_value',
                 'sylius.factory.product_option_value_translation',
-                'sylius.repository.product_option_value'
+                'sylius.repository.product_option_value',
             ],
         ],
         'translatable_property' => [
@@ -144,7 +145,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 '$productOptionValueFactory' => 'sylius.factory.product_option_value',
                 '$productOptionValueTranslationFactory' => 'sylius.factory.product_option_value_translation',
                 '$productOptionValueRepository' => 'sylius.repository.product_option_value',
-                '$translationLocaleProvider' => 'sylius.translation_locale_provider.admin'
+                '$translationLocaleProvider' => 'sylius.translation_locale_provider.admin',
             ],
         ],
         'translatable_property' => [
@@ -176,13 +177,13 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'class' => MetricPropertyValueHandler::class,
             'arguments' => [
                 '$propertyAccessor' => 'property_accessor',
-                '$unitMeasurementValueConverter' => 'webgriffe_sylius_akeneo.converter.unit_measurement_value'
+                '$unitMeasurementValueConverter' => 'webgriffe_sylius_akeneo.converter.unit_measurement_value',
             ],
         ],
     ];
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function load(array $config, ContainerBuilder $container): void
     {

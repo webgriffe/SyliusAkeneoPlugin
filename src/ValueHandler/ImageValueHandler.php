@@ -76,6 +76,7 @@ final class ImageValueHandler implements ValueHandlerInterface
 
         if ($value[0]['data'] === null) {
             $this->removeAlreadyExistentVariantImages($subject, $product);
+
             return;
         }
 

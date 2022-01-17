@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Converter;
 
@@ -10,9 +11,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
 {
     private const RECOGNIZED_OPERATORS = ['add', 'sub', 'mul', 'div'];
 
-    /**
-     * @var MeasurementFamiliesApiClientInterface
-     */
+    /** @var MeasurementFamiliesApiClientInterface */
     private $apiClient;
 
     /**
@@ -39,7 +38,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
         /** @var array{array{operator: string, value: string}} $operationsToDefaultUnitMeasurement */
         $operationsToDefaultUnitMeasurement = $this->getOperationsForDefaultFromUnitMeasurement($unitMeasurementFamily['units'], $sourceUnitMeasurementCode);
 
-        $value = (float)$amount;
+        $value = (float) $amount;
         $value = $this->doOperations($operationsToDefaultUnitMeasurement, $value);
 
         if ($destinationUnitMeasurementCode !== null && $unitMeasurementFamily['standard_unit_code'] !== $destinationUnitMeasurementCode) {
@@ -73,24 +72,26 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
 
     /**
      * @param array<array{operator: string, value: string}> $operationsToDefaultUnitMeasurement
-     * @param float $value
-     * @return float
      */
     private function doOperations($operationsToDefaultUnitMeasurement, float $value): float
     {
         foreach ($operationsToDefaultUnitMeasurement as $operation) {
             switch ($operation['operator']) {
                 case 'add':
-                    $value += (float)$operation['value'];
+                    $value += (float) $operation['value'];
+
                     break;
                 case 'sub':
-                    $value -= (float)$operation['value'];
+                    $value -= (float) $operation['value'];
+
                     break;
                 case 'mul':
-                    $value *= (float)$operation['value'];
+                    $value *= (float) $operation['value'];
+
                     break;
                 case 'div':
-                    $value /= (float)$operation['value'];
+                    $value /= (float) $operation['value'];
+
                     break;
                 default:
                     throw new \LogicException(sprintf(
@@ -100,29 +101,32 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
                     ));
             }
         }
+
         return $value;
     }
 
     /**
      * @param array<array{operator: string, value: string}> $operationsToDefaultUnitMeasurement
-     * @param float $value
-     * @return float
      */
     private function doReverseOperations($operationsToDefaultUnitMeasurement, float $value): float
     {
         foreach ($operationsToDefaultUnitMeasurement as $operation) {
             switch ($operation['operator']) {
                 case 'add':
-                    $value -= (float)$operation['value'];
+                    $value -= (float) $operation['value'];
+
                     break;
                 case 'sub':
-                    $value += (float)$operation['value'];
+                    $value += (float) $operation['value'];
+
                     break;
                 case 'mul':
-                    $value /= (float)$operation['value'];
+                    $value /= (float) $operation['value'];
+
                     break;
                 case 'div':
-                    $value *= (float)$operation['value'];
+                    $value *= (float) $operation['value'];
+
                     break;
                 default:
                     throw new \LogicException(sprintf(
@@ -132,12 +136,13 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
                     ));
             }
         }
+
         return $value;
     }
 
     /**
      * @param array{unitCode: array{code: string, labels: array<string, string>, convert_from_standard: array{operator: string, value: string}, symbol: string}} $units
-     * @param string $unitMeasurementCode
+     *
      * @return array|array{array{operator: string, value: string}}
      */
     private function getOperationsForDefaultFromUnitMeasurement(array $units, string $unitMeasurementCode): array
@@ -148,6 +153,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
                 $operationsToDefaultUnitMeasurement = $unitMeasurement['convert_from_standard'];
             }
         }
+
         return $operationsToDefaultUnitMeasurement;
     }
 }

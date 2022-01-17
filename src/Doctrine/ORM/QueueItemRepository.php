@@ -13,7 +13,7 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 class QueueItemRepository extends EntityRepository implements QueueItemRepositoryInterface, CleanableQueueItemRepositoryInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function findAllToImport(): array
     {

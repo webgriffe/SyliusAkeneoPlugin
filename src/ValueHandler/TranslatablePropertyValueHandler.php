@@ -105,6 +105,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     ): void {
         if ($value === null) {
             $this->setNullOnExistingProductVariantAndProductTranslation($variant, $localeCode);
+
             return;
         }
 

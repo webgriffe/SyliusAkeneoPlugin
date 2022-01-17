@@ -15,7 +15,7 @@ final class ImporterRegistry implements ImporterRegistryInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function all(): array
     {

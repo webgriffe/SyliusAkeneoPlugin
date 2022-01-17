@@ -14,7 +14,6 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
-use Webmozart\Assert\Assert;
 
 final class ChannelPricingValueHandler implements ValueHandlerInterface
 {
@@ -62,7 +61,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function supports($subject, string $attribute, array $value): bool
     {
@@ -70,7 +69,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function handle($subject, string $attribute, array $value): void
     {
