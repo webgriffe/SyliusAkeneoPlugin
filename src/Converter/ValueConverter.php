@@ -33,7 +33,7 @@ final class ValueConverter implements ValueConverterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function convert(AttributeInterface $attribute, $value, string $localeCode)
     {
@@ -43,16 +43,16 @@ final class ValueConverter implements ValueConverterInterface
                 if (!array_key_exists('amount', $value)) {
                     throw new \LogicException('Amount key not found');
                 }
-                $amount = number_format((float) ($value['amount']));
+                $floatAmount = (float) ($value['amount']);
                 if (!array_key_exists('unit', $value)) {
                     throw new \LogicException('Unit key not found');
                 }
                 $unit = (string) $value['unit'];
                 if ($this->translator === null) {
-                    return $amount . ' ' . $unit;
+                    return $floatAmount . ' ' . $unit;
                 }
 
-                return $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $amount], null, $localeCode);
+                return $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
             }
 
             return $value;
