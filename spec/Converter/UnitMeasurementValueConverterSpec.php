@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\Converter;
 
-use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverter;
 use PhpSpec\ObjectBehavior;
+use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverter;
 use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 
@@ -162,7 +162,7 @@ JSON;
         )->during('convert', [
             '23.0000',
             'FAKE_UM',
-            null
+            null,
         ]);
     }
 

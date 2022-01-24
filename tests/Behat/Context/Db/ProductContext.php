@@ -82,14 +82,14 @@ final class ProductContext implements Context
         $associatedProduct = $this->productRepository->findOneByCode($associatedProductCode);
         Assert::isInstanceOf($associatedProduct, ProductInterface::class);
 
+        /** @var ProductAssociationTypeInterface|mixed|object|null $productAssociationType */
         $productAssociationType = $this->productAssociationTypeRepository->findOneBy(['code' => $associationTypeCode]);
         Assert::isInstanceOf($productAssociationType, ProductAssociationTypeInterface::class);
-        /** @var ProductAssociationTypeInterface $productAssociationType */
+        /** @var ProductAssociationInterface|mixed|object|null $productAssociation */
         $productAssociation = $this->productAssociationRepository->findOneBy(
             ['owner' => $product, 'type' => $productAssociationType]
         );
         Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
-        /** @var ProductAssociationInterface $productAssociation */
         $associatedProducts = $productAssociation->getAssociatedProducts();
         Assert::true($associatedProducts->contains($associatedProduct));
     }
