@@ -19,7 +19,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
 
     private const PROPERTY_PATH = 'property_path';
 
-    private const KG_23_VALUE = [0 => ['data' => ['amount' => 23, 'unit' => 'KILOGRAM']]];
+    private const KG_23_VALUE = [0 => ['data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM']]];
 
     public function let(
         PropertyAccessorInterface $propertyAccessor,
