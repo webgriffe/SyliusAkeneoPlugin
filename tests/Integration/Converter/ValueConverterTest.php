@@ -13,7 +13,7 @@ class ValueConverterTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->valueConverter = self::getContainer()->get('webgriffe_sylius_akeneo.converter.value');
+        $this->valueConverter = self::$container->get('webgriffe_sylius_akeneo.converter.value');
     }
 
     /**
