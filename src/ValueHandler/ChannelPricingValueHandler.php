@@ -7,7 +7,6 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
