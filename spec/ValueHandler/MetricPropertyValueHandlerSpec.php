@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use PhpSpec\ObjectBehavior;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\MetricPropertyValueHandler;
-use PhpSpec\ObjectBehavior;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
 class MetricPropertyValueHandlerSpec extends ObjectBehavior
@@ -18,6 +18,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     private const AKENEO_ATTRIBUTE_CODE = 'akeneo_attribute_code';
 
     private const PROPERTY_PATH = 'property_path';
+
     private const KG_23_VALUE = [0 => ['data' => ['amount' => 23, 'unit' => 'KILOGRAM']]];
 
     public function let(
@@ -125,7 +126,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [
-            ['locale' => null, 'scope' => null, 'data' => null]
+            ['locale' => null, 'scope' => null, 'data' => null],
         ]);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, null)->shouldNotHaveBeenCalled();
@@ -159,7 +160,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
                 [
                     $productVariant,
                     self::AKENEO_ATTRIBUTE_CODE,
-                    self::KG_23_VALUE
+                    self::KG_23_VALUE,
                 ]
             )
         ;

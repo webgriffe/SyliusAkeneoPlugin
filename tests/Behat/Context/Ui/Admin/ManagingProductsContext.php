@@ -62,7 +62,9 @@ final class ManagingProductsContext implements Context
     public function iShouldBeNotifiedThatItHasBeenSuccessfullyEnqueued()
     {
         $this->testHelper->waitUntilNotificationPopups(
-            $this->notificationChecker, NotificationType::success(), 'Akeneo PIM product import has been successfully scheduled'
+            $this->notificationChecker,
+            NotificationType::success(),
+            'Akeneo PIM product import has been successfully scheduled'
         );
     }
 
@@ -72,7 +74,9 @@ final class ManagingProductsContext implements Context
     public function iShouldBeNotifiedThatItHasBeenAlreadyEnqueued()
     {
         $this->testHelper->waitUntilNotificationPopups(
-            $this->notificationChecker, NotificationType::success(), 'Akeneo PIM import for this product has been already scheduled before'
+            $this->notificationChecker,
+            NotificationType::success(),
+            'Akeneo PIM import for this product has been already scheduled before'
         );
     }
 

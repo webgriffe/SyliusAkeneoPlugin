@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Transform;
-
 
 use Behat\Behat\Context\Context;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;

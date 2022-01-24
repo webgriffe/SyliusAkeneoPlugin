@@ -13,7 +13,6 @@ use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
-use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
@@ -683,7 +682,7 @@ final class ImporterTest extends KernelTestCase
         $this->fixtureLoader->load(
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml'
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
             ],
             [],
             [],
@@ -729,7 +728,7 @@ final class ImporterTest extends KernelTestCase
         $this->fixtureLoader->load(
             [
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml'
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
             ],
             [],
             [],

@@ -8,7 +8,7 @@ use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface;
 
 class DateTimeBuilder implements DateTimeBuilderInterface
 {
-    public static $forcedNow = null;
+    public static $forcedNow;
 
     /**
      * @param string $time

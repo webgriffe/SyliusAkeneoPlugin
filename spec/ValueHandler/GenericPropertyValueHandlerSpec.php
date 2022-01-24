@@ -129,7 +129,7 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
                 [
                     $productVariant,
                     self::AKENEO_ATTRIBUTE_CODE,
-                    [['locale' => null, 'scope' => null, 'data' => 'New value']]
+                    [['locale' => null, 'scope' => null, 'data' => 'New value']],
                 ]
             )
         ;

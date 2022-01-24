@@ -113,7 +113,7 @@ final class ManagingQueueItems implements Context
             $this->indexPage->isSingleResourceOnPage(
                 [
                     'akeneoIdentifier' => $queueItem->getAkeneoIdentifier(),
-                    'akeneoEntity' => $queueItem->getAkeneoEntity()
+                    'akeneoEntity' => $queueItem->getAkeneoEntity(),
                 ]
             )
         );

@@ -229,7 +229,8 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
                     )
                 )
             )
-            ->during('handle',
+            ->during(
+                'handle',
                 [
                     $productVariant,
                     self::AKENEO_ATTRIBUTE_CODE,
