@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\Converter;
 
 use Sylius\Component\Product\Model\ProductAttribute;
