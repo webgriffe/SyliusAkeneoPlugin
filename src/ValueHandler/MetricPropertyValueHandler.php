@@ -48,6 +48,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
     public function supports($subject, string $attribute, array $value): bool
     {
         if (!array_key_exists(0, $value) ||
+            !is_array($value[0]) ||
             !array_key_exists('data', $value[0])
         ) {
             return false;
@@ -56,6 +57,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         $metricValueData = $value[0]['data'];
         if (
             $metricValueData !== null && (
+                !is_array($value[0]['data']) ||
                 !array_key_exists('amount', $value[0]['data']) ||
                 !array_key_exists('unit', $value[0]['data']) ||
                 !is_string($value[0]['data']['amount']) ||
@@ -87,6 +89,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         $hasBeenSet = false;
 
         if (!array_key_exists(0, $value) ||
+            !is_array($value[0]) ||
             !array_key_exists('data', $value[0])
         ) {
             throw new \InvalidArgumentException('Invalid data argument');
@@ -95,6 +98,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         $metricValueData = $value[0]['data'];
         if (
             $metricValueData !== null && (
+                !is_array($value[0]['data']) ||
                 !array_key_exists('amount', $value[0]['data']) ||
                 !array_key_exists('unit', $value[0]['data']) ||
                 !is_string($value[0]['data']['amount']) ||
