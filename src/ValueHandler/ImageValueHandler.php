@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -87,7 +88,9 @@ final class ImageValueHandler implements ValueHandlerInterface
             $productImage = $this->productImageFactory->createNew();
             Assert::isInstanceOf($productImage, ProductImageInterface::class);
             $productImage->setType($this->syliusImageType);
-            $subject->addImage($productImage);
+            if (!$product->isSimple()) {
+                $subject->addImage($productImage);
+            }
             $product->addImage($productImage);
         }
         $productImage->setFile($imageFile);
@@ -99,7 +102,7 @@ final class ImageValueHandler implements ValueHandlerInterface
     ): ?ProductImageInterface {
         $existentProductImages = $this->getExistentProductImages($product);
         foreach ($existentProductImages as $existentProductImage) {
-            if ($existentProductImage->hasProductVariant($subject)) {
+            if ($product->isSimple() || $existentProductImage->hasProductVariant($subject)) {
                 return $existentProductImage;
             }
         }

@@ -43,6 +43,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $apiClient->downloadFile(Argument::type('string'))->willReturn($imageFile);
         $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([]));
         $product->addImage($productImage)->hasReturnVoid();
+        $product->isSimple()->willReturn(true);
         $productVariant->addImage($productImage)->hasReturnVoid();
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
@@ -108,23 +109,26 @@ class ImageValueHandlerSpec extends ObjectBehavior
         ProductImageInterface $productImage
     ) {
         $productVariant->getProduct()->willReturn($product);
+        $product->isSimple()->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
-        $productVariant->addImage($productImage)->shouldHaveBeenCalled();
+        $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
         $product->addImage($productImage)->shouldHaveBeenCalled();
     }
 
-    function it_adds_product_variant_association_to_image_when_handling_product_variant(
+    function it_adds_product_variant_association_to_image_when_handling_product_variant_from_configurable(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $productImage
     ) {
         $productVariant->getProduct()->willReturn($product);
+        $product->isSimple()->willReturn(false);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
         $productVariant->addImage($productImage)->shouldHaveBeenCalled();
+        $product->addImage($productImage)->shouldHaveBeenCalled();
     }
 
     function it_should_download_image_from_akeneo_when_handling(
@@ -192,6 +196,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         FactoryInterface $productImageFactory,
         ProductImageInterface $newProductImage
     ) {
+        $product->isSimple()->willReturn(false);
         $productVariant->getProduct()->willReturn($product);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
