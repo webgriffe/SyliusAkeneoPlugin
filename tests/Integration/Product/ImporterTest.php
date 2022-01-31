@@ -419,6 +419,70 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
+    public function it_imports_new_product_image_without_associate_it_with_the_variant_if_product_is_simple()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/127469.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('127469');
+
+        /** @var ProductVariantInterface[] $allVariants */
+        $allVariants = $this->productVariantRepository->findAll();
+        $this->assertCount(1, $allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
+        $product = $allVariants[0]->getProduct();
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals('127469', $product->getCode());
+        $this->assertCount(1, $product->getImages());
+        $this->assertCount(0, $allVariants[0]->getImages());
+        /** @var ProductImageInterface $image */
+        $image = $product->getImages()[0];
+        $this->assertFalse($image->hasProductVariant($allVariants[0]));
+    }
+
+    /**
+     * @test
+     */
+    public function it_imports_updated_product_image_without_associate_it_with_the_variant_if_product_is_simple()
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/127469-with-image.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('127469');
+
+        /** @var ProductVariantInterface[] $allVariants */
+        $allVariants = $this->productVariantRepository->findAll();
+        $this->assertCount(1, $allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
+        $product = $allVariants[0]->getProduct();
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals('127469', $product->getCode());
+        $this->assertCount(1, $product->getImages());
+        $this->assertCount(0, $allVariants[0]->getImages());
+        /** @var ProductImageInterface $image */
+        $image = $product->getImages()[0];
+        $this->assertFalse($image->hasProductVariant($allVariants[0]));
+        $this->assertEquals('picture', $image->getType());
+        $this->assertNotEquals('path/to/existent-image/127469.jpg', $image->getPath());
+    }
+
+    /**
+     * @test
+     */
     public function it_imports_product_as_disabled_if_it_is_disabled_on_akeneo_and_has_not_a_parent_model()
     {
         $this->fixtureLoader->load(

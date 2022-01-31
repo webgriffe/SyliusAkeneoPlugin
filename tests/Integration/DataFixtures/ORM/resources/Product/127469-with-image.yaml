@@ -1,0 +1,31 @@
+Sylius\Component\Core\Model\ProductTranslation:
+  product-127469_en_US:
+    locale: "en_US"
+    name: "HP LaserJet 1160 Printer"
+    slug: "hp-laserjet-1160-printer"
+    description: <paragraph(2)>
+    translatable: "@product-127469"
+
+Sylius\Component\Core\Model\Product:
+  product-127469:
+    fallbackLocale: "en_US"
+    currentLocale: "en_US"
+    code: "127469"
+    translations:
+      - "@product-127469_en_US"
+    variants:
+      - "@product-variant-127469"
+    images:
+      - "@product-image-127469"
+
+Sylius\Component\Core\Model\ProductImage:
+  product-image-127469:
+    type: "picture"
+    owner: "@product-127469"
+    path: "path/to/existent-image/127469.jpg"
+
+Sylius\Component\Core\Model\ProductVariant:
+  product-variant-127469:
+    code: "127469"
+    product: "@product-127469"
+
