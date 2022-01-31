@@ -40,6 +40,18 @@
                     "unit": "MILLIGRAM"
                 }
             }
+        ],
+        "picture": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "c\/1\/2\/2\/c1222e8291f3f5e4f4946baeb34f46b97a309218_c06324701.jpg",
+                "_links": {
+                    "download": {
+                        "href": "http:\/\/demo.akeneo.com\/api\/rest\/v1\/media-files\/c\/1\/2\/2\/c1222e8291f3f5e4f4946baeb34f46b97a309218_c06324701.jpg\/download"
+                    }
+                }
+            }
         ]
     },
     "created": "2021-03-09T10:43:38+00:00",
