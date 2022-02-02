@@ -2,6 +2,7 @@ imports:
   - { resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/config.yaml" }
 
 webgriffe_sylius_akeneo:
+  bind_arguments_by_name: false
   api_client:
     base_url: 'http://demo.akeneo.com/'
     username: 'admin'

@@ -200,8 +200,11 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
         $loader->load('services.xml');
 
+        /** @var bool $bindArgumentsByName */
+        $bindArgumentsByName = $config['bind_arguments_by_name'];
+
         $container->addDefinitions(
-            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? [])
+            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? [], $bindArgumentsByName)
         );
     }
 
@@ -221,23 +224,39 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         return array_keys(self::$valueHandlersTypesDefinitionsPrivate);
     }
 
-    private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers): array
+    /**
+     * @return array<string, Definition>
+     */
+    private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers, bool $bindArgumentsByName): array
     {
+        /** @var array<string, Definition> $definitions */
         $definitions = [];
         foreach ($valueHandlers as $key => $valueHandler) {
             $type = $valueHandler['type'];
             Assert::string($type);
+            /** @var array<string, string> $options */
             $options = $valueHandler['options'] ?? [];
             $priority = $valueHandler['priority'] ?? 0;
 
+            if ($type === 'channel_pricing' && (!array_key_exists('$akeneoAttribute', $options))) {
+                /** @var array<string, string> $optionsNamed */
+                $optionsNamed = [];
+                $optionsNamed['$akeneoAttribute'] = array_shift($options);
+                if (count($options) > 0) {
+                    $optionsNamed['$syliusPropertyPath'] = array_shift($options);
+                }
+                $options = $optionsNamed;
+            }
+
+            $bindArgumentsByName = $bindArgumentsByName || $type === 'channel_pricing';
             $arguments = array_merge(
                 array_map(
-                    static function (string $argument): Reference {
-                        return new Reference($argument);
+                    static function (string $argumentValue): Reference {
+                        return new Reference($argumentValue);
                     },
-                    self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments']
+                    $bindArgumentsByName ? self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments'] : array_values(self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments']),
                 ),
-                $options
+                $bindArgumentsByName ? $options : array_values($options)
             );
             $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $key);
             $definition = new Definition(self::$valueHandlersTypesDefinitionsPrivate[$type]['class'], $arguments);

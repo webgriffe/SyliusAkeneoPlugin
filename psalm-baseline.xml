@@ -112,7 +112,7 @@
     </TypeDoesNotContainType>
   </file>
   <file src="src/DependencyInjection/Configuration.php">
-    <MixedMethodCall occurrences="90">
+    <MixedMethodCall occurrences="93">
       <code>addDefaultsIfNotSet</code>
       <code>addDefaultsIfNotSet</code>
       <code>addDefaultsIfNotSet</code>
@@ -126,6 +126,7 @@
       <code>arrayNode</code>
       <code>arrayNode</code>
       <code>arrayPrototype</code>
+      <code>booleanNode</code>
       <code>cannotBeEmpty</code>
       <code>cannotBeEmpty</code>
       <code>cannotBeEmpty</code>
@@ -142,6 +143,7 @@
       <code>children</code>
       <code>children</code>
       <code>children</code>
+      <code>defaultFalse</code>
       <code>defaultNull</code>
       <code>defaultNull</code>
       <code>defaultNull</code>
@@ -153,6 +155,7 @@
       <code>defaultValue</code>
       <code>defaultValue</code>
       <code>defaultValue</code>
+      <code>end</code>
       <code>end</code>
       <code>end</code>
       <code>end</code>
