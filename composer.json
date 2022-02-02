@@ -15,10 +15,6 @@
         "symfony/deprecation-contracts": "^2.2",
         "symfony/lock": "^4.4|^5.0"
     },
-    "conflict": {
-        "doctrine/dbal": "^3.0",
-        "doctrine/orm": "^2.10.0"
-    },
     "require-dev": {
         "ext-json": "*",
         "behat/behat": "^3.6.1",
