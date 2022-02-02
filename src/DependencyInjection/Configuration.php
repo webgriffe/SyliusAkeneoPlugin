@@ -22,6 +22,10 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
 
+                ->booleanNode('bind_arguments_by_name')
+                    ->defaultFalse()
+                ->end()
+
                 ->arrayNode('api_client')
                     ->addDefaultsIfNotSet()
                     ->children()
