@@ -606,7 +606,7 @@ To be able to setup a plugin's database, remember to configure you database cred
 - Code style
 
   ```bash
-  vendor/bin/ecs check src/ spec/ tests/Behat tests/Integration
+  vendor/bin/ecs check src/ tests/Behat tests/Integration
   ```
 
 - Static analysis
