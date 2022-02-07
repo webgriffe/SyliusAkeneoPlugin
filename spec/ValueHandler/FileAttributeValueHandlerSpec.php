@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -20,8 +22,16 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
     function let(
         \SplFileInfo $attachmentFile,
         ApiClientInterface $apiClient,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
     ) {
+        $commerceChannel = new Channel();
+        $commerceChannel->setCode('ecommerce');
+        $supportChannel = new Channel();
+        $supportChannel->setCode('support');
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
+        $productVariant->getProduct()->willReturn($product);
         $attachmentFile->getPathname()->willReturn('/private/var/folders/A/B/C/akeneo-ABC');
         $apiClient->downloadFile(Argument::type('string'))->willReturn($attachmentFile);
         $apiClient->findAttribute('allegato_1')->willReturn(['type' => 'pim_catalog_file']);
@@ -87,7 +97,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $this->supports(new \stdClass(), self::AKENEO_FILE_ATTRIBUTE_CODE, [])->shouldReturn(false);
     }
 
-    function it_throws_an_exception_while_handling_subject_that_is_not_a_product()
+    function it_throws_exception_during_handle_when_subject_is_not_product_variant()
     {
         $this
             ->shouldThrow(
@@ -102,6 +112,14 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ->during('handle', [new \stdClass(), self::AKENEO_FILE_ATTRIBUTE_CODE, []]);
     }
 
+    function it_throws_exception_during_handle_when_product_variant_hasnt_an_associated_product(ProductVariantInterface $productVariant)
+    {
+        $productVariant->getProduct()->willReturn(new \stdClass());
+        $this
+            ->shouldThrow(\TypeError::class)
+            ->during('handle', [$productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, []]);
+    }
+
     function it_throws_with_invalid_akeneo_file_data_during_handling(ProductVariantInterface $productVariant)
     {
         $this
@@ -111,12 +129,9 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
 
     function it_save_file_to_media_when_handling_product_variant(
         ProductVariantInterface $productVariant,
-        ProductInterface $product,
         ApiClientInterface $apiClient,
         Filesystem $filesystem
     ) {
-        $productVariant->getProduct()->willReturn($product);
-
         $this->handle(
             $productVariant,
             self::AKENEO_FILE_ATTRIBUTE_CODE,
@@ -124,6 +139,105 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
                 [
                     'locale' => null,
                     'scope' => null,
+                    'data' => 'path/to/a/file.jpg',
+                    '_links' => ['download' => ['href' => 'download-url']],
+                ],
+            ]
+        );
+
+        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
+        $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
+        $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
+    }
+
+    function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_null_scope(
+        ProductVariantInterface $productVariant,
+        ApiClientInterface $apiClient,
+        Filesystem $filesystem
+    ) {
+        $this->handle(
+            $productVariant,
+            self::AKENEO_FILE_ATTRIBUTE_CODE,
+            [
+                [
+                    'locale' => null,
+                    'scope' => 'paper_catalog',
+                    'data' => 'path/to/a/file-not-to-download.jpg',
+                    '_links' => ['download' => ['href' => 'download-url']],
+                ],
+                [
+                    'locale' => null,
+                    'scope' => null,
+                    'data' => 'path/to/a/file.jpg',
+                    '_links' => ['download' => ['href' => 'download-url']],
+                ],
+                [
+                    'locale' => null,
+                    'scope' => null,
+                    'data' => 'path/to/a/file-not-to-download.jpg',
+                    '_links' => ['download' => ['href' => 'download-url']],
+                ],
+            ]
+        );
+
+        $apiClient->downloadFile('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
+
+        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
+        $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
+        $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
+    }
+
+    function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_channel_scope(
+        ProductVariantInterface $productVariant,
+        ApiClientInterface $apiClient,
+        Filesystem $filesystem
+    ) {
+        $this->handle(
+            $productVariant,
+            self::AKENEO_FILE_ATTRIBUTE_CODE,
+            [
+                [
+                    'locale' => null,
+                    'scope' => 'paper_catalog',
+                    'data' => 'path/to/a/file-not-to-download.jpg',
+                    '_links' => ['download' => ['href' => 'download-url']],
+                ],
+                [
+                    'locale' => null,
+                    'scope' => 'ecommerce',
+                    'data' => 'path/to/a/file.jpg',
+                    '_links' => ['download' => ['href' => 'download-url']],
+                ],
+                [
+                    'locale' => null,
+                    'scope' => null,
+                    'data' => 'path/to/a/file-not-to-download.jpg',
+                    '_links' => ['download' => ['href' => 'download-url']],
+                ],
+            ]
+        );
+
+        $apiClient->downloadFile('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
+
+        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
+        $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
+        $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
+    }
+
+    function it_saves_file_to_media_when_media_data_doesnt_contain_scope_info(
+        ProductVariantInterface $productVariant,
+        ApiClientInterface $apiClient,
+        Filesystem $filesystem
+    ) {
+        $this->handle(
+            $productVariant,
+            self::AKENEO_FILE_ATTRIBUTE_CODE,
+            [
+                [
+                    'locale' => null,
                     'data' => 'path/to/a/file.jpg',
                     '_links' => ['download' => ['href' => 'download-url']],
                 ],
