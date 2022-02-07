@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
+use Webmozart\Assert\Assert;
 
 final class FileAttributeValueHandler implements ValueHandlerInterface
 {
@@ -74,17 +77,16 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
             );
         }
 
-        if (!array_key_exists(0, $value) || !is_array($value[0]) || !array_key_exists('data', $value[0])) {
-            throw new \InvalidArgumentException('Invalid Akeneo attachment data. Cannot find the media code.');
-        }
-
-        if ($value[0]['data'] === null) {
+        /** @var ProductInterface|null $product */
+        $product = $subject->getProduct();
+        Assert::isInstanceOf($product, ProductInterface::class);
+        // TODO: we should download all files related to all channels of a product, and not only the first one?
+        $mediaCode = $this->getValue($value, $product);
+        if ($mediaCode === null) {
             // TODO remove existing image? See https://github.com/webgriffe/SyliusAkeneoPlugin/issues/61
             return;
         }
 
-        /** @var string $mediaCode */
-        $mediaCode = $value[0]['data'];
         $downloadedFile = $this->apiClient->downloadFile($mediaCode);
 
         $relativeFilePath = $mediaCode;
@@ -99,5 +101,25 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
             $this->filesystem->mkdir($destinationFolder);
         }
         $this->filesystem->rename($downloadedFile->getPathname(), $destinationFilepath, true);
+    }
+
+    private function getValue(array $value, ProductInterface $product): ?string
+    {
+        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
+            return $channel->getCode();
+        }, $product->getChannels()->toArray());
+        foreach ($value as $valueData) {
+            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+                continue;
+            }
+
+            if (!is_array($valueData) || !array_key_exists('data', $valueData)) {
+                continue;
+            }
+            /** @psalm-suppress MixedAssignment */
+            return $valueData['data'];
+        }
+
+        throw new \InvalidArgumentException('Invalid Akeneo attachment data. Cannot find the media code.');
     }
 }
