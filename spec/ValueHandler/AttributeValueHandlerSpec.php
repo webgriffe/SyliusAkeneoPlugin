@@ -7,6 +7,7 @@ namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
@@ -78,6 +79,11 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $productVariant->getProduct()->willReturn($product);
         $productOption->getCode()->willReturn(self::PRODUCT_OPTION_CODE);
         $product->getOptions()->willReturn(new ArrayCollection([$productOption->getWrappedObject()]));
+        $commerceChannel = new Channel();
+        $commerceChannel->setCode('ecommerce');
+        $supportChannel = new Channel();
+        $supportChannel->setCode('support');
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
         $selectProductAttribute->getConfiguration()->willReturn(
             [
                 'choices' => [
@@ -164,6 +170,14 @@ class AttributeValueHandlerSpec extends ObjectBehavior
                 )
             )
             ->during('handle', [new \stdClass(), self::TEXT_ATTRIBUTE_CODE, []]);
+    }
+
+    function it_throws_exception_during_handle_when_product_variant_hasnt_an_associated_product(ProductVariantInterface $productVariant)
+    {
+        $productVariant->getProduct()->willReturn(new \stdClass());
+        $this
+            ->shouldThrow(\TypeError::class)
+            ->during('handle', [$productVariant, self::TEXT_ATTRIBUTE_CODE, []]);
     }
 
     function it_throws_exception_during_handle_when_attribute_is_not_found(ProductVariantInterface $productVariant)
@@ -589,5 +603,91 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
 
         $product->addAttribute(Argument::type(ProductAttributeValueInterface::class))->shouldNotHaveBeenCalled();
+    }
+
+    function it_skips_values_related_to_channels_that_are_not_associated_to_the_product(
+        ProductVariantInterface $productVariant,
+        ProductAttributeValueInterface $itAttributeValue,
+        ProductAttributeValueInterface $enAttributeValue,
+        FactoryInterface $factory,
+        ProductInterface $product,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $textProductAttribute
+    ) {
+        $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
+        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
+
+        $value = [
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'en_US',
+                'data' => 'Wood',
+            ],
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'it_IT',
+                'data' => 'Legno',
+            ],
+            [
+                'scope' => 'paper_catalog',
+                'locale' => 'en_US',
+                'data' => 'Woody',
+            ],
+            [
+                'scope' => 'paper_catalog',
+                'locale' => 'it_IT',
+                'data' => 'Legnoso',
+            ],
+        ];
+
+        $valueConverter->convert($textProductAttribute, 'Wood', 'en_US')->willReturn('Wood');
+        $valueConverter->convert($textProductAttribute, 'Legno', 'it_IT')->willReturn('Legno');
+
+        $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $value);
+
+        $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
+        $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
+        $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
+        $itAttributeValue->setValue('Legno')->shouldHaveBeenCalled();
+        $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
+        $enAttributeValue->setValue('Wood')->shouldHaveBeenCalled();
+        $itAttributeValue->setValue('Legnoso')->shouldNotHaveBeenCalled();
+        $enAttributeValue->setValue('Woody')->shouldNotHaveBeenCalled();
+    }
+
+    function it_handle_values_that_has_no_scope(
+        ProductVariantInterface $productVariant,
+        ProductAttributeValueInterface $itAttributeValue,
+        ProductAttributeValueInterface $enAttributeValue,
+        FactoryInterface $factory,
+        ProductInterface $product,
+        ValueConverterInterface $valueConverter,
+        ProductAttributeInterface $textProductAttribute
+    ) {
+        $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
+        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
+
+        $value = [
+            [
+                'locale' => 'en_US',
+                'data' => 'Wood',
+            ],
+            [
+                'locale' => 'it_IT',
+                'data' => 'Legno',
+            ],
+        ];
+
+        $valueConverter->convert($textProductAttribute, 'Wood', 'en_US')->willReturn('Wood');
+        $valueConverter->convert($textProductAttribute, 'Legno', 'it_IT')->willReturn('Legno');
+
+        $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $value);
+
+        $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
+        $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
+        $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
+        $itAttributeValue->setValue('Legno')->shouldHaveBeenCalled();
+        $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
+        $enAttributeValue->setValue('Wood')->shouldHaveBeenCalled();
     }
 }

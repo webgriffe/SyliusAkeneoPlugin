@@ -10,9 +10,10 @@ use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextareaAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextAttributeType;
 use Sylius\Component\Attribute\Model\AttributeInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductAttributeValueInterface;
-use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
@@ -105,10 +106,19 @@ final class AttributeValueHandler implements ValueHandlerInterface
             );
         }
 
+        $availableLocalesCodes = $this->localeProvider->getDefinedLocalesCodes();
+
+        /** @var ProductInterface|null $product */
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        $availableLocalesCodes = $this->localeProvider->getDefinedLocalesCodes();
+        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
+            return $channel->getCode();
+        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_filter($productChannelCodes);
         foreach ($value as $valueData) {
+            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+                continue;
+            }
             $localeCodesToSet = $availableLocalesCodes;
             /** @var string|null $valueLocaleCode */
             $valueLocaleCode = $valueData['locale'];
