@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -66,25 +67,22 @@ final class ImageValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        if (!array_key_exists(0, $value) || !is_array($value[0]) || !array_key_exists('data', $value[0])) {
-            throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.');
-        }
 
+        /** @var ProductInterface|null $product */
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-
-        if ($value[0]['data'] === null) {
+        $mediaCode = $this->getValue($value, $product);
+        if ($mediaCode === null) {
             $this->removeAlreadyExistentVariantImages($subject, $product);
 
             return;
         }
 
-        /** @var string $mediaCode */
-        $mediaCode = $value[0]['data'];
         $imageFile = $this->apiClient->downloadFile($mediaCode);
 
         $productImage = $this->getExistentProductVariantImage($subject, $product);
         if ($productImage === null) {
+            /** @var ProductImageInterface|object $productImage */
             $productImage = $this->productImageFactory->createNew();
             Assert::isInstanceOf($productImage, ProductImageInterface::class);
             $productImage->setType($this->syliusImageType);
@@ -151,5 +149,25 @@ final class ImageValueHandler implements ValueHandlerInterface
             $product->removeImage($alreadyExistentImage);
             $subject->removeImage($alreadyExistentImage);
         }
+    }
+
+    private function getValue(array $value, ProductInterface $product): ?string
+    {
+        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
+            return $channel->getCode();
+        }, $product->getChannels()->toArray());
+        foreach ($value as $valueData) {
+            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+                continue;
+            }
+
+            if (!is_array($valueData) || !array_key_exists('data', $valueData)) {
+                continue;
+            }
+            /** @psalm-suppress MixedAssignment */
+            return $valueData['data'];
+        }
+
+        throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.');
     }
 }
