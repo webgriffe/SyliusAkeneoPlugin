@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use InvalidArgumentException;
 use PhpSpec\ObjectBehavior;
+use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -24,35 +26,35 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     public function let(
         PropertyAccessorInterface $propertyAccessor,
         UnitMeasurementValueConverterInterface $unitMeasurementValueConverter
-    ) {
+    ): void {
         $this->beConstructedWith($propertyAccessor, $unitMeasurementValueConverter, self::AKENEO_ATTRIBUTE_CODE, self::PROPERTY_PATH);
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(MetricPropertyValueHandler::class);
     }
 
-    function it_implements_value_handler_interface()
+    public function it_implements_value_handler_interface(): void
     {
         $this->shouldHaveType(ValueHandlerInterface::class);
     }
 
-    function it_supports_provided_akeneo_attribute_code_with_metrical_value()
+    public function it_supports_provided_akeneo_attribute_code_with_metrical_value(): void
     {
         $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE)->shouldReturn(true);
     }
 
-    function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code()
+    public function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code(): void
     {
         $this->supports(new ProductVariant(), 'another_attribute', self::KG_23_VALUE)->shouldReturn(false);
     }
 
-    function it_throws_trying_to_handle_not_supported_property()
+    public function it_throws_trying_to_handle_not_supported_property(): void
     {
         $this
             ->shouldThrow(
-                new \InvalidArgumentException(
+                new InvalidArgumentException(
                     sprintf(
                         'Cannot handle Akeneo attribute "%s". %s only supports Akeneo attribute "%s".',
                         'not_supported_property',
@@ -64,12 +66,12 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
             ->during('handle', [new ProductVariant(), 'not_supported_property', []]);
     }
 
-    function it_sets_value_on_provided_property_path_on_both_product_and_product_variant(
+    public function it_sets_value_on_provided_property_path_on_both_product_and_product_variant(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
@@ -81,12 +83,12 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
     }
 
-    function it_sets_value_on_provided_property_path_on_variant_only_if_product_is_not_writable(
+    public function it_sets_value_on_provided_property_path_on_variant_only_if_product_is_not_writable(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
@@ -98,12 +100,12 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldNotHaveBeenCalled();
     }
 
-    function it_sets_value_on_provided_property_path_on_product_only_if_variant_is_not_writable(
+    public function it_sets_value_on_provided_property_path_on_product_only_if_variant_is_not_writable(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
@@ -115,12 +117,11 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
     }
 
-    function it_unset_value_if_value_is_null(
+    public function it_unset_value_if_value_is_null(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
-        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
@@ -133,12 +134,12 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, null)->shouldHaveBeenCalled();
     }
 
-    function it_throws_if_provided_property_path_is_not_writeable_on_both_product_and_variant(
+    public function it_throws_if_provided_property_path_is_not_writeable_on_both_product_and_variant(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
@@ -146,7 +147,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
 
         $this
             ->shouldThrow(
-                new \RuntimeException(
+                new RuntimeException(
                     sprintf(
                         'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                         self::PROPERTY_PATH,
