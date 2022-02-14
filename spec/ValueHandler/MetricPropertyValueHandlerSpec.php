@@ -25,8 +25,16 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
 
     public function let(
         PropertyAccessorInterface $propertyAccessor,
-        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter
+        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
     ): void {
+        $unitMeasurementValueConverter->convert('23', 'KILOGRAM', null)->willReturn(23.0);
+
+        $productVariant->getProduct()->willReturn($product);
+        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
+        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
+
         $this->beConstructedWith($propertyAccessor, $unitMeasurementValueConverter, self::AKENEO_ATTRIBUTE_CODE, self::PROPERTY_PATH);
     }
 
@@ -69,14 +77,8 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     public function it_sets_value_on_provided_property_path_on_both_product_and_product_variant(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
-        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
     ): void {
-        $productVariant->getProduct()->willReturn($product);
-        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
-        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
-        $unitMeasurementValueConverter->convert('23', 'KILOGRAM', null)->willReturn(23.0);
-
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
@@ -86,13 +88,9 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     public function it_sets_value_on_provided_property_path_on_variant_only_if_product_is_not_writable(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
-        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
     ): void {
-        $productVariant->getProduct()->willReturn($product);
-        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
-        $unitMeasurementValueConverter->convert('23', 'KILOGRAM', null)->willReturn(23.0);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE);
 
@@ -103,13 +101,9 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     public function it_sets_value_on_provided_property_path_on_product_only_if_variant_is_not_writable(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
-        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
     ): void {
-        $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
-        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
-        $unitMeasurementValueConverter->convert('23', 'KILOGRAM', null)->willReturn(23.0);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE);
 
@@ -122,9 +116,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         ProductVariantInterface $productVariant,
         ProductInterface $product
     ): void {
-        $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
-        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [
             ['locale' => null, 'scope' => null, 'data' => null],
@@ -137,13 +129,10 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     public function it_throws_if_provided_property_path_is_not_writeable_on_both_product_and_variant(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
-        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
         ProductInterface $product
     ): void {
-        $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
-        $unitMeasurementValueConverter->convert('23', 'KILOGRAM', null)->willReturn(23.0);
 
         $this
             ->shouldThrow(
