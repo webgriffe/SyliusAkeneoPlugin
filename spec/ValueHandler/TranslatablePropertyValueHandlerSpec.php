@@ -21,12 +21,12 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
 
     private const TRANSLATION_PROPERTY_PATH = 'translation_property_path';
 
-    function let(
+    public function let(
         PropertyAccessorInterface $propertyAccessor,
         FactoryInterface $productTranslationFactory,
         FactoryInterface $productVariantTranslationFactory,
         TranslationLocaleProviderInterface $localeProvider
-    ) {
+    ): void {
         $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
         $this->beConstructedWith(
             $propertyAccessor,
@@ -38,32 +38,32 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         );
     }
 
-    function it_implements_value_handler_interface()
+    public function it_implements_value_handler_interface(): void
     {
         $this->shouldHaveType(\Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface::class);
     }
 
-    function it_supports_provided_akeneo_attribute_code(ProductVariantInterface $productVariant)
+    public function it_supports_provided_akeneo_attribute_code(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_supports_any_product_variant_subject(ProductVariantInterface $productVariant)
+    public function it_supports_any_product_variant_subject(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code(ProductVariantInterface $productVariant)
+    public function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, 'another_attribute', [])->shouldReturn(false);
     }
 
-    function it_does_not_support_any_other_type_of_subject()
+    public function it_does_not_support_any_other_type_of_subject(): void
     {
         $this->supports(new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(false);
     }
 
-    function it_throws_when_handling_not_product_variant_subject()
+    public function it_throws_when_handling_not_product_variant_subject(): void
     {
         $this
             ->shouldThrow(
@@ -78,13 +78,13 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
             ->during('handle', [new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, []]);
     }
 
-    function it_sets_value_on_both_product_and_product_variant_translation(
+    public function it_sets_value_on_both_product_and_product_variant_translation(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductTranslationInterface $productTranslation,
         ProductVariantTranslationInterface $productVariantTranslation,
         PropertyAccessorInterface $propertyAccessor
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $productVariant->getTranslation('en_US')->willReturn($productVariantTranslation);
         $productVariantTranslation->getLocale()->willReturn('en_US');
@@ -100,7 +100,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
-    function it_creates_product_variant_translation_if_it_does_not_exists(
+    public function it_creates_product_variant_translation_if_it_does_not_exists(
         ProductVariantInterface $productVariant,
         ProductVariantTranslationInterface $fallbackProductVariantTranslation,
         ProductVariantTranslationInterface $newProductVariantTranslation,
@@ -108,7 +108,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         ProductTranslationInterface $productTranslation,
         PropertyAccessorInterface $propertyAccessor,
         FactoryInterface $productVariantTranslationFactory
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $productVariant->getTranslation('it_IT')->willReturn($fallbackProductVariantTranslation);
         $fallbackProductVariantTranslation->getLocale()->willReturn('en_US');
@@ -129,7 +129,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
-    function it_creates_product_translation_if_it_does_not_exists(
+    public function it_creates_product_translation_if_it_does_not_exists(
         ProductVariantInterface $productVariant,
         ProductVariantTranslationInterface $productVariantTranslation,
         ProductInterface $product,
@@ -137,7 +137,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         PropertyAccessorInterface $propertyAccessor,
         FactoryInterface $productTranslationFactory,
         ProductTranslationInterface $newProductTranslation
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $productVariant->getTranslation('it_IT')->willReturn($productVariantTranslation);
         $productVariantTranslation->getLocale()->willReturn('it_IT');
@@ -157,19 +157,19 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($newProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
-    function it_skips_locales_not_specified_in_sylius(
+    public function it_skips_locales_not_specified_in_sylius(
         ProductVariantInterface $productVariant,
         ProductTranslationInterface $productTranslation,
         ProductVariantTranslationInterface $productVariantTranslation,
         PropertyAccessorInterface $propertyAccessor
-    ) {
+    ): void {
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
 
         $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
     }
 
-    function it_sets_value_on_all_product_translations_when_locale_not_specified(
+    public function it_sets_value_on_all_product_translations_when_locale_not_specified(
         ProductVariantInterface $productVariant,
         ProductVariantTranslationInterface $englishProductVariantTranslation,
         ProductVariantTranslationInterface $italianProductVariantTranslation,
@@ -177,7 +177,7 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         ProductTranslationInterface $englishProductTranslation,
         ProductTranslationInterface $italianProductTranslation,
         PropertyAccessorInterface $propertyAccessor
-    ) {
+    ): void {
         $productVariant->getProduct()->willReturn($product);
         $englishProductVariantTranslation->getLocale()->willReturn('en_US');
         $italianProductVariantTranslation->getLocale()->willReturn('it_IT');
@@ -202,13 +202,13 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($italianProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
-    function it_throws_exception_when_property_path_is_not_writable_on_both_product_and_variant_translation(
+    public function it_throws_exception_when_property_path_is_not_writable_on_both_product_and_variant_translation(
         ProductVariantInterface $productVariant,
         ProductVariantTranslationInterface $productVariantTranslation,
         PropertyAccessorInterface $propertyAccessor,
         ProductInterface $product,
         ProductTranslationInterface $productTranslation
-    ) {
+    ): void {
         $productVariantTranslation->getLocale()->willReturn('en_US');
         $productVariant->getTranslation('en_US')->shouldBeCalled()->willReturn($productVariantTranslation);
         $propertyAccessor->isWritable($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(false);
@@ -239,12 +239,12 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
             );
     }
 
-    function it_does_not_create_translations_for_null_values(
+    public function it_does_not_create_translations_for_null_values(
         ProductVariantInterface $productVariant,
         ProductVariantTranslationInterface $englishVariantTranslation,
         ProductInterface $product,
         ProductVariantTranslationInterface $englishProductTranslation
-    ) {
+    ): void {
         $productVariant->getTranslations()->willReturn(new ArrayCollection(['en_US' => $englishVariantTranslation->getWrappedObject()]));
         $englishVariantTranslation->getLocale()->willReturn('en_US');
         $productVariant->getProduct()->willReturn($product);
