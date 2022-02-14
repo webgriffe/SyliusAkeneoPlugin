@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -72,19 +73,31 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        foreach ($value as $item) {
-            $localeCode = $item['locale'];
+
+        $availableLocalesCodes = $this->localeProvider->getDefinedLocalesCodes();
+
+        /** @var ProductInterface|null $product */
+        $product = $subject->getProduct();
+        Assert::isInstanceOf($product, ProductInterface::class);
+        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
+            return $channel->getCode();
+        }, $product->getChannels()->toArray());
+        foreach ($value as $valueData) {
+            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+                continue;
+            }
+            $localeCode = $valueData['locale'];
             if (!$localeCode) {
-                $this->setValueOnAllTranslations($subject, $item);
+                $this->setValueOnAllTranslations($subject, $valueData);
 
                 continue;
             }
 
-            if (!in_array($localeCode, $this->localeProvider->getDefinedLocalesCodes(), true)) {
+            if (!in_array($localeCode, $availableLocalesCodes, true)) {
                 continue;
             }
 
-            $this->setValueOnProductVariantAndProductTranslation($subject, $localeCode, $item['data']);
+            $this->setValueOnProductVariantAndProductTranslation($subject, $localeCode, $valueData['data']);
         }
     }
 
