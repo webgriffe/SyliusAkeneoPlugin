@@ -88,25 +88,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         }
         $hasBeenSet = false;
 
-        if (!array_key_exists(0, $value) ||
-            !is_array($value[0]) ||
-            !array_key_exists('data', $value[0])
-        ) {
-            throw new \InvalidArgumentException('Invalid data argument');
-        }
-        /** @var array{amount: string, unit: string}|null $metricValueData */
         $metricValueData = $value[0]['data'];
-        if (
-            $metricValueData !== null && (
-                !is_array($value[0]['data']) ||
-                !array_key_exists('amount', $value[0]['data']) ||
-                !array_key_exists('unit', $value[0]['data']) ||
-                !is_string($value[0]['data']['amount']) ||
-                !is_string($value[0]['data']['unit'])
-            )
-        ) {
-            throw new \InvalidArgumentException('Invalid data argument');
-        }
 
         $productVariant = $subject;
         Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
