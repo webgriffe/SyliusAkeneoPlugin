@@ -21,7 +21,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
 
     private const PROPERTY_PATH = 'property_path';
 
-    private const KG_23_VALUE = [0 => ['data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM']]];
+    private const KG_23_VALUE = ['data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM']];
 
     public function let(
         PropertyAccessorInterface $propertyAccessor,
@@ -50,12 +50,17 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
 
     public function it_supports_provided_akeneo_attribute_code_with_metrical_value(): void
     {
-        $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE)->shouldReturn(true);
+        $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, [self::KG_23_VALUE])->shouldReturn(true);
     }
 
     public function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code(): void
     {
-        $this->supports(new ProductVariant(), 'another_attribute', self::KG_23_VALUE)->shouldReturn(false);
+        $this->supports(new ProductVariant(), 'another_attribute', [self::KG_23_VALUE])->shouldReturn(false);
+    }
+
+    public function it_does_not_support_data_with_one_metrical_value_and_one_non_metrical(): void
+    {
+        $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, [self::KG_23_VALUE, ['data' => 'altissimo']])->shouldReturn(false);
     }
 
     public function it_throws_trying_to_handle_not_supported_property(): void
@@ -79,7 +84,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         ProductVariantInterface $productVariant,
         ProductInterface $product
     ): void {
-        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE);
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [self::KG_23_VALUE]);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
@@ -92,7 +97,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     ): void {
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
 
-        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE);
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [self::KG_23_VALUE]);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldNotHaveBeenCalled();
@@ -105,7 +110,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     ): void {
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
 
-        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::KG_23_VALUE);
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [self::KG_23_VALUE]);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 23.0)->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
@@ -150,9 +155,8 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
                 [
                     $productVariant,
                     self::AKENEO_ATTRIBUTE_CODE,
-                    self::KG_23_VALUE,
+                    [self::KG_23_VALUE],
                 ]
-            )
-        ;
+            );
     }
 }
