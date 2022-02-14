@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use InvalidArgumentException;
+use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -47,24 +49,14 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
      */
     public function supports($subject, string $attribute, array $value): bool
     {
-        if (!array_key_exists(0, $value) ||
-            !is_array($value[0]) ||
-            !array_key_exists('data', $value[0])
-        ) {
-            return false;
-        }
-        /** @var array{amount: string, unit: string}|null $metricValueData */
-        $metricValueData = $value[0]['data'];
-        if (
-            $metricValueData !== null && (
-                !is_array($value[0]['data']) ||
-                !array_key_exists('amount', $value[0]['data']) ||
-                !array_key_exists('unit', $value[0]['data']) ||
-                !is_string($value[0]['data']['amount']) ||
-                !is_string($value[0]['data']['unit'])
-            )
-        ) {
-            return false;
+        foreach ($value as $valueData) {
+            if (!is_array($valueData) || !array_key_exists('data', $valueData)) {
+                return false;
+            }
+
+            if (!$this->isSupported($valueData['data'])) {
+                return false;
+            }
         }
 
         return $subject instanceof ProductVariantInterface && $attribute === $this->akeneoAttributeCode;
@@ -77,7 +69,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
     public function handle($subject, string $attribute, array $value): void
     {
         if (!$this->supports($subject, $attribute, $value)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'Cannot handle Akeneo attribute "%s". %s only supports Akeneo attribute "%s".',
                     $attribute,
@@ -107,7 +99,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         }
 
         if (!$hasBeenSet) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf(
                     'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                     $this->propertyPath,
@@ -128,5 +120,21 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         }
 
         return $this->unitMeasurementValueConverter->convert($data['amount'], $data['unit'], $this->akeneoUnitMeasurementCode);
+    }
+
+
+    /**
+     * @param mixed $metricValueData
+     */
+    private function isSupported($metricValueData): bool
+    {
+        return $metricValueData === null ||
+            (
+                is_array($metricValueData) &&
+                array_key_exists('amount', $metricValueData) &&
+                array_key_exists('unit', $metricValueData) &&
+                is_string($metricValueData['amount']) &&
+                is_string($metricValueData['unit'])
+            );
     }
 }
