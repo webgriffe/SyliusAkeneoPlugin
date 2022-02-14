@@ -10,6 +10,7 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use RuntimeException;
 use stdClass;
+use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -42,6 +43,14 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->isWritable($englishProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
         $propertyAccessor->isWritable($italianProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
 
+        $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
+
+        $productVariant->getProduct()->willReturn($product);
+        $commerceChannel = new Channel();
+        $commerceChannel->setCode('ecommerce');
+        $supportChannel = new Channel();
+        $supportChannel->setCode('support');
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
         $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
 
         $productVariant->getProduct()->willReturn($product);
@@ -263,5 +272,49 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $product->addTranslation(Argument::any())->shouldNotHaveBeenCalled();
         $productTranslationFactory->createNew()->shouldNotHaveBeenCalled();
         $productVariantTranslationFactory->createNew()->shouldNotHaveBeenCalled();
+    }
+
+    public function it_skips_values_related_to_channels_that_are_not_associated_to_the_product(
+        ProductVariantInterface $productVariant,
+        ProductVariantTranslationInterface $italianProductVariantTranslation,
+        ProductVariantTranslationInterface $englishProductVariantTranslation,
+        ProductTranslationInterface $italianProductTranslation,
+        ProductTranslationInterface $englishProductTranslation,
+        PropertyAccessorInterface $propertyAccessor
+    ): void {
+        $value = [
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'en_US',
+                'data' => 'Wood',
+            ],
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'it_IT',
+                'data' => 'Legno',
+            ],
+            [
+                'scope' => 'paper_catalog',
+                'locale' => 'en_US',
+                'data' => 'Woody',
+            ],
+            [
+                'scope' => 'paper_catalog',
+                'locale' => 'it_IT',
+                'data' => 'Legnoso',
+            ],
+        ];
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, $value);
+
+        $propertyAccessor->setValue($englishProductVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'Wood')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($italianProductVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'Legno')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($englishProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'Wood')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($italianProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'Legno')->shouldHaveBeenCalled();
+
+        $propertyAccessor->setValue($englishProductVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'Woody')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($italianProductVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'Legnoso')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($englishProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'Woody')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($italianProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'Legnoso')->shouldNotHaveBeenCalled();
     }
 }
