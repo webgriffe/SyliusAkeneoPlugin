@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use InvalidArgumentException;
 use RuntimeException;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -78,24 +79,39 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
                 )
             );
         }
+
         $hasBeenSet = false;
-
-        $metricValueData = $value[0]['data'];
-
         $productVariant = $subject;
         Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
-        if ($this->propertyAccessor->isWritable($productVariant, $this->propertyPath)) {
-            $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $this->getValue($metricValueData));
-            Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
-            $hasBeenSet = true;
-        }
-
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        if ($this->propertyAccessor->isWritable($product, $this->propertyPath)) {
-            $this->propertyAccessor->setValue($product, $this->propertyPath, $this->getValue($metricValueData));
-            Assert::isInstanceOf($product, ProductInterface::class);
-            $hasBeenSet = true;
+
+        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
+            return $channel->getCode();
+        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_filter($productChannelCodes);
+
+        foreach ($value as $valueData) {
+            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+                continue;
+            }
+
+            $valueToSet = $this->getValue($valueData['data']);
+            if ($this->propertyAccessor->isWritable($productVariant, $this->propertyPath)) {
+                $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $valueToSet);
+                Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
+                $hasBeenSet = true;
+            }
+
+            if ($this->propertyAccessor->isWritable($product, $this->propertyPath)) {
+                $this->propertyAccessor->setValue($product, $this->propertyPath, $valueToSet);
+                Assert::isInstanceOf($product, ProductInterface::class);
+                $hasBeenSet = true;
+            }
+
+            if ($hasBeenSet) {
+                break;
+            }
         }
 
         if (!$hasBeenSet) {
@@ -121,7 +137,6 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
 
         return $this->unitMeasurementValueConverter->convert($data['amount'], $data['unit'], $this->akeneoUnitMeasurementCode);
     }
-
 
     /**
      * @param mixed $metricValueData
