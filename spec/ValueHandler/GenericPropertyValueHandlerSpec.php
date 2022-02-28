@@ -18,32 +18,41 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
 
     private const PROPERTY_PATH = 'property_path';
 
-    function let(PropertyAccessorInterface $propertyAccessor)
+    private const NEW_VALUE_DATA = ['locale' => null, 'scope' => null, 'data' => 'New value'];
+
+    public function let(PropertyAccessorInterface $propertyAccessor,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
+    ): void
     {
+        $productVariant->getProduct()->willReturn($product);
+        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
+        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
+
         $this->beConstructedWith($propertyAccessor, self::AKENEO_ATTRIBUTE_CODE, self::PROPERTY_PATH);
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(GenericPropertyValueHandler::class);
     }
 
-    function it_implements_value_handler_interface()
+    public function it_implements_value_handler_interface(): void
     {
         $this->shouldHaveType(ValueHandlerInterface::class);
     }
 
-    function it_supports_provided_akeneo_attribute_code()
+    public function it_supports_provided_akeneo_attribute_code(): void
     {
         $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code()
+    public function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code(): void
     {
         $this->supports(new ProductVariant(), 'another_attribute', [])->shouldReturn(false);
     }
 
-    function it_throws_trying_to_handle_not_supported_property()
+    public function it_throws_trying_to_handle_not_supported_property(): void
     {
         $this
             ->shouldThrow(
@@ -59,57 +68,48 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
             ->during('handle', [new ProductVariant(), 'not_supported_property', []]);
     }
 
-    function it_sets_value_on_provided_property_path_on_both_product_and_product_variant(
+    public function it_sets_value_on_provided_property_path_on_both_product_and_product_variant(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         ProductInterface $product
-    ) {
-        $productVariant->getProduct()->willReturn($product);
-        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
-        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
-
-        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => 'New value']]);
+    ): void {
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [self::NEW_VALUE_DATA]);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
-    function it_sets_value_on_provided_property_path_on_variant_only_if_product_is_not_writable(
+    public function it_sets_value_on_provided_property_path_on_variant_only_if_product_is_not_writable(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         ProductInterface $product
-    ) {
-        $productVariant->getProduct()->willReturn($product);
-        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
+    ): void {
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
 
-        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => 'New value']]);
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [self::NEW_VALUE_DATA]);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
     }
 
-    function it_sets_value_on_provided_property_path_on_product_only_if_variant_is_not_writable(
+    public function it_sets_value_on_provided_property_path_on_product_only_if_variant_is_not_writable(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         ProductInterface $product
-    ) {
-        $productVariant->getProduct()->willReturn($product);
+    ): void {
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
-        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
 
-        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => 'New value']]);
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [self::NEW_VALUE_DATA]);
 
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value')->shouldHaveBeenCalled();
     }
 
-    function it_throws_if_provided_property_path_is_not_writeable_on_both_product_and_variant(
+    public function it_throws_if_provided_property_path_is_not_writeable_on_both_product_and_variant(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         ProductInterface $product
-    ) {
-        $productVariant->getProduct()->willReturn($product);
+    ): void {
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
 
@@ -129,7 +129,7 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
                 [
                     $productVariant,
                     self::AKENEO_ATTRIBUTE_CODE,
-                    [['locale' => null, 'scope' => null, 'data' => 'New value']],
+                    [self::NEW_VALUE_DATA],
                 ]
             )
         ;
