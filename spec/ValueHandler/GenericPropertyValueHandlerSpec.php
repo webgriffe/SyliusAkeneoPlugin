@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
+use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -20,11 +22,17 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
 
     private const NEW_VALUE_DATA = ['locale' => null, 'scope' => null, 'data' => 'New value'];
 
-    public function let(PropertyAccessorInterface $propertyAccessor,
+    public function let(
+        PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
         ProductInterface $product
-    ): void
-    {
+    ): void {
+        $commerceChannel = new Channel();
+        $commerceChannel->setCode('ecommerce');
+        $supportChannel = new Channel();
+        $supportChannel->setCode('support');
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
+
         $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
@@ -131,7 +139,63 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
                     self::AKENEO_ATTRIBUTE_CODE,
                     [self::NEW_VALUE_DATA],
                 ]
-            )
-        ;
+            );
+    }
+
+    public function it_skips_values_related_to_channels_that_are_not_associated_to_the_product(
+        PropertyAccessorInterface $propertyAccessor,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
+    ): void {
+        $value = [
+            [
+                'scope' => 'print',
+                'locale' => 'en_US',
+                'data' => 'New value other',
+            ],
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'en_US',
+                'data' => 'New value commerce',
+            ],
+            [
+                'scope' => 'paper_catalog',
+                'locale' => 'en_US',
+                'data' => 'New value other',
+            ],
+        ];
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, $value);
+
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value commerce')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value commerce')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value other')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value other')->shouldNotHaveBeenCalled();
+    }
+
+    public function it_skips_subsequent_values_after_that_one_has_already_been_set_successfully(
+        PropertyAccessorInterface $propertyAccessor,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
+    ): void {
+        $value = [
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'en_US',
+                'data' => 'New value commerce',
+            ],
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'it_IT',
+                'data' => 'New value other',
+            ],
+        ];
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, $value);
+
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value commerce')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value commerce')->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value other')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value other')->shouldNotHaveBeenCalled();
     }
 }
