@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use InvalidArgumentException;
+use RuntimeException;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -44,8 +47,9 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
      */
     public function handle($subject, string $attribute, array $value): void
     {
+        // todo: this value handler shares the same exact code of the metric property value handler
         if (!$this->supports($subject, $attribute, $value)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'Cannot handle Akeneo attribute "%s". %s only supports Akeneo attribute "%s".',
                     $attribute,
@@ -54,28 +58,43 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        $hasBeenSet = false;
 
+        $hasBeenSet = false;
         $productVariant = $subject;
         Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
-        if ($this->propertyAccessor->isWritable($productVariant, $this->propertyPath)) {
-            /** @psalm-suppress MixedArgument */
-            $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $this->getValue($value));
-            Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
-            $hasBeenSet = true;
-        }
-
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        if ($this->propertyAccessor->isWritable($product, $this->propertyPath)) {
-            /** @psalm-suppress MixedArgument */
-            $this->propertyAccessor->setValue($product, $this->propertyPath, $this->getValue($value));
-            Assert::isInstanceOf($product, ProductInterface::class);
-            $hasBeenSet = true;
+
+        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
+            return $channel->getCode();
+        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_filter($productChannelCodes);
+
+        foreach ($value as $valueData) {
+            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+                continue;
+            }
+
+            $valueToSet = $valueData['data'];
+            if ($this->propertyAccessor->isWritable($productVariant, $this->propertyPath)) {
+                $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $valueToSet);
+                Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
+                $hasBeenSet = true;
+            }
+
+            if ($this->propertyAccessor->isWritable($product, $this->propertyPath)) {
+                $this->propertyAccessor->setValue($product, $this->propertyPath, $valueToSet);
+                Assert::isInstanceOf($product, ProductInterface::class);
+                $hasBeenSet = true;
+            }
+
+            if ($hasBeenSet) {
+                break;
+            }
         }
 
         if (!$hasBeenSet) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf(
                     'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                     $this->propertyPath,
@@ -84,21 +103,5 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                 )
             );
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getValue(array $value)
-    {
-        Assert::keyExists($value, 0);
-        /** @psalm-suppress MixedAssignment */
-        $value = $value[0];
-        Assert::isArray($value);
-        Assert::keyExists($value, 'data');
-        /** @psalm-suppress MixedAssignment */
-        $value = $value['data'];
-
-        return $value;
     }
 }
