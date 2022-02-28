@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use InvalidArgumentException;
 use PhpSpec\ObjectBehavior;
 use RuntimeException;
+use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariant;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -31,6 +33,12 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     ): void {
         $unitMeasurementValueConverter->convert('23', 'KILOGRAM', null)->willReturn(23.0);
 
+        $commerceChannel = new Channel();
+        $commerceChannel->setCode('ecommerce');
+        $supportChannel = new Channel();
+        $supportChannel->setCode('support');
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
+
         $productVariant->getProduct()->willReturn($product);
         $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(true);
         $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(true);
@@ -51,6 +59,29 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     public function it_supports_provided_akeneo_attribute_code_with_metrical_value(): void
     {
         $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, [self::KG_23_VALUE])->shouldReturn(true);
+    }
+
+    public function it_supports_provided_akeneo_attribute_code_with_metrical_values_related_to_different_channels(): void
+    {
+        $value = [
+            [
+                'scope' => 'print',
+                'locale' => 'en_US',
+                'data' => ['amount' => '21.0000', 'unit' => 'KILOGRAM'],
+            ],
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'en_US',
+                'data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM'],
+            ],
+            [
+                'scope' => 'paper_catalog',
+                'locale' => 'en_US',
+                'data' => ['amount' => '21.0000', 'unit' => 'KILOGRAM'],
+            ],
+        ];
+
+        $this->supports(new ProductVariant(), self::AKENEO_ATTRIBUTE_CODE, $value)->shouldReturn(true);
     }
 
     public function it_does_not_support_any_other_attribute_except_provided_akeneo_attribute_code(): void
@@ -158,5 +189,62 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
                     [self::KG_23_VALUE],
                 ]
             );
+    }
+
+    public function it_skips_values_related_to_channels_that_are_not_associated_to_the_product(
+        PropertyAccessorInterface $propertyAccessor,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
+    ): void {
+        $value = [
+            [
+                'scope' => 'print',
+                'locale' => 'en_US',
+                'data' => ['amount' => '21.0000', 'unit' => 'KILOGRAM'],
+            ],
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'en_US',
+                'data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM'],
+            ],
+            [
+                'scope' => 'paper_catalog',
+                'locale' => 'en_US',
+                'data' => ['amount' => '21.0000', 'unit' => 'KILOGRAM'],
+            ],
+        ];
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, $value);
+
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
+    }
+
+    public function it_skips_subsequent_values_after_that_one_has_already_been_set_successfully(
+        PropertyAccessorInterface $propertyAccessor,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
+    ): void {
+        $value = [
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'en_US',
+                'data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM'],
+            ],
+            [
+                'scope' => 'ecommerce',
+                'locale' => 'it_IT',
+                'data' => ['amount' => '21.0000', 'unit' => 'KILOGRAM'],
+            ],
+        ];
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, $value);
+
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
     }
 }
