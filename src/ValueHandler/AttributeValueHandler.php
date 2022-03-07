@@ -10,7 +10,7 @@ use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextareaAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextAttributeType;
 use Sylius\Component\Attribute\Model\AttributeInterface;
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductAttributeValueInterface;
@@ -117,6 +117,9 @@ final class AttributeValueHandler implements ValueHandlerInterface
         $productChannelCodes = array_filter($productChannelCodes);
 
         foreach ($value as $valueData) {
+            if (!is_array($valueData)) {
+                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
+            }
             if (!array_key_exists('scope', $valueData)) {
                 throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
             }

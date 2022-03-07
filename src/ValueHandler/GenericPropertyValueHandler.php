@@ -6,7 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use InvalidArgumentException;
 use RuntimeException;
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -71,6 +71,9 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
         $productChannelCodes = array_filter($productChannelCodes);
 
         foreach ($value as $valueData) {
+            if (!is_array($valueData)) {
+                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
+            }
             if (!array_key_exists('scope', $valueData)) {
                 throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
             }
@@ -78,6 +81,7 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
 
+            /** @psalm-suppress MixedAssignment */
             $valueToSet = $valueData['data'];
             if ($this->propertyAccessor->isWritable($productVariant, $this->propertyPath)) {
                 $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $valueToSet);

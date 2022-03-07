@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -109,7 +109,11 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
             return $channel->getCode();
         }, $product->getChannels()->toArray());
         foreach ($value as $valueData) {
-            if (!is_array($valueData) || !array_key_exists('data', $valueData)) {
+            if (!is_array($valueData)) {
+                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
+            }
+            // todo: we should throw here? it seeme that API won't never return an empty array
+            if (!array_key_exists('data', $valueData)) {
                 continue;
             }
 
@@ -121,7 +125,12 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
             }
 
             /** @psalm-suppress MixedAssignment */
-            return $valueData['data'];
+            $data = $valueData['data'];
+            if (!is_string($data) && null !== $data) {
+                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected a string or null value, got "%s".', gettype($data)));
+            }
+
+            return $data;
         }
 
         throw new \InvalidArgumentException('Invalid Akeneo attachment data: cannot find the media code.');
