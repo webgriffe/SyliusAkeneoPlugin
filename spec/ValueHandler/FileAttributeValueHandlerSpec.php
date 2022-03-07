@@ -25,7 +25,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         ApiClientInterface $apiClient,
         Filesystem $filesystem,
         ProductVariantInterface $productVariant,
-        ProductInterface $product,
+        ProductInterface $product
     ) {
         $commerceChannel = new Channel();
         $commerceChannel->setCode('ecommerce');
