@@ -23,7 +23,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
 
     private const PROPERTY_PATH = 'property_path';
 
-    private const KG_23_VALUE = ['data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM']];
+    private const KG_23_VALUE = ['scope' => null, 'locale' => null, 'data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM']];
 
     public function let(
         PropertyAccessorInterface $propertyAccessor,
@@ -246,5 +246,24 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
+    }
+
+    public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.',))
+            ->during(
+                'handle',
+                [
+                    $productVariant,
+                    self::AKENEO_ATTRIBUTE_CODE,
+                    [
+                        [
+                            'locale' => 'en_US',
+                            'data' => ['amount' => '23.0000', 'unit' => 'KILOGRAM'],
+                        ],
+                    ],
+                ]
+            );
     }
 }

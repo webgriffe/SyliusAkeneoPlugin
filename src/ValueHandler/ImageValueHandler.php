@@ -157,17 +157,21 @@ final class ImageValueHandler implements ValueHandlerInterface
             return $channel->getCode();
         }, $product->getChannels()->toArray());
         foreach ($value as $valueData) {
-            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
-                continue;
-            }
-
             if (!is_array($valueData) || !array_key_exists('data', $valueData)) {
                 continue;
             }
+
+            if (!array_key_exists('scope', $valueData)) {
+                throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
+            }
+            if ($valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+                continue;
+            }
+
             /** @psalm-suppress MixedAssignment */
             return $valueData['data'];
         }
 
-        throw new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.');
+        throw new \InvalidArgumentException('Invalid Akeneo value data: cannot find the media code.');
     }
 }

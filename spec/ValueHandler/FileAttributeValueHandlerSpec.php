@@ -124,7 +124,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
     function it_throws_with_invalid_akeneo_file_data_during_handling(ProductVariantInterface $productVariant)
     {
         $this
-            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo attachment data. Cannot find the media code.'))
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo attachment data: cannot find the media code.'))
             ->during('handle', [$productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, [['malformed' => 'data']]]);
     }
 
@@ -228,26 +228,23 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
     }
 
-    function it_saves_file_to_media_when_media_data_doesnt_contain_scope_info(
-        ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient,
-        Filesystem $filesystem
-    ) {
-        $this->handle(
-            $productVariant,
-            self::AKENEO_FILE_ATTRIBUTE_CODE,
-            [
+    public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.',))
+            ->during(
+                'handle',
                 [
-                    'locale' => null,
-                    'data' => 'path/to/a/file.jpg',
-                    '_links' => ['download' => ['href' => 'download-url']],
-                ],
-            ]
-        );
-
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
-        $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
-        $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
-        $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
+                    $productVariant,
+                    self::AKENEO_FILE_ATTRIBUTE_CODE,
+                    [
+                        [
+                            'locale' => null,
+                            'data' => 'path/to/a/file.jpg',
+                            '_links' => ['download' => ['href' => 'download-url']],
+                        ],
+                    ]
+                ]
+            );
     }
 }

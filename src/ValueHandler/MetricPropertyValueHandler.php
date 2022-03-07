@@ -92,7 +92,10 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         $productChannelCodes = array_filter($productChannelCodes);
 
         foreach ($value as $valueData) {
-            if (array_key_exists('scope', $valueData) && $valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
+            if (!array_key_exists('scope', $valueData)) {
+                throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
+            }
+            if ($valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
                 continue;
             }
 

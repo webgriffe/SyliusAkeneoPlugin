@@ -317,4 +317,18 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($englishProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'Woody')->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($italianProductTranslation, self::TRANSLATION_PROPERTY_PATH, 'Legnoso')->shouldNotHaveBeenCalled();
     }
+
+    public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.',))
+            ->during(
+                'handle',
+                [
+                    $productVariant,
+                    self::AKENEO_ATTRIBUTE_CODE,
+                    [['locale' => 'en_US', 'data' => 'New value']],
+                ]
+            );
+    }
 }
