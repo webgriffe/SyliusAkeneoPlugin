@@ -6,7 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use InvalidArgumentException;
 use RuntimeException;
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -92,6 +92,10 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         $productChannelCodes = array_filter($productChannelCodes);
 
         foreach ($value as $valueData) {
+            // todo: this case is impossible as the given array is checked in isSupported method. we should refactor this
+            if (!is_array($valueData)) {
+                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
+            }
             if (!array_key_exists('scope', $valueData)) {
                 throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
             }
@@ -99,7 +103,13 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
 
-            $valueToSet = $this->getValue($valueData['data']);
+            /** @psalm-suppress MixedAssignment */
+            $data = $valueData['data'];
+            if (!is_array($data) && $data !== null) {
+                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected array or null, "%s" given.', gettype($data)));
+            }
+            /** @psalm-suppress MixedArgumentTypeCoercion */
+            $valueToSet = $this->getValue($data); // @phpstan-ignore-line
             if ($this->propertyAccessor->isWritable($productVariant, $this->propertyPath)) {
                 $this->propertyAccessor->setValue($productVariant, $this->propertyPath, $valueToSet);
                 Assert::isInstanceOf($productVariant, ProductVariantInterface::class);

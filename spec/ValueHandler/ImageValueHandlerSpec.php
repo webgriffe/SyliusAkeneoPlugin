@@ -346,4 +346,41 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $apiClient->downloadFile('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
     }
+
+    function it_throws_when_value_data_is_not_an_array(
+        ApiClientInterface $apiClient,
+        ProductVariantInterface $productVariant,
+        ProductImageInterface $productImage
+    ) {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected an array, "NULL" given.'))
+            ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [null]]);
+
+        $apiClient->downloadFile('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
+        $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
+    }
+
+    function it_throws_when_data_is_not_string_nor_null(
+        ApiClientInterface $apiClient,
+        ProductVariantInterface $productVariant,
+        ProductImageInterface $productImage
+    ) {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected a string or null value, got "integer".'))
+            ->during('handle', [
+                $productVariant,
+                self::AKENEO_ATTRIBUTE_CODE,
+                [
+                    [
+                        'scope' => null,
+                        'locale' => null,
+                        'data' => 1,
+                        '_links' => ['download' => ['href' => 'download-url']],
+                    ],
+                ],
+            ]);
+
+        $apiClient->downloadFile('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
+        $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
+    }
 }

@@ -247,4 +247,32 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
                 ]
             );
     }
+
+    public function it_throws_when_data_is_not_an_array(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected an array, "NULL" given.',))
+            ->during('handle', [$productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, [null]]);
+    }
+
+    public function it_throws_when_data_is_not_string_nor_null(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected a string or null value, got "integer".',))
+            ->during(
+                'handle',
+                [
+                    $productVariant,
+                    self::AKENEO_FILE_ATTRIBUTE_CODE,
+                    [
+                        [
+                            'scope' => null,
+                            'locale' => null,
+                            'data' => 1,
+                            '_links' => ['download' => ['href' => 'download-url']],
+                        ],
+                    ]
+                ]
+            );
+    }
 }

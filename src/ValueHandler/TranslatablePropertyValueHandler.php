@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -82,7 +82,11 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
             return $channel->getCode();
         }, $product->getChannels()->toArray());
+
         foreach ($value as $valueData) {
+            if (!is_array($valueData)) {
+                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
+            }
             if (!array_key_exists('scope', $valueData)) {
                 throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
             }

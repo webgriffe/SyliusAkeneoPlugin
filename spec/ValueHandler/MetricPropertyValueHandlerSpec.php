@@ -98,7 +98,7 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
     {
         $this
             ->shouldThrow(
-                new InvalidArgumentException(
+                new \InvalidArgumentException(
                     sprintf(
                         'Cannot handle Akeneo attribute "%s". %s only supports Akeneo attribute "%s".',
                         'not_supported_property',
@@ -246,6 +246,13 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 23.0)->shouldHaveBeenCalled();
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
+    }
+
+    public function it_throws_when_data_is_not_an_array(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(\InvalidArgumentException::class)
+            ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [null]]);
     }
 
     public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void

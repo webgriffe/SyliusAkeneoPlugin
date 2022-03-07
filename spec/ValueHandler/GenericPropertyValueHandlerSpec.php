@@ -199,6 +199,13 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value other')->shouldNotHaveBeenCalled();
     }
 
+    public function it_throws_when_data_is_not_an_array(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected an array, "NULL" given.',))
+            ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [null]]);
+    }
+
     public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
     {
         $this
