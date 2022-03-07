@@ -287,7 +287,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $productImage,
-        \SplFileInfo $imageFile,
+        \SplFileInfo $imageFile
     ) {
         $productVariant->getProduct()->willReturn($product);
 
