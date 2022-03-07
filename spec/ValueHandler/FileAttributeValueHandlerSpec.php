@@ -14,6 +14,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
+use Webmozart\Assert\InvalidArgumentException;
 
 class FileAttributeValueHandlerSpec extends ObjectBehavior
 {
@@ -116,7 +117,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
     {
         $productVariant->getProduct()->willReturn(null);
         $this
-            ->shouldThrow(\TypeError::class)
+            ->shouldThrow(InvalidArgumentException::class)
             ->during('handle', [$productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, []]);
     }
 
