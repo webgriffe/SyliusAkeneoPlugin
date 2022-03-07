@@ -18,6 +18,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
+use Webmozart\Assert\InvalidArgumentException;
 
 class AttributeValueHandlerSpec extends ObjectBehavior
 {
@@ -176,7 +177,7 @@ class AttributeValueHandlerSpec extends ObjectBehavior
     {
         $productVariant->getProduct()->willReturn(null);
         $this
-            ->shouldThrow(\TypeError::class)
+            ->shouldThrow(InvalidArgumentException::class)
             ->during('handle', [$productVariant, self::TEXT_ATTRIBUTE_CODE, []]);
     }
 
