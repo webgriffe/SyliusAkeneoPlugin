@@ -198,4 +198,23 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 'New value other')->shouldNotHaveBeenCalled();
         $propertyAccessor->setValue($product, self::PROPERTY_PATH, 'New value other')->shouldNotHaveBeenCalled();
     }
+
+    public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.',))
+            ->during(
+                'handle',
+                [
+                    $productVariant,
+                    self::AKENEO_ATTRIBUTE_CODE,
+                    [
+                        [
+                            'locale' => 'en_US',
+                            'data' => 'New value commerce',
+                        ],
+                    ],
+                ]
+            );
+    }
 }

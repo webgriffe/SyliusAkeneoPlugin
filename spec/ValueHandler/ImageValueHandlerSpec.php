@@ -54,8 +54,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productVariant->getProduct()->willReturn($product);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
-            ->willReturn(new ArrayCollection([]))
-        ;
+            ->willReturn(new ArrayCollection([]));
         $this->beConstructedWith(
             $productImageFactory,
             $productImageRepository,
@@ -173,8 +172,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
     ) {
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
-            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
-        ;
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]));
         $existentProductImage->hasProductVariant($productVariant)->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
@@ -194,8 +192,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $product->isSimple()->willReturn(false);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
-            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
-        ;
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]));
         $existentProductImage->hasProductVariant($productVariant)->willReturn(false);
         $productImageFactory->createNew()->willReturn($newProductImage);
 
@@ -211,7 +208,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
     function it_throws_with_invalid_akeneo_image_data_during_handling(ProductVariantInterface $productVariant)
     {
         $this
-            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo image data. Cannot find the media code.'))
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: cannot find the media code.'))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [['malformed' => 'data']]]);
     }
 
@@ -224,8 +221,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $existentProductImage->hasProductVariant($productVariant)->willReturn(true);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
-            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
-        ;
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]));
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => null]]);
 
@@ -242,8 +238,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $existentProductImage->hasProductVariant($productVariant)->willReturn(false);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
-            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]))
-        ;
+            ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]));
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => null, 'scope' => null, 'data' => null]]);
 
@@ -329,28 +324,26 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productImage->setFile($imageFile)->shouldHaveBeenCalled();
     }
 
-    function it_handles_image_when_media_data_doesnt_contain_scope_info(
+    function it_throws_when_data_doesnt_contain_scope_info(
         ApiClientInterface $apiClient,
         ProductVariantInterface $productVariant,
-        ProductInterface $product,
-        ProductImageInterface $productImage,
-        \SplFileInfo $imageFile,
+        ProductImageInterface $productImage
     ) {
-        $this->handle(
-            $productVariant,
-            self::AKENEO_ATTRIBUTE_CODE,
-            [
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.'))
+            ->during('handle', [
+                $productVariant,
+                self::AKENEO_ATTRIBUTE_CODE,
                 [
-                    'locale' => null,
-                    'data' => 'path/to/a/file.jpg',
-                    '_links' => ['download' => ['href' => 'download-url']],
+                    [
+                        'locale' => null,
+                        'data' => 'path/to/a/file.jpg',
+                        '_links' => ['download' => ['href' => 'download-url']],
+                    ],
                 ],
-            ]
-        );
+            ]);
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $apiClient->downloadFile('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
-        $product->addImage($productImage)->shouldHaveBeenCalled();
-        $productImage->setFile($imageFile)->shouldHaveBeenCalled();
     }
 }

@@ -656,39 +656,22 @@ class AttributeValueHandlerSpec extends ObjectBehavior
         $enAttributeValue->setValue('Woody')->shouldNotHaveBeenCalled();
     }
 
-    function it_handle_values_that_has_no_scope(
-        ProductVariantInterface $productVariant,
-        ProductAttributeValueInterface $itAttributeValue,
-        ProductAttributeValueInterface $enAttributeValue,
-        FactoryInterface $factory,
-        ProductInterface $product,
-        ValueConverterInterface $valueConverter,
-        ProductAttributeInterface $textProductAttribute
-    ) {
-        $factory->createNew()->willReturn($enAttributeValue, $itAttributeValue);
-        $product->getAttributeByCodeAndLocale(Argument::type('string'), Argument::type('string'))->willReturn(null);
-
-        $value = [
-            [
-                'locale' => 'en_US',
-                'data' => 'Wood',
-            ],
-            [
-                'locale' => 'it_IT',
-                'data' => 'Legno',
-            ],
-        ];
-
-        $valueConverter->convert($textProductAttribute, 'Wood', 'en_US')->willReturn('Wood');
-        $valueConverter->convert($textProductAttribute, 'Legno', 'it_IT')->willReturn('Legno');
-
-        $this->handle($productVariant, self::TEXT_ATTRIBUTE_CODE, $value);
-
-        $product->addAttribute($itAttributeValue)->shouldHaveBeenCalled();
-        $product->addAttribute($enAttributeValue)->shouldHaveBeenCalled();
-        $itAttributeValue->setLocaleCode('it_IT')->shouldHaveBeenCalled();
-        $itAttributeValue->setValue('Legno')->shouldHaveBeenCalled();
-        $enAttributeValue->setLocaleCode('en_US')->shouldHaveBeenCalled();
-        $enAttributeValue->setValue('Wood')->shouldHaveBeenCalled();
+    public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
+    {
+        $this
+            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.',))
+            ->during(
+                'handle',
+                [
+                    $productVariant,
+                    self::TEXT_ATTRIBUTE_CODE,
+                    [
+                        [
+                            'locale' => 'en_US',
+                            'data' => 'Wood',
+                        ],
+                    ],
+                ]
+            );
     }
 }
