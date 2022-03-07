@@ -114,7 +114,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
 
     function it_throws_exception_during_handle_when_product_variant_hasnt_an_associated_product(ProductVariantInterface $productVariant)
     {
-        $productVariant->getProduct()->willReturn(new \stdClass());
+        $productVariant->getProduct()->willReturn(null);
         $this
             ->shouldThrow(\TypeError::class)
             ->during('handle', [$productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, []]);
