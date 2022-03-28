@@ -333,7 +333,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
     }
 
     public function it_throws_when_data_doesnt_contain_scope_info(
-        ApiClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
         ProductVariantInterface $productVariant,
         ProductImageInterface $productImage
     ): void {
@@ -351,12 +351,12 @@ class ImageValueHandlerSpec extends ObjectBehavior
                 ],
             ]);
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
     }
 
     public function it_throws_when_value_data_is_not_an_array(
-        ApiClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
         ProductVariantInterface $productVariant,
         ProductImageInterface $productImage
     ): void {
@@ -364,12 +364,12 @@ class ImageValueHandlerSpec extends ObjectBehavior
             ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected an array, "NULL" given.'))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [null]]);
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
     }
 
     public function it_throws_when_data_is_not_string_nor_null(
-        ApiClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
         ProductVariantInterface $productVariant,
         ProductImageInterface $productImage
     ): void {
@@ -388,7 +388,7 @@ class ImageValueHandlerSpec extends ObjectBehavior
                 ],
             ]);
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldNotHaveBeenCalled();
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
     }
 }
