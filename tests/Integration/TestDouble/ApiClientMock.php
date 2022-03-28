@@ -58,6 +58,8 @@ final class ApiClientMock implements AkeneoPimClientInterface
 
     private FamilyApiInterface $familyApi;
 
+    private MeasurementFamilyApiInterface $measurementFamilyApi;
+
     public function __construct()
     {
         $this->productApi = new ProductApiMock();
@@ -67,6 +69,7 @@ final class ApiClientMock implements AkeneoPimClientInterface
         $this->productModelApi = new ProductModelApiMock();
         $this->familyVariantApi = new FamilyVariantApiMock();
         $this->familyApi = new FamilyApiMock();
+        $this->measurementFamilyApi = new MeasurementFamilyApiMock();
     }
 
     public function addProductUpdatedAt(string $identifier, \DateTime $updatedAt): void
@@ -141,7 +144,7 @@ final class ApiClientMock implements AkeneoPimClientInterface
 
     public function getMeasurementFamilyApi(): MeasurementFamilyApiInterface
     {
-        // TODO: Implement getMeasurementFamilyApi() method.
+        return $this->measurementFamilyApi;
     }
 
     public function getAssociationTypeApi(): AssociationTypeApiInterface

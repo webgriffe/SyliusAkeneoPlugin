@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Converter;
 
-use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use LogicException;
 use Webmozart\Assert\Assert;
 
 final class UnitMeasurementValueConverter implements UnitMeasurementValueConverterInterface
 {
     private const RECOGNIZED_OPERATORS = ['add', 'sub', 'mul', 'div'];
 
-    /**
-     * UnitMeasurementValueConverter constructor.
-     */
-    public function __construct(private MeasurementFamiliesApiClientInterface $apiClient)
+    public function __construct(private AkeneoPimClientInterface $apiClient)
     {
     }
 
@@ -51,14 +49,15 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
      */
     private function getUnitMeasurementFamilyByUnitMeasurementCode(string $unitMeasurementCode): array
     {
-        $unitMeasurementFamilies = $this->apiClient->getMeasurementFamilies();
+        $unitMeasurementFamilies = $this->apiClient->getMeasurementFamilyApi()->all();
+        /** @var array{code: string, labels: array{localeCode: string}, standard_unit_code: string, units: array{unitCode: array{code: string, labels: array<string, string>, convert_from_standard: array{operator: string, value: string}, symbol: string}}} $unitMeasurementFamily */
         foreach ($unitMeasurementFamilies as $unitMeasurementFamily) {
             if (array_key_exists($unitMeasurementCode, $unitMeasurementFamily['units'])) {
                 return $unitMeasurementFamily;
             }
         }
 
-        throw new \LogicException(
+        throw new LogicException(
             sprintf(
                 'Unable to retrieve unit measurement family for the "%s" unit measurement code',
                 $unitMeasurementCode
@@ -90,7 +89,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
 
                     break;
                 default:
-                    throw new \LogicException(sprintf(
+                    throw new LogicException(sprintf(
                         'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
                         $operation['operator'],
                         implode(', ', self::RECOGNIZED_OPERATORS)
@@ -125,7 +124,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
 
                     break;
                 default:
-                    throw new \LogicException(sprintf(
+                    throw new LogicException(sprintf(
                         'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
                         $operation['operator'],
                         implode(', ', self::RECOGNIZED_OPERATORS)
