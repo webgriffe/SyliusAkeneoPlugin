@@ -12,7 +12,7 @@ final class AttributeOptionApiMock implements AttributeOptionApiInterface
 {
     public function get($attributeCode, $code): array
     {
-        return OfficialApiClientMock::jsonFileOrHttpNotFoundException(
+        return ApiClientMock::jsonFileOrHttpNotFoundException(
             __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '/' . $code . '.json'
         );
     }
