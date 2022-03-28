@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\MediaFileApiInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
+use SplFileInfo;
 use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
@@ -31,17 +36,23 @@ class ImageValueHandlerSpec extends ObjectBehavior
         ],
     ];
 
-    function let(
+    public function let(
         FactoryInterface $productImageFactory,
         RepositoryInterface $productImageRepository,
         ProductImageInterface $productImage,
-        ApiClientInterface $apiClient,
-        \SplFileInfo $imageFile,
+        AkeneoPimClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
+        ResponseInterface $downloadResponse,
+        StreamInterface $responseBody,
         ProductVariantInterface $productVariant,
         ProductInterface $product
-    ) {
+    ): void {
         $productImageFactory->createNew()->willReturn($productImage);
-        $apiClient->downloadFile(Argument::type('string'))->willReturn($imageFile);
+        $apiClient->getProductMediaFileApi()->willReturn($productMediaFileApi);
+        $productMediaFileApi->download(Argument::type('string'))->willReturn($downloadResponse);
+        $downloadResponse->getStatusCode()->willReturn(200);
+        $downloadResponse->getBody()->willReturn($responseBody);
+        $responseBody->getContents()->willReturn('__FILE_CONTENT__');
         $product->getImagesByType(self::SYLIUS_IMAGE_TYPE)->willReturn(new ArrayCollection([]));
         $product->addImage($productImage)->hasReturnVoid();
         $product->isSimple()->willReturn(true);
@@ -64,37 +75,37 @@ class ImageValueHandlerSpec extends ObjectBehavior
         );
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(ImageValueHandler::class);
     }
 
-    function it_implements_value_handler_interface()
+    public function it_implements_value_handler_interface(): void
     {
         $this->shouldHaveType(\Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface::class);
     }
 
-    function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant)
+    public function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_supports_provided_akeneo_attribute_code(ProductVariantInterface $productVariant)
+    public function it_supports_provided_akeneo_attribute_code(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_does_not_support_another_attribute_code(ProductVariantInterface $productVariant)
+    public function it_does_not_support_another_attribute_code(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, 'another_attribute_code', [])->shouldReturn(false);
     }
 
-    function it_does_not_support_other_types_of_subject_than_product_variant()
+    public function it_does_not_support_other_types_of_subject_than_product_variant(): void
     {
         $this->supports(new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, [])->shouldReturn(false);
     }
 
-    function it_throws_an_exception_while_handling_subject_that_is_not_a_product()
+    public function it_throws_an_exception_while_handling_subject_that_is_not_a_product(): void
     {
         $this
             ->shouldThrow(
@@ -109,11 +120,11 @@ class ImageValueHandlerSpec extends ObjectBehavior
             ->during('handle', [new \stdClass(), self::AKENEO_ATTRIBUTE_CODE, []]);
     }
 
-    function it_adds_image_to_product_when_handling_product_variant(
+    public function it_adds_image_to_product_when_handling_product_variant(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $productImage
-    ) {
+    ): void {
         $product->isSimple()->willReturn(true);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
@@ -122,11 +133,11 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $product->addImage($productImage)->shouldHaveBeenCalled();
     }
 
-    function it_adds_product_variant_association_to_image_when_handling_product_variant_from_configurable(
+    public function it_adds_product_variant_association_to_image_when_handling_product_variant_from_configurable(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $productImage
-    ) {
+    ): void {
         $product->isSimple()->willReturn(false);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
@@ -135,41 +146,40 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $product->addImage($productImage)->shouldHaveBeenCalled();
     }
 
-    function it_should_download_image_from_akeneo_when_handling(
+    public function it_should_download_image_from_akeneo_when_handling(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient
-    ) {
+        MediaFileApiInterface $productMediaFileApi
+    ): void {
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
     }
 
-    function it_sets_downloaded_image_to_product_image_when_handling(
-        ProductVariantInterface $productVariant,
-        ProductImageInterface $productImage,
-        \SplFileInfo $imageFile
-    ) {
-        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
-
-        $productImage->setFile($imageFile)->shouldHaveBeenCalled();
-    }
-
-    function it_sets_provided_product_image_type_when_handling(
+    public function it_sets_downloaded_image_to_product_image_when_handling(
         ProductVariantInterface $productVariant,
         ProductImageInterface $productImage
-    ) {
+    ): void {
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
+
+        $productImage->setFile(Argument::type(SplFileInfo::class))->shouldHaveBeenCalled();
+    }
+
+    public function it_sets_provided_product_image_type_when_handling(
+        ProductVariantInterface $productVariant,
+        ProductImageInterface $productImage
+    ): void {
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
         $productImage->setType(self::SYLIUS_IMAGE_TYPE)->shouldHaveBeenCalled();
     }
 
-    function it_updates_already_existent_product_image_of_the_provided_type_when_handling(
+    public function it_updates_already_existent_product_image_of_the_provided_type_when_handling(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $existentProductImage,
         RepositoryInterface $productImageRepository,
         FactoryInterface $productImageFactory
-    ) {
+    ): void {
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
             ->willReturn(new ArrayCollection([$existentProductImage->getWrappedObject()]));
@@ -178,17 +188,17 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, self::AKENEO_IMAGE_ATTRIBUTE_DATA);
 
         $productImageFactory->createNew()->shouldNotHaveBeenCalled();
-        $existentProductImage->setFile(Argument::type(\SplFileInfo::class))->shouldHaveBeenCalled();
+        $existentProductImage->setFile(Argument::type(SplFileInfo::class))->shouldHaveBeenCalled();
     }
 
-    function it_does_not_overwrite_already_existent_product_image_of_another_product_variant(
+    public function it_does_not_overwrite_already_existent_product_image_of_another_product_variant(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $existentProductImage,
         RepositoryInterface $productImageRepository,
         FactoryInterface $productImageFactory,
         ProductImageInterface $newProductImage
-    ) {
+    ): void {
         $product->isSimple()->willReturn(false);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
@@ -202,22 +212,22 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $newProductImage->setType(self::SYLIUS_IMAGE_TYPE)->shouldHaveBeenCalled();
         $productVariant->addImage($newProductImage)->shouldHaveBeenCalled();
         $product->addImage($newProductImage)->shouldHaveBeenCalled();
-        $newProductImage->setFile(Argument::type(\SplFileInfo::class))->shouldHaveBeenCalled();
+        $newProductImage->setFile(Argument::type(SplFileInfo::class))->shouldHaveBeenCalled();
     }
 
-    function it_throws_with_invalid_akeneo_image_data_during_handling(ProductVariantInterface $productVariant)
+    public function it_throws_with_invalid_akeneo_image_data_during_handling(ProductVariantInterface $productVariant): void
     {
         $this
             ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: cannot find the media code.'))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [['malformed' => 'data']]]);
     }
 
-    function it_removes_existing_image_on_sylius_if_empty_on_akeneo(
+    public function it_removes_existing_image_on_sylius_if_empty_on_akeneo(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $existentProductImage,
         RepositoryInterface $productImageRepository
-    ) {
+    ): void {
         $existentProductImage->hasProductVariant($productVariant)->willReturn(true);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
@@ -229,12 +239,12 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productVariant->removeImage($existentProductImage)->shouldHaveBeenCalled();
     }
 
-    function it_does_not_remove_image_of_other_variant_on_sylius_if_empty_on_akeneo(
+    public function it_does_not_remove_image_of_other_variant_on_sylius_if_empty_on_akeneo(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $existentProductImage,
         RepositoryInterface $productImageRepository
-    ) {
+    ): void {
         $existentProductImage->hasProductVariant($productVariant)->willReturn(false);
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
@@ -246,13 +256,12 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productVariant->removeImage($existentProductImage)->shouldNotHaveBeenCalled();
     }
 
-    function it_skips_images_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_null_scope(
-        ApiClientInterface $apiClient,
+    public function it_skips_images_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_null_scope(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $productImage,
-        \SplFileInfo $imageFile
-    ) {
+        MediaFileApiInterface $productMediaFileApi
+    ): void {
         $productVariant->getProduct()->willReturn($product);
 
         $this->handle(
@@ -274,21 +283,20 @@ class ImageValueHandlerSpec extends ObjectBehavior
             ]
         );
 
-        $apiClient->downloadFile('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
         $product->addImage($productImage)->shouldHaveBeenCalled();
-        $productImage->setFile($imageFile)->shouldHaveBeenCalled();
+        $productImage->setFile(Argument::type(SplFileInfo::class))->shouldHaveBeenCalled();
     }
 
-    function it_skips_images_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_channel_scope(
-        ApiClientInterface $apiClient,
+    public function it_skips_images_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_channel_scope(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductImageInterface $productImage,
-        \SplFileInfo $imageFile
-    ) {
+        MediaFileApiInterface $productMediaFileApi
+    ): void {
         $productVariant->getProduct()->willReturn($product);
 
         $this->handle(
@@ -316,19 +324,19 @@ class ImageValueHandlerSpec extends ObjectBehavior
             ]
         );
 
-        $apiClient->downloadFile('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
         $product->addImage($productImage)->shouldHaveBeenCalled();
-        $productImage->setFile($imageFile)->shouldHaveBeenCalled();
+        $productImage->setFile(Argument::type(SplFileInfo::class))->shouldHaveBeenCalled();
     }
 
-    function it_throws_when_data_doesnt_contain_scope_info(
+    public function it_throws_when_data_doesnt_contain_scope_info(
         ApiClientInterface $apiClient,
         ProductVariantInterface $productVariant,
         ProductImageInterface $productImage
-    ) {
+    ): void {
         $this
             ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.'))
             ->during('handle', [
@@ -347,11 +355,11 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
     }
 
-    function it_throws_when_value_data_is_not_an_array(
+    public function it_throws_when_value_data_is_not_an_array(
         ApiClientInterface $apiClient,
         ProductVariantInterface $productVariant,
         ProductImageInterface $productImage
-    ) {
+    ): void {
         $this
             ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected an array, "NULL" given.'))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [null]]);
@@ -360,11 +368,11 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productVariant->addImage($productImage)->shouldNotHaveBeenCalled();
     }
 
-    function it_throws_when_data_is_not_string_nor_null(
+    public function it_throws_when_data_is_not_string_nor_null(
         ApiClientInterface $apiClient,
         ProductVariantInterface $productVariant,
         ProductImageInterface $productImage
-    ) {
+    ): void {
         $this
             ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected a string or null value, got "integer".'))
             ->during('handle', [
