@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\Converter;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\MeasurementFamilyApiInterface;
 use PhpSpec\ObjectBehavior;
 use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverter;
 use Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverterInterface;
-use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 
 class UnitMeasurementValueConverterSpec extends ObjectBehavior
 {
     public function let(
-        MeasurementFamiliesApiClientInterface $apiClient
+        AkeneoPimClientInterface $apiClient,
+        MeasurementFamilyApiInterface $measurementFamilyApi
     ) {
         $unitMeasurementsFamilies = <<<JSON
 [
@@ -123,7 +125,8 @@ class UnitMeasurementValueConverterSpec extends ObjectBehavior
 ]
 JSON;
 
-        $apiClient->getMeasurementFamilies()->willReturn(json_decode($unitMeasurementsFamilies, true));
+        $apiClient->getMeasurementFamilyApi()->willReturn($measurementFamilyApi);
+        $measurementFamilyApi->all()->willReturn(json_decode($unitMeasurementsFamilies, true));
         $this->beConstructedWith($apiClient);
     }
 
