@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\AttributeApiInterface;
+use Akeneo\Pim\ApiClient\Api\MediaFileApiInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
 use Doctrine\Common\Collections\ArrayCollection;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\InvalidArgumentException;
@@ -20,56 +25,58 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
 {
     public const AKENEO_FILE_ATTRIBUTE_CODE = 'allegato_1';
 
-    function let(
-        \SplFileInfo $attachmentFile,
-        ApiClientInterface $apiClient,
+    public function let(
+        AkeneoPimClientInterface $apiClient,
+        AttributeApiInterface $attributeApi,
+        MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem,
         ProductVariantInterface $productVariant,
         ProductInterface $product
-    ) {
+    ): void {
         $commerceChannel = new Channel();
         $commerceChannel->setCode('ecommerce');
         $supportChannel = new Channel();
         $supportChannel->setCode('support');
         $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
         $productVariant->getProduct()->willReturn($product);
-        $attachmentFile->getPathname()->willReturn('/private/var/folders/A/B/C/akeneo-ABC');
-        $apiClient->downloadFile(Argument::type('string'))->willReturn($attachmentFile);
-        $apiClient->findAttribute('allegato_1')->willReturn(['type' => 'pim_catalog_file']);
+        $apiClient->getAttributeApi()->willReturn($attributeApi);
+        $apiClient->getProductMediaFileApi()->willReturn($productMediaFileApi);
+        $productMediaFileApi->download(Argument::type('string'))->willReturn(new Response(200, [], '__FILE_CONTENT__'));
+        $attributeApi->get('allegato_1')->willReturn(['type' => 'pim_catalog_file']);
         $this->beConstructedWith($apiClient, $filesystem, 'allegato_1', 'public/media/attachment/product/');
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(FileAttributeValueHandler::class);
     }
 
-    function it_implements_value_handler_interface()
+    public function it_implements_value_handler_interface(): void
     {
         $this->shouldHaveType(ValueHandlerInterface::class);
     }
 
-    function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant)
+    public function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_supports_attribute_code_with_given_prefix(ProductVariantInterface $productVariant)
+    public function it_supports_attribute_code_with_given_prefix(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, [])->shouldReturn(true);
     }
 
-    function it_does_not_support_attribute_with_wrong_prefix(
+    public function it_does_not_support_attribute_with_wrong_prefix(
         ProductVariantInterface $productVariant
-    ) {
+    ): void {
         $this->supports($productVariant, 'another_attribute', [])->shouldReturn(false);
     }
 
-    function it_does_not_support_attribute_that_is_not_file_attribute(
+    public function it_does_not_support_attribute_that_is_not_file_attribute(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient
-    ) {
-        $apiClient->findAttribute('allegato_1')->willReturn(['type' => 'pim_catalog_simpleselect']);
+        AttributeApiInterface $attributeApi
+    ): void {
+        $attributeApi->get('allegato_1')->willReturn(['type' => 'pim_catalog_simpleselect']);
         $this
             ->shouldThrow(
                 new \InvalidArgumentException(
@@ -79,26 +86,28 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ->during('supports', [$productVariant, 'allegato_1', []]);
     }
 
-    function it_does_not_support_attribute_that_does_not_exist(
+    public function it_does_not_support_attribute_that_does_not_exist(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient
-    ) {
-        $apiClient->findAttribute('allegato_1')->willReturn(null);
+        AttributeApiInterface $attributeApi
+    ): void {
+        $attributeApi->get('allegato_1')->willThrow(
+            new HttpException('Not found', new Request('GET', '/'), new Response(404))
+        );
         $this
             ->shouldThrow(
                 new \InvalidArgumentException(
-                    'This file value handler only supports akeneo file attributes. allegato_1 is not a file attribute',
+                    'The attribute "allegato_1" does not exists.',
                 )
             )
             ->during('supports', [$productVariant, 'allegato_1', []]);
     }
 
-    function it_does_not_support_any_other_type_of_subject()
+    public function it_does_not_support_any_other_type_of_subject(): void
     {
         $this->supports(new \stdClass(), self::AKENEO_FILE_ATTRIBUTE_CODE, [])->shouldReturn(false);
     }
 
-    function it_throws_exception_during_handle_when_subject_is_not_product_variant()
+    public function it_throws_exception_during_handle_when_subject_is_not_product_variant(): void
     {
         $this
             ->shouldThrow(
@@ -113,7 +122,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ->during('handle', [new \stdClass(), self::AKENEO_FILE_ATTRIBUTE_CODE, []]);
     }
 
-    function it_throws_exception_during_handle_when_product_variant_hasnt_an_associated_product(ProductVariantInterface $productVariant)
+    public function it_throws_exception_during_handle_when_product_variant_hasnt_an_associated_product(ProductVariantInterface $productVariant): void
     {
         $productVariant->getProduct()->willReturn(null);
         $this
@@ -121,18 +130,18 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ->during('handle', [$productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, []]);
     }
 
-    function it_throws_with_invalid_akeneo_file_data_during_handling(ProductVariantInterface $productVariant)
+    public function it_throws_with_invalid_akeneo_file_data_during_handling(ProductVariantInterface $productVariant): void
     {
         $this
             ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo attachment data: cannot find the media code.'))
             ->during('handle', [$productVariant, self::AKENEO_FILE_ATTRIBUTE_CODE, [['malformed' => 'data']]]);
     }
 
-    function it_save_file_to_media_when_handling_product_variant(
+    public function it_save_file_to_media_when_handling_product_variant(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem
-    ) {
+    ): void {
         $this->handle(
             $productVariant,
             self::AKENEO_FILE_ATTRIBUTE_CODE,
@@ -146,17 +155,17 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ]
         );
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
-        $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
+        $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
     }
 
-    function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_null_scope(
+    public function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_null_scope(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem
-    ) {
+    ): void {
         $this->handle(
             $productVariant,
             self::AKENEO_FILE_ATTRIBUTE_CODE,
@@ -182,19 +191,19 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ]
         );
 
-        $apiClient->downloadFile('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
-        $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
+        $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
     }
 
-    function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_channel_scope(
+    public function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_channel_scope(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient,
+        MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem
-    ) {
+    ): void {
         $this->handle(
             $productVariant,
             self::AKENEO_FILE_ATTRIBUTE_CODE,
@@ -220,12 +229,12 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
             ]
         );
 
-        $apiClient->downloadFile('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
 
-        $apiClient->downloadFile('path/to/a/file.jpg')->shouldHaveBeenCalled();
+        $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
-        $filesystem->rename('/private/var/folders/A/B/C/akeneo-ABC', 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
+        $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
     }
 
     public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
