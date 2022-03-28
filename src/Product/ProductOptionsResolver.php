@@ -39,6 +39,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
                 )
             );
         }
+
         try {
             $productResponse = $this->apiClient->getProductModelApi()->get($parentCode);
         } catch (HttpException $e) {
@@ -52,6 +53,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
         $familyCode = $productResponse['family'];
         /** @var string $familyVariantCode */
         $familyVariantCode = $productResponse['family_variant'];
+
         try {
             $familyVariantResponse = $this->apiClient->getFamilyVariantApi()->get($familyCode, $familyVariantCode);
         } catch (HttpException $e) {
@@ -80,6 +82,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
             Assert::isInstanceOf($productOption, ProductOptionInterface::class);
             $productOption->setCode($attributeCode);
             $productOption->setPosition($position);
+
             try {
                 $attributeResponse = $this->apiClient->getAttributeApi()->get($attributeCode);
             } catch (HttpException $e) {

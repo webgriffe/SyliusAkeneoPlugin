@@ -165,7 +165,7 @@ final class OfficialApiClientMock implements AkeneoPimClientInterface
             throw new HttpException('Not found', new Request('GET', '/'), new Response(404));
         }
 
-        return json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
+        return json_decode(file_get_contents($file), true, 512, \JSON_THROW_ON_ERROR);
     }
 
     public function getPublishedProductApi(): PublishedProductApiInterface
