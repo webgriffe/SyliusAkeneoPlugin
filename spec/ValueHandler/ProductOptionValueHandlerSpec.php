@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\AttributeOptionApiInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
 use Doctrine\Common\Collections\ArrayCollection;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use PhpSpec\ObjectBehavior;
+use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
@@ -33,11 +39,12 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
 
     private const IT_LABEL = 'IT Label';
 
-    function let(
+    public function let(
         ProductVariantInterface $productVariant,
         ProductInterface $product,
         ProductOptionInterface $productOption,
-        ApiClientInterface $apiClient,
+        AkeneoPimClientInterface $apiClient,
+        AttributeOptionApiInterface $attributeOptionApi,
         ProductOptionRepositoryInterface $productOptionRepository,
         FactoryInterface $productOptionValueFactory,
         FactoryInterface $productOptionValueTranslationFactory,
@@ -46,14 +53,15 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
         ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
         TranslationLocaleProviderInterface $translationLocaleProvider
-    ) {
+    ): void {
         $productVariant->getCode()->willReturn(self::VARIANT_CODE);
         $productVariant->getProduct()->willReturn($product);
         $product->getCode()->willReturn(self::PRODUCT_CODE);
         $product->getOptions()->willReturn(new ArrayCollection([$productOption->getWrappedObject()]));
         $productOption->getCode()->willReturn(self::OPTION_CODE);
-        $apiClient
-            ->findAttributeOption(self::OPTION_CODE, self::VALUE_CODE)
+        $apiClient->getAttributeOptionApi()->willReturn($attributeOptionApi);
+        $attributeOptionApi
+            ->get(self::OPTION_CODE, self::VALUE_CODE)
             ->willReturn(
                 [
                     'code' => self::VALUE_CODE,
@@ -82,38 +90,38 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         );
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(ProductOptionValueHandler::class);
     }
 
-    function it_implements_value_handler_interface()
+    public function it_implements_value_handler_interface(): void
     {
         $this->shouldHaveType(ValueHandlerInterface::class);
     }
 
-    function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant)
+    public function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::OPTION_CODE, [])->shouldReturn(true);
     }
 
-    function it_does_not_support_other_type_of_subject()
+    public function it_does_not_support_other_type_of_subject(): void
     {
         $this->supports(new \stdClass(), self::OPTION_CODE, [])->shouldReturn(false);
     }
 
-    function it_supports_option_code_of_parent_product(ProductVariantInterface $productVariant)
+    public function it_supports_option_code_of_parent_product(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::OPTION_CODE, [])->shouldReturn(true);
     }
 
-    function it_does_not_support_different_attribute_than_option_code_of_parent_product(
+    public function it_does_not_support_different_attribute_than_option_code_of_parent_product(
         ProductVariantInterface $productVariant
-    ) {
+    ): void {
         $this->supports($productVariant, 'other-attribute', [])->shouldReturn(false);
     }
 
-    function it_throws_exception_during_handle_when_subject_is_not_product_variant()
+    public function it_throws_exception_during_handle_when_subject_is_not_product_variant(): void
     {
         $this
             ->shouldThrow(
@@ -128,9 +136,9 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
             ->during('handle', [new \stdClass(), self::OPTION_CODE, []]);
     }
 
-    function it_throws_exception_during_handle_when_value_has_an_invalid_number_of_values(
+    public function it_throws_exception_during_handle_when_value_has_an_invalid_number_of_values(
         ProductVariantInterface $productVariant
-    ) {
+    ): void {
         $value = [
             [
                 'scope' => null,
@@ -145,7 +153,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         ];
 
         $this->shouldThrow(
-            new \RuntimeException(
+            new RuntimeException(
                 sprintf(
                     'Cannot handle option value on Akeneo product "%s", the option of the parent product "%s" is ' .
                     '"%s". More than one value is set for this attribute on Akeneo but this handler only supports ' .
@@ -158,10 +166,10 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         )->during('handle', [$productVariant, self::OPTION_CODE, $value]);
     }
 
-    function it_throws_an_exception_during_handle_if_attribute_option_does_not_exists_on_akeneo(
+    public function it_throws_an_exception_during_handle_if_attribute_option_does_not_exists_on_akeneo(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient
-    ) {
+        AttributeOptionApiInterface $attributeOptionApi
+    ): void {
         $value = [
             [
                 'scope' => null,
@@ -169,10 +177,12 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
                 'data' => self::VALUE_CODE,
             ],
         ];
-        $apiClient->findAttributeOption(self::OPTION_CODE, self::VALUE_CODE)->willReturn(null);
+        $attributeOptionApi->get(self::OPTION_CODE, self::VALUE_CODE)->willThrow(
+            new HttpException('Not found', new Request('GET', '/'), new Response(404))
+        );
 
         $this->shouldThrow(
-            new \RuntimeException(
+            new RuntimeException(
                 sprintf(
                     'Cannot handle option value on Akeneo product "%s", the option of the parent product "%s" is ' .
                     '"%s". The option value for this variant is "%s" but there is no such option on Akeneo.',
@@ -185,10 +195,10 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         )->during('handle', [$productVariant, self::OPTION_CODE, $value]);
     }
 
-    function it_throws_an_exception_if_product_option_does_not_exists_on_sylius(
+    public function it_throws_an_exception_if_product_option_does_not_exists_on_sylius(
         ProductVariantInterface $productVariant,
         ProductOptionRepositoryInterface $productOptionRepository
-    ) {
+    ): void {
         $value = [
             [
                 'scope' => null,
@@ -199,7 +209,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $productOptionRepository->findOneBy(['code' => self::OPTION_CODE])->willReturn(null);
 
         $this->shouldThrow(
-            new \RuntimeException(
+            new RuntimeException(
                 sprintf(
                     'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',
                     self::VARIANT_CODE,
@@ -210,14 +220,13 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         )->during('handle', [$productVariant, self::OPTION_CODE, $value]);
     }
 
-    function it_creates_product_option_value_from_factory_with_all_translations_if_does_not_already_exists(
+    public function it_creates_product_option_value_from_factory_with_all_translations_if_does_not_already_exists(
         ProductVariantInterface $productVariant,
         ProductOptionValueInterface $productOptionValue,
         ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
         ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
-        ProductOptionInterface $productOption,
-        RepositoryInterface $productOptionValueRepository
-    ) {
+        ProductOptionInterface $productOption
+    ): void {
         $value = [
             [
                 'scope' => null,
@@ -240,13 +249,13 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
     }
 
-    function it_updates_existing_product_option_value_and_all_translations(
+    public function it_updates_existing_product_option_value_and_all_translations(
         ProductVariantInterface $productVariant,
         RepositoryInterface $productOptionValueRepository,
         ProductOptionValueInterface $existentProductOptionValue,
         ProductOptionValueTranslationInterface $englishProductOptionValue,
         ProductOptionValueTranslationInterface $italianProductOptionValue
-    ) {
+    ): void {
         $value = [
             [
                 'scope' => null,
@@ -269,16 +278,15 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $italianProductOptionValue->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
     }
 
-    function it_skips_locale_not_defined_on_sylius(
+    public function it_skips_locale_not_defined_on_sylius(
         ProductVariantInterface $productVariant,
         ProductOptionValueInterface $productOptionValue,
         ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
         ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
         ProductOptionInterface $productOption,
-        RepositoryInterface $productOptionValueRepository,
         ApiClientInterface $apiClient,
         FactoryInterface $productOptionValueTranslationFactory
-    ) {
+    ): void {
         $value = [
             [
                 'scope' => null,
