@@ -4,129 +4,257 @@ declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 
-use const JSON_THROW_ON_ERROR;
-use Symfony\Component\HttpFoundation\File\File;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
-use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
-use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
-use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
-use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\AssetApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetCategoryApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetManager\AssetApiInterface as AssetManagerApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetManager\AssetAttributeApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetManager\AssetAttributeOptionApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetManager\AssetFamilyApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetManager\AssetMediaFileApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetReferenceFileApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetTagApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssetVariationFileApiInterface;
+use Akeneo\Pim\ApiClient\Api\AssociationTypeApiInterface;
+use Akeneo\Pim\ApiClient\Api\AttributeApiInterface;
+use Akeneo\Pim\ApiClient\Api\AttributeGroupApiInterface;
+use Akeneo\Pim\ApiClient\Api\AttributeOptionApiInterface;
+use Akeneo\Pim\ApiClient\Api\CategoryApiInterface;
+use Akeneo\Pim\ApiClient\Api\ChannelApiInterface;
+use Akeneo\Pim\ApiClient\Api\CurrencyApiInterface;
+use Akeneo\Pim\ApiClient\Api\FamilyApiInterface;
+use Akeneo\Pim\ApiClient\Api\FamilyVariantApiInterface;
+use Akeneo\Pim\ApiClient\Api\LocaleApiInterface;
+use Akeneo\Pim\ApiClient\Api\MeasureFamilyApiInterface;
+use Akeneo\Pim\ApiClient\Api\MeasurementFamilyApiInterface;
+use Akeneo\Pim\ApiClient\Api\MediaFileApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductDraftApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductModelApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductModelDraftApiInterface;
+use Akeneo\Pim\ApiClient\Api\PublishedProductApiInterface;
+use Akeneo\Pim\ApiClient\Api\ReferenceEntityApiInterface;
+use Akeneo\Pim\ApiClient\Api\ReferenceEntityAttributeApiInterface;
+use Akeneo\Pim\ApiClient\Api\ReferenceEntityAttributeOptionApiInterface;
+use Akeneo\Pim\ApiClient\Api\ReferenceEntityMediaFileApiInterface;
+use Akeneo\Pim\ApiClient\Api\ReferenceEntityRecordApiInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 
-final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface, MeasurementFamiliesApiClientInterface
+final class ApiClientMock implements AkeneoPimClientInterface
 {
-    private array $productsUpdatedAt = [];
+    private ProductApiInterface $productApi;
 
-    public function __construct(private TemporaryFilesManagerInterface $temporaryFilesManager)
-    {
-    }
+    private MediaFileApiInterface $productMediaFileApi;
 
-    public function findProductModel(string $code): ?array
-    {
-        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/ProductModel/' . $code . '.json');
-    }
+    private AttributeOptionApiInterface $attributeOptionApi;
 
-    public function findFamilyVariant(string $familyCode, string $familyVariantCode): ?array
-    {
-        return $this->jsonDecodeOrNull(
-            __DIR__ . '/../DataFixtures/ApiClientMock/FamilyVariant/' . $familyCode . '/' . $familyVariantCode . '.json'
-        );
-    }
+    private AttributeApiInterface $attributeApi;
 
-    public function findAttribute(string $code): ?array
-    {
-        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/' . $code . '.json');
-    }
+    private ProductModelApiInterface $productModelApi;
 
-    public function findProduct(string $code): ?array
-    {
-        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Product/' . $code . '.json');
-    }
+    private FamilyVariantApiInterface $familyVariantApi;
 
-    public function findAttributeOption(string $attributeCode, string $optionCode): ?array
+    private FamilyApiInterface $familyApi;
+
+    public function __construct()
     {
-        return $this->jsonDecodeOrNull(
-            __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '/' . $optionCode . '.json'
-        );
+        $this->productApi = new ProductApiMock();
+        $this->productMediaFileApi = new ProductMediaFileApiMock();
+        $this->attributeOptionApi = new AttributeOptionApiMock();
+        $this->attributeApi = new AttributeApiMock();
+        $this->productModelApi = new ProductModelApiMock();
+        $this->familyVariantApi = new FamilyVariantApiMock();
+        $this->familyApi = new FamilyApiMock();
     }
 
     public function addProductUpdatedAt(string $identifier, \DateTime $updatedAt): void
     {
-        $this->productsUpdatedAt[$identifier] = $updatedAt;
+        $this->productApi->addProductUpdatedAt($identifier, $updatedAt);
     }
 
-    /**
-     * @return mixed|null
-     */
-    private function jsonDecodeOrNull(string $filename)
+    public function getToken(): ?string
     {
-        if (file_exists($filename)) {
-            return json_decode(file_get_contents($filename), true, 512, JSON_THROW_ON_ERROR);
+        // TODO: Implement getToken() method.
+    }
+
+    public function getRefreshToken(): ?string
+    {
+        // TODO: Implement getRefreshToken() method.
+    }
+
+    public function getProductApi(): ProductApiInterface
+    {
+        return $this->productApi;
+    }
+
+    public function getCategoryApi(): CategoryApiInterface
+    {
+        // TODO: Implement getCategoryApi() method.
+    }
+
+    public function getAttributeApi(): AttributeApiInterface
+    {
+        return $this->attributeApi;
+    }
+
+    public function getAttributeOptionApi(): AttributeOptionApiInterface
+    {
+        return $this->attributeOptionApi;
+    }
+
+    public function getAttributeGroupApi(): AttributeGroupApiInterface
+    {
+        // TODO: Implement getAttributeGroupApi() method.
+    }
+
+    public function getFamilyApi(): FamilyApiInterface
+    {
+        return $this->familyApi;
+    }
+
+    public function getProductMediaFileApi(): MediaFileApiInterface
+    {
+        return $this->productMediaFileApi;
+    }
+
+    public function getLocaleApi(): LocaleApiInterface
+    {
+        // TODO: Implement getLocaleApi() method.
+    }
+
+    public function getChannelApi(): ChannelApiInterface
+    {
+        // TODO: Implement getChannelApi() method.
+    }
+
+    public function getCurrencyApi(): CurrencyApiInterface
+    {
+        // TODO: Implement getCurrencyApi() method.
+    }
+
+    public function getMeasureFamilyApi(): MeasureFamilyApiInterface
+    {
+        // TODO: Implement getMeasureFamilyApi() method.
+    }
+
+    public function getMeasurementFamilyApi(): MeasurementFamilyApiInterface
+    {
+        // TODO: Implement getMeasurementFamilyApi() method.
+    }
+
+    public function getAssociationTypeApi(): AssociationTypeApiInterface
+    {
+        // TODO: Implement getAssociationTypeApi() method.
+    }
+
+    public function getFamilyVariantApi(): FamilyVariantApiInterface
+    {
+        return $this->familyVariantApi;
+    }
+
+    public function getProductModelApi(): ProductModelApiInterface
+    {
+        return $this->productModelApi;
+    }
+
+    public static function jsonFileOrHttpNotFoundException(string $file): array
+    {
+        if (!file_exists($file)) {
+            throw new HttpException('Not found', new Request('GET', '/'), new Response(404));
         }
 
-        return null;
+        return json_decode(file_get_contents($file), true, 512, \JSON_THROW_ON_ERROR);
     }
 
-    public function downloadFile(string $code): \SplFileInfo
+    public function getPublishedProductApi(): PublishedProductApiInterface
     {
-        // $code should be like 4/a/f/0/4af0dd6fbd5e310a80b6cd2caf413bcf7183d632_1314976_5566.jpg
-        $path = __DIR__ . '/../DataFixtures/ApiClientMock/media-files/' . $code;
-        if (!file_exists($path)) {
-            throw new \RuntimeException("File '$path' does not exists.");
-        }
-        $tempName = $this->temporaryFilesManager->generateTemporaryFilePath();
-        file_put_contents($tempName, file_get_contents($path));
-
-        return new File($tempName);
+        // TODO: Implement getPublishedProductApi() method.
     }
 
-    public function findProductsModifiedSince(\DateTime $date): array
+    public function getProductModelDraftApi(): ProductModelDraftApiInterface
     {
-        $products = [];
-        foreach ($this->productsUpdatedAt as $identifier => $updatedAt) {
-            if ($updatedAt > $date) {
-                $products[] = ['identifier' => $identifier];
-            }
-        }
-
-        return $products;
+        // TODO: Implement getProductModelDraftApi() method.
     }
 
-    public function findAllAttributeOptions(string $attributeCode): array
+    public function getProductDraftApi(): ProductDraftApiInterface
     {
-        return $this->jsonDecodeOrNull(
-            __DIR__ . '/../DataFixtures/ApiClientMock/Attribute/' . $attributeCode . '/options.json'
-        );
+        // TODO: Implement getProductDraftApi() method.
     }
 
-    public function findAllAttributes(): array
+    public function getAssetApi(): AssetApiInterface
     {
-        $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/*.json');
-        $attributes = [];
-        foreach ($files as $file) {
-            $attributes[] = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
-        }
-
-        return $attributes;
+        // TODO: Implement getAssetApi() method.
     }
 
-    public function findAllFamilies(): array
+    public function getAssetCategoryApi(): AssetCategoryApiInterface
     {
-        $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Family/*.json');
-        $attributes = [];
-        foreach ($files as $file) {
-            $attributes[] = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
-        }
-
-        return $attributes;
+        // TODO: Implement getAssetCategoryApi() method.
     }
 
-    public function findFamily(string $code): ?array
+    public function getAssetTagApi(): AssetTagApiInterface
     {
-        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Family/' . $code . '.json');
+        // TODO: Implement getAssetTagApi() method.
     }
 
-    public function getMeasurementFamilies(): array
+    public function getAssetReferenceFileApi(): AssetReferenceFileApiInterface
     {
-        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/MeasurementFamilies/MeasurementFamilies.json');
+        // TODO: Implement getAssetReferenceFileApi() method.
+    }
+
+    public function getAssetVariationFileApi(): AssetVariationFileApiInterface
+    {
+        // TODO: Implement getAssetVariationFileApi() method.
+    }
+
+    public function getReferenceEntityRecordApi(): ReferenceEntityRecordApiInterface
+    {
+        // TODO: Implement getReferenceEntityRecordApi() method.
+    }
+
+    public function getReferenceEntityMediaFileApi(): ReferenceEntityMediaFileApiInterface
+    {
+        // TODO: Implement getReferenceEntityMediaFileApi() method.
+    }
+
+    public function getReferenceEntityAttributeApi(): ReferenceEntityAttributeApiInterface
+    {
+        // TODO: Implement getReferenceEntityAttributeApi() method.
+    }
+
+    public function getReferenceEntityAttributeOptionApi(): ReferenceEntityAttributeOptionApiInterface
+    {
+        // TODO: Implement getReferenceEntityAttributeOptionApi() method.
+    }
+
+    public function getReferenceEntityApi(): ReferenceEntityApiInterface
+    {
+        // TODO: Implement getReferenceEntityApi() method.
+    }
+
+    public function getAssetManagerApi(): AssetManagerApiInterface
+    {
+        // TODO: Implement getAssetManagerApi() method.
+    }
+
+    public function getAssetFamilyApi(): AssetFamilyApiInterface
+    {
+        // TODO: Implement getAssetFamilyApi() method.
+    }
+
+    public function getAssetAttributeApi(): AssetAttributeApiInterface
+    {
+        // TODO: Implement getAssetAttributeApi() method.
+    }
+
+    public function getAssetAttributeOptionApi(): AssetAttributeOptionApiInterface
+    {
+        // TODO: Implement getAssetAttributeOptionApi() method.
+    }
+
+    public function getAssetMediaFileApi(): AssetMediaFileApiInterface
+    {
+        // TODO: Implement getAssetMediaFileApi() method.
     }
 }
