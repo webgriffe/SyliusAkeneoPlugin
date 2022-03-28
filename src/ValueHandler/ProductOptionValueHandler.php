@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
+use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
@@ -13,7 +16,6 @@ use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -22,7 +24,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     private ?TranslationLocaleProviderInterface $translationLocaleProvider;
 
     public function __construct(
-        private ApiClientInterface $apiClient,
+        private AkeneoPimClientInterface $apiClient,
         private ProductOptionRepositoryInterface $productOptionRepository,
         private FactoryInterface $productOptionValueFactory,
         private FactoryInterface $productOptionValueTranslationFactory,
@@ -66,7 +68,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
         if (count($akeneoValue) > 1) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf(
                     'Cannot handle option value on Akeneo product "%s", the option of the parent product "%s" is ' .
                     '"%s". More than one value is set for this attribute on Akeneo but this handler only supports ' .
@@ -77,20 +79,27 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 )
             );
         }
+        /** @var string $partialValueCode */
         $partialValueCode = $akeneoValue[0]['data'];
         $fullValueCode = $optionCode . '_' . $partialValueCode;
-        $akeneoAttributeOption = $this->apiClient->findAttributeOption($optionCode, $partialValueCode);
-        if ($akeneoAttributeOption === null) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Cannot handle option value on Akeneo product "%s", the option of the parent product "%s" is ' .
-                    '"%s". The option value for this variant is "%s" but there is no such option on Akeneo.',
-                    $productVariant->getCode(),
-                    $product->getCode(),
-                    $optionCode,
-                    $partialValueCode
-                )
-            );
+        try {
+            $akeneoAttributeOption = $this->apiClient->getAttributeOptionApi()->get($optionCode, $partialValueCode);
+        } catch (HttpException $e) {
+            $response = $e->getResponse();
+            if ($response->getStatusCode() === 404) {
+                throw new RuntimeException(
+                    sprintf(
+                        'Cannot handle option value on Akeneo product "%s", the option of the parent product "%s" is ' .
+                        '"%s". The option value for this variant is "%s" but there is no such option on Akeneo.',
+                        $productVariant->getCode(),
+                        $product->getCode(),
+                        $optionCode,
+                        $partialValueCode
+                    )
+                );
+            }
+
+            throw $e;
         }
         /** @var ProductOptionInterface|null $productOption */
         $productOption = $this->productOptionRepository->findOneBy(['code' => $optionCode]);
@@ -101,7 +110,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         //            }
         //        )->first();
         if ($productOption === null) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf(
                     'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',
                     $productVariant->getCode(),
