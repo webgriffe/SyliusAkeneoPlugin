@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\AttributeOptions;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
@@ -15,7 +16,7 @@ final class Importer implements ImporterInterface
 
     private const MULTISELECT_TYPE = 'pim_catalog_multiselect';
 
-    public function __construct(private ApiClientInterface $apiClient, private RepositoryInterface $attributeRepository)
+    public function __construct(private AkeneoPimClientInterface $apiClient, private RepositoryInterface $attributeRepository)
     {
     }
 
@@ -36,14 +37,18 @@ final class Importer implements ImporterInterface
             return;
         }
 
-        /** @var array[] $attributeOptions */
-        $attributeOptions = $this->apiClient->findAllAttributeOptions($identifier);
+        $attributeOptionsOrdered = [];
+        $attributeOptions = $this->apiClient->getAttributeOptionApi()->all($identifier);
+        /** @var array $attributeOption */
+        foreach ($attributeOptions as $attributeOption) {
+            $attributeOptionsOrdered[] = $attributeOption;
+        }
         usort(
-            $attributeOptions,
+            $attributeOptionsOrdered,
             static fn (array $option1, array $option2): int => ($option1['sort_order'] ?? 0) <=> ($option2['sort_order'] ?? 0)
         );
         $configuration = $attribute->getConfiguration();
-        $configuration['choices'] = $this->convertAkeneoAttributeOptionsIntoSyliusChoices($attributeOptions);
+        $configuration['choices'] = $this->convertAkeneoAttributeOptionsIntoSyliusChoices($attributeOptionsOrdered);
         $attribute->setConfiguration($configuration);
 
         $this->attributeRepository->add($attribute);
@@ -53,7 +58,7 @@ final class Importer implements ImporterInterface
     {
         // It's not possible to fetch only attributes or attribute options modified since a given date with the Akeneo
         // REST API. So, the $sinceDate argument it's not used.
-        $akeneoAttributes = $this->apiClient->findAllAttributes();
+        $akeneoAttributes = $this->apiClient->getAttributeApi()->all();
         /** @var ProductAttributeInterface[] $syliusSelectAttributes */
         $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);
         $syliusSelectAttributes = array_filter(

@@ -7,6 +7,7 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 use Akeneo\Pim\ApiClient\Api\AttributeApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
+use ArrayIterator;
 
 final class AttributeApiMock implements AttributeApiInterface
 {
@@ -29,7 +30,47 @@ final class AttributeApiMock implements AttributeApiInterface
 
     public function all(int $pageSize = 10, array $queryParameters = []): ResourceCursorInterface
     {
-        // TODO: Implement all() method.
+        $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/*.json');
+        $attributes = [];
+        foreach ($files as $file) {
+            $attributes[] = json_decode(file_get_contents($file), true);
+        }
+
+        return new class(new ArrayIterator($attributes), $pageSize) implements ResourceCursorInterface {
+            public function __construct(private ArrayIterator $iterator, private int $pageSize)
+            {
+            }
+
+            public function current()
+            {
+                return $this->iterator->current();
+            }
+
+            public function next(): void
+            {
+                $this->iterator->next();
+            }
+
+            public function key(): mixed
+            {
+                return $this->iterator->key();
+            }
+
+            public function valid(): bool
+            {
+                return $this->iterator->valid();
+            }
+
+            public function rewind(): void
+            {
+                $this->iterator->rewind();
+            }
+
+            public function getPageSize(): ?int
+            {
+                return $this->pageSize;
+            }
+        };
     }
 
     public function upsert(string $code, array $data = []): int
