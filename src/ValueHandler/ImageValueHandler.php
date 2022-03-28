@@ -172,7 +172,7 @@ final class ImageValueHandler implements ValueHandlerInterface
             /** @var array $responseResult */
             $responseResult = json_decode($bodyContents, true, 512, JSON_THROW_ON_ERROR);
 
-            throw new HttpException((int) $responseResult['message'], (string) $responseResult['code']);
+            throw new HttpException((int) $responseResult['code'], (string) $responseResult['message']);
         }
         $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
         Assert::string($tempName);
