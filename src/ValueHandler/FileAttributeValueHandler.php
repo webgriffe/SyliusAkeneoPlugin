@@ -37,6 +37,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
         if ($attribute !== $this->akeneoAttributeCode) {
             return false;
         }
+
         try {
             $attributeInfo = $this->apiClient->getAttributeApi()->get($attribute);
         } catch (HttpException $e) {
@@ -136,7 +137,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
         $bodyContents = $response->getBody()->getContents();
         if ($statusClass !== 2) {
             /** @var array $responseResult */
-            $responseResult = json_decode($bodyContents, true, 512, JSON_THROW_ON_ERROR);
+            $responseResult = json_decode($bodyContents, true, 512, \JSON_THROW_ON_ERROR);
 
             throw new SymfonyHttpException((int) $responseResult['code'], (string) $responseResult['message']);
         }

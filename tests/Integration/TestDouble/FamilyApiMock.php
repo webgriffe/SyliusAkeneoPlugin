@@ -46,7 +46,7 @@ final class FamilyApiMock implements FamilyApiInterface
     private function jsonDecodeOrNull(string $filename)
     {
         if (file_exists($filename)) {
-            return json_decode(file_get_contents($filename), true, 512, JSON_THROW_ON_ERROR);
+            return json_decode(file_get_contents($filename), true, 512, \JSON_THROW_ON_ERROR);
         }
 
         return null;

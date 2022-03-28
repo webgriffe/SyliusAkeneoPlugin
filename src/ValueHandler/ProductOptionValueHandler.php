@@ -82,6 +82,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         /** @var string $partialValueCode */
         $partialValueCode = $akeneoValue[0]['data'];
         $fullValueCode = $optionCode . '_' . $partialValueCode;
+
         try {
             $akeneoAttributeOption = $this->apiClient->getAttributeOptionApi()->get($optionCode, $partialValueCode);
         } catch (HttpException $e) {
