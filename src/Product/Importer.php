@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Search\SearchBuilder;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\ProductInterface;
@@ -17,7 +20,6 @@ use Sylius\Component\Product\Factory\ProductVariantFactoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
@@ -34,7 +36,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         private ProductVariantFactoryInterface $productVariantFactory,
         private ProductVariantRepositoryInterface $productVariantRepository,
         private ProductRepositoryInterface $productRepository,
-        private ApiClientInterface $apiClient,
+        private AkeneoPimClientInterface $apiClient,
         private ValueHandlersResolverInterface $valueHandlersResolver,
         private ProductFactoryInterface $productFactory,
         private TaxonsResolverInterface $taxonsResolver,
@@ -68,10 +70,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
     public function import(string $identifier): void
     {
-        $productVariantResponse = $this->apiClient->findProduct($identifier);
-        if ($productVariantResponse === null) {
-            throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
-        }
+        $productVariantResponse = $this->apiClient->getProductApi()->get($identifier);
 
         $product = $this->getOrCreateProductFromVariantResponse($productVariantResponse);
 
@@ -118,9 +117,11 @@ final class Importer implements ImporterInterface, ReconcilerInterface
      * @inheritdoc
      * @psalm-return array<array-key, string>
      */
-    public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
+    public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
-        $products = $this->apiClient->findProductsModifiedSince($sinceDate);
+        $searchBuilder = new SearchBuilder();
+        $searchBuilder->addFilter('updated_at', '>', $sinceDate->format('Y-m-d H:i:s'));
+        $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {
             Assert::string($product['identifier']);
@@ -136,7 +137,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
      */
     public function getAllIdentifiers(): array
     {
-        return $this->getIdentifiersModifiedSince((new \DateTime())->setTimestamp(0));
+        return $this->getIdentifiersModifiedSince((new DateTime())->setTimestamp(0));
     }
 
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
@@ -242,15 +243,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
      */
     private function addMissingAttributes(array $attributesValues, string $familyCode): array
     {
-        if (!$this->apiClient instanceof FamilyAwareApiClientInterface) {
-            return $attributesValues;
-        }
-
-        $family = $this->apiClient->findFamily($familyCode);
-
-        if (null === $family) {
-            throw new \RuntimeException(sprintf('Cannot find "%s" family on Akeneo.', $familyCode));
-        }
+        $family = $this->apiClient->getFamilyApi()->get($familyCode);
 
         /** @var string[] $allFamilyAttributes */
         $allFamilyAttributes = $family['attributes'] ?? [];

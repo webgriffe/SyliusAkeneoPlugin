@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ProductAssociations;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Exception\HttpException;
+use Akeneo\Pim\ApiClient\Search\SearchBuilder;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use RuntimeException;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Product\Model\ProductAssociationInterface;
 use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
@@ -13,7 +18,6 @@ use Sylius\Component\Product\Model\ProductInterface as BaseProductInterface;
 use Sylius\Component\Product\Repository\ProductAssociationTypeRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webmozart\Assert\Assert;
 
@@ -21,8 +25,13 @@ final class Importer implements ImporterInterface
 {
     private const AKENEO_ENTITY = 'ProductAssociations';
 
-    public function __construct(private ApiClientInterface $apiClient, private ProductRepositoryInterface $productRepository, private RepositoryInterface $productAssociationRepository, private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository, private FactoryInterface $productAssociationFactory)
-    {
+    public function __construct(
+        private AkeneoPimClientInterface $apiClient,
+        private ProductRepositoryInterface $productRepository,
+        private RepositoryInterface $productAssociationRepository,
+        private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository,
+        private FactoryInterface $productAssociationFactory
+    ) {
     }
 
     /**
@@ -38,9 +47,14 @@ final class Importer implements ImporterInterface
      */
     public function import(string $identifier): void
     {
-        $productVariantResponse = $this->apiClient->findProduct($identifier);
-        if ($productVariantResponse === null) {
-            throw new \RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
+        try {
+            $productVariantResponse = $this->apiClient->getProductApi()->get($identifier);
+        } catch (HttpException $e) {
+            if ($e->getResponse()->getStatusCode() === 404) {
+                throw new RuntimeException(sprintf('Cannot find product "%s" on Akeneo.', $identifier));
+            }
+
+            throw $e;
         }
 
         $parentCode = $productVariantResponse['parent'];
@@ -52,7 +66,7 @@ final class Importer implements ImporterInterface
 
         $product = $this->productRepository->findOneByCode($productCode);
         if ($product === null) {
-            throw new \RuntimeException(sprintf('Cannot find product "%s" on Sylius.', $productCode));
+            throw new RuntimeException(sprintf('Cannot find product "%s" on Sylius.', $productCode));
         }
         $associations = $productVariantResponse['associations'];
         foreach ($associations as $associationTypeCode => $associationInfo) {
@@ -110,9 +124,11 @@ final class Importer implements ImporterInterface
     /**
      * @inheritdoc
      */
-    public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
+    public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
-        $products = $this->apiClient->findProductsModifiedSince($sinceDate);
+        $searchBuilder = new SearchBuilder();
+        $searchBuilder->addFilter('updated_at', '>', $sinceDate->format('Y-m-d H:i:s'));
+        $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {
             $identifiers[] = $product['identifier'];
