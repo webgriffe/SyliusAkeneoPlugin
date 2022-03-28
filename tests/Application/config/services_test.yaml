@@ -11,6 +11,8 @@ services:
         class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock'
         arguments:
             - '@webgriffe_sylius_akeneo.temporary_file_manager'
+    webgriffe_sylius_akeneo.api_client_official:
+        class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\OfficialApiClientMock'
     webgriffe_sylius_akeneo.date_time_builder:
         class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\DateTimeBuilder'
 

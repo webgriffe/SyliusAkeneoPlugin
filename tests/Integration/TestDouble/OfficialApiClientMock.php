@@ -56,6 +56,8 @@ final class OfficialApiClientMock implements AkeneoPimClientInterface
 
     private FamilyVariantApiInterface $familyVariantApi;
 
+    private FamilyApiInterface $familyApi;
+
     public function __construct()
     {
         $this->productApi = new ProductApiMock();
@@ -64,6 +66,7 @@ final class OfficialApiClientMock implements AkeneoPimClientInterface
         $this->attributeApi = new AttributeApiMock();
         $this->productModelApi = new ProductModelApiMock();
         $this->familyVariantApi = new FamilyVariantApiMock();
+        $this->familyApi = new FamilyApiMock();
     }
 
     public function addProductUpdatedAt(string $identifier, \DateTime $updatedAt): void
@@ -108,7 +111,7 @@ final class OfficialApiClientMock implements AkeneoPimClientInterface
 
     public function getFamilyApi(): FamilyApiInterface
     {
-        // TODO: Implement getFamilyApi() method.
+        return $this->familyApi;
     }
 
     public function getProductMediaFileApi(): MediaFileApiInterface
