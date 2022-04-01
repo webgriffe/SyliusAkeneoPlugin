@@ -23,14 +23,20 @@ jobs:
             matrix:
                 php: ["8.0", "7.4"]
                 symfony: ["^4.4", "^5.2"]
-                sylius: ["~1.9.0", "~1.10.0@alpha"]
+                sylius: ["~1.9.10", "~1.10.11", "~1.11.2"]
                 node: ["12.x"]
                 mysql: ["8.0"]
 
                 exclude:
                     -
                         php: "8.0"
-                        sylius: "~1.9.0"
+                        sylius: "~1.9.10"
+                    -
+                        php: "7.4"
+                        sylius: "~1.11.2"
+                    -
+                        symfony: "^4.4"
+                        sylius: "~1.11.2"
 
         env:
             APP_ENV: test
