@@ -11,7 +11,7 @@
         "php": "^7.4 || ^8.0",
         "cocur/slugify": "^4.0",
         "guzzlehttp/guzzle": "^6.5",
-        "sylius/sylius": "~1.9.0 || ~1.10.0@alpha",
+        "sylius/sylius": "~1.9.10 || ~1.10.11 || ~1.11.2",
         "symfony/deprecation-contracts": "^2.2",
         "symfony/lock": "^4.4|^5.0"
     },
@@ -47,7 +47,8 @@
         "symfony/intl": "^4.4 || ^5.2",
         "symfony/web-profiler-bundle": "^4.4 || ^5.2",
         "theofidry/alice-data-fixtures": "^1.1",
-        "vimeo/psalm": "4.7.1"
+        "vimeo/psalm": "4.7.1",
+        "polishsymfonycommunity/symfony-mocker-container": "^1.0"
     },
     "config": {
         "sort-packages": true,
