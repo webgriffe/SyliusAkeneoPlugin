@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
 
+use const JSON_THROW_ON_ERROR;
 use Symfony\Component\HttpFoundation\File\File;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as AttributeOptionsApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
-use const JSON_THROW_ON_ERROR;
 
 final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface, MeasurementFamiliesApiClientInterface
 {
