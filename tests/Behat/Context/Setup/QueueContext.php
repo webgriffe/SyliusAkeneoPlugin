@@ -12,23 +12,8 @@ use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
 final class QueueContext implements Context
 {
-    /** @var FactoryInterface */
-    private $queueItemFactory;
-
-    /** @var QueueItemRepositoryInterface */
-    private $queueItemRepository;
-
-    /** @var SharedStorageInterface */
-    private $sharedStorage;
-
-    public function __construct(
-        FactoryInterface $queueItemFactory,
-        QueueItemRepositoryInterface $queueItemRepository,
-        SharedStorageInterface $sharedStorage
-    ) {
-        $this->queueItemFactory = $queueItemFactory;
-        $this->queueItemRepository = $queueItemRepository;
-        $this->sharedStorage = $sharedStorage;
+    public function __construct(private FactoryInterface $queueItemFactory, private QueueItemRepositoryInterface $queueItemRepository, private SharedStorageInterface $sharedStorage)
+    {
     }
 
     /**

@@ -12,16 +12,8 @@ use Webmozart\Assert\Assert;
 
 final class ManagingQueueItems implements Context
 {
-    /** @var IndexPageInterface */
-    private $indexPage;
-
-    /** @var SharedStorageInterface */
-    private $sharedStorage;
-
-    public function __construct(IndexPageInterface $indexPage, SharedStorageInterface $sharedStorage)
+    public function __construct(private IndexPageInterface $indexPage, private SharedStorageInterface $sharedStorage)
     {
-        $this->indexPage = $indexPage;
-        $this->sharedStorage = $sharedStorage;
     }
 
     /**

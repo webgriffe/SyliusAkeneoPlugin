@@ -11,12 +11,8 @@ use Webmozart\Assert\Assert;
 
 final class AkeneoContext implements Context
 {
-    /** @var ApiClientInterface|ApiClientMock */
-    private $apiClient;
-
-    public function __construct(ApiClientInterface $apiClient)
+    public function __construct(private ApiClientInterface $apiClient)
     {
-        $this->apiClient = $apiClient;
     }
 
     /**

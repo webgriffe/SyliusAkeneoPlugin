@@ -12,18 +12,8 @@ use Webgriffe\SyliusAkeneoPlugin\Command\ReconcileCommand;
 
 final class ReconcileCommandContext implements Context
 {
-    /** @var KernelInterface */
-    private $kernel;
-
-    /** @var ReconcileCommand */
-    private $reconcileCommand;
-
-    public function __construct(
-        KernelInterface $kernel,
-        ReconcileCommand $reconcileCommand
-    ) {
-        $this->kernel = $kernel;
-        $this->reconcileCommand = $reconcileCommand;
+    public function __construct(private KernelInterface $kernel, private ReconcileCommand $reconcileCommand)
+    {
     }
 
     /**

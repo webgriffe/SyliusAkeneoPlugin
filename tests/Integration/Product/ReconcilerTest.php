@@ -17,23 +17,17 @@ use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 
 final class ReconcilerTest extends KernelTestCase
 {
-    /** @var ReconcilerInterface */
-    private $reconciler;
+    private ReconcilerInterface $reconciler;
 
-    /** @var ProductRepositoryInterface */
-    private $productRepository;
+    private ProductRepositoryInterface $productRepository;
 
-    /** @var ProductVariantRepository */
-    private $productVariantRepository;
+    private ProductVariantRepository $productVariantRepository;
 
-    /** @var PurgerLoader */
-    private $fixtureLoader;
+    private PurgerLoader $fixtureLoader;
 
-    /** @var ChannelRepository */
-    private $channelRepository;
+    private ChannelRepository $channelRepository;
 
-    /** @var Filesystem */
-    private $filesystem;
+    private Filesystem $filesystem;
 
     protected function setUp(): void
     {

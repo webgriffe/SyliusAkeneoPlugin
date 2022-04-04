@@ -127,8 +127,8 @@ class GenericPropertyValueHandlerSpec extends ObjectBehavior
                     sprintf(
                         'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                         self::PROPERTY_PATH,
-                        get_class($productVariant->getWrappedObject()),
-                        get_class($product->getWrappedObject())
+                        $productVariant->getWrappedObject()::class,
+                        $product->getWrappedObject()::class
                     )
                 )
             )

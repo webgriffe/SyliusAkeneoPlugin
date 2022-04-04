@@ -13,14 +13,10 @@ use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
 final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface, MeasurementFamiliesApiClientInterface
 {
-    private $productsUpdatedAt = [];
+    private array $productsUpdatedAt = [];
 
-    /** @var TemporaryFilesManagerInterface */
-    private $temporaryFilesManager;
-
-    public function __construct(TemporaryFilesManagerInterface $temporaryFilesManager)
+    public function __construct(private TemporaryFilesManagerInterface $temporaryFilesManager)
     {
-        $this->temporaryFilesManager = $temporaryFilesManager;
     }
 
     public function findProductModel(string $code): ?array
@@ -63,7 +59,7 @@ final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClie
     private function jsonDecodeOrNull(string $filename)
     {
         if (file_exists($filename)) {
-            return json_decode(file_get_contents($filename), true);
+            return json_decode(file_get_contents($filename), true, 512, JSON_THROW_ON_ERROR);
         }
 
         return null;
@@ -106,7 +102,7 @@ final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClie
         $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/*.json');
         $attributes = [];
         foreach ($files as $file) {
-            $attributes[] = json_decode(file_get_contents($file), true);
+            $attributes[] = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
         }
 
         return $attributes;
@@ -117,7 +113,7 @@ final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClie
         $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Family/*.json');
         $attributes = [];
         foreach ($files as $file) {
-            $attributes[] = json_decode(file_get_contents($file), true);
+            $attributes[] = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
         }
 
         return $attributes;

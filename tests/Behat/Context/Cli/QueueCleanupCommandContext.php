@@ -14,20 +14,8 @@ use Webmozart\Assert\Assert;
 
 final class QueueCleanupCommandContext implements Context
 {
-    /** @var KernelInterface */
-    private $kernel;
-
-    /** @var QueueCleanupCommand */
-    private $queueCleanupCommand;
-
-    /** @var SharedStorageInterface */
-    private $sharedStorage;
-
-    public function __construct(KernelInterface $kernel, QueueCleanupCommand $queueCleanupCommand, SharedStorageInterface $sharedStorage)
+    public function __construct(private KernelInterface $kernel, private QueueCleanupCommand $queueCleanupCommand, private SharedStorageInterface $sharedStorage)
     {
-        $this->kernel = $kernel;
-        $this->queueCleanupCommand = $queueCleanupCommand;
-        $this->sharedStorage = $sharedStorage;
     }
 
     /**

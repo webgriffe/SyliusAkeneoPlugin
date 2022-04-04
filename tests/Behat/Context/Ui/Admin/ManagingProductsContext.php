@@ -18,31 +18,11 @@ final class ManagingProductsContext implements Context
 {
     private const SCHEDULE_AKENEO_PIM_IMPORT = 'Schedule Akeneo PIM import';
 
-    /** @var IndexPageInterface */
-    private $indexPage;
-
-    /** @var JavaScriptTestHelperInterface */
-    private $testHelper;
-
-    /** @var NotificationCheckerInterface */
-    private $notificationChecker;
-
-    /** @var QueueItemsIndexPageInterface */
-    private $queueItemsIndexPage;
-
     /**
      * ProductItems constructor.
      */
-    public function __construct(
-        IndexPageInterface $indexPage,
-        JavaScriptTestHelperInterface $testHelper,
-        NotificationCheckerInterface $notificationChecker,
-        QueueItemsIndexPageInterface $queueItemsIndexPage
-    ) {
-        $this->indexPage = $indexPage;
-        $this->testHelper = $testHelper;
-        $this->notificationChecker = $notificationChecker;
-        $this->queueItemsIndexPage = $queueItemsIndexPage;
+    public function __construct(private IndexPageInterface $indexPage, private JavaScriptTestHelperInterface $testHelper, private NotificationCheckerInterface $notificationChecker, private QueueItemsIndexPageInterface $queueItemsIndexPage)
+    {
     }
 
     /**
