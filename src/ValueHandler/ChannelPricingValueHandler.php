@@ -17,47 +17,26 @@ use Webmozart\Assert\Assert;
 
 final class ChannelPricingValueHandler implements ValueHandlerInterface
 {
-    /** @var FactoryInterface */
-    private $channelPricingFactory;
-
-    /** @var ChannelRepositoryInterface */
-    private $channelRepository;
-
-    /** @var RepositoryInterface */
-    private $currencyRepository;
-
-    /** @var string */
-    private $akeneoAttribute;
-
-    /** @var string */
-    private $syliusPropertyPath;
-
-    /** @var PropertyAccessorInterface|null */
-    private $propertyAccessor;
+    private ?PropertyAccessorInterface $propertyAccessor;
 
     public function __construct(
-        FactoryInterface $channelPricingFactory,
-        ChannelRepositoryInterface $channelRepository,
-        RepositoryInterface $currencyRepository,
-        string $akeneoAttribute,
+        private FactoryInterface $channelPricingFactory,
+        private ChannelRepositoryInterface $channelRepository,
+        private RepositoryInterface $currencyRepository,
+        private string $akeneoAttribute,
         PropertyAccessorInterface $propertyAccessor = null,
-        string $syliusPropertyPath = 'price'
+        private string $syliusPropertyPath = 'price'
     ) {
-        $this->channelPricingFactory = $channelPricingFactory;
-        $this->channelRepository = $channelRepository;
-        $this->currencyRepository = $currencyRepository;
-        $this->akeneoAttribute = $akeneoAttribute;
         if ($propertyAccessor === null) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
                 '1.12',
                 'Not passing a property accessor to "%s" is deprecated and will be removed in %s.',
-                __CLASS__,
+                self::class,
                 '2.0'
             );
         }
         $this->propertyAccessor = $propertyAccessor;
-        $this->syliusPropertyPath = $syliusPropertyPath;
     }
 
     /**
@@ -78,7 +57,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This channel pricing value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    is_object($subject) ? get_class($subject) : gettype($subject)
+                    get_debug_type($subject)
                 )
             );
         }

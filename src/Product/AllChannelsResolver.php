@@ -10,12 +10,8 @@ use Webmozart\Assert\Assert;
 
 final class AllChannelsResolver implements ChannelsResolverInterface
 {
-    /** @var ChannelRepositoryInterface */
-    private $channelRepository;
-
-    public function __construct(ChannelRepositoryInterface $channelRepository)
+    public function __construct(private ChannelRepositoryInterface $channelRepository)
     {
-        $this->channelRepository = $channelRepository;
     }
 
     /**

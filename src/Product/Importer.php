@@ -28,78 +28,29 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 {
     private const AKENEO_ENTITY = 'Product';
 
-    /** @var ProductVariantFactoryInterface */
-    private $productVariantFactory;
-
-    /** @var ProductVariantRepositoryInterface */
-    private $productVariantRepository;
-
-    /** @var ProductRepositoryInterface */
-    private $productRepository;
-
-    /** @var ApiClientInterface */
-    private $apiClient;
-
-    /** @var ValueHandlersResolverInterface */
-    private $valueHandlersResolver;
-
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
-
-    /** @var ProductFactoryInterface */
-    private $productFactory;
-
-    /** @var TaxonsResolverInterface */
-    private $taxonsResolver;
-
-    /** @var ProductOptionsResolverInterface */
-    private $productOptionsResolver;
-
-    /** @var ChannelsResolverInterface */
-    private $channelsResolver;
-
-    /** @var StatusResolverInterface */
-    private $statusResolver;
-
-    /** @var FactoryInterface */
-    private $productTaxonFactory;
-
-    /** @var StatusResolverInterface */
-    private $variantStatusResolver;
+    private StatusResolverInterface $variantStatusResolver;
 
     public function __construct(
-        ProductVariantFactoryInterface $productVariantFactory,
-        ProductVariantRepositoryInterface $productVariantRepository,
-        ProductRepositoryInterface $productRepository,
-        ApiClientInterface $apiClient,
-        ValueHandlersResolverInterface $valueHandlerResolver,
-        ProductFactoryInterface $productFactory,
-        TaxonsResolverInterface $taxonsResolver,
-        ProductOptionsResolverInterface $productOptionsResolver,
-        EventDispatcherInterface $eventDispatcher,
-        ChannelsResolverInterface $channelsResolver,
-        StatusResolverInterface $statusResolver,
-        FactoryInterface $productTaxonFactory,
+        private ProductVariantFactoryInterface $productVariantFactory,
+        private ProductVariantRepositoryInterface $productVariantRepository,
+        private ProductRepositoryInterface $productRepository,
+        private ApiClientInterface $apiClient,
+        private ValueHandlersResolverInterface $valueHandlersResolver,
+        private ProductFactoryInterface $productFactory,
+        private TaxonsResolverInterface $taxonsResolver,
+        private ProductOptionsResolverInterface $productOptionsResolver,
+        private EventDispatcherInterface $eventDispatcher,
+        private ChannelsResolverInterface $channelsResolver,
+        private StatusResolverInterface $statusResolver,
+        private FactoryInterface $productTaxonFactory,
         StatusResolverInterface $variantStatusResolver = null
     ) {
-        $this->productVariantFactory = $productVariantFactory;
-        $this->productVariantRepository = $productVariantRepository;
-        $this->productRepository = $productRepository;
-        $this->apiClient = $apiClient;
-        $this->valueHandlersResolver = $valueHandlerResolver;
-        $this->productFactory = $productFactory;
-        $this->taxonsResolver = $taxonsResolver;
-        $this->productOptionsResolver = $productOptionsResolver;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->channelsResolver = $channelsResolver;
-        $this->statusResolver = $statusResolver;
-        $this->productTaxonFactory = $productTaxonFactory;
         if (null === $variantStatusResolver) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
                 '1.2',
                 'Not passing a variant status resolver to "%s" is deprecated and will be removed in %s.',
-                __CLASS__,
+                self::class,
                 '2.0'
             );
             $variantStatusResolver = new VariantStatusResolver();
@@ -247,12 +198,10 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     {
         $akeneoTaxons = new ArrayCollection($this->taxonsResolver->resolve($akeneoProduct));
         $syliusTaxons = $product->getTaxons();
-        $akeneoTaxonsCodes = $akeneoTaxons->map(function (TaxonInterface $taxon): ?string {return $taxon->getCode(); })->toArray();
-        $syliusTaxonsCodes = $syliusTaxons->map(function (TaxonInterface $taxon): ?string {return $taxon->getCode(); })->toArray();
+        $akeneoTaxonsCodes = $akeneoTaxons->map(fn (TaxonInterface $taxon): ?string => $taxon->getCode())->toArray();
+        $syliusTaxonsCodes = $syliusTaxons->map(fn (TaxonInterface $taxon): ?string => $taxon->getCode())->toArray();
         $toAddTaxons = $akeneoTaxons->filter(
-            function (TaxonInterface $taxon) use ($syliusTaxonsCodes): bool {
-                return !in_array($taxon->getCode(), $syliusTaxonsCodes, true);
-            }
+            fn (TaxonInterface $taxon): bool => !in_array($taxon->getCode(), $syliusTaxonsCodes, true)
         );
         $toRemoveTaxonsCodes = array_diff($syliusTaxonsCodes, $akeneoTaxonsCodes);
 
@@ -323,9 +272,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         /** @var ProductVariantInterface[] $productVariantsToReconcile */
         $productVariantsToReconcile = $this->productVariantRepository->findAll();
         /** @var string[] $identifiersToReconcile */
-        $identifiersToReconcile = array_map(static function ($productVariant): ?string {
-            return $productVariant->getCode();
-        }, $productVariantsToReconcile);
+        $identifiersToReconcile = array_map(static fn ($productVariant): ?string => $productVariant->getCode(), $productVariantsToReconcile);
 
         $identifiersToDisable = array_diff($identifiersToReconcile, $identifiersToReconcileWith);
 

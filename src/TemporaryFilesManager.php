@@ -9,28 +9,8 @@ use Symfony\Component\Finder\Finder;
 
 final class TemporaryFilesManager implements TemporaryFilesManagerInterface
 {
-    /** @var Filesystem */
-    private $filesystem;
-
-    /** @var Finder */
-    private $finder;
-
-    /** @var string */
-    private $temporaryDirectory;
-
-    /** @var string */
-    private $temporaryFilesPrefix;
-
-    public function __construct(
-        Filesystem $filesystem,
-        Finder $finder,
-        string $temporaryDirectory,
-        string $temporaryFilesPrefix
-    ) {
-        $this->filesystem = $filesystem;
-        $this->finder = $finder;
-        $this->temporaryDirectory = $temporaryDirectory;
-        $this->temporaryFilesPrefix = $temporaryFilesPrefix;
+    public function __construct(private Filesystem $filesystem, private Finder $finder, private string $temporaryDirectory, private string $temporaryFilesPrefix)
+    {
     }
 
     public function generateTemporaryFilePath(): string

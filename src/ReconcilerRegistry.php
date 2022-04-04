@@ -7,7 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 final class ReconcilerRegistry implements ReconcilerRegistryInterface
 {
     /** @var ReconcilerInterface[] */
-    private $registry = [];
+    private array $registry = [];
 
     public function add(ReconcilerInterface $reconciliation): void
     {

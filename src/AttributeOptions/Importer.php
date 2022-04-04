@@ -15,16 +15,8 @@ final class Importer implements ImporterInterface
 
     private const MULTISELECT_TYPE = 'pim_catalog_multiselect';
 
-    /** @var ApiClientInterface */
-    private $apiClient;
-
-    /** @var RepositoryInterface */
-    private $attributeRepository;
-
-    public function __construct(ApiClientInterface $apiClient, RepositoryInterface $attributeRepository)
+    public function __construct(private ApiClientInterface $apiClient, private RepositoryInterface $attributeRepository)
     {
-        $this->apiClient = $apiClient;
-        $this->attributeRepository = $attributeRepository;
     }
 
     public function getAkeneoEntity(): string
@@ -48,13 +40,7 @@ final class Importer implements ImporterInterface
         $attributeOptions = $this->apiClient->findAllAttributeOptions($identifier);
         usort(
             $attributeOptions,
-            static function (array $option1, array $option2): int {
-                if (($option1['sort_order'] ?? 0) === ($option2['sort_order'] ?? 0)) {
-                    return 0;
-                }
-
-                return ($option1['sort_order'] ?? 0) > ($option2['sort_order'] ?? 0) ? 1 : -1;
-            }
+            static fn (array $option1, array $option2): int => ($option2['sort_order'] ?? 0) <=> ($option1['sort_order'] ?? 0)
         );
         $configuration = $attribute->getConfiguration();
         $configuration['choices'] = $this->convertAkeneoAttributeOptionsIntoSyliusChoices($attributeOptions);
@@ -72,9 +58,7 @@ final class Importer implements ImporterInterface
         $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);
         $syliusSelectAttributes = array_filter(
             array_map(
-                static function (ProductAttributeInterface $attribute): ?string {
-                    return $attribute->getCode();
-                },
+                static fn (ProductAttributeInterface $attribute): ?string => $attribute->getCode(),
                 $syliusSelectAttributes
             )
         );

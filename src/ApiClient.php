@@ -15,54 +15,30 @@ use Webmozart\Assert\Assert;
 
 final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface, MeasurementFamiliesApiClientInterface
 {
-    /** @var string|null */
-    private $accessToken;
+    private ?string $accessToken = null;
 
-    /** @var string|null */
-    private $refreshToken;
+    private ?string $refreshToken = null;
 
-    /** @var ClientInterface */
-    private $httpClient;
+    private string $baseUrl;
 
-    /** @var string */
-    private $baseUrl;
-
-    /** @var string */
-    private $username;
-
-    /** @var string */
-    private $password;
-
-    /** @var string */
-    private $clientId;
-
-    /** @var string */
-    private $secret;
-
-    /** @var TemporaryFilesManagerInterface|null */
-    private $temporaryFilesManager;
+    private ?\Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface $temporaryFilesManager;
 
     public function __construct(
-        ClientInterface $httpClient,
+        private ClientInterface $httpClient,
         string $baseUrl,
-        string $username,
-        string $password,
-        string $clientId,
-        string $secret,
+        private string $username,
+        private string $password,
+        private string $clientId,
+        private string $secret,
         TemporaryFilesManagerInterface $temporaryFilesManager = null
     ) {
-        $this->httpClient = $httpClient;
         $this->baseUrl = rtrim($baseUrl, '/');
-        $this->username = $username;
-        $this->password = $password;
-        $this->clientId = $clientId;
-        $this->secret = $secret;
         if (null === $temporaryFilesManager) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
                 '1.3',
                 'Not passing a temporary files manager to %s is deprecated and will not be possible anymore in %s',
-                __CLASS__,
+                self::class,
                 '2.0'
             );
         }
@@ -75,7 +51,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
      */
     public function authenticatedRequest(string $uri, string $method, array $headers, bool $withRefresh = false): array
     {
-        if (strpos($uri, '/') === 0) {
+        if (str_starts_with($uri, '/')) {
             $uri = $this->baseUrl . $uri;
         }
 
@@ -99,7 +75,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         try {
             $response = $this->httpClient->send($request);
 
-            return (array) json_decode($response->getBody()->getContents(), true);
+            return (array) json_decode($response->getBody()->getContents(), true, 512, \JSON_THROW_ON_ERROR);
         } catch (RequestException $requestException) {
             $erroredResponse = $requestException->getResponse();
             Assert::notNull($erroredResponse);
@@ -155,7 +131,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         $statusClass = (int) ($response->getStatusCode() / 100);
         $bodyContents = $response->getBody()->getContents();
         if ($statusClass !== 2) {
-            $responseResult = json_decode($bodyContents, true);
+            $responseResult = json_decode($bodyContents, true, 512, \JSON_THROW_ON_ERROR);
 
             throw new \HttpException($responseResult['message'], $responseResult['code']);
         }
@@ -226,7 +202,8 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
                 'grant_type' => 'password',
                 'username' => $this->username,
                 'password' => $this->password,
-            ]
+            ],
+            \JSON_THROW_ON_ERROR
         );
         Assert::string($body);
         $responseResult = $this->makeOauthRequest($body);
@@ -241,7 +218,8 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             [
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $this->refreshToken,
-            ]
+            ],
+            \JSON_THROW_ON_ERROR
         );
         Assert::string($body);
         $responseResult = $this->makeOauthRequest($body);
@@ -321,7 +299,7 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
         $rawResponse = $this->httpClient->send($request, $options);
 
         /** @var array{access_token: string, refresh_token: string, expires_in: int, token_type: string, scope: string|null} $result */
-        $result = json_decode($rawResponse->getBody()->getContents(), true);
+        $result = json_decode($rawResponse->getBody()->getContents(), true, 512, \JSON_THROW_ON_ERROR);
 
         return $result;
     }

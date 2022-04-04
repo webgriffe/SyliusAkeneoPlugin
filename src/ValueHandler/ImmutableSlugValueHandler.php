@@ -18,33 +18,8 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
 {
     private const MAX_DEDUPLICATION_INCREMENT = 100;
 
-    /** @var SlugifyInterface */
-    private $slugify;
-
-    /** @var FactoryInterface */
-    private $productTranslationFactory;
-
-    /** @var TranslationLocaleProviderInterface */
-    private $translationLocaleProvider;
-
-    /** @var RepositoryInterface */
-    private $productTranslationRepository;
-
-    /** @var string */
-    private $akeneoAttributeToSlugify;
-
-    public function __construct(
-        SlugifyInterface $slugify,
-        FactoryInterface $productTranslationFactory,
-        TranslationLocaleProviderInterface $translationLocaleProvider,
-        RepositoryInterface $productTranslationRepository,
-        string $akeneoAttributeToSlugify
-    ) {
-        $this->slugify = $slugify;
-        $this->productTranslationFactory = $productTranslationFactory;
-        $this->translationLocaleProvider = $translationLocaleProvider;
-        $this->productTranslationRepository = $productTranslationRepository;
-        $this->akeneoAttributeToSlugify = $akeneoAttributeToSlugify;
+    public function __construct(private SlugifyInterface $slugify, private FactoryInterface $productTranslationFactory, private TranslationLocaleProviderInterface $translationLocaleProvider, private RepositoryInterface $productTranslationRepository, private string $akeneoAttributeToSlugify)
+    {
     }
 
     /**
@@ -65,7 +40,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This immutable slug value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    is_object($subject) ? get_class($subject) : gettype($subject)
+                    get_debug_type($subject)
                 )
             );
         }

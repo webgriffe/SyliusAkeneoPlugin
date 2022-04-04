@@ -11,15 +11,11 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
 {
     private const RECOGNIZED_OPERATORS = ['add', 'sub', 'mul', 'div'];
 
-    /** @var MeasurementFamiliesApiClientInterface */
-    private $apiClient;
-
     /**
      * UnitMeasurementValueConverter constructor.
      */
-    public function __construct(MeasurementFamiliesApiClientInterface $apiClient)
+    public function __construct(private MeasurementFamiliesApiClientInterface $apiClient)
     {
-        $this->apiClient = $apiClient;
     }
 
     public function convert(string $amount, string $sourceUnitMeasurementCode, ?string $destinationUnitMeasurementCode): float

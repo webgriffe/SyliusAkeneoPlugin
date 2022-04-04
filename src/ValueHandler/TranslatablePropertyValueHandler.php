@@ -17,38 +17,8 @@ use Webmozart\Assert\Assert;
 
 final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 {
-    /** @var PropertyAccessorInterface */
-    private $propertyAccessor;
-
-    /** @var FactoryInterface */
-    private $productTranslationFactory;
-
-    /** @var FactoryInterface */
-    private $productVariantTranslationFactory;
-
-    /** @var TranslationLocaleProviderInterface */
-    private $localeProvider;
-
-    /** @var string */
-    private $akeneoAttributeCode;
-
-    /** @var string */
-    private $translationPropertyPath;
-
-    public function __construct(
-        PropertyAccessorInterface $propertyAccessor,
-        FactoryInterface $productTranslationFactory,
-        FactoryInterface $productVariantTranslationFactory,
-        TranslationLocaleProviderInterface $localeProvider,
-        string $akeneoAttributeCode,
-        string $translationPropertyPath
-    ) {
-        $this->propertyAccessor = $propertyAccessor;
-        $this->productTranslationFactory = $productTranslationFactory;
-        $this->productVariantTranslationFactory = $productVariantTranslationFactory;
-        $this->localeProvider = $localeProvider;
-        $this->akeneoAttributeCode = $akeneoAttributeCode;
-        $this->translationPropertyPath = $translationPropertyPath;
+    public function __construct(private PropertyAccessorInterface $propertyAccessor, private FactoryInterface $productTranslationFactory, private FactoryInterface $productVariantTranslationFactory, private TranslationLocaleProviderInterface $localeProvider, private string $akeneoAttributeCode, private string $translationPropertyPath)
+    {
     }
 
     /**
@@ -69,7 +39,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This translatable property value handler only support instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    is_object($subject) ? get_class($subject) : gettype($subject)
+                    get_debug_type($subject)
                 )
             );
         }
@@ -79,9 +49,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         /** @var ProductInterface|null $product */
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
-            return $channel->getCode();
-        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
 
         foreach ($value as $valueData) {
             if (!is_array($valueData)) {

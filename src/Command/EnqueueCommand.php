@@ -31,28 +31,12 @@ final class EnqueueCommand extends Command
 
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
 
-    /** @var QueueItemRepositoryInterface */
-    private $queueItemRepository;
-
-    /** @var FactoryInterface */
-    private $queueItemFactory;
-
-    /** @var DateTimeBuilderInterface */
-    private $dateTimeBuilder;
-
-    /** @var ImporterRegistryInterface */
-    private $importerRegistry;
-
     public function __construct(
-        QueueItemRepositoryInterface $queueItemRepository,
-        FactoryInterface $queueItemFactory,
-        DateTimeBuilderInterface $dateTimeBuilder,
-        ImporterRegistryInterface $importerRegistry
+        private QueueItemRepositoryInterface $queueItemRepository,
+        private FactoryInterface $queueItemFactory,
+        private DateTimeBuilderInterface $dateTimeBuilder,
+        private ImporterRegistryInterface $importerRegistry
     ) {
-        $this->queueItemRepository = $queueItemRepository;
-        $this->queueItemFactory = $queueItemFactory;
-        $this->dateTimeBuilder = $dateTimeBuilder;
-        $this->importerRegistry = $importerRegistry;
         parent::__construct();
     }
 
@@ -93,7 +77,7 @@ final class EnqueueCommand extends Command
         if ('' !== $sinceOptionValue = (string) $input->getOption(self::SINCE_OPTION_NAME)) {
             try {
                 $sinceDate = new \DateTime($sinceOptionValue);
-            } catch (\Throwable $t) {
+            } catch (\Throwable) {
                 throw new \InvalidArgumentException(
                     sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME)
                 );
@@ -216,9 +200,7 @@ final class EnqueueCommand extends Command
             throw new \RuntimeException('There are no importers in registry.');
         }
         $importersCodes = array_map(
-            static function (ImporterInterface $importer): string {
-                return $importer->getAkeneoEntity();
-            },
+            static fn (ImporterInterface $importer): string => $importer->getAkeneoEntity(),
             $allImporters
         );
 

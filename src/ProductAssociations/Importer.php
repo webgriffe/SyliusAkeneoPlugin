@@ -21,33 +21,8 @@ final class Importer implements ImporterInterface
 {
     private const AKENEO_ENTITY = 'ProductAssociations';
 
-    /** @var ApiClientInterface */
-    private $apiClient;
-
-    /** @var ProductRepositoryInterface */
-    private $productRepository;
-
-    /** @var RepositoryInterface */
-    private $productAssociationRepository;
-
-    /** @var ProductAssociationTypeRepositoryInterface */
-    private $productAssociationTypeRepository;
-
-    /** @var FactoryInterface */
-    private $productAssociationFactory;
-
-    public function __construct(
-        ApiClientInterface $apiClient,
-        ProductRepositoryInterface $productRepository,
-        RepositoryInterface $productAssociationRepository,
-        ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository,
-        FactoryInterface $productAssociationFactory
-    ) {
-        $this->apiClient = $apiClient;
-        $this->productRepository = $productRepository;
-        $this->productAssociationRepository = $productAssociationRepository;
-        $this->productAssociationTypeRepository = $productAssociationTypeRepository;
-        $this->productAssociationFactory = $productAssociationFactory;
+    public function __construct(private ApiClientInterface $apiClient, private ProductRepositoryInterface $productRepository, private RepositoryInterface $productAssociationRepository, private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository, private FactoryInterface $productAssociationFactory)
+    {
     }
 
     /**
@@ -155,9 +130,7 @@ final class Importer implements ImporterInterface
     private function getProductsToAdd(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
     {
         return $akeneoAssociations->filter(
-            static function (BaseProductInterface $productToAssociate) use ($syliusAssociations): bool {
-                return !$syliusAssociations->contains($productToAssociate);
-            }
+            static fn (BaseProductInterface $productToAssociate): bool => !$syliusAssociations->contains($productToAssociate)
         );
     }
 
@@ -170,9 +143,7 @@ final class Importer implements ImporterInterface
     private function getProductsToRemove(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
     {
         return $syliusAssociations->filter(
-            static function (BaseProductInterface $productToAssociate) use ($akeneoAssociations): bool {
-                return !$akeneoAssociations->contains($productToAssociate);
-            }
+            static fn (BaseProductInterface $productToAssociate): bool => !$akeneoAssociations->contains($productToAssociate)
         );
     }
 }

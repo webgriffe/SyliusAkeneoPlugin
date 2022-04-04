@@ -11,12 +11,8 @@ use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
 final class CommandEventSubscriber implements EventSubscriberInterface
 {
-    /** @var TemporaryFilesManagerInterface */
-    private $temporaryFilesManager;
-
-    public function __construct(TemporaryFilesManagerInterface $temporaryFilesManager)
+    public function __construct(private TemporaryFilesManagerInterface $temporaryFilesManager)
     {
-        $this->temporaryFilesManager = $temporaryFilesManager;
     }
 
     public static function getSubscribedEvents(): array

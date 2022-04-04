@@ -16,33 +16,8 @@ use Webmozart\Assert\Assert;
 
 final class ImageValueHandler implements ValueHandlerInterface
 {
-    /** @var FactoryInterface */
-    private $productImageFactory;
-
-    /** @var RepositoryInterface */
-    private $productImageRepository;
-
-    /** @var ApiClientInterface */
-    private $apiClient;
-
-    /** @var string */
-    private $akeneoAttributeCode;
-
-    /** @var string */
-    private $syliusImageType;
-
-    public function __construct(
-        FactoryInterface $productImageFactory,
-        RepositoryInterface $productImageRepository,
-        ApiClientInterface $apiClient,
-        string $akeneoAttributeCode,
-        string $syliusImageType
-    ) {
-        $this->productImageFactory = $productImageFactory;
-        $this->productImageRepository = $productImageRepository;
-        $this->apiClient = $apiClient;
-        $this->akeneoAttributeCode = $akeneoAttributeCode;
-        $this->syliusImageType = $syliusImageType;
+    public function __construct(private FactoryInterface $productImageFactory, private RepositoryInterface $productImageRepository, private ApiClientInterface $apiClient, private string $akeneoAttributeCode, private string $syliusImageType)
+    {
     }
 
     /**
@@ -63,7 +38,7 @@ final class ImageValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This image value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    is_object($subject) ? get_class($subject) : gettype($subject)
+                    get_debug_type($subject)
                 )
             );
         }
@@ -152,9 +127,7 @@ final class ImageValueHandler implements ValueHandlerInterface
 
     private function getValue(array $value, ProductInterface $product): ?string
     {
-        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
-            return $channel->getCode();
-        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
         foreach ($value as $valueData) {
             if (!is_array($valueData)) {
                 throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));

@@ -28,16 +28,12 @@ final class ReconcileCommand extends Command
 
     protected static $defaultName = 'webgriffe:akeneo:reconcile';
 
-    /** @var ReconcilerRegistryInterface */
-    private $reconciliationRegistry;
-
     /**
      * ReconcileCommand constructor.
      */
-    public function __construct(ReconcilerRegistryInterface $reconciliationRegistry)
+    public function __construct(private ReconcilerRegistryInterface $reconciliationRegistry)
     {
         parent::__construct();
-        $this->reconciliationRegistry = $reconciliationRegistry;
     }
 
     protected function configure(): void
@@ -81,9 +77,7 @@ final class ReconcileCommand extends Command
             return [];
         }
         $reconcilersCodes = array_map(
-            static function (ReconcilerInterface $reconciler): string {
-                return $reconciler->getAkeneoEntity();
-            },
+            static fn (ReconcilerInterface $reconciler): string => $reconciler->getAkeneoEntity(),
             $allReconcilers
         );
 

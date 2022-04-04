@@ -8,10 +8,5 @@ use Sylius\Component\Attribute\Model\AttributeInterface;
 
 interface ValueConverterInterface
 {
-    /**
-     * @param int|string|bool|array $value
-     *
-     * @return array|int|string|bool
-     */
-    public function convert(AttributeInterface $attribute, $value, string $localeCode);
+    public function convert(AttributeInterface $attribute, array|bool|int|string $value, string $localeCode): array|bool|int|string;
 }

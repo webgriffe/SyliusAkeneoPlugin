@@ -6,21 +6,14 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 final class PriorityValueHandlersResolver implements ValueHandlersResolverInterface
 {
-    /** @var array */
-    private $valueHandlers = [];
+    private array $valueHandlers = [];
 
     public function add(ValueHandlerInterface $valueHandler, int $priority = 0): void
     {
         $this->valueHandlers[] = ['handler' => $valueHandler, 'priority' => $priority];
         usort(
             $this->valueHandlers,
-            static function (array $a, array $b): int {
-                if ($a['priority'] === $b['priority']) {
-                    return 0;
-                }
-
-                return $a['priority'] > $b['priority'] ? 1 : -1;
-            }
+            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority']
         );
     }
 

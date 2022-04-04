@@ -11,8 +11,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class ValueConverter implements ValueConverterInterface
 {
-    /** @var TranslatorInterface|null */
-    private $translator;
+    private ?TranslatorInterface $translator;
 
     /**
      * ValueConverter constructor.
@@ -25,7 +24,7 @@ final class ValueConverter implements ValueConverterInterface
                 'webgriffe/sylius-akeneo-plugin',
                 '1.8',
                 'Not passing a translator to "%s" is deprecated and will be removed in %s.',
-                __CLASS__,
+                self::class,
                 '2.0'
             );
         }
