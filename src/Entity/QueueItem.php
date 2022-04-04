@@ -10,15 +10,15 @@ use DateTimeInterface;
 /** @internal */
 class QueueItem implements QueueItemInterface
 {
-    private ?mixed $id = null;
+    private mixed $id = null;
 
-    private ?string $akeneoEntity = null;
+    private string $akeneoEntity;
 
-    private ?string $akeneoIdentifier = null;
+    private string $akeneoIdentifier;
 
     private ?string $errorMessage = null;
 
-    private ?DateTimeInterface $createdAt = null;
+    private DateTimeInterface $createdAt;
 
     private ?DateTimeInterface $importedAt = null;
 

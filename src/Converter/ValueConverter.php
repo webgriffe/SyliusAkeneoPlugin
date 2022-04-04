@@ -31,10 +31,7 @@ final class ValueConverter implements ValueConverterInterface
         $this->translator = $translator;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function convert(AttributeInterface $attribute, $value, string $localeCode)
+    public function convert(AttributeInterface $attribute, array|bool|int|string $value, string $localeCode): array|bool|int|string
     {
         if (is_array($value) && $attribute->getType() !== SelectAttributeType::TYPE) {
             // Akeneo metrical attribute

@@ -205,7 +205,6 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             ],
             \JSON_THROW_ON_ERROR
         );
-        Assert::string($body);
         $responseResult = $this->makeOauthRequest($body);
 
         $this->accessToken = $responseResult['access_token'];
@@ -221,7 +220,6 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
             ],
             \JSON_THROW_ON_ERROR
         );
-        Assert::string($body);
         $responseResult = $this->makeOauthRequest($body);
 
         $this->accessToken = $responseResult['access_token'];
