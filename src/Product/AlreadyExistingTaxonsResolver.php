@@ -13,13 +13,11 @@ final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
     {
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolve(array $akeneoProduct): array
     {
+        /** @var string[]|mixed $categories */
         $categories = $akeneoProduct['categories'] ?? [];
-        if ((is_countable($categories) ? count($categories) : 0) === 0) {
+        if (!is_array($categories) || count($categories) === 0) {
             return [];
         }
         $taxons = [];
