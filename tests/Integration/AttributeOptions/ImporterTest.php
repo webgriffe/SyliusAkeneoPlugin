@@ -13,14 +13,11 @@ use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class ImporterTest extends KernelTestCase
 {
-    /** @var ImporterInterface */
-    private $importer;
+    private ImporterInterface $importer;
 
-    /** @var PurgerLoader */
-    private $fixtureLoader;
+    private PurgerLoader $fixtureLoader;
 
-    /** @var RepositoryInterface */
-    private $attributeRepository;
+    private RepositoryInterface $attributeRepository;
 
     protected function setUp(): void
     {

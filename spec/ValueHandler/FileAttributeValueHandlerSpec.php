@@ -18,7 +18,7 @@ use Webmozart\Assert\InvalidArgumentException;
 
 class FileAttributeValueHandlerSpec extends ObjectBehavior
 {
-    const AKENEO_FILE_ATTRIBUTE_CODE = 'allegato_1';
+    public const AKENEO_FILE_ATTRIBUTE_CODE = 'allegato_1';
 
     function let(
         \SplFileInfo $attachmentFile,

@@ -12,18 +12,8 @@ use Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand;
 
 final class ConsumeCommandContext implements Context
 {
-    /** @var KernelInterface */
-    private $kernel;
-
-    /** @var ConsumeCommand */
-    private $consumeCommand;
-
-    public function __construct(
-        KernelInterface $kernel,
-        ConsumeCommand $consumeCommand
-    ) {
-        $this->kernel = $kernel;
-        $this->consumeCommand = $consumeCommand;
+    public function __construct(private KernelInterface $kernel, private ConsumeCommand $consumeCommand)
+    {
     }
 
     /**

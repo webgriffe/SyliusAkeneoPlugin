@@ -11,19 +11,10 @@ use Webmozart\Assert\Assert;
 
 final class FilesystemContext implements Context
 {
-    /** @var vfsStreamContainer */
-    private $vfsStream;
+    private ?vfsStreamContainer $vfsStream = null;
 
-    /** @var string */
-    private $temporaryDirectory;
-
-    /** @var string */
-    private $temporaryFilesPrefix;
-
-    public function __construct(string $temporaryDirectory, string $temporaryFilesPrefix)
+    public function __construct(private string $temporaryDirectory, private string $temporaryFilesPrefix)
     {
-        $this->temporaryDirectory = $temporaryDirectory;
-        $this->temporaryFilesPrefix = $temporaryFilesPrefix;
     }
 
     /**

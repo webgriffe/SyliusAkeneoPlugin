@@ -15,23 +15,8 @@ use Webmozart\Assert\Assert;
 
 final class EnqueueCommandContext implements Context
 {
-    /** @var KernelInterface */
-    private $kernel;
-
-    /** @var EnqueueCommand */
-    private $enqueueCommand;
-
-    /** @var SharedStorageInterface */
-    private $sharedStorage;
-
-    public function __construct(
-        KernelInterface $kernel,
-        EnqueueCommand $enqueueCommand,
-        SharedStorageInterface $sharedStorage
-    ) {
-        $this->kernel = $kernel;
-        $this->enqueueCommand = $enqueueCommand;
-        $this->sharedStorage = $sharedStorage;
+    public function __construct(private KernelInterface $kernel, private EnqueueCommand $enqueueCommand, private SharedStorageInterface $sharedStorage)
+    {
     }
 
     /**
