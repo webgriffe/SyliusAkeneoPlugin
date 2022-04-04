@@ -20,23 +20,11 @@ final class ConsumeCommand extends Command
 
     protected static $defaultName = 'webgriffe:akeneo:consume';
 
-    /** @var QueueItemRepositoryInterface */
-    private $queueItemRepository;
-
-    /** @var ImporterRegistryInterface */
-    private $importerRegistry;
-
-    /** @var ManagerRegistry */
-    private $managerRegistry;
-
     public function __construct(
-        QueueItemRepositoryInterface $queueItemRepository,
-        ImporterRegistryInterface $importerRegistry,
-        ManagerRegistry $managerRegistry
+        private QueueItemRepositoryInterface $queueItemRepository,
+        private ImporterRegistryInterface $importerRegistry,
+        private ManagerRegistry $managerRegistry
     ) {
-        $this->queueItemRepository = $queueItemRepository;
-        $this->importerRegistry = $importerRegistry;
-        $this->managerRegistry = $managerRegistry;
         parent::__construct();
     }
 

@@ -24,18 +24,14 @@ final class QueueCleanupCommand extends Command
 
     private const DAYS_ARGUMENT_NAME = 'days';
 
-    /** @var CleanableQueueItemRepositoryInterface */
-    private $queueItemRepository;
-
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'webgriffe:akeneo:cleanup-queue';
 
     /**
      * QueueCleanupCommand constructor.
      */
-    public function __construct(CleanableQueueItemRepositoryInterface $queueItemRepository)
+    public function __construct(private CleanableQueueItemRepositoryInterface $queueItemRepository)
     {
-        $this->queueItemRepository = $queueItemRepository;
         parent::__construct();
     }
 

@@ -16,33 +16,8 @@ use Webmozart\Assert\Assert;
 
 final class MetricPropertyValueHandler implements ValueHandlerInterface
 {
-    /** @var PropertyAccessorInterface */
-    private $propertyAccessor;
-
-    /** @var string */
-    private $akeneoAttributeCode;
-
-    /** @var string */
-    private $propertyPath;
-
-    /** @var string|null */
-    private $akeneoUnitMeasurementCode;
-
-    /** @var UnitMeasurementValueConverterInterface */
-    private $unitMeasurementValueConverter;
-
-    public function __construct(
-        PropertyAccessorInterface $propertyAccessor,
-        UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
-        string $akeneoAttributeCode,
-        string $propertyPath,
-        string $akeneoUnitMeasurementCode = null
-    ) {
-        $this->propertyAccessor = $propertyAccessor;
-        $this->unitMeasurementValueConverter = $unitMeasurementValueConverter;
-        $this->akeneoAttributeCode = $akeneoAttributeCode;
-        $this->propertyPath = $propertyPath;
-        $this->akeneoUnitMeasurementCode = $akeneoUnitMeasurementCode;
+    public function __construct(private PropertyAccessorInterface $propertyAccessor, private UnitMeasurementValueConverterInterface $unitMeasurementValueConverter, private string $akeneoAttributeCode, private string $propertyPath, private ?string $akeneoUnitMeasurementCode = null)
+    {
     }
 
     /**
@@ -86,9 +61,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
 
-        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
-            return $channel->getCode();
-        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
         $productChannelCodes = array_filter($productChannelCodes);
 
         foreach ($value as $valueData) {
@@ -132,8 +105,8 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
                 sprintf(
                     'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                     $this->propertyPath,
-                    get_class($productVariant),
-                    get_class($product)
+                    $productVariant::class,
+                    $product::class
                 )
             );
         }

@@ -104,7 +104,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     ];
 
     /** @var array<string, array{class: string, arguments: string[]}> */
-    private static $valueHandlersTypesDefinitionsPrivate = [
+    private static array $valueHandlersTypesDefinitionsPrivate = [
         'channel_pricing' => [
             'class' => ChannelPricingValueHandler::class,
             'arguments' => [
@@ -251,9 +251,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             $bindArgumentsByName = $bindArgumentsByName || $type === 'channel_pricing';
             $arguments = array_merge(
                 array_map(
-                    static function (string $argumentValue): Reference {
-                        return new Reference($argumentValue);
-                    },
+                    static fn (string $argumentValue): Reference => new Reference($argumentValue),
                     $bindArgumentsByName ? self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments'] : array_values(self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments']),
                 ),
                 $bindArgumentsByName ? $options : array_values($options)

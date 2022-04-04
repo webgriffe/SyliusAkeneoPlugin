@@ -19,43 +19,22 @@ use Webmozart\Assert\Assert;
 
 final class ProductOptionValueHandler implements ValueHandlerInterface
 {
-    /** @var ApiClientInterface */
-    private $apiClient;
-
-    /** @var ProductOptionRepositoryInterface */
-    private $productOptionRepository;
-
-    /** @var FactoryInterface */
-    private $productOptionValueFactory;
-
-    /** @var FactoryInterface */
-    private $productOptionValueTranslationFactory;
-
-    /** @var RepositoryInterface */
-    private $productOptionValueRepository;
-
-    /** @var TranslationLocaleProviderInterface|null */
-    private $translationLocaleProvider;
+    private ?TranslationLocaleProviderInterface $translationLocaleProvider;
 
     public function __construct(
-        ApiClientInterface $apiClient,
-        ProductOptionRepositoryInterface $productOptionRepository,
-        FactoryInterface $productOptionValueFactory,
-        FactoryInterface $productOptionValueTranslationFactory,
-        RepositoryInterface $productOptionValueRepository,
+        private ApiClientInterface $apiClient,
+        private ProductOptionRepositoryInterface $productOptionRepository,
+        private FactoryInterface $productOptionValueFactory,
+        private FactoryInterface $productOptionValueTranslationFactory,
+        private RepositoryInterface $productOptionValueRepository,
         TranslationLocaleProviderInterface $translationLocaleProvider = null
     ) {
-        $this->apiClient = $apiClient;
-        $this->productOptionRepository = $productOptionRepository;
-        $this->productOptionValueFactory = $productOptionValueFactory;
-        $this->productOptionValueTranslationFactory = $productOptionValueTranslationFactory;
-        $this->productOptionValueRepository = $productOptionValueRepository;
         if ($translationLocaleProvider === null) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
                 '1.6',
                 'Not passing a translation locale provider to %s is deprecated and will not be possible anymore in %s',
-                __CLASS__,
+                self::class,
                 '2.0'
             );
         }
@@ -80,7 +59,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This option value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    is_object($productVariant) ? get_class($productVariant) : gettype($productVariant)
+                    get_debug_type($productVariant)
                 )
             );
         }

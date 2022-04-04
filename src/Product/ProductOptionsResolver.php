@@ -13,28 +13,8 @@ use Webmozart\Assert\Assert;
 
 final class ProductOptionsResolver implements ProductOptionsResolverInterface
 {
-    /** @var ApiClientInterface */
-    private $apiClient;
-
-    /** @var ProductOptionRepositoryInterface */
-    private $productOptionRepository;
-
-    /** @var FactoryInterface */
-    private $productOptionFactory;
-
-    /** @var FactoryInterface */
-    private $productOptionTranslationFactory;
-
-    public function __construct(
-        ApiClientInterface $apiClient,
-        ProductOptionRepositoryInterface $productOptionRepository,
-        FactoryInterface $productOptionFactory,
-        FactoryInterface $productOptionTranslationFactory
-    ) {
-        $this->apiClient = $apiClient;
-        $this->productOptionRepository = $productOptionRepository;
-        $this->productOptionFactory = $productOptionFactory;
-        $this->productOptionTranslationFactory = $productOptionTranslationFactory;
+    public function __construct(private ApiClientInterface $apiClient, private ProductOptionRepositoryInterface $productOptionRepository, private FactoryInterface $productOptionFactory, private FactoryInterface $productOptionTranslationFactory)
+    {
     }
 
     /**

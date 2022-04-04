@@ -4,27 +4,23 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Entity;
 
+use DateTimeInterface;
+
 /** @final */
 /** @internal */
 class QueueItem implements QueueItemInterface
 {
-    /** @var mixed */
-    private $id;
+    private ?mixed $id = null;
 
-    /** @var string */
-    private $akeneoEntity;
+    private ?string $akeneoEntity = null;
 
-    /** @var string */
-    private $akeneoIdentifier;
+    private ?string $akeneoIdentifier = null;
 
-    /** @var string|null */
-    private $errorMessage;
+    private ?string $errorMessage = null;
 
-    /** @var \DateTimeInterface */
-    private $createdAt;
+    private ?DateTimeInterface $createdAt = null;
 
-    /** @var \DateTimeInterface|null */
-    private $importedAt;
+    private ?DateTimeInterface $importedAt = null;
 
     /** @return mixed */
     public function getId()
@@ -47,12 +43,12 @@ class QueueItem implements QueueItemInterface
         return $this->errorMessage;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function getImportedAt(): ?\DateTimeInterface
+    public function getImportedAt(): ?DateTimeInterface
     {
         return $this->importedAt;
     }
@@ -72,12 +68,12 @@ class QueueItem implements QueueItemInterface
         $this->errorMessage = $errorMessage;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): void
+    public function setCreatedAt(DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function setImportedAt(?\DateTimeInterface $importedAt): void
+    public function setImportedAt(?DateTimeInterface $importedAt): void
     {
         $this->importedAt = $importedAt;
     }

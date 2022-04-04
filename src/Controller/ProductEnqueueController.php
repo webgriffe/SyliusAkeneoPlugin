@@ -17,35 +17,23 @@ use Webmozart\Assert\Assert;
 
 final class ProductEnqueueController extends AbstractController
 {
-    /** @var QueueItemRepositoryInterface */
-    private $queueItemRepository;
-
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
-
-    /** @var ProductRepositoryInterface */
-    private $productRepository;
-
     private ?TranslatorInterface $translator;
 
     /**
      * ProductEnqueueController constructor.
      */
     public function __construct(
-        QueueItemRepositoryInterface $queueItemRepository,
-        ProductRepositoryInterface $productRepository,
-        UrlGeneratorInterface $urlGenerator,
+        private QueueItemRepositoryInterface $queueItemRepository,
+        private ProductRepositoryInterface $productRepository,
+        private UrlGeneratorInterface $urlGenerator,
         TranslatorInterface $translator = null
     ) {
-        $this->queueItemRepository = $queueItemRepository;
-        $this->urlGenerator = $urlGenerator;
-        $this->productRepository = $productRepository;
         if ($translator === null) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
                 '1.12',
                 'Not passing a translator to "%s" is deprecated and will be removed in %s.',
-                __CLASS__,
+                self::class,
                 '2.0'
             );
         }

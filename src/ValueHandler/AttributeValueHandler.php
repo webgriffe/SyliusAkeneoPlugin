@@ -25,33 +25,20 @@ use Webmozart\Assert\Assert;
 
 final class AttributeValueHandler implements ValueHandlerInterface
 {
-    /** @var RepositoryInterface */
-    private $attributeRepository;
-
-    /** @var FactoryInterface */
-    private $factory;
-
-    /** @var TranslationLocaleProviderInterface */
-    private $localeProvider;
-
-    /** @var ValueConverterInterface */
-    private $valueConverter;
+    private ValueConverterInterface $valueConverter;
 
     public function __construct(
-        RepositoryInterface $attributeRepository,
-        FactoryInterface $factory,
-        TranslationLocaleProviderInterface $localeProvider,
+        private RepositoryInterface $attributeRepository,
+        private FactoryInterface $factory,
+        private TranslationLocaleProviderInterface $localeProvider,
         ValueConverterInterface $valueConverter = null
     ) {
-        $this->attributeRepository = $attributeRepository;
-        $this->factory = $factory;
-        $this->localeProvider = $localeProvider;
         if ($valueConverter === null) {
             trigger_deprecation(
                 'webgriffe/sylius-akeneo-plugin',
                 '1.8',
                 'Not passing a value converter to "%s" is deprecated and will be removed in %s.',
-                __CLASS__,
+                self::class,
                 '2.0'
             );
             $valueConverter = new ValueConverter();
@@ -88,7 +75,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This attribute value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    is_object($subject) ? get_class($subject) : gettype($subject)
+                    get_debug_type($subject)
                 )
             );
         }
@@ -111,9 +98,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         /** @var ProductInterface|null $product */
         $product = $subject->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
-        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
-            return $channel->getCode();
-        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
         $productChannelCodes = array_filter($productChannelCodes);
 
         foreach ($value as $valueData) {
@@ -188,9 +173,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         Assert::isInstanceOf($product, ProductInterface::class);
         $options = $product->getOptions();
 
-        $productOptions = $options->filter(function (ProductOptionInterface $option) use ($attributeCode): bool {
-            return $option->getCode() === $attributeCode;
-        });
+        $productOptions = $options->filter(fn (ProductOptionInterface $option): bool => $option->getCode() === $attributeCode);
 
         return !$productOptions->isEmpty();
     }

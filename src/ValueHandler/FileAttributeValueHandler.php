@@ -16,28 +16,8 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
 {
     public const AKENEO_ATTRIBUTE_TYPE_FILE = 'pim_catalog_file';
 
-    /** @var ApiClientInterface */
-    private $apiClient;
-
-    /** @var Filesystem */
-    private $filesystem;
-
-    /** @var string */
-    private $akeneoAttributeCode;
-
-    /** @var string */
-    private $downloadPath;
-
-    public function __construct(
-        ApiClientInterface $apiClient,
-        Filesystem $filesystem,
-        string $akeneoAttributeCode,
-        string $downloadPath
-    ) {
-        $this->apiClient = $apiClient;
-        $this->filesystem = $filesystem;
-        $this->akeneoAttributeCode = $akeneoAttributeCode;
-        $this->downloadPath = $downloadPath;
+    public function __construct(private ApiClientInterface $apiClient, private Filesystem $filesystem, private string $akeneoAttributeCode, private string $downloadPath)
+    {
     }
 
     public function supports($subject, string $attribute, array $value): bool
@@ -72,7 +52,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This file value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    is_object($subject) ? get_class($subject) : gettype($subject)
+                    get_debug_type($subject)
                 )
             );
         }
@@ -105,9 +85,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
 
     private function getValue(array $value, ProductInterface $product): ?string
     {
-        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
-            return $channel->getCode();
-        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
         foreach ($value as $valueData) {
             if (!is_array($valueData)) {
                 throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));

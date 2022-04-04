@@ -9,12 +9,8 @@ use Sylius\Component\Taxonomy\Repository\TaxonRepositoryInterface;
 
 final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
 {
-    /** @var TaxonRepositoryInterface */
-    private $taxonRepository;
-
-    public function __construct(TaxonRepositoryInterface $taxonRepository)
+    public function __construct(private TaxonRepositoryInterface $taxonRepository)
     {
-        $this->taxonRepository = $taxonRepository;
     }
 
     /**
@@ -23,7 +19,7 @@ final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
     public function resolve(array $akeneoProduct): array
     {
         $categories = $akeneoProduct['categories'] ?? [];
-        if (count($categories) === 0) {
+        if ((is_countable($categories) ? count($categories) : 0) === 0) {
             return [];
         }
         $taxons = [];

@@ -15,23 +15,8 @@ use Webmozart\Assert\Assert;
 
 final class GenericPropertyValueHandler implements ValueHandlerInterface
 {
-    /** @var PropertyAccessorInterface */
-    private $propertyAccessor;
-
-    /** @var string */
-    private $akeneoAttributeCode;
-
-    /** @var string */
-    private $propertyPath;
-
-    public function __construct(
-        PropertyAccessorInterface $propertyAccessor,
-        string $akeneoAttributeCode,
-        string $propertyPath
-    ) {
-        $this->propertyAccessor = $propertyAccessor;
-        $this->akeneoAttributeCode = $akeneoAttributeCode;
-        $this->propertyPath = $propertyPath;
+    public function __construct(private PropertyAccessorInterface $propertyAccessor, private string $akeneoAttributeCode, private string $propertyPath)
+    {
     }
 
     /**
@@ -65,9 +50,7 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
         $product = $productVariant->getProduct();
         Assert::isInstanceOf($product, ProductInterface::class);
 
-        $productChannelCodes = array_map(static function (ChannelInterface $channel): ?string {
-            return $channel->getCode();
-        }, $product->getChannels()->toArray());
+        $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
         $productChannelCodes = array_filter($productChannelCodes);
 
         foreach ($value as $valueData) {
@@ -105,8 +88,8 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                 sprintf(
                     'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                     $this->propertyPath,
-                    get_class($productVariant),
-                    get_class($product)
+                    $productVariant::class,
+                    $product::class
                 )
             );
         }

@@ -7,7 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 final class ImporterRegistry implements ImporterRegistryInterface
 {
     /** @var ImporterInterface[] */
-    private $registry = [];
+    private array $registry = [];
 
     public function add(ImporterInterface $importer): void
     {
