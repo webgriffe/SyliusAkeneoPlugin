@@ -10,6 +10,7 @@ use Webgriffe\SyliusAkeneoPlugin\AttributeOptions\ApiClientInterface as Attribut
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\MeasurementFamiliesApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
+use const JSON_THROW_ON_ERROR;
 
 final class ApiClientMock implements ApiClientInterface, AttributeOptionsApiClientInterface, FamilyAwareApiClientInterface, MeasurementFamiliesApiClientInterface
 {
