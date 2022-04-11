@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
-use Sylius\Component\Resource\Factory\FactoryInterface;
+use DateTime;
+use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilderInterface;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
-use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
+use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webmozart\Assert\Assert;
 
 final class EnqueueCommand extends Command
@@ -32,10 +34,9 @@ final class EnqueueCommand extends Command
     protected static $defaultName = 'webgriffe:akeneo:enqueue';
 
     public function __construct(
-        private QueueItemRepositoryInterface $queueItemRepository,
-        private FactoryInterface $queueItemFactory,
         private DateTimeBuilderInterface $dateTimeBuilder,
         private ImporterRegistryInterface $importerRegistry,
+        private MessageBusInterface $messageBus,
     ) {
         parent::__construct();
     }
@@ -76,18 +77,18 @@ final class EnqueueCommand extends Command
         $sinceFilePath = null;
         if ('' !== $sinceOptionValue = (string) $input->getOption(self::SINCE_OPTION_NAME)) {
             try {
-                $sinceDate = new \DateTime($sinceOptionValue);
-            } catch (\Throwable) {
-                throw new \InvalidArgumentException(
+                $sinceDate = new DateTime($sinceOptionValue);
+            } catch (Throwable) {
+                throw new InvalidArgumentException(
                     sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME),
                 );
             }
         } elseif ('' !== $sinceFilePath = (string) $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
             $sinceDate = $this->getSinceDateByFile($sinceFilePath);
         } elseif ($input->getOption(self::ALL_OPTION_NAME) === true) {
-            $sinceDate = (new \DateTime())->setTimestamp(0);
+            $sinceDate = (new DateTime())->setTimestamp(0);
         } else {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'One of "--%s", "--%s" or "--%s" option must be specified',
                     self::SINCE_OPTION_NAME,
@@ -118,15 +119,11 @@ final class EnqueueCommand extends Command
                 continue;
             }
             foreach ($identifiers as $identifier) {
-                if ($this->isEntityAlreadyQueuedToImport($importer->getAkeneoEntity(), $identifier)) {
-                    continue;
-                }
-                $queueItem = $this->queueItemFactory->createNew();
-                Assert::isInstanceOf($queueItem, QueueItemInterface::class);
-                $queueItem->setAkeneoEntity($importer->getAkeneoEntity());
-                $queueItem->setAkeneoIdentifier($identifier);
-                $queueItem->setCreatedAt(new \DateTime());
-                $this->queueItemRepository->add($queueItem);
+                $itemImport = new ItemImport(
+                    $importer->getAkeneoEntity(),
+                    $identifier
+                );
+                $this->messageBus->dispatch($itemImport);
                 $output->writeln(
                     sprintf(
                         '<info>%s</info> entity with identifier <info>%s</info> enqueued.',
@@ -146,20 +143,20 @@ final class EnqueueCommand extends Command
         return 0;
     }
 
-    private function getSinceDateByFile(string $filepath): \DateTime
+    private function getSinceDateByFile(string $filepath): DateTime
     {
         if (!file_exists($filepath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('The file "%s" does not exists', $filepath),
             );
         }
         if (!is_readable($filepath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('The file "%s" is not readable', $filepath),
             );
         }
         if (!is_writable($filepath)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('The file "%s" is not writable', $filepath),
             );
         }
@@ -167,27 +164,17 @@ final class EnqueueCommand extends Command
         try {
             $content = file_get_contents($filepath);
             Assert::string($content);
-            $sinceDate = new \DateTime(trim($content));
-        } catch (\Throwable $t) {
+            $sinceDate = new DateTime(trim($content));
+        } catch (Throwable $t) {
             throw new \RuntimeException(sprintf('The file "%s" must contain a valid datetime', $filepath), 0, $t);
         }
 
         return $sinceDate;
     }
 
-    private function writeSinceDateFile(string $filepath, \DateTime $runDate): void
+    private function writeSinceDateFile(string $filepath, DateTime $runDate): void
     {
         file_put_contents($filepath, $runDate->format('c'));
-    }
-
-    private function isEntityAlreadyQueuedToImport(string $akeneoEntity, string $akeneoIdentifier): bool
-    {
-        $queueItem = $this->queueItemRepository->findOneToImport($akeneoEntity, $akeneoIdentifier);
-        if ($queueItem !== null) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -220,7 +207,7 @@ final class EnqueueCommand extends Command
         $importers = [];
         foreach ($importersToUse as $importerToUse) {
             if (!array_key_exists($importerToUse, $allImporters)) {
-                throw new \InvalidArgumentException(sprintf('Importer "%s" does not exists.', $importerToUse));
+                throw new InvalidArgumentException(sprintf('Importer "%s" does not exists.', $importerToUse));
             }
             $importers[] = $allImporters[$importerToUse];
         }
