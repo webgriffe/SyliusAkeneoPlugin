@@ -56,25 +56,6 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
 
-                ->arrayNode('resources')->addDefaultsIfNotSet()
-                    ->children()
-                        ->arrayNode('queue_item')->addDefaultsIfNotSet()
-                            ->children()
-                                ->variableNode('options')->end()
-                                ->arrayNode('classes')->addDefaultsIfNotSet()
-                                    ->children()
-                                        ->scalarNode('model')->defaultValue(QueueItem::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('interface')->defaultValue(QueueItemInterface::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('factory')->defaultValue(Factory::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('repository')->defaultValue(QueueItemRepository::class)->cannotBeEmpty()->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
-
             ->end()
         ;
 

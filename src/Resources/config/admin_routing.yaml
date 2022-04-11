@@ -1,19 +1,3 @@
-webgriffe_sylius_akeneo_admin_queue_item:
-    resource: |
-        alias: webgriffe_sylius_akeneo.queue_item
-        section: admin
-        path: akeneo_queue_items
-        except: ['update', 'create', 'show']
-        templates: "@SyliusAdmin\\Crud"
-        redirect: update
-        grid: webgriffe_sylius_akeneo_admin_queue_item
-        vars:
-            all:
-                subheader: webgriffe_sylius_akeneo.ui.manage_akeneo_queue_items
-            index:
-                icon: 'cloud download'
-    type: sylius.resource
-
 webgriffe_sylius_akeneo_product_enqueue:
     controller: webgriffe_sylius_akeneo.controller.product_enqueue_controller:enqueueAction
     path: product/{productId}/enqueue

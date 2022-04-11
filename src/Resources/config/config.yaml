@@ -70,3 +70,7 @@ sylius_grid:
                             icon: cloud download
                             color: violet
 
+framework:
+    messenger:
+        routing:
+

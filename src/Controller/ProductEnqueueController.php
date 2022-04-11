@@ -9,18 +9,16 @@ use Sylius\Component\Product\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem;
-use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
+use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webmozart\Assert\Assert;
 
 final class ProductEnqueueController extends AbstractController
 {
     public function __construct(
-        private QueueItemRepositoryInterface $queueItemRepository,
         private ProductRepositoryInterface $productRepository,
-        private UrlGeneratorInterface $urlGenerator,
+        private MessageBusInterface $messageBus,
         private TranslatorInterface $translator,
     ) {
     }
@@ -33,38 +31,20 @@ final class ProductEnqueueController extends AbstractController
             throw new NotFoundHttpException('Product not found');
         }
 
-        $alreadyEnqueued = [];
         $enqueued = [];
         foreach ($product->getVariants() as $productVariant) {
             $productVariantCode = $productVariant->getCode();
             Assert::notNull($productVariantCode);
 
-            $productEnqueued = $this->queueItemRepository->findBy([
-                'akeneoIdentifier' => $productVariantCode,
-                'akeneoEntity' => 'Product',
-                'importedAt' => null,
-            ]);
-            if (count($productEnqueued) > 0) {
-                $alreadyEnqueued[] = $productVariantCode;
-
-                continue;
-            }
-
-            $queueItem = new QueueItem();
-            $queueItem->setAkeneoEntity('Product');
-            $queueItem->setAkeneoIdentifier($productVariantCode);
-            $queueItem->setCreatedAt(new \DateTime());
-            $this->queueItemRepository->add($queueItem);
+            $queueItem = new ItemImport(
+                'Product',
+                $productVariantCode
+            );
+            $this->messageBus->dispatch($queueItem);
 
             $enqueued[] = $productVariantCode;
         }
 
-        foreach ($alreadyEnqueued as $code) {
-            $this->addFlash(
-                'error',
-                $this->translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued', ['code' => $code]), // @phpstan-ignore-line
-            );
-        }
         foreach ($enqueued as $code) {
             $this->addFlash(
                 'success',
