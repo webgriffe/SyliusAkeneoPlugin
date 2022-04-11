@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use InvalidArgumentException;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
@@ -17,43 +18,25 @@ use Webmozart\Assert\Assert;
 
 final class ChannelPricingValueHandler implements ValueHandlerInterface
 {
-    private ?PropertyAccessorInterface $propertyAccessor;
-
     public function __construct(
         private FactoryInterface $channelPricingFactory,
         private ChannelRepositoryInterface $channelRepository,
         private RepositoryInterface $currencyRepository,
         private string $akeneoAttribute,
-        PropertyAccessorInterface $propertyAccessor = null,
+        private PropertyAccessorInterface $propertyAccessor,
         private string $syliusPropertyPath = 'price'
     ) {
-        if ($propertyAccessor === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                '1.12',
-                'Not passing a property accessor to "%s" is deprecated and will be removed in %s.',
-                self::class,
-                '2.0'
-            );
-        }
-        $this->propertyAccessor = $propertyAccessor;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductVariantInterface && $attribute === $this->akeneoAttribute;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function handle($subject, string $attribute, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'This channel pricing value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
@@ -85,12 +68,8 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                     $channelPricing->setChannelCode($channel->getCode());
                 }
 
-                if ($this->propertyAccessor === null) {
-                    $channelPricing->setPrice((int) round($price * 100));
-                } else {
-                    $this->propertyAccessor->setValue($channelPricing, $this->syliusPropertyPath, (int) round($price * 100));
-                    Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
-                }
+                $this->propertyAccessor->setValue($channelPricing, $this->syliusPropertyPath, (int) round($price * 100));
+                Assert::isInstanceOf($channelPricing, ChannelPricingInterface::class);
                 if ($isNewChannelPricing) {
                     $subject->addChannelPricing($channelPricing);
                 }

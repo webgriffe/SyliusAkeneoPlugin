@@ -29,8 +29,6 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 {
     private const AKENEO_ENTITY = 'Product';
 
-    private StatusResolverInterface $variantStatusResolver;
-
     public function __construct(
         private ProductVariantFactoryInterface $productVariantFactory,
         private ProductVariantRepositoryInterface $productVariantRepository,
@@ -44,24 +42,10 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         private ChannelsResolverInterface $channelsResolver,
         private StatusResolverInterface $statusResolver,
         private FactoryInterface $productTaxonFactory,
-        StatusResolverInterface $variantStatusResolver = null
+        private StatusResolverInterface $variantStatusResolver
     ) {
-        if (null === $variantStatusResolver) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                '1.2',
-                'Not passing a variant status resolver to "%s" is deprecated and will be removed in %s.',
-                self::class,
-                '2.0'
-            );
-            $variantStatusResolver = new VariantStatusResolver();
-        }
-        $this->variantStatusResolver = $variantStatusResolver;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getAkeneoEntity(): string
     {
         return self::AKENEO_ENTITY;
@@ -112,10 +96,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         $this->dispatchPostEvent($product, $eventName);
     }
 
-    /**
-     * @inheritdoc
-     * @psalm-return array<array-key, string>
-     */
+    /** @psalm-return array<array-key, string> */
     public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
         $searchBuilder = new SearchBuilder();
@@ -130,10 +111,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         return $identifiers;
     }
 
-    /**
-     * @inheritdoc
-     * @psalm-return array<array-key, string>
-     */
+    /** @psalm-return array<array-key, string> */
     public function getAllIdentifiers(): array
     {
         return $this->getIdentifiersModifiedSince((new DateTime())->setTimestamp(0));

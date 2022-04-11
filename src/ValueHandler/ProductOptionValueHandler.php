@@ -24,39 +24,15 @@ use Webmozart\Assert\Assert;
 
 final class ProductOptionValueHandler implements ValueHandlerInterface
 {
-    private ?TranslationLocaleProviderInterface $translationLocaleProvider;
-
-    private ?TranslatorInterface $translator;
-
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private ProductOptionRepositoryInterface $productOptionRepository,
         private FactoryInterface $productOptionValueFactory,
         private FactoryInterface $productOptionValueTranslationFactory,
         private RepositoryInterface $productOptionValueRepository,
-        TranslationLocaleProviderInterface $translationLocaleProvider = null,
-        TranslatorInterface $translator = null
+        private TranslationLocaleProviderInterface $translationLocaleProvider,
+        private TranslatorInterface $translator
     ) {
-        if ($translationLocaleProvider === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                '1.6',
-                'Not passing a translation locale provider to %s is deprecated and will not be possible anymore in %s',
-                self::class,
-                '2.0'
-            );
-        }
-        $this->translationLocaleProvider = $translationLocaleProvider;
-        if ($translator === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                '1.15',
-                'Not passing a translator to %s is deprecated and will not be possible anymore in %s',
-                __CLASS__,
-                '2.0'
-            );
-        }
-        $this->translator = $translator;
     }
 
     /**
@@ -130,12 +106,12 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 break;
             case 'pim_catalog_metric':
                 Assert::isArray($akeneoValueData);
-                $this->handleMetricOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
+                $this->handleMetricOption($productOption, $optionCode, $akeneoValueData, $productVariant);
 
                 break;
             case 'pim_catalog_boolean':
                 Assert::boolean($akeneoValueData);
-                $this->handleBooleanOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
+                $this->handleBooleanOption($productOption, $optionCode, $akeneoValueData, $productVariant);
 
                 break;
             default:
@@ -169,8 +145,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             throw $e;
         }
         foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
-            if ($this->translationLocaleProvider !== null &&
-                !in_array($localeCode, $this->translationLocaleProvider->getDefinedLocalesCodes(), true)) {
+            if (!in_array($localeCode, $this->translationLocaleProvider->getDefinedLocalesCodes(), true)) {
                 continue;
             }
             $optionValueTranslation = $optionValue->getTranslation($localeCode);
@@ -189,7 +164,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
     }
 
-    private function handleMetricOption(ProductOptionInterface $productOption, string $optionCode, array $akeneoDataValue, ProductInterface $product, ProductVariantInterface $productVariant): void
+    private function handleMetricOption(ProductOptionInterface $productOption, string $optionCode, array $akeneoDataValue, ProductVariantInterface $productVariant): void
     {
         if (!array_key_exists('amount', $akeneoDataValue)) {
             throw new LogicException('Amount key not found');
@@ -204,13 +179,10 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
         /** @var string[] $locales */
-        $locales = $this->getLocaleCodes($product);
+        $locales = $this->getLocaleCodes();
 
         foreach ($locales as $localeCode) {
-            $label = $floatAmount . ' ' . $unit;
-            if ($this->translator !== null) {
-                $label = $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
-            }
+            $label = $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
             $optionValue = $this->addOptionValueTranslation($optionValue, $localeCode, $label);
         }
         if (!$productVariant->hasOptionValue($optionValue)) {
@@ -218,19 +190,16 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
     }
 
-    private function handleBooleanOption(ProductOptionInterface $productOption, string $optionCode, bool $akeneoDataValue, ProductInterface $product, ProductVariantInterface $productVariant): void
+    private function handleBooleanOption(ProductOptionInterface $productOption, string $optionCode, bool $akeneoDataValue, ProductVariantInterface $productVariant): void
     {
         $optionValueCode = $this->createOptionValueCode($optionCode, (string) $akeneoDataValue);
 
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
         /** @var string[] $locales */
-        $locales = $this->getLocaleCodes($product);
+        $locales = $this->getLocaleCodes();
         foreach ($locales as $localeCode) {
-            $label = (string) $akeneoDataValue;
-            if ($this->translator !== null) {
-                $label = $akeneoDataValue ? $this->translator->trans('sylius.ui.yes_label', [], null, $localeCode) : $this->translator->trans('sylius.ui.no_label', [], null, $localeCode);
-            }
+            $label = $akeneoDataValue ? $this->translator->trans('sylius.ui.yes_label', [], null, $localeCode) : $this->translator->trans('sylius.ui.no_label', [], null, $localeCode);
             $optionValue = $this->addOptionValueTranslation($optionValue, $localeCode, $label);
         }
         if (!$productVariant->hasOptionValue($optionValue)) {
@@ -277,22 +246,9 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         return $optionValue;
     }
 
-    private function getLocaleCodes(ProductInterface $product): array
+    private function getLocaleCodes(): array
     {
-        $locales = [];
-        if ($this->translationLocaleProvider !== null) {
-            $locales = $this->translationLocaleProvider->getDefinedLocalesCodes();
-        } else {
-            foreach ($product->getTranslations() as $translation) {
-                $locale = $translation->getLocale();
-                if ($locale === null) {
-                    continue;
-                }
-                $locales[] = $locale;
-            }
-        }
-
-        return $locales;
+        return $this->translationLocaleProvider->getDefinedLocalesCodes();
     }
 
     private function addOptionValueTranslation(

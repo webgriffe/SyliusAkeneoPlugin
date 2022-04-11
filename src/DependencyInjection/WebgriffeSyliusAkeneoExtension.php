@@ -30,79 +30,6 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
     private const RECONCILER_TAG = 'webgriffe_sylius_akeneo.reconciler';
 
-    /**
-     * @var array
-     *
-     * @deprecated Do not use anymore. Use $valueHandlersTypesDefinitionsPrivate instead.
-     */
-    public static $valueHandlersTypesDefinitions = [
-        'channel_pricing' => [
-            'class' => ChannelPricingValueHandler::class,
-            'arguments' => [
-                'sylius.factory.channel_pricing',
-                'sylius.repository.channel',
-                'sylius.repository.currency',
-            ],
-        ],
-        'generic_property' => [
-            'class' => GenericPropertyValueHandler::class,
-            'arguments' => [
-                'property_accessor',
-            ],
-        ],
-        'image' => [
-            'class' => ImageValueHandler::class,
-            'arguments' => [
-                'sylius.factory.product_image',
-                'sylius.repository.product_image',
-                'webgriffe_sylius_akeneo.api_client',
-            ],
-        ],
-        'immutable_slug' => [
-            'class' => ImmutableSlugValueHandler::class,
-            'arguments' => [
-                'webgriffe_sylius_akeneo.slugify',
-                'sylius.factory.product_translation',
-                'sylius.translation_locale_provider.admin',
-                'sylius.repository.product_translation',
-            ],
-        ],
-        'product_option' => [
-            'class' => ProductOptionValueHandler::class,
-            'arguments' => [
-                'webgriffe_sylius_akeneo.api_client',
-                'sylius.repository.product_option',
-                'sylius.factory.product_option_value',
-                'sylius.factory.product_option_value_translation',
-                'sylius.repository.product_option_value',
-            ],
-        ],
-        'translatable_property' => [
-            'class' => TranslatablePropertyValueHandler::class,
-            'arguments' => [
-                'property_accessor',
-                'sylius.factory.product_translation',
-                'sylius.factory.product_variant_translation',
-                'sylius.translation_locale_provider.admin',
-            ],
-        ],
-        'generic_attribute' => [
-            'class' => AttributeValueHandler::class,
-            'arguments' => [
-                'sylius.repository.product_attribute',
-                'sylius.factory.product_attribute_value',
-                'sylius.translation_locale_provider.admin',
-            ],
-        ],
-        'file_attribute' => [
-            'class' => FileAttributeValueHandler::class,
-            'arguments' => [
-                'webgriffe_sylius_akeneo.api_client',
-                'filesystem',
-            ],
-        ],
-    ];
-
     /** @var array<string, array{class: string, arguments: string[]}> */
     private static array $valueHandlersTypesDefinitionsPrivate = [
         'channel_pricing' => [
@@ -194,9 +121,6 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         Assert::isArray($config['resources']);
 
         $this->registerResources('webgriffe_sylius_akeneo', 'doctrine/orm', $config['resources'], $container);
-        // The following registers plugin resources again with a different prefix. This is only for BC compatibility
-        // and could be removed in 2.x.
-        $this->registerResources('webgriffe_sylius_akeneo_plugin', 'doctrine/orm', $config['resources'], $container);
         $this->registerApiClientParameters($config['api_client'], $container);
 
         $loader->load('services.xml');
