@@ -56,6 +56,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
         }
 
         $hasBeenSet = false;
+        $hasAnyValueApplicable = false;
         $productVariant = $subject;
         Assert::isInstanceOf($productVariant, ProductVariantInterface::class);
         $product = $productVariant->getProduct();
@@ -75,6 +76,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
             if ($valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
                 continue;
             }
+            $hasAnyValueApplicable = true;
 
             /** @psalm-suppress MixedAssignment */
             $data = $valueData['data'];
@@ -100,7 +102,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
             }
         }
 
-        if (!$hasBeenSet) {
+        if (!$hasBeenSet && $hasAnyValueApplicable) {
             throw new RuntimeException(
                 sprintf(
                     'Property path "%s" is not writable on both %s and %s but it should be for at least once.',

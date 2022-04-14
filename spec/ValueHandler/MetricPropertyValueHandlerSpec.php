@@ -191,6 +191,27 @@ class MetricPropertyValueHandlerSpec extends ObjectBehavior
             );
     }
 
+    public function it_does_not_throw_if_provided_property_path_is_not_writeable_on_both_product_and_variant_but_the_value_is_not_related_to_any_channels(
+        PropertyAccessorInterface $propertyAccessor,
+        ProductVariantInterface $productVariant,
+        ProductInterface $product
+    ): void {
+        $propertyAccessor->isWritable($productVariant, self::PROPERTY_PATH)->willReturn(false);
+        $propertyAccessor->isWritable($product, self::PROPERTY_PATH)->willReturn(false);
+
+        $value = [
+            [
+                'scope' => 'other_ecommerce',
+                'locale' => 'it_IT',
+                'data' => ['amount' => '21.0000', 'unit' => 'KILOGRAM'],
+            ],
+        ];
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, $value);
+
+        $propertyAccessor->setValue($productVariant, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($product, self::PROPERTY_PATH, 21.0)->shouldNotHaveBeenCalled();
+    }
+
     public function it_skips_values_related_to_channels_that_are_not_associated_to_the_product(
         PropertyAccessorInterface $propertyAccessor,
         ProductVariantInterface $productVariant,
