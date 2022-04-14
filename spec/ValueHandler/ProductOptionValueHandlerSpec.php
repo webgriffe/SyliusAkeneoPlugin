@@ -400,4 +400,47 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
         $productOptionValueTranslationFactory->createNew()->shouldHaveBeenCalledOnce();
     }
+
+    public function it_supports_product_option_boolean_value(
+        ProductVariantInterface $productVariant,
+        ProductOptionValueInterface $productOptionValue,
+        ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
+        ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
+        ProductOptionInterface $productOption,
+        RepositoryInterface $productOptionValueRepository,
+        ApiClientInterface $apiClient,
+        FactoryInterface $productOptionValueTranslationFactory,
+        TranslatorInterface $translator
+    ): void {
+        $apiClient->findAttribute(self::OPTION_CODE)->willReturn(
+            [
+                'code' => self::OPTION_CODE,
+                'type' => 'pim_catalog_boolean'
+            ]
+        );
+        $value = [
+            [
+                'scope' => null,
+                'locale' => null,
+                'data' => true,
+            ],
+        ];
+        $translator->trans('sylius.ui.yes_label', [], null, 'en_US')->shouldBeCalledOnce()->willReturn('Yes');
+        $translator->trans('sylius.ui.yes_label', [], null, 'it_IT')->shouldBeCalledOnce()->willReturn('Si');
+        $productVariant->hasOptionValue($productOptionValue)->willReturn(false);
+        $productOptionValueRepository->findOneBy(['code' => 'option-code_1'])->willReturn(null);
+
+        $this->handle($productVariant, self::OPTION_CODE, $value);
+
+        $productOptionValue->setCode('option-code_1')->shouldHaveBeenCalled();
+        $productOptionValue->setOption($productOption)->shouldHaveBeenCalled();
+        $productOption->addValue($productOptionValue)->shouldHaveBeenCalled();
+        $englishProductOptionValueTranslation->setValue('Yes')->shouldHaveBeenCalled();
+        $italianProductOptionValueTranslation->setLocale('it_IT')->shouldHaveBeenCalled();
+        $italianProductOptionValueTranslation->setValue('Si')->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($englishProductOptionValueTranslation)->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($italianProductOptionValueTranslation)->shouldHaveBeenCalled();
+        $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
+        $productOptionValueTranslationFactory->createNew()->shouldHaveBeenCalledOnce();
+    }
 }
