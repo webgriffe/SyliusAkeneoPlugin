@@ -148,6 +148,11 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 $this->handleMetricOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
 
                 break;
+            case 'pim_catalog_boolean':
+                Assert::boolean($akeneoValueData);
+                $this->handleBooleanOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
+
+                break;
             default:
                 throw new LogicException(sprintf('The Akeneo attribute type "%s" is not supported from the "%s"', $attributeType, self::class));
         }
@@ -237,6 +242,46 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             $label = $floatAmount . ' ' . $unit;
             if ($this->translator !== null) {
                 $label = $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
+            }
+            $optionValueTranslation = $optionValue->getTranslation($localeCode);
+            if ($optionValueTranslation->getLocale() !== $localeCode) {
+                /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
+                $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
+                $optionValueTranslation->setLocale($localeCode);
+            }
+            $optionValueTranslation->setValue($label);
+            if (!$optionValue->hasTranslation($optionValueTranslation)) {
+                $optionValue->addTranslation($optionValueTranslation);
+            }
+        }
+        if (!$productVariant->hasOptionValue($optionValue)) {
+            $productVariant->addOptionValue($optionValue);
+        }
+    }
+
+    private function handleBooleanOption(ProductOptionInterface $productOption, string $optionCode, bool $akeneoDataValue, ProductInterface $product, ProductVariantInterface $productVariant): void
+    {
+        $optionValueCode = $optionCode . '_' . $akeneoDataValue;
+
+        $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
+
+        /** @var string[] $locales */
+        $locales = [];
+        if ($this->translationLocaleProvider !== null) {
+            $locales = $this->translationLocaleProvider->getDefinedLocalesCodes();
+        } else {
+            foreach ($product->getTranslations() as $translation) {
+                $locale = $translation->getLocale();
+                if ($locale === null) {
+                    continue;
+                }
+                $locales[] = $locale;
+            }
+        }
+        foreach ($locales as $localeCode) {
+            $label = (string) $akeneoDataValue;
+            if ($this->translator !== null) {
+                $label = $akeneoDataValue ? $this->translator->trans('sylius.ui.yes_label', [], null, $localeCode) : $this->translator->trans('sylius.ui.no_label', [], null, $localeCode);
             }
             $optionValueTranslation = $optionValue->getTranslation($localeCode);
             if ($optionValueTranslation->getLocale() !== $localeCode) {
