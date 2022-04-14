@@ -200,7 +200,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
 
     public function it_throws_an_exception_during_handle_if_attribute_option_does_not_exists_on_akeneo(
         ProductVariantInterface $productVariant,
-        ApiClientInterface $apiClient,
+        ApiClientInterface $apiClient
     ): void {
         $value = [
             [
