@@ -225,33 +225,14 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
         /** @var string[] $locales */
-        $locales = [];
-        if ($this->translationLocaleProvider !== null) {
-            $locales = $this->translationLocaleProvider->getDefinedLocalesCodes();
-        } else {
-            foreach ($product->getTranslations() as $translation) {
-                $locale = $translation->getLocale();
-                if ($locale === null) {
-                    continue;
-                }
-                $locales[] = $locale;
-            }
-        }
+        $locales = $this->getLocaleCodes($product);
+
         foreach ($locales as $localeCode) {
             $label = $floatAmount . ' ' . $unit;
             if ($this->translator !== null) {
                 $label = $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
             }
-            $optionValueTranslation = $optionValue->getTranslation($localeCode);
-            if ($optionValueTranslation->getLocale() !== $localeCode) {
-                /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
-                $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
-                $optionValueTranslation->setLocale($localeCode);
-            }
-            $optionValueTranslation->setValue($label);
-            if (!$optionValue->hasTranslation($optionValueTranslation)) {
-                $optionValue->addTranslation($optionValueTranslation);
-            }
+            $optionValue = $this->addOptionValueTranslation($optionValue, $localeCode, $label);
         }
         if (!$productVariant->hasOptionValue($optionValue)) {
             $productVariant->addOptionValue($optionValue);
@@ -265,33 +246,13 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
         /** @var string[] $locales */
-        $locales = [];
-        if ($this->translationLocaleProvider !== null) {
-            $locales = $this->translationLocaleProvider->getDefinedLocalesCodes();
-        } else {
-            foreach ($product->getTranslations() as $translation) {
-                $locale = $translation->getLocale();
-                if ($locale === null) {
-                    continue;
-                }
-                $locales[] = $locale;
-            }
-        }
+        $locales = $this->getLocaleCodes($product);
         foreach ($locales as $localeCode) {
             $label = (string) $akeneoDataValue;
             if ($this->translator !== null) {
                 $label = $akeneoDataValue ? $this->translator->trans('sylius.ui.yes_label', [], null, $localeCode) : $this->translator->trans('sylius.ui.no_label', [], null, $localeCode);
             }
-            $optionValueTranslation = $optionValue->getTranslation($localeCode);
-            if ($optionValueTranslation->getLocale() !== $localeCode) {
-                /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
-                $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
-                $optionValueTranslation->setLocale($localeCode);
-            }
-            $optionValueTranslation->setValue($label);
-            if (!$optionValue->hasTranslation($optionValueTranslation)) {
-                $optionValue->addTranslation($optionValueTranslation);
-            }
+            $optionValue = $this->addOptionValueTranslation($optionValue, $localeCode, $label);
         }
         if (!$productVariant->hasOptionValue($optionValue)) {
             $productVariant->addOptionValue($optionValue);
@@ -332,6 +293,43 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             $optionValue->setCode($optionValueCode);
             $optionValue->setOption($productOption);
             $productOption->addValue($optionValue);
+        }
+
+        return $optionValue;
+    }
+
+    private function getLocaleCodes(ProductInterface $product): array
+    {
+        $locales = [];
+        if ($this->translationLocaleProvider !== null) {
+            $locales = $this->translationLocaleProvider->getDefinedLocalesCodes();
+        } else {
+            foreach ($product->getTranslations() as $translation) {
+                $locale = $translation->getLocale();
+                if ($locale === null) {
+                    continue;
+                }
+                $locales[] = $locale;
+            }
+        }
+
+        return $locales;
+    }
+
+    private function addOptionValueTranslation(
+        ProductOptionValueInterface $optionValue,
+        string $localeCode,
+        string $label
+    ): ProductOptionValueInterface {
+        $optionValueTranslation = $optionValue->getTranslation($localeCode);
+        if ($optionValueTranslation->getLocale() !== $localeCode) {
+            /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
+            $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
+            $optionValueTranslation->setLocale($localeCode);
+        }
+        $optionValueTranslation->setValue($label);
+        if (!$optionValue->hasTranslation($optionValueTranslation)) {
+            $optionValue->addTranslation($optionValueTranslation);
         }
 
         return $optionValue;
