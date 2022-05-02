@@ -385,11 +385,11 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => 'CUBIC_CENTIMETER', 'amount' => 250.0000], null, 'en_US')->shouldBeCalledOnce()->willReturn('250 cm3');
         $translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => 'CUBIC_CENTIMETER', 'amount' => 250.0000], null, 'it_IT')->shouldBeCalledOnce()->willReturn('250 cm3');
         $productVariant->hasOptionValue($productOptionValue)->willReturn(false);
-        $productOptionValueRepository->findOneBy(['code' => 'option-code_250.0000_CUBIC_CENTIMETER'])->willReturn(null);
+        $productOptionValueRepository->findOneBy(['code' => 'option-code_2500000_CUBIC_CENTIMETER'])->willReturn(null);
 
         $this->handle($productVariant, self::OPTION_CODE, $value);
 
-        $productOptionValue->setCode('option-code_250.0000_CUBIC_CENTIMETER')->shouldHaveBeenCalled();
+        $productOptionValue->setCode('option-code_2500000_CUBIC_CENTIMETER')->shouldHaveBeenCalled();
         $productOptionValue->setOption($productOption)->shouldHaveBeenCalled();
         $productOption->addValue($productOptionValue)->shouldHaveBeenCalled();
         $englishProductOptionValueTranslation->setValue('250 cm3')->shouldHaveBeenCalled();
