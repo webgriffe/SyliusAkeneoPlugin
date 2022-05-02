@@ -172,7 +172,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
     private function handleSelectOption(ProductOptionInterface $productOption, string $optionCode, string $akeneoValue, ProductInterface $product, ProductVariantInterface $productVariant): void
     {
-        $optionValueCode = $optionCode . '_' . $akeneoValue;
+        $optionValueCode = $this->createOptionValueCode($optionCode, $akeneoValue);
 
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
@@ -220,7 +220,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             throw new LogicException('Unit key not found');
         }
         $unit = (string) $akeneoDataValue['unit'];
-        $optionValueCode = $optionCode . '_' . $floatAmount . '_' . $unit;
+        $optionValueCode = $this->createOptionValueCode($optionCode, $floatAmount, $unit);
 
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
@@ -241,7 +241,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
     private function handleBooleanOption(ProductOptionInterface $productOption, string $optionCode, bool $akeneoDataValue, ProductInterface $product, ProductVariantInterface $productVariant): void
     {
-        $optionValueCode = $optionCode . '_' . $akeneoDataValue;
+        $optionValueCode = $this->createOptionValueCode($optionCode, (string) $akeneoDataValue);
 
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
@@ -333,5 +333,14 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
 
         return $optionValue;
+    }
+
+    private function createOptionValueCode(string ...$pieces): string
+    {
+        $slugifiedPieces = array_map(static function (string $word): ?string {
+            return preg_replace('/[^a-z0-9\-_]+/i', '', $word);
+        }, $pieces);
+
+        return implode('_', $slugifiedPieces);
     }
 }
