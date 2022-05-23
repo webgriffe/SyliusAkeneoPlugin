@@ -337,8 +337,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
     private function createOptionValueCode(string ...$pieces): string
     {
-        $slugifiedPieces = array_map(static function (string $word): ?string {
-            return preg_replace('/[^a-z0-9\-_]+/i', '', $word);
+        $slugifiedPieces = array_map(static function (string $word): string {
+            return str_replace(['.', ','], '', $word);
         }, $pieces);
 
         return implode('_', $slugifiedPieces);
