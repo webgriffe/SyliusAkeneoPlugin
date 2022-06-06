@@ -6,6 +6,8 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Akeneo\Pim\ApiClient\Exception\HttpException;
+use InvalidArgumentException;
+use LogicException;
 use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -16,6 +18,7 @@ use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -23,13 +26,16 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 {
     private ?TranslationLocaleProviderInterface $translationLocaleProvider;
 
+    private ?TranslatorInterface $translator;
+
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private ProductOptionRepositoryInterface $productOptionRepository,
         private FactoryInterface $productOptionValueFactory,
         private FactoryInterface $productOptionValueTranslationFactory,
         private RepositoryInterface $productOptionValueRepository,
-        TranslationLocaleProviderInterface $translationLocaleProvider = null
+        TranslationLocaleProviderInterface $translationLocaleProvider = null,
+        TranslatorInterface $translator = null
     ) {
         if ($translationLocaleProvider === null) {
             trigger_deprecation(
@@ -41,6 +47,16 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             );
         }
         $this->translationLocaleProvider = $translationLocaleProvider;
+        if ($translator === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.15',
+                'Not passing a translator to %s is deprecated and will not be possible anymore in %s',
+                __CLASS__,
+                '2.0'
+            );
+        }
+        $this->translator = $translator;
     }
 
     /**
@@ -57,7 +73,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     public function handle($productVariant, string $optionCode, array $akeneoValue): void
     {
         if (!$productVariant instanceof ProductVariantInterface) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'This option value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
@@ -79,12 +95,62 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 )
             );
         }
-        /** @var string $partialValueCode */
-        $partialValueCode = $akeneoValue[0]['data'];
-        $fullValueCode = $optionCode . '_' . $partialValueCode;
 
         try {
-            $akeneoAttributeOption = $this->apiClient->getAttributeOptionApi()->get($optionCode, $partialValueCode);
+            $akeneoAttribute = $this->apiClient->getAttributeApi()->get($optionCode);
+        } catch (HttpException $e) {
+            $response = $e->getResponse();
+            if ($response->getStatusCode() === 404) {
+                throw new RuntimeException(
+                    sprintf(
+                        'Cannot handle option value on Akeneo product "%s", the option of the parent product "%s" is ' .
+                        '"%s". The attribute "%s" does not exists.',
+                        $productVariant->getCode(),
+                        $product->getCode(),
+                        $optionCode,
+                        $optionCode
+                    )
+                );
+            }
+
+            throw $e;
+        }
+        /** @var string|array|bool|int $akeneoValueData */
+        $akeneoValueData = $akeneoValue[0]['data'];
+
+        $productOption = $this->getProductOption($optionCode, $productVariant, $product);
+
+        /** @var string $attributeType */
+        $attributeType = $akeneoAttribute['type'];
+        switch ($attributeType) {
+            case 'pim_catalog_simpleselect':
+                Assert::string($akeneoValueData);
+                $this->handleSelectOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
+
+                break;
+            case 'pim_catalog_metric':
+                Assert::isArray($akeneoValueData);
+                $this->handleMetricOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
+
+                break;
+            case 'pim_catalog_boolean':
+                Assert::boolean($akeneoValueData);
+                $this->handleBooleanOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
+
+                break;
+            default:
+                throw new LogicException(sprintf('The Akeneo attribute type "%s" is not supported from the "%s"', $attributeType, self::class));
+        }
+    }
+
+    private function handleSelectOption(ProductOptionInterface $productOption, string $optionCode, string $akeneoValue, ProductInterface $product, ProductVariantInterface $productVariant): void
+    {
+        $optionValueCode = $this->createOptionValueCode($optionCode, $akeneoValue);
+
+        $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
+
+        try {
+            $akeneoAttributeOption = $this->apiClient->getAttributeOptionApi()->get($optionCode, $akeneoValue);
         } catch (HttpException $e) {
             $response = $e->getResponse();
             if ($response->getStatusCode() === 404) {
@@ -95,39 +161,12 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                         $productVariant->getCode(),
                         $product->getCode(),
                         $optionCode,
-                        $partialValueCode
+                        $akeneoValue
                     )
                 );
             }
 
             throw $e;
-        }
-        /** @var ProductOptionInterface|null $productOption */
-        $productOption = $this->productOptionRepository->findOneBy(['code' => $optionCode]);
-        // TODO productOptionRepository could be removed by getting product option from product with something like:
-        //        $productOption = $product->getOptions()->filter(
-        //            function (ProductOptionInterface $productOption) use ($optionCode) {
-        //                return $productOption->getCode() === $optionCode;
-        //            }
-        //        )->first();
-        if ($productOption === null) {
-            throw new RuntimeException(
-                sprintf(
-                    'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',
-                    $productVariant->getCode(),
-                    $optionCode,
-                    $product->getCode()
-                )
-            );
-        }
-        /** @var ProductOptionValueInterface|null $optionValue */
-        $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $fullValueCode]);
-        if (!$optionValue instanceof ProductOptionValueInterface) {
-            /** @var ProductOptionValueInterface $optionValue */
-            $optionValue = $this->productOptionValueFactory->createNew();
-            $optionValue->setCode($fullValueCode);
-            $optionValue->setOption($productOption);
-            $productOption->addValue($optionValue);
         }
         foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
             if ($this->translationLocaleProvider !== null &&
@@ -148,6 +187,140 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         if (!$productVariant->hasOptionValue($optionValue)) {
             $productVariant->addOptionValue($optionValue);
         }
+    }
+
+    private function handleMetricOption(ProductOptionInterface $productOption, string $optionCode, array $akeneoDataValue, ProductInterface $product, ProductVariantInterface $productVariant): void
+    {
+        if (!array_key_exists('amount', $akeneoDataValue)) {
+            throw new LogicException('Amount key not found');
+        }
+        $floatAmount = (string) ($akeneoDataValue['amount']);
+        if (!array_key_exists('unit', $akeneoDataValue)) {
+            throw new LogicException('Unit key not found');
+        }
+        $unit = (string) $akeneoDataValue['unit'];
+        $optionValueCode = $this->createOptionValueCode($optionCode, $floatAmount, $unit);
+
+        $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
+
+        /** @var string[] $locales */
+        $locales = $this->getLocaleCodes($product);
+
+        foreach ($locales as $localeCode) {
+            $label = $floatAmount . ' ' . $unit;
+            if ($this->translator !== null) {
+                $label = $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
+            }
+            $optionValue = $this->addOptionValueTranslation($optionValue, $localeCode, $label);
+        }
+        if (!$productVariant->hasOptionValue($optionValue)) {
+            $productVariant->addOptionValue($optionValue);
+        }
+    }
+
+    private function handleBooleanOption(ProductOptionInterface $productOption, string $optionCode, bool $akeneoDataValue, ProductInterface $product, ProductVariantInterface $productVariant): void
+    {
+        $optionValueCode = $this->createOptionValueCode($optionCode, (string) $akeneoDataValue);
+
+        $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
+
+        /** @var string[] $locales */
+        $locales = $this->getLocaleCodes($product);
+        foreach ($locales as $localeCode) {
+            $label = (string) $akeneoDataValue;
+            if ($this->translator !== null) {
+                $label = $akeneoDataValue ? $this->translator->trans('sylius.ui.yes_label', [], null, $localeCode) : $this->translator->trans('sylius.ui.no_label', [], null, $localeCode);
+            }
+            $optionValue = $this->addOptionValueTranslation($optionValue, $localeCode, $label);
+        }
+        if (!$productVariant->hasOptionValue($optionValue)) {
+            $productVariant->addOptionValue($optionValue);
+        }
+    }
+
+    private function getProductOption(string $optionCode, ProductVariantInterface $productVariant, ProductInterface $product): ProductOptionInterface
+    {
+        /** @var ProductOptionInterface|null $productOption */
+        $productOption = $this->productOptionRepository->findOneBy(['code' => $optionCode]);
+        // TODO productOptionRepository could be removed by getting product option from product with something like:
+        //        $productOption = $product->getOptions()->filter(
+        //            function (ProductOptionInterface $productOption) use ($optionCode) {
+        //                return $productOption->getCode() === $optionCode;
+        //            }
+        //        )->first();
+        if ($productOption === null) {
+            throw new RuntimeException(
+                sprintf(
+                    'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',
+                    (string) $productVariant->getCode(),
+                    $optionCode,
+                    (string) $product->getCode()
+                )
+            );
+        }
+
+        return $productOption;
+    }
+
+    private function getOrCreateProductOptionValue(string $optionValueCode, ProductOptionInterface $productOption): ProductOptionValueInterface
+    {
+        /** @var ProductOptionValueInterface|null $optionValue */
+        $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $optionValueCode]);
+        if (!$optionValue instanceof ProductOptionValueInterface) {
+            /** @var ProductOptionValueInterface $optionValue */
+            $optionValue = $this->productOptionValueFactory->createNew();
+            $optionValue->setCode($optionValueCode);
+            $optionValue->setOption($productOption);
+            $productOption->addValue($optionValue);
+        }
+
+        return $optionValue;
+    }
+
+    private function getLocaleCodes(ProductInterface $product): array
+    {
+        $locales = [];
+        if ($this->translationLocaleProvider !== null) {
+            $locales = $this->translationLocaleProvider->getDefinedLocalesCodes();
+        } else {
+            foreach ($product->getTranslations() as $translation) {
+                $locale = $translation->getLocale();
+                if ($locale === null) {
+                    continue;
+                }
+                $locales[] = $locale;
+            }
+        }
+
+        return $locales;
+    }
+
+    private function addOptionValueTranslation(
+        ProductOptionValueInterface $optionValue,
+        string $localeCode,
+        string $label
+    ): ProductOptionValueInterface {
+        $optionValueTranslation = $optionValue->getTranslation($localeCode);
+        if ($optionValueTranslation->getLocale() !== $localeCode) {
+            /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
+            $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
+            $optionValueTranslation->setLocale($localeCode);
+        }
+        $optionValueTranslation->setValue($label);
+        if (!$optionValue->hasTranslation($optionValueTranslation)) {
+            $optionValue->addTranslation($optionValueTranslation);
+        }
+
+        return $optionValue;
+    }
+
+    private function createOptionValueCode(string ...$pieces): string
+    {
+        $slugifiedPieces = array_map(static function (string $word): string {
+            return str_replace(['.', ','], '', $word);
+        }, $pieces);
+
+        return implode('_', $slugifiedPieces);
     }
 
     private function isVariantOption(ProductVariantInterface $productVariant, string $attribute): bool

@@ -146,6 +146,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 '$productOptionValueTranslationFactory' => 'sylius.factory.product_option_value_translation',
                 '$productOptionValueRepository' => 'sylius.repository.product_option_value',
                 '$translationLocaleProvider' => 'sylius.translation_locale_provider.admin',
+                '$translator' => 'translator',
             ],
         ],
         'translatable_property' => [
