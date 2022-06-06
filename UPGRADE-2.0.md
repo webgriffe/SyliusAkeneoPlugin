@@ -57,8 +57,9 @@ Removed all deprecations of the v1.x releases.
  - [BC] The parameter $valueConverter of Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler#__construct() changed from Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface|null to a non-contravariant Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface
  - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler#__construct() increased from 4 to 5
  - [BC] The parameter $propertyAccessor of Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler#__construct() changed from Symfony\Component\PropertyAccess\PropertyAccessorInterface|null to a non-contravariant Symfony\Component\PropertyAccess\PropertyAccessorInterface
- - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler#__construct() increased from 5 to 6
+ - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler#__construct() increased from 5 to 7
  - [BC] The parameter $translationLocaleProvider of Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler#__construct() changed from Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface|null to a non-contravariant Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface
+ - [BC] The parameter $translator of Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler#__construct() changed from Symfony\Contracts\Translation\TranslatorInterface|null to a non-contravariant Symfony\Contracts\Translation\TranslatorInterface
  
 ##### Removed
  - [BC] Property Webgriffe\SyliusAkeneoPlugin\DependencyInjection\WebgriffeSyliusAkeneoExtension::$valueHandlersTypesDefinitions was removed
