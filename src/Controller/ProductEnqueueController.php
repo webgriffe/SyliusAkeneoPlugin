@@ -17,39 +17,16 @@ use Webmozart\Assert\Assert;
 
 final class ProductEnqueueController extends AbstractController
 {
-    private ?TranslatorInterface $translator;
-
-    /**
-     * ProductEnqueueController constructor.
-     */
     public function __construct(
         private QueueItemRepositoryInterface $queueItemRepository,
         private ProductRepositoryInterface $productRepository,
         private UrlGeneratorInterface $urlGenerator,
-        TranslatorInterface $translator = null
+        private TranslatorInterface $translator
     ) {
-        if ($translator === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                '1.12',
-                'Not passing a translator to "%s" is deprecated and will be removed in %s.',
-                self::class,
-                '2.0'
-            );
-        }
-        $this->translator = $translator;
     }
 
     public function enqueueAction(int $productId): Response
     {
-        if ($this->translator === null) {
-            /**
-             * @psalm-suppress DeprecatedMethod
-             */
-            $translator = $this->get('translator');
-            Assert::isInstanceOf($translator, TranslatorInterface::class);
-            $this->translator = $translator;
-        }
         /** @var ProductInterface|null $product */
         $product = $this->productRepository->find($productId);
         if ($product === null) {

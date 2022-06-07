@@ -49,7 +49,7 @@ class ValueConverterSpec extends ObjectBehavior
             ]
         );
 
-        $this->beConstructedWith();
+        $this->beConstructedWith($translator);
     }
 
     function it_is_initializable()
@@ -91,24 +91,9 @@ class ValueConverterSpec extends ObjectBehavior
         ]);
     }
 
-    function it_converts_metric_value_from_akeneo_to_text_value_not_translated_when_translator_is_not_injected(
-        AttributeInterface $textAttribute
-    ) {
-        $this->convert(
-            $textAttribute,
-            [
-                'amount' => 23.0000,
-                'unit' => 'INCH',
-            ],
-            'it'
-        )->shouldReturn('23 INCH');
-    }
-
     function it_converts_metric_value_from_akeneo_to_text_value_translated_when_translator_is_injected(
-        TranslatorInterface $translator,
         AttributeInterface $textAttribute
     ) {
-        $this->beConstructedWith($translator);
         $this->convert(
             $textAttribute,
             [

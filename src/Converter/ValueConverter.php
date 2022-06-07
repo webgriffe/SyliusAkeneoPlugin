@@ -11,24 +11,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class ValueConverter implements ValueConverterInterface
 {
-    private ?TranslatorInterface $translator;
-
-    /**
-     * ValueConverter constructor.
-     */
     public function __construct(
-        TranslatorInterface $translator = null
+        private TranslatorInterface $translator
     ) {
-        if ($translator === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                '1.8',
-                'Not passing a translator to "%s" is deprecated and will be removed in %s.',
-                self::class,
-                '2.0'
-            );
-        }
-        $this->translator = $translator;
     }
 
     public function convert(AttributeInterface $attribute, array|bool|int|string $value, string $localeCode): array|bool|int|string
@@ -44,9 +29,6 @@ final class ValueConverter implements ValueConverterInterface
                     throw new \LogicException('Unit key not found');
                 }
                 $unit = (string) $value['unit'];
-                if ($this->translator === null) {
-                    return $floatAmount . ' ' . $unit;
-                }
 
                 return $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
             }

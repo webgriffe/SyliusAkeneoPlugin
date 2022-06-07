@@ -18,32 +18,18 @@ use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
-use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter;
 use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
 final class AttributeValueHandler implements ValueHandlerInterface
 {
-    private ValueConverterInterface $valueConverter;
-
     public function __construct(
         private RepositoryInterface $attributeRepository,
         private FactoryInterface $factory,
         private TranslationLocaleProviderInterface $localeProvider,
-        ValueConverterInterface $valueConverter = null
+        private ValueConverterInterface $valueConverter
     ) {
-        if ($valueConverter === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                '1.8',
-                'Not passing a value converter to "%s" is deprecated and will be removed in %s.',
-                self::class,
-                '2.0'
-            );
-            $valueConverter = new ValueConverter();
-        }
-        $this->valueConverter = $valueConverter;
     }
 
     /**
