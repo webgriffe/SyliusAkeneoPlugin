@@ -6,6 +6,7 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Messenger;
 
 use Behat\Behat\Context\Context;
 use InvalidArgumentException;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Throwable;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
@@ -32,42 +33,39 @@ final class MessengerContext implements Context
     }
 
     /**
-     * @Then /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer should not be in the Akeneo queue$/
+     * @Then the queue item with identifier :identifier for the :importer importer should not be in the Akeneo queue
      */
-    public function theProductShouldNotBeInTheAkeneoQueue(string $identifier, string $importer): void
+    public function theQueueItemWithIdentifierForTheImporterShouldNotBeInTheAkeneoQueue(string $identifier, string $importer): void
     {
-        Assert::null(
-            $this->queueItemRepository->findOneBy(['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier]),
+        Assert::null($this->getEnvelopeByImporterAndIdentifier($importer, $identifier),
         );
     }
 
     /**
-     * @Then /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer should be in the Akeneo queue$/
+     * @Then the queue item with identifier :identifier for the :importer importer should be in the Akeneo queue
      */
-    public function theProductShouldBeInTheAkeneoQueue(string $identifier, string $importer): void
+    public function theQueueItemWithIdentifierForTheImporterShouldBeInTheAkeneoQueue(string $identifier, string $importer): void
     {
         Assert::isInstanceOf(
-            $this->queueItemRepository->findOneBy(
-                ['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier],
-            ),
-            QueueItemInterface::class,
+            $this->getEnvelopeByImporterAndIdentifier($importer, $identifier)->getMessage(),
+            ItemImport::class
         );
     }
 
     /**
-     * @Then /^there should be no item in the queue for the "([^"]*)" importer/
+     * @Then there should be no item in the queue for the :importer importer
      */
     public function thereShouldBeNoProductInTheAkeneoQueue(string $importer): void
     {
-        Assert::isEmpty($this->queueItemRepository->findBy(['akeneoEntity' => $importer]));
+        Assert::isEmpty($this->getEnvelopesByImporter($importer));
     }
 
     /**
-     * @Then /^there should be no item in the Akeneo queue$/
+     * @Then there should be no item in the Akeneo queue
      */
     public function thereShouldBeNoItemInTheAkeneoQueue(): void
     {
-        Assert::isEmpty($this->queueItemRepository->findAll());
+        Assert::isEmpty($this->transport->get());
     }
 
     /**
@@ -86,17 +84,17 @@ final class MessengerContext implements Context
      */
     public function thereShouldBeItemsForTheImporterInTheAkeneoQueue(int $count, string $importer): void
     {
-        $items = $this->queueItemRepository->findBy(['akeneoEntity' => $importer]);
+        $items = $this->getEnvelopesByImporter($importer);
         Assert::count($items, $count);
     }
 
     /**
-     * @Then /^there should be items for the "([^"]*)" importer only in the Akeneo queue$/
+     * @Then there should be items for the :importer importer only in the Akeneo queue
      */
     public function thereShouldBeItemsForTheImporterOnlyInTheAkeneoQueue(string $importer): void
     {
-        $importerItems = $this->queueItemRepository->findBy(['akeneoEntity' => $importer]);
-        Assert::count($this->queueItemRepository->findAll(), count($importerItems));
+        $importerItems = $this->getEnvelopesByImporter($importer);
+        Assert::count($this->transport->get(), count($importerItems));
     }
 
     private function getQueueItemByImporterAndIdentifier(string $importer, string $identifier): ItemImport
@@ -142,5 +140,29 @@ final class MessengerContext implements Context
             return $failedMessage->getAkeneoIdentifier() === $identifier && $failedMessage->getAkeneoEntity() === $importer;
         });
         Assert::count($failedMessages, 1);
+    }
+
+    private function getEnvelopesByImporter(string $importer): array
+    {
+        return array_filter($this->transport->get(), static function (Envelope $envelope) use ($importer): bool {
+            /** @var ItemImport|mixed $message */
+            $message = $envelope->getMessage();
+            return $message instanceof ItemImport && $message->getAkeneoEntity() === $importer;
+        });
+    }
+
+    private function getEnvelopeByImporterAndIdentifier(string $importer, string $identifier): ?Envelope
+    {
+        $envelopes = array_filter($this->transport->get(), static function (Envelope $envelope) use ($importer, $identifier): bool {
+            /** @var ItemImport|mixed $message */
+            $message = $envelope->getMessage();
+            return $message instanceof ItemImport && $message->getAkeneoEntity() === $importer && $message->getAkeneoIdentifier() === $identifier;
+        });
+        $envelope = reset($envelopes);
+        if (!$envelope instanceof Envelope) {
+            return null;
+        }
+
+        return $envelope;
     }
 }

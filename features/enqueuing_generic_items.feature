@@ -26,13 +26,6 @@ Feature: Enqueuing items
     Then I should be notified that the since date file does not exists
 
   @cli
-  Scenario: Avoiding to enqueue two times the same item if it has not been imported yet
-    Given there is a product "product-1" updated at "2020-01-20 22:23:13" on Akeneo
-    And there is one item to import with identifier "product-1" for the "Product" importer in the Akeneo queue
-    When I enqueue items for all importers modified since date "2020-01-20 01:00:00"
-    Then there should be only one queue item with identifier "product-1" for the "Product" importer in the Akeneo queue
-
-  @cli
   Scenario: Enqueuing all items regardless last modified date
     Given there are 3 products on Akeneo
     When I enqueue all items for all importers
