@@ -11,18 +11,17 @@ use Sylius\Behat\Page\Admin\Product\IndexPageInterface;
 use Sylius\Behat\Service\Helper\JavaScriptTestHelperInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Component\Core\Model\ProductInterface;
-use Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPageInterface as QueueItemsIndexPageInterface;
 use Webmozart\Assert\Assert;
 
 final class ManagingProductsContext implements Context
 {
     private const SCHEDULE_AKENEO_PIM_IMPORT = 'Schedule Akeneo PIM import';
 
-    /**
-     * ProductItems constructor.
-     */
-    public function __construct(private IndexPageInterface $indexPage, private JavaScriptTestHelperInterface $testHelper, private NotificationCheckerInterface $notificationChecker, private QueueItemsIndexPageInterface $queueItemsIndexPage)
-    {
+    public function __construct(
+        private IndexPageInterface $indexPage,
+        private JavaScriptTestHelperInterface $testHelper,
+        private NotificationCheckerInterface $notificationChecker
+    ) {
     }
 
     /**

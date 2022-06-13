@@ -69,10 +69,6 @@
             <tag name="kernel.event_subscriber" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.event_listener.admin_menu_listener" class="Webgriffe\SyliusAkeneoPlugin\Menu\AdminMenuListener">
-            <tag name="kernel.event_listener" event="sylius.menu.admin.main" method="addAdminMenuItems" />
-        </service>
-
         <!-- Product Importer -->
         <service id="webgriffe_sylius_akeneo.product.taxons_resolver" class="Webgriffe\SyliusAkeneoPlugin\Product\AlreadyExistingTaxonsResolver">
             <argument type="service" id="sylius.repository.taxon" />
