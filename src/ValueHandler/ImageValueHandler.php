@@ -15,7 +15,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -25,7 +25,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         private FactoryInterface $productImageFactory,
         private RepositoryInterface $productImageRepository,
         private AkeneoPimClientInterface $apiClient,
-        private TemporaryFilesManager $temporaryFilesManager,
+        private TemporaryFilesManagerInterface $temporaryFilesManager,
         private string $akeneoAttributeCode,
         private string $syliusImageType,
     ) {
