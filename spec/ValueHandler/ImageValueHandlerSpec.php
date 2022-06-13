@@ -19,6 +19,7 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler;
 
 class ImageValueHandlerSpec extends ObjectBehavior
@@ -45,7 +46,8 @@ class ImageValueHandlerSpec extends ObjectBehavior
         ResponseInterface $downloadResponse,
         StreamInterface $responseBody,
         ProductVariantInterface $productVariant,
-        ProductInterface $product
+        ProductInterface $product,
+        TemporaryFilesManagerInterface $temporaryFilesManager,
     ): void {
         $productImageFactory->createNew()->willReturn($productImage);
         $apiClient->getProductMediaFileApi()->willReturn($productMediaFileApi);
@@ -66,10 +68,12 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
             ->willReturn(new ArrayCollection([]));
+        $temporaryFilesManager->generateTemporaryFilePath()->willReturn('tempfile');
         $this->beConstructedWith(
             $productImageFactory,
             $productImageRepository,
             $apiClient,
+            $temporaryFilesManager,
             self::AKENEO_ATTRIBUTE_CODE,
             self::SYLIUS_IMAGE_TYPE
         );

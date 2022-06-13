@@ -17,6 +17,7 @@ use Sylius\Component\Core\Model\Channel;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\InvalidArgumentException;
@@ -31,7 +32,8 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem,
         ProductVariantInterface $productVariant,
-        ProductInterface $product
+        ProductInterface $product,
+        TemporaryFilesManagerInterface $temporaryFilesManager,
     ): void {
         $commerceChannel = new Channel();
         $commerceChannel->setCode('ecommerce');
@@ -43,7 +45,8 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $apiClient->getProductMediaFileApi()->willReturn($productMediaFileApi);
         $productMediaFileApi->download(Argument::type('string'))->willReturn(new Response(200, [], '__FILE_CONTENT__'));
         $attributeApi->get('allegato_1')->willReturn(['type' => 'pim_catalog_file']);
-        $this->beConstructedWith($apiClient, $filesystem, 'allegato_1', 'public/media/attachment/product/');
+        $temporaryFilesManager->generateTemporaryFilePath()->willReturn('tempfile');
+        $this->beConstructedWith($apiClient, $filesystem, $temporaryFilesManager, 'allegato_1', 'public/media/attachment/product/');
     }
 
     public function it_is_initializable(): void
