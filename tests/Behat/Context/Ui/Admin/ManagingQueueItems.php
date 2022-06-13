@@ -6,13 +6,11 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin;
 
 use Behat\Behat\Context\Context;
 use Sylius\Behat\Service\SharedStorageInterface;
-use Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPageInterface;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webmozart\Assert\Assert;
 
 final class ManagingQueueItems implements Context
 {
-    public function __construct(private IndexPageInterface $indexPage, private SharedStorageInterface $sharedStorage)
+    public function __construct(private SharedStorageInterface $sharedStorage)
     {
     }
 

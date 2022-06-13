@@ -47,7 +47,6 @@
         <service id="webgriffe_sylius_akeneo.behat.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext" />
 
         <service id="webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\ManagingQueueItems">
-            <argument type="service" id="webgriffe_sylius_akeneo.behat.page.admin.queue_item.index" />
             <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
@@ -55,11 +54,6 @@
             <argument type="service" id="sylius.behat.page.admin.product.index" />
             <argument type="service" id="sylius.behat.java_script_test_helper" />
             <argument type="service" id="sylius.behat.notification_checker" />
-            <argument type="service" id="webgriffe_sylius_akeneo.behat.page.admin.queue_item.index" />
-        </service>
-
-        <service id="webgriffe_sylius_akeneo.behat.page.admin.queue_item.index" parent="sylius.behat.page.admin.crud.index" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPage" public="false">
-            <argument type="string">webgriffe_sylius_akeneo_admin_queue_item_index</argument>
         </service>
     </services>
 </container>
