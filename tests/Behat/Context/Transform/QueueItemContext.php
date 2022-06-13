@@ -6,7 +6,6 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Transform;
 
 use Behat\Behat\Context\Context;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
-use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 use Webmozart\Assert\Assert;
 
 final class QueueItemContext implements Context

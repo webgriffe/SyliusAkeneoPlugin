@@ -9,7 +9,6 @@ use Sylius\Behat\Service\SharedStorageInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
-use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
 
 final class QueueContext implements Context
 {
