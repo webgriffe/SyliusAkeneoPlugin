@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli;
 
 use Behat\Behat\Context\Context;
+use DateTime;
 use org\bovigo\vfs\vfsStream;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -26,12 +27,12 @@ final class EnqueueCommandContext implements Context
     /**
      * @When I enqueue items for all importers modified since date :date
      */
-    public function iRunEnqueueCommandWithSinceDate(string $date): void
+    public function iRunEnqueueCommandWithSinceDate(DateTime $date): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => $date]);
+            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => $date->format('Y-m-d H:i:s')]);
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
