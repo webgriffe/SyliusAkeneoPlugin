@@ -121,6 +121,7 @@ final class MessengerContext implements Context
             if (!$message instanceof ItemImport) {
                 continue;
             }
+
             try {
                 $this->itemImportHandler->__invoke($message);
             } catch (Throwable $throwable) {
@@ -147,6 +148,7 @@ final class MessengerContext implements Context
         return array_filter($this->transport->get(), static function (Envelope $envelope) use ($importer): bool {
             /** @var ItemImport|mixed $message */
             $message = $envelope->getMessage();
+
             return $message instanceof ItemImport && $message->getAkeneoEntity() === $importer;
         });
     }
@@ -156,6 +158,7 @@ final class MessengerContext implements Context
         $envelopes = array_filter($this->transport->get(), static function (Envelope $envelope) use ($importer, $identifier): bool {
             /** @var ItemImport|mixed $message */
             $message = $envelope->getMessage();
+
             return $message instanceof ItemImport && $message->getAkeneoEntity() === $importer && $message->getAkeneoIdentifier() === $identifier;
         });
         $envelope = reset($envelopes);
