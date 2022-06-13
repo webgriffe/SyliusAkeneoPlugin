@@ -12,12 +12,14 @@ use Webgriffe\SyliusAkeneoPlugin\Command\ReconcileCommand;
 
 final class ReconcileCommandContext implements Context
 {
-    public function __construct(private KernelInterface $kernel, private ReconcileCommand $reconcileCommand)
-    {
+    public function __construct(
+        private KernelInterface $kernel,
+        private ReconcileCommand $reconcileCommand
+    ) {
     }
 
     /**
-     * @When /^I reconcile items$/
+     * @When I reconcile items
      */
     public function iReconcileItems(): void
     {

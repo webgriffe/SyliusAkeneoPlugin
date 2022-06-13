@@ -40,7 +40,7 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Then /^the product "([^"]*)" should not exists$/
+     * @Then the product :code should not exists
      */
     public function theProductShouldNotExists(string $code): void
     {

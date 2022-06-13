@@ -9,8 +9,6 @@ default:
                 - sylius.behat.context.setup.locale
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.behat.context.cli.consume_command
-
                 - webgriffe_sylius_akeneo.behat.context.db.product
                 - webgriffe_sylius_akeneo.behat.context.db.queue
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
@@ -26,8 +24,6 @@ default:
                 - sylius.behat.context.setup.product_association
                 - sylius.behat.context.setup.channel
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
-
-                - webgriffe_sylius_akeneo.behat.context.cli.consume_command
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
                 - webgriffe_sylius_akeneo.behat.context.db.queue
@@ -144,16 +140,3 @@ default:
 
             filters:
                 tags: "@managing_queue_items && @ui"
-
-        cli_cleaning_queue:
-            contexts:
-                - sylius.behat.context.hook.doctrine_orm
-
-                - sylius.behat.context.transform.shared_storage
-
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
-
-                - webgriffe_sylius_akeneo.behat.context.cli.queue_cleanup_command
-
-            filters:
-                tags: "@cleaning_queue && @cli"

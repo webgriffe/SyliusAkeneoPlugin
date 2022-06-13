@@ -45,7 +45,7 @@ final class FilesystemContext implements Context
     }
 
     /**
-     * @Then /^there should not be any temporary file in the temporary files directory$/
+     * @Then there should not be any temporary file in the temporary files directory
      */
     public function thereShouldNotBeAnyTemporaryFileInTheTemporaryFilesDirectory(): void
     {

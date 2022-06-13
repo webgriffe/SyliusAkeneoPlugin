@@ -16,12 +16,15 @@ use Webmozart\Assert\Assert;
 
 final class EnqueueCommandContext implements Context
 {
-    public function __construct(private KernelInterface $kernel, private EnqueueCommand $enqueueCommand, private SharedStorageInterface $sharedStorage)
-    {
+    public function __construct(
+        private KernelInterface $kernel,
+        private EnqueueCommand $enqueueCommand,
+        private SharedStorageInterface $sharedStorage
+    ) {
     }
 
     /**
-     * @When /^I enqueue items for all importers modified since date "([^"]+)"$/
+     * @When I enqueue items for all importers modified since date :date
      */
     public function iRunEnqueueCommandWithSinceDate(string $date): void
     {
@@ -37,7 +40,7 @@ final class EnqueueCommandContext implements Context
     /**
      * @When I enqueue items for all importers with no since date
      */
-    public function iRunEnqueueCommandWithNoSinceDate(): void
+    public function iEnqueueItemsForAllImportersWithNoSinceDate(): void
     {
         $commandTester = $this->getCommandTester();
 
@@ -49,9 +52,9 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that a since date is required$/
+     * @Then I should be notified that a since date is required
      */
-    public function theCommandShouldHaveThrownExceptionWithMessageContaining(): void
+    public function iShouldBeNotifiedThatASinceDateIsRequired(): void
     {
         /** @var Throwable|mixed $throwable */
         $throwable = $this->sharedStorage->get('command_exception');
@@ -63,7 +66,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When /^I enqueue items for all importers with invalid since date$/
+     * @When I enqueue items for all importers with invalid since date
      */
     public function iEnqueueItemsForAllImportersWithInvalidSinceDate(): void
     {
@@ -77,7 +80,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that the since date must be a valid date$/
+     * @Then I should be notified that the since date must be a valid date
      */
     public function iShouldBeNotifiedThatTheSinceDateMustBeAValidDate(): void
     {
@@ -88,7 +91,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When /^I enqueue items with since date specified from a not existent file$/
+     * @When I enqueue items with since date specified from a not existent file
      */
     public function iEnqueueItemsWithSinceDateSpecifiedFromANotExistentFile(): void
     {
@@ -103,7 +106,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that the since date file does not exists$/
+     * @Then I should be notified that the since date file does not exists
      */
     public function iShouldBeNotifiedThatTheSinceDateFileDoesNotExists(): void
     {
@@ -114,9 +117,9 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When /^I enqueue items for all importers modified since date specified from file "([^"]+)"$/
+     * @When I enqueue items for all importers modified since date specified from file :file
      */
-    public function iEnqueueItemsWithSinceDateSpecifiedFromFile(string $file): void
+    public function iEnqueueItemsForAllImportersModifiedSinceDateSpecifiedFromFile(string $file): void
     {
         $commandTester = $this->getCommandTester();
         $filepath = vfsStream::url('root/' . $file);
@@ -129,7 +132,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When /^I enqueue all items for all importers$/
+     * @When I enqueue all items for all importers
      */
     public function iEnqueueAllItemsForAllImporters(): void
     {
@@ -139,9 +142,9 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When /^I enqueue all items for the "([^"]+)" importer$/
+     * @When I enqueue all items for the :importer importer
      */
-    public function iEnqueueItemsModifiedSinceDateForTheImporter(string $importer): void
+    public function iEnqueueAllItemsForTheImporter(string $importer): void
     {
         $commandTester = $this->getCommandTester();
 
@@ -151,7 +154,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When /^I enqueue all items for a not existent importer$/
+     * @When I enqueue all items for a not existent importer
      */
     public function iEnqueueAllItemsForANotExistentImporter(): void
     {
@@ -167,7 +170,7 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @Then /^I should be notified that the importer does not exists$/
+     * @Then I should be notified that the importer does not exists
      */
     public function iShouldBeNotifiedThatTheImporterDoesNotExists(): void
     {

@@ -2,44 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Messenger;
 
 use Behat\Behat\Context\Context;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
-use Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface;
+use InvalidArgumentException;
+use Symfony\Component\Messenger\Transport\InMemoryTransport;
+use Throwable;
+use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
+use Webgriffe\SyliusAkeneoPlugin\MessageHandler\ItemImportHandler;
 use Webmozart\Assert\Assert;
 
-final class QueueContext implements Context
+final class MessengerContext implements Context
 {
-    public function __construct(private QueueItemRepositoryInterface $queueItemRepository)
-    {
-    }
+    private array $failedMessages = [];
 
-    /**
-     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has been marked as imported$/
-     */
-    public function theQueueItemForProductWithIdentifierHasBeenMarkedAsImported(string $identifier, string $importer): void
-    {
-        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
-        Assert::notNull($queueItem->getImportedAt());
-    }
-
-    /**
-     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has not been marked as imported$/
-     */
-    public function theQueueItemForProductWithIdentifierHasNotBeenMarkedAsImported(string $identifier, string $importer): void
-    {
-        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
-        Assert::null($queueItem->getImportedAt());
-    }
-
-    /**
-     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has an error message$/
-     */
-    public function theQueueItemHasAnErrorMessage(string $identifier, string $importer): void
-    {
-        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
-        Assert::notNull($queueItem->getErrorMessage());
+    public function __construct(
+        private InMemoryTransport $transport,
+        private ItemImportHandler $itemImportHandler,
+    ) {
     }
 
     /**
@@ -119,12 +99,48 @@ final class QueueContext implements Context
         Assert::count($this->queueItemRepository->findAll(), count($importerItems));
     }
 
-    private function getQueueItemByImporterAndIdentifier(string $importer, string $identifier): QueueItemInterface
+    private function getQueueItemByImporterAndIdentifier(string $importer, string $identifier): ItemImport
     {
-        /** @var QueueItemInterface|null $item */
-        $item = $this->queueItemRepository->findOneBy(['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier]);
-        Assert::isInstanceOf($item, QueueItemInterface::class);
+        $sentMessages = $this->transport->get();
+        foreach ($sentMessages as $sentMessage) {
+            /** @var ItemImport|object $message */
+            $message = $sentMessage->getMessage();
+            if ($message instanceof ItemImport && $message->getAkeneoEntity() === $importer && $message->getAkeneoIdentifier() === $identifier) {
+                return $message;
+            }
+        }
 
-        return $item;
+        throw new InvalidArgumentException(sprintf('No message founded for importer "%s" and identifier "%s".', $importer, $identifier));
+    }
+
+    /**
+     * @When I consume the messages
+     */
+    public function iConsumeTheMessages(): void
+    {
+        foreach ($this->transport->get() as $envelope) {
+            $message = $envelope->getMessage();
+            if (!$message instanceof ItemImport) {
+                continue;
+            }
+            try {
+                $this->itemImportHandler->__invoke($message);
+            } catch (Throwable $throwable) {
+                $this->failedMessages[] = $message;
+
+                continue;
+            }
+        }
+    }
+
+    /**
+     * @Then the item import message for :identifier identifier and the :importer importer should have failed
+     */
+    public function theItemImportMessageForProductShouldHaveFailed(string $identifier, string $importer): void
+    {
+        $failedMessages = array_filter($this->failedMessages, static function (ItemImport $failedMessage) use ($identifier, $importer): bool {
+            return $failedMessage->getAkeneoIdentifier() === $identifier && $failedMessage->getAkeneoEntity() === $importer;
+        });
+        Assert::count($failedMessages, 1);
     }
 }

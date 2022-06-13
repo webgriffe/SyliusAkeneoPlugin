@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use InvalidArgumentException;
 use SplFileInfo;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductImageInterface;
@@ -14,6 +15,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -23,6 +25,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         private FactoryInterface $productImageFactory,
         private RepositoryInterface $productImageRepository,
         private AkeneoPimClientInterface $apiClient,
+        private TemporaryFilesManager $temporaryFilesManager,
         private string $akeneoAttributeCode,
         private string $syliusImageType,
     ) {
@@ -42,7 +45,7 @@ final class ImageValueHandler implements ValueHandlerInterface
     public function handle($subject, string $attribute, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'This image value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
@@ -137,7 +140,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
         foreach ($value as $valueData) {
             if (!is_array($valueData)) {
-                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
+                throw new InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
             }
             // todo: we should throw here? it seeme that API won't never return an empty array
             if (!array_key_exists('data', $valueData)) {
@@ -145,7 +148,7 @@ final class ImageValueHandler implements ValueHandlerInterface
             }
 
             if (!array_key_exists('scope', $valueData)) {
-                throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
+                throw new InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
             }
             if ($valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
                 continue;
@@ -154,13 +157,13 @@ final class ImageValueHandler implements ValueHandlerInterface
             /** @psalm-suppress MixedAssignment */
             $data = $valueData['data'];
             if (!is_string($data) && null !== $data) {
-                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected a string or null value, got "%s".', gettype($data)));
+                throw new InvalidArgumentException(sprintf('Invalid Akeneo value data: expected a string or null value, got "%s".', gettype($data)));
             }
 
             return $data;
         }
 
-        throw new \InvalidArgumentException('Invalid Akeneo value data: cannot find the media code.');
+        throw new InvalidArgumentException('Invalid Akeneo value data: cannot find the media code.');
     }
 
     private function downloadFile(string $mediaCode): SplFileInfo
@@ -174,10 +177,14 @@ final class ImageValueHandler implements ValueHandlerInterface
 
             throw new HttpException((int) $responseResult['code'], (string) $responseResult['message']);
         }
-        $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
-        Assert::string($tempName);
+        $tempName = $this->generateTempFilePath();
         file_put_contents($tempName, $bodyContents);
 
         return new File($tempName);
+    }
+
+    private function generateTempFilePath(): string
+    {
+        return $this->temporaryFilesManager->generateTemporaryFilePath();
     }
 }

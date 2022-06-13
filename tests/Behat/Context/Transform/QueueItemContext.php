@@ -11,7 +11,7 @@ use Webmozart\Assert\Assert;
 
 final class QueueItemContext implements Context
 {
-    public function __construct(private QueueItemRepositoryInterface $queueItemRepository)
+    public function __construct()
     {
     }
 
