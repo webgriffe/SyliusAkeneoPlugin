@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\DependencyInjection;
 
-use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
-use Sylius\Component\Resource\Factory\Factory;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\QueueItemRepository;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItem;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 
 final class Configuration implements ConfigurationInterface
 {

@@ -7,6 +7,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Akeneo\Pim\ApiClient\Exception\HttpException;
 use InvalidArgumentException;
+use const JSON_THROW_ON_ERROR;
 use SplFileInfo;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
@@ -14,6 +15,7 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\Exception\HttpException as SymfonyHttpException;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -24,6 +26,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private Filesystem $filesystem,
+        private TemporaryFilesManagerInterface $temporaryFilesManager,
         private string $akeneoAttributeCode,
         private string $downloadPath,
     ) {
@@ -137,14 +140,18 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
         $bodyContents = $response->getBody()->getContents();
         if ($statusClass !== 2) {
             /** @var array $responseResult */
-            $responseResult = json_decode($bodyContents, true, 512, \JSON_THROW_ON_ERROR);
+            $responseResult = json_decode($bodyContents, true, 512, JSON_THROW_ON_ERROR);
 
             throw new SymfonyHttpException((int) $responseResult['code'], (string) $responseResult['message']);
         }
-        $tempName = tempnam(sys_get_temp_dir(), 'akeneo-');
-        Assert::string($tempName);
+        $tempName = $this->generateTempFilePath();
         file_put_contents($tempName, $bodyContents);
 
         return new File($tempName);
+    }
+
+    private function generateTempFilePath(): string
+    {
+        return $this->temporaryFilesManager->generateTemporaryFilePath();
     }
 }

@@ -65,8 +65,7 @@
             <argument>%webgriffe_sylius_akeneo.temporary_files_prefix%</argument>
         </service>
 
-        <service id="webgriffe_sylius_akeneo.event_subscriber.command" class="Webgriffe\SyliusAkeneoPlugin\EventSubscriber\CommandEventSubscriber">
-            <argument type="service" id="webgriffe_sylius_akeneo.temporary_file_manager" />
+        <service id="webgriffe_sylius_akeneo.event_subscriber.product" class="Webgriffe\SyliusAkeneoPlugin\EventSubscriber\ProductEventSubscriber">
             <tag name="kernel.event_subscriber" />
         </service>
 
@@ -139,5 +138,14 @@
         <service id="webgriffe_sylius_akeneo.converter.unit_measurement_value" class="Webgriffe\SyliusAkeneoPlugin\Converter\UnitMeasurementValueConverter">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
+
+        <service id="webgriffe_sylius_akeneo.message_handler.item_import"
+                 class="Webgriffe\SyliusAkeneoPlugin\MessageHandler\ItemImportHandler">
+            <argument type="service" id="webgriffe_sylius_akeneo.importer_registry"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.temporary_file_manager"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+
     </services>
 </container>

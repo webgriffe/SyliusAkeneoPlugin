@@ -5,33 +5,20 @@
         <defaults public="true" />
 
         <service id="webgriffe_sylius_akeneo.behat.context.transform.queue_item" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Transform\QueueItemContext">
-            <argument type="service" id="webgriffe_sylius_akeneo.repository.queue_item" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
-            <argument type="service" id="webgriffe_sylius_akeneo.factory.queue_item" />
-            <argument type="service" id="webgriffe_sylius_akeneo.repository.queue_item" />
             <argument type="service" id="sylius.behat.shared_storage" />
+            <argument type="service" id="messenger.default_bus"/>
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.behat.context.cli.consume_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ConsumeCommandContext">
-            <argument type="service" id="kernel" />
-            <argument type="service" id="webgriffe_sylius_akeneo.command.consume" />
-        </service>
-
         <service id="webgriffe_sylius_akeneo.behat.context.cli.enqueue_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\EnqueueCommandContext">
             <argument type="service" id="kernel" />
             <argument type="service" id="webgriffe_sylius_akeneo.command.enqueue" />
-            <argument type="service" id="sylius.behat.shared_storage" />
-        </service>
-
-        <service id="webgriffe_sylius_akeneo.behat.context.cli.queue_cleanup_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\QueueCleanupCommandContext">
-            <argument type="service" id="kernel" />
-            <argument type="service" id="webgriffe_sylius_akeneo.command.queue_cleanup" />
             <argument type="service" id="sylius.behat.shared_storage" />
         </service>
 
@@ -47,8 +34,9 @@
             <argument type="service" id="sylius.repository.product_association_type" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.behat.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\QueueContext">
-            <argument type="service" id="webgriffe_sylius_akeneo.repository.queue_item" />
+        <service id="webgriffe_sylius_akeneo.behat.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Messenger\MessengerContext">
+            <argument type="service" id="messenger.transport.main"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.message_handler.item_import"/>
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.system.filesystem" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\FilesystemContext">

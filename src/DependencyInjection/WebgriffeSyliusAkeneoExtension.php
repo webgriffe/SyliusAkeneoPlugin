@@ -53,6 +53,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 '$productImageFactory' => 'sylius.factory.product_image',
                 '$productImageRepository' => 'sylius.repository.product_image',
                 '$apiClient' => 'webgriffe_sylius_akeneo.api_client',
+                '$temporaryFilesManager' => 'webgriffe_sylius_akeneo.temporary_file_manager',
             ],
         ],
         'immutable_slug' => [
@@ -99,6 +100,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'arguments' => [
                 '$apiClient' => 'webgriffe_sylius_akeneo.api_client',
                 '$filesystem' => 'filesystem',
+                '$temporaryFilesManager' => 'webgriffe_sylius_akeneo.temporary_file_manager',
             ],
         ],
         'metric_property' => [

@@ -12,6 +12,6 @@ Feature: Importing product associations from queue
     And the store has a product "upsell-product-2" with code "upsell-product-2"
     And there is one product associations to import with identifier "10627329" in the Akeneo queue
     And the store has a product association type "Upsell" with a code "UPSELL"
-    When I import all items in queue
+    When I consume the messages
     Then the product "10627329" should be associated to product "upsell-product-1" for association with code "UPSELL"
     And the product "10627329" should be associated to product "upsell-product-2" for association with code "UPSELL"

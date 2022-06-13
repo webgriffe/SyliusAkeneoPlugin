@@ -73,4 +73,5 @@ sylius_grid:
 framework:
     messenger:
         routing:
+            'Webgriffe\SyliusAkeneoPlugin\Message\ItemImport': main
 

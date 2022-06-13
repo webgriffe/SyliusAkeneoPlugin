@@ -12,7 +12,7 @@ use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager;
 
 final class TemporaryFilesManagerTest extends TestCase
 {
-    private $temporaryFileManager;
+    private TemporaryFilesManager $temporaryFileManager;
 
     protected function setUp(): void
     {
@@ -25,10 +25,8 @@ final class TemporaryFilesManagerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function it_generates_temporary_file_path()
+    /** @test */
+    public function it_generates_temporary_file_path(): void
     {
         $this->assertMatchesRegularExpression(
             '|' . vfsStream::url('root') . '/akeneo-.*|',
@@ -36,10 +34,8 @@ final class TemporaryFilesManagerTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function it_deletes_all_temporary_files()
+    /** @test */
+    public function it_deletes_all_temporary_files(): void
     {
         touch(vfsStream::url('root') . '/akeneo-temp1');
         touch(vfsStream::url('root') . '/akeneo-temp2');
@@ -52,10 +48,8 @@ final class TemporaryFilesManagerTest extends TestCase
         $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-temp3');
     }
 
-    /**
-     * @test
-     */
-    public function it_does_not_delete_not_managed_temporary_files()
+    /** @test */
+    public function it_does_not_delete_not_managed_temporary_files(): void
     {
         touch(vfsStream::url('root') . '/not-managed-temp-file');
 
