@@ -30,6 +30,7 @@ final class FilesystemContext implements Context
      */
     public function thereIsAFileWithNameAndContent(string $filename, string $date): void
     {
+        Assert::notNull($this->vfsStream);
         vfsStream::newFile($filename)->at($this->vfsStream)->setContent($date);
     }
 
