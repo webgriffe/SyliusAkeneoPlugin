@@ -1,14 +1,14 @@
 <?php
 
 use PhpCsFixer\Fixer\ClassNotation\VisibilityRequiredFixer;
+use SlevomatCodingStandard\Sniffs\Commenting\InlineDocCommentDeclarationSniff;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symplify\EasyCodingStandard\ValueObject\Option;
-use Symplify\EasyCodingStandard\Config\ECSConfig;
 
-return static function (ECSConfig $ecsConfig): void {
-    $ecsConfig->import('vendor/sylius-labs/coding-standard/ecs.php');
-    $parameters = $ecsConfig->parameters();
+return static function (ContainerConfigurator $containerConfigurator): void {
+    $containerConfigurator->import('vendor/sylius-labs/coding-standard/ecs.php');
 
-    $parameters->set(Option::SKIP, [
+    $containerConfigurator->parameters()->set(Option::SKIP, [
         VisibilityRequiredFixer::class => ['*Spec.php'],
     ]);
 };
