@@ -48,7 +48,7 @@ final class ManagingProductsContext implements Context
     /**
      * @When /^I schedule an Akeneo PIM import for the ("[^"]*" product)$/
      */
-    public function scheduleAnAkeneoPimImportForTheProduct(ProductInterface $product)
+    public function scheduleAnAkeneoPimImportForTheProduct(ProductInterface $product): void
     {
         /** @var NodeElement $actionsNodeProduct */
         $actionsNodeProduct = $this->indexPage->getActionsForResource(['code' => $product->getCode()]);
@@ -59,7 +59,7 @@ final class ManagingProductsContext implements Context
     /**
      * @Then I should be notified that it has been successfully enqueued
      */
-    public function iShouldBeNotifiedThatItHasBeenSuccessfullyEnqueued()
+    public function iShouldBeNotifiedThatItHasBeenSuccessfullyEnqueued(): void
     {
         $this->testHelper->waitUntilNotificationPopups(
             $this->notificationChecker,
@@ -71,7 +71,7 @@ final class ManagingProductsContext implements Context
     /**
      * @Given /^I should be notified that it has been already enqueued$/
      */
-    public function iShouldBeNotifiedThatItHasBeenAlreadyEnqueued()
+    public function iShouldBeNotifiedThatItHasBeenAlreadyEnqueued(): void
     {
         $this->testHelper->waitUntilNotificationPopups(
             $this->notificationChecker,
@@ -83,7 +83,7 @@ final class ManagingProductsContext implements Context
     /**
      * @Then /^I should see (\d+), not imported, items? in the Akeneo queue items list$/
      */
-    public function iShouldSeeNotImportedItemInTheAkeneoQueueItemsList(int $numberOfItems)
+    public function iShouldSeeNotImportedItemInTheAkeneoQueueItemsList(int $numberOfItems): void
     {
         $this->queueItemsIndexPage->open();
         Assert::same($this->queueItemsIndexPage->countItems(), $numberOfItems);

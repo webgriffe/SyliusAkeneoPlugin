@@ -170,7 +170,7 @@ jobs:
 
             -
                 name: Run PHPStan
-                run: vendor/bin/phpstan analyse -c phpstan.neon -l max src/
+                run: vendor/bin/phpstan analyse -c phpstan.neon
 
             -
                 name: Run Psalm

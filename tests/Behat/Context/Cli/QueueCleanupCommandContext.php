@@ -34,7 +34,7 @@ final class QueueCleanupCommandContext implements Context
      * @When I clean the queue
      * @When /^I clean the queue specifying (\d+) days of retention$/
      */
-    public function iCleanTheQueue(int $days = null)
+    public function iCleanTheQueue(int $days = null): void
     {
         $this->sharedStorage->set('command_input_days', $days);
         $commandTester = $this->getCommandTester();
@@ -50,7 +50,7 @@ final class QueueCleanupCommandContext implements Context
     /**
      * @Then I should be notified that there are no items to clean
      */
-    public function iShouldBeNotifiedThatThereAreNoItemsToClean()
+    public function iShouldBeNotifiedThatThereAreNoItemsToClean(): void
     {
         $output = $this->sharedStorage->get('command_display');
         Assert::contains($output, 'There are no items to clean');
@@ -59,7 +59,7 @@ final class QueueCleanupCommandContext implements Context
     /**
      * @Then /^I should be notified that (\d+) item[s]? (has|have) been deleted$/
      */
-    public function iShouldBeNotifiedThatItemHasBeenDeleted(int $count)
+    public function iShouldBeNotifiedThatItemHasBeenDeleted(int $count): void
     {
         $output = $this->sharedStorage->get('command_display');
         Assert::regex($output, "/$count items imported before \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} has been deleted/");
@@ -68,7 +68,7 @@ final class QueueCleanupCommandContext implements Context
     /**
      * @Then /^there shouldn\'t be any more item[s]? to clean$/
      */
-    public function thereShouldntBeAnyMoreItemToClean()
+    public function thereShouldntBeAnyMoreItemToClean(): void
     {
         $this->iCleanTheQueue($this->sharedStorage->has('command_input_days') ? $this->sharedStorage->get('command_input_days') : null);
         $this->iShouldBeNotifiedThatThereAreNoItemsToClean();

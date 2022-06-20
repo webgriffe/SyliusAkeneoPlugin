@@ -622,7 +622,7 @@ To be able to set up a plugin's database, remember to configure you database cre
 - Static analysis
 
   ```bash
-  vendor/bin/phpstan analyse -c phpstan.neon -l max src/
+  vendor/bin/phpstan analyse -c phpstan.neon
   ```
 
 - PHPUnit

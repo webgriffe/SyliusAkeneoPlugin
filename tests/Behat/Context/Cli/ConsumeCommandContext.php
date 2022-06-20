@@ -29,7 +29,7 @@ final class ConsumeCommandContext implements Context
     /**
      * @When /^I import all items in queue$/
      */
-    public function iImportAllItemsInQueue()
+    public function iImportAllItemsInQueue(): void
     {
         $application = new Application($this->kernel);
         $application->setAutoExit(false);
