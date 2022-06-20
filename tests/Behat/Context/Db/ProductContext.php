@@ -24,7 +24,7 @@ final class ProductContext implements Context
     /**
      * @Then /^the product "([^"]*)" should exists with the right data$/
      */
-    public function theProductShouldExistsWithTheRightData(string $code)
+    public function theProductShouldExistsWithTheRightData(string $code): void
     {
         $product = $this->productRepository->findOneByCode($code);
         Assert::isInstanceOf($product, ProductInterface::class);
@@ -33,7 +33,7 @@ final class ProductContext implements Context
     /**
      * @Given /^the product variant "([^"]*)" of product "([^"]*)" should exists with the right data$/
      */
-    public function theProductVariantShouldExistsWithTheRightData(string $code, string $productCode)
+    public function theProductVariantShouldExistsWithTheRightData(string $code, string $productCode): void
     {
         $product = $this->productVariantRepository->findOneByCodeAndProductCode($code, $productCode);
         Assert::isInstanceOf($product, ProductVariantInterface::class);
@@ -42,7 +42,7 @@ final class ProductContext implements Context
     /**
      * @Then /^the product "([^"]*)" should not exists$/
      */
-    public function theProductShouldNotExists(string $code)
+    public function theProductShouldNotExists(string $code): void
     {
         $product = $this->productRepository->findOneByCode($code);
         Assert::null($product);
@@ -55,7 +55,7 @@ final class ProductContext implements Context
         string $code,
         string $associatedProductCode,
         string $associationTypeCode
-    ) {
+    ): void {
         $product = $this->productRepository->findOneByCode($code);
         Assert::isInstanceOf($product, ProductInterface::class);
 
@@ -77,7 +77,7 @@ final class ProductContext implements Context
     /**
      * @Then /^the ("[^"]+" product) should be enabled$/
      */
-    public function theProductShouldBeEnabled(ProductInterface $product)
+    public function theProductShouldBeEnabled(ProductInterface $product): void
     {
         Assert::true($product->isEnabled());
     }
@@ -85,7 +85,7 @@ final class ProductContext implements Context
     /**
      * @Given /^the ("[^"]+" product variant) should be enabled$/
      */
-    public function theProductVariantShouldBeEnabled(ProductVariantInterface $productVariant)
+    public function theProductVariantShouldBeEnabled(ProductVariantInterface $productVariant): void
     {
         Assert::true($productVariant->isEnabled());
     }
@@ -93,7 +93,7 @@ final class ProductContext implements Context
     /**
      * @Then /^the ("[^"]+" product) should be disabled/
      */
-    public function theProductShouldBeDisabled(ProductInterface $product)
+    public function theProductShouldBeDisabled(ProductInterface $product): void
     {
         Assert::false($product->isEnabled());
     }
@@ -101,7 +101,7 @@ final class ProductContext implements Context
     /**
      * @Given /^the ("[^"]+" product variant) should be disabled/
      */
-    public function theProductVariantShouldBeDisabled(ProductVariantInterface $productVariant)
+    public function theProductVariantShouldBeDisabled(ProductVariantInterface $productVariant): void
     {
         Assert::false($productVariant->isEnabled());
     }

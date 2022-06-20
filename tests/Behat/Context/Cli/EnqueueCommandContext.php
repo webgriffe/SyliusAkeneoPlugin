@@ -10,6 +10,7 @@ use Sylius\Behat\Service\SharedStorageInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Throwable;
 use Webgriffe\SyliusAkeneoPlugin\Command\EnqueueCommand;
 use Webmozart\Assert\Assert;
 
@@ -22,13 +23,13 @@ final class EnqueueCommandContext implements Context
     /**
      * @When /^I enqueue items for all importers modified since date "([^"]+)"$/
      */
-    public function iRunEnqueueCommandWithSinceDate($date)
+    public function iRunEnqueueCommandWithSinceDate(string $date): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => $date]);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
@@ -36,13 +37,13 @@ final class EnqueueCommandContext implements Context
     /**
      * @When I enqueue items for all importers with no since date
      */
-    public function iRunEnqueueCommandWithNoSinceDate()
+    public function iRunEnqueueCommandWithNoSinceDate(): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue']);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
@@ -50,11 +51,11 @@ final class EnqueueCommandContext implements Context
     /**
      * @Then /^I should be notified that a since date is required$/
      */
-    public function theCommandShouldHaveThrownExceptionWithMessageContaining()
+    public function theCommandShouldHaveThrownExceptionWithMessageContaining(): void
     {
-        /** @var \Throwable $throwable */
+        /** @var Throwable|mixed $throwable */
         $throwable = $this->sharedStorage->get('command_exception');
-        Assert::isInstanceOf($throwable, \Throwable::class);
+        Assert::isInstanceOf($throwable, Throwable::class);
         Assert::contains(
             $throwable->getMessage(),
             'One of "--since", "--since-file" or "--all" option must be specified'
@@ -64,13 +65,13 @@ final class EnqueueCommandContext implements Context
     /**
      * @When /^I enqueue items for all importers with invalid since date$/
      */
-    public function iEnqueueItemsForAllImportersWithInvalidSinceDate()
+    public function iEnqueueItemsForAllImportersWithInvalidSinceDate(): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => 'bad date']);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
@@ -78,25 +79,25 @@ final class EnqueueCommandContext implements Context
     /**
      * @Then /^I should be notified that the since date must be a valid date$/
      */
-    public function iShouldBeNotifiedThatTheSinceDateMustBeAValidDate()
+    public function iShouldBeNotifiedThatTheSinceDateMustBeAValidDate(): void
     {
-        /** @var \Throwable $throwable */
+        /** @var Throwable|mixed $throwable */
         $throwable = $this->sharedStorage->get('command_exception');
-        Assert::isInstanceOf($throwable, \Throwable::class);
+        Assert::isInstanceOf($throwable, Throwable::class);
         Assert::contains($throwable->getMessage(), 'The "since" argument must be a valid date');
     }
 
     /**
      * @When /^I enqueue items with since date specified from a not existent file$/
      */
-    public function iEnqueueItemsWithSinceDateSpecifiedFromANotExistentFile()
+    public function iEnqueueItemsWithSinceDateSpecifiedFromANotExistentFile(): void
     {
         $commandTester = $this->getCommandTester();
         $filepath = vfsStream::url('root/not-existent-file.txt');
 
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since-file' => $filepath]);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
@@ -104,25 +105,25 @@ final class EnqueueCommandContext implements Context
     /**
      * @Then /^I should be notified that the since date file does not exists$/
      */
-    public function iShouldBeNotifiedThatTheSinceDateFileDoesNotExists()
+    public function iShouldBeNotifiedThatTheSinceDateFileDoesNotExists(): void
     {
-        /** @var \Throwable $throwable */
+        /** @var Throwable|mixed $throwable */
         $throwable = $this->sharedStorage->get('command_exception');
-        Assert::isInstanceOf($throwable, \Throwable::class);
+        Assert::isInstanceOf($throwable, Throwable::class);
         Assert::contains($throwable->getMessage(), 'does not exists');
     }
 
     /**
      * @When /^I enqueue items for all importers modified since date specified from file "([^"]+)"$/
      */
-    public function iEnqueueItemsWithSinceDateSpecifiedFromFile(string $file)
+    public function iEnqueueItemsWithSinceDateSpecifiedFromFile(string $file): void
     {
         $commandTester = $this->getCommandTester();
         $filepath = vfsStream::url('root/' . $file);
 
         try {
             $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since-file' => $filepath]);
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
@@ -130,7 +131,7 @@ final class EnqueueCommandContext implements Context
     /**
      * @When /^I enqueue all items for all importers$/
      */
-    public function iEnqueueAllItemsForAllImporters()
+    public function iEnqueueAllItemsForAllImporters(): void
     {
         $commandTester = $this->getCommandTester();
 
@@ -140,7 +141,7 @@ final class EnqueueCommandContext implements Context
     /**
      * @When /^I enqueue all items for the "([^"]+)" importer$/
      */
-    public function iEnqueueItemsModifiedSinceDateForTheImporter(string $importer)
+    public function iEnqueueItemsModifiedSinceDateForTheImporter(string $importer): void
     {
         $commandTester = $this->getCommandTester();
 
@@ -152,7 +153,7 @@ final class EnqueueCommandContext implements Context
     /**
      * @When /^I enqueue all items for a not existent importer$/
      */
-    public function iEnqueueAllItemsForANotExistentImporter()
+    public function iEnqueueAllItemsForANotExistentImporter(): void
     {
         $commandTester = $this->getCommandTester();
 
@@ -160,7 +161,7 @@ final class EnqueueCommandContext implements Context
             $commandTester->execute(
                 ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => ['not_existent']]
             );
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
@@ -168,11 +169,11 @@ final class EnqueueCommandContext implements Context
     /**
      * @Then /^I should be notified that the importer does not exists$/
      */
-    public function iShouldBeNotifiedThatTheImporterDoesNotExists()
+    public function iShouldBeNotifiedThatTheImporterDoesNotExists(): void
     {
-        /** @var \Throwable $throwable */
+        /** @var Throwable|mixed $throwable */
         $throwable = $this->sharedStorage->get('command_exception');
-        Assert::isInstanceOf($throwable, \Throwable::class);
+        Assert::isInstanceOf($throwable, Throwable::class);
         Assert::regex($throwable->getMessage(), '/Importer ".*?" does not exists/');
     }
 

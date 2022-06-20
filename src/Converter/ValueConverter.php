@@ -41,6 +41,7 @@ final class ValueConverter implements ValueConverterInterface
             /** @var array $choices */
             $choices = $attributeConfiguration['choices'];
             $possibleOptionsCodes = array_map('strval', array_keys($choices));
+            /** @var string[] $invalid */
             $invalid = array_diff($value, $possibleOptionsCodes);
 
             if (count($invalid) > 0) {

@@ -20,7 +20,7 @@ final class FilesystemContext implements Context
     /**
      * @BeforeScenario
      */
-    public function before()
+    public function before(): void
     {
         $this->vfsStream = vfsStream::setup('root');
     }
@@ -28,7 +28,7 @@ final class FilesystemContext implements Context
     /**
      * @Given /^there is a file with name "([^"]+)" and content "([^"]+)"$/
      */
-    public function thereIsAFileWithNameAndContent($filename, $date)
+    public function thereIsAFileWithNameAndContent(string $filename, string $date): void
     {
         vfsStream::newFile($filename)->at($this->vfsStream)->setContent($date);
     }
@@ -36,7 +36,7 @@ final class FilesystemContext implements Context
     /**
      * @Given /^there is a file with name "([^"]+)" that contains "([^"]+)"$/
      */
-    public function thereIsAFileWithNameThatContains($filename, $content)
+    public function thereIsAFileWithNameThatContains(string $filename, string $content): void
     {
         $file = vfsStream::url('root/' . $filename);
         $actualFileContent = file_get_contents($file);
@@ -46,7 +46,7 @@ final class FilesystemContext implements Context
     /**
      * @Then /^there should not be any temporary file in the temporary files directory$/
      */
-    public function thereShouldNotBeAnyTemporaryFileInTheTemporaryFilesDirectory()
+    public function thereShouldNotBeAnyTemporaryFileInTheTemporaryFilesDirectory(): void
     {
         Assert::isEmpty(glob(rtrim($this->temporaryDirectory, '/') . '/' . $this->temporaryFilesPrefix . '*'));
     }

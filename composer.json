@@ -50,7 +50,7 @@
         "symfony/intl": "^5.4",
         "symfony/web-profiler-bundle": "^5.4",
         "theofidry/alice-data-fixtures": "^1.1",
-        "vimeo/psalm": "4.7.1",
+        "vimeo/psalm": "4.23.0",
         "polishsymfonycommunity/symfony-mocker-container": "^1.0"
     },
     "config": {
@@ -61,6 +61,10 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "symfony/thanks": true
         }
+    },
+    "conflict": {
+        "sylius-labs/coding-standard": ">=4.2.1",
+        "symplify/easy-coding-standard": "^10"
     },
     "extra": {
         "branch-alias": {

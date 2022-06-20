@@ -19,7 +19,7 @@ final class ReconcileCommandContext implements Context
     /**
      * @When /^I reconcile items$/
      */
-    public function iReconcileItems()
+    public function iReconcileItems(): void
     {
         $application = new Application($this->kernel);
         $application->add($this->reconcileCommand);

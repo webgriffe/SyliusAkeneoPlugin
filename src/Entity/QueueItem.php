@@ -53,14 +53,14 @@ class QueueItem implements QueueItemInterface
         return $this->importedAt;
     }
 
-    public function setAkeneoIdentifier(string $akeneoIdentifier): void
+    public function setAkeneoIdentifier(string $identifier): void
     {
-        $this->akeneoIdentifier = $akeneoIdentifier;
+        $this->akeneoIdentifier = $identifier;
     }
 
-    public function setAkeneoEntity(string $akeneoEntity): void
+    public function setAkeneoEntity(string $entity): void
     {
-        $this->akeneoEntity = $akeneoEntity;
+        $this->akeneoEntity = $entity;
     }
 
     public function setErrorMessage(?string $errorMessage): void
