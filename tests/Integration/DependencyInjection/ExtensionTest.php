@@ -28,13 +28,13 @@ final class ExtensionTest extends AbstractExtensionTestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         );
 
         $this->assertContainerBuilderHasServiceDefinitionWithTag(
             'webgriffe_sylius_akeneo.value_handler.product.test_value_handler',
             'webgriffe_sylius_akeneo.product.value_handler',
-            ['priority' => 42]
+            ['priority' => 42],
         );
     }
 

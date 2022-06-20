@@ -16,7 +16,7 @@ final class AkeneoContext implements Context
      * @param AkeneoPimClientInterface|ApiClientMock $apiClient
      */
     public function __construct(
-        private $apiClient
+        private $apiClient,
     ) {
     }
 

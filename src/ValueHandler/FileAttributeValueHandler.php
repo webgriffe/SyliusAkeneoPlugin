@@ -25,7 +25,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
         private AkeneoPimClientInterface $apiClient,
         private Filesystem $filesystem,
         private string $akeneoAttributeCode,
-        private string $downloadPath
+        private string $downloadPath,
     ) {
     }
 
@@ -54,8 +54,8 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
             throw new InvalidArgumentException(
                 sprintf(
                     'This file value handler only supports akeneo file attributes. %s is not a file attribute',
-                    $attribute
-                )
+                    $attribute,
+                ),
             );
         }
 
@@ -69,8 +69,8 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This file value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    get_debug_type($subject)
-                )
+                    get_debug_type($subject),
+                ),
             );
         }
 

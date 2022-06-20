@@ -44,7 +44,7 @@ final class ManagingProductsContext implements Context
         $this->testHelper->waitUntilNotificationPopups(
             $this->notificationChecker,
             NotificationType::success(),
-            'Akeneo PIM product import has been successfully scheduled'
+            'Akeneo PIM product import has been successfully scheduled',
         );
     }
 
@@ -56,7 +56,7 @@ final class ManagingProductsContext implements Context
         $this->testHelper->waitUntilNotificationPopups(
             $this->notificationChecker,
             NotificationType::success(),
-            'Akeneo PIM import for this product has been already scheduled before'
+            'Akeneo PIM import for this product has been already scheduled before',
         );
     }
 

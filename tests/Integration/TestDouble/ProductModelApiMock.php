@@ -18,7 +18,7 @@ final class ProductModelApiMock implements ProductModelApiInterface
     public function get(string $code): array
     {
         return ApiClientMock::jsonFileOrHttpNotFoundException(
-            __DIR__ . '/../DataFixtures/ApiClientMock/ProductModel/' . $code . '.json'
+            __DIR__ . '/../DataFixtures/ApiClientMock/ProductModel/' . $code . '.json',
         );
     }
 

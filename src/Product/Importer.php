@@ -42,7 +42,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         private ChannelsResolverInterface $channelsResolver,
         private StatusResolverInterface $statusResolver,
         private FactoryInterface $productTaxonFactory,
-        private StatusResolverInterface $variantStatusResolver
+        private StatusResolverInterface $variantStatusResolver,
     ) {
     }
 
@@ -179,7 +179,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         $akeneoTaxonsCodes = $akeneoTaxons->map(fn (TaxonInterface $taxon): ?string => $taxon->getCode())->toArray();
         $syliusTaxonsCodes = $syliusTaxons->map(fn (TaxonInterface $taxon): ?string => $taxon->getCode())->toArray();
         $toAddTaxons = $akeneoTaxons->filter(
-            fn (TaxonInterface $taxon): bool => !in_array($taxon->getCode(), $syliusTaxonsCodes, true)
+            fn (TaxonInterface $taxon): bool => !in_array($taxon->getCode(), $syliusTaxonsCodes, true),
         );
         $toRemoveTaxonsCodes = array_diff($syliusTaxonsCodes, $akeneoTaxonsCodes);
 

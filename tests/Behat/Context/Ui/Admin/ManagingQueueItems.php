@@ -106,8 +106,8 @@ final class ManagingQueueItems implements Context
                 [
                     'akeneoIdentifier' => $queueItem->getAkeneoIdentifier(),
                     'akeneoEntity' => $queueItem->getAkeneoEntity(),
-                ]
-            )
+                ],
+            ),
         );
     }
 

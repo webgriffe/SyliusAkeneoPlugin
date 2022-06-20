@@ -13,7 +13,7 @@ final class FamilyVariantApiMock implements FamilyVariantApiInterface
     public function get($familyCode, $familyVariantCode): array
     {
         return ApiClientMock::jsonFileOrHttpNotFoundException(
-            __DIR__ . '/../DataFixtures/ApiClientMock/FamilyVariant/' . $familyCode . '/' . $familyVariantCode . '.json'
+            __DIR__ . '/../DataFixtures/ApiClientMock/FamilyVariant/' . $familyCode . '/' . $familyVariantCode . '.json',
         );
     }
 
@@ -31,7 +31,7 @@ final class FamilyVariantApiMock implements FamilyVariantApiInterface
         $familyCode,
         $limit = 10,
         $withCount = false,
-        array $queryParameters = []
+        array $queryParameters = [],
     ): PageInterface {
         // TODO: Implement listPerPage() method.
     }

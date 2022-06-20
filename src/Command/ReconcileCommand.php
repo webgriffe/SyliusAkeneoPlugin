@@ -44,7 +44,7 @@ final class ReconcileCommand extends Command
                 self::RECONCILER_OPTION_NAME,
                 'i',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Reconcile items only for specified reconcilers'
+                'Reconcile items only for specified reconcilers',
             )
         ;
     }
@@ -78,7 +78,7 @@ final class ReconcileCommand extends Command
         }
         $reconcilersCodes = array_map(
             static fn (ReconcilerInterface $reconciler): string => $reconciler->getAkeneoEntity(),
-            $allReconcilers
+            $allReconcilers,
         );
 
         $reconcilersToUse = $input->getOption(self::RECONCILER_OPTION_NAME);

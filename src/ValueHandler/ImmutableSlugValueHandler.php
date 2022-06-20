@@ -40,8 +40,8 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This immutable slug value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    get_debug_type($subject)
-                )
+                    get_debug_type($subject),
+                ),
             );
         }
 
@@ -73,7 +73,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
 
     private function getOrCreateNewProductTranslation(
         ProductInterface $product,
-        string $localeCode
+        string $localeCode,
     ): ProductTranslationInterface {
         $translation = $product->getTranslation($localeCode);
         if ($translation->getLocale() !== $localeCode) {
@@ -103,7 +103,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         string $slug,
         string $localeCode,
         ProductInterface $product,
-        int $_increment = 0
+        int $_increment = 0,
     ): string {
         if ($_increment > self::MAX_DEDUPLICATION_INCREMENT) {
             throw new \RuntimeException('Maximum slug deduplication increment reached.');
@@ -115,7 +115,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
 
         /** @var ProductTranslationInterface|null $anotherProductTranslation */
         $anotherProductTranslation = $this->productTranslationRepository->findOneBy(
-            ['slug' => $deduplicatedSlug, 'locale' => $localeCode]
+            ['slug' => $deduplicatedSlug, 'locale' => $localeCode],
         );
         if ($anotherProductTranslation !== null &&
             $anotherProductTranslation->getTranslatable() instanceof ProductInterface &&

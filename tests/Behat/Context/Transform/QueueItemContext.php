@@ -25,7 +25,7 @@ final class QueueItemContext implements Context
         Assert::count(
             $queueItems,
             1,
-            sprintf('%d queue items has been found with identifier "%s".', count($queueItems), $akeneoIdentifier)
+            sprintf('%d queue items has been found with identifier "%s".', count($queueItems), $akeneoIdentifier),
         );
 
         return $queueItems[0];

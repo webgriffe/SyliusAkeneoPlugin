@@ -30,7 +30,7 @@ final class Importer implements ImporterInterface
         private ProductRepositoryInterface $productRepository,
         private RepositoryInterface $productAssociationRepository,
         private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository,
-        private FactoryInterface $productAssociationFactory
+        private FactoryInterface $productAssociationFactory,
     ) {
     }
 
@@ -72,7 +72,7 @@ final class Importer implements ImporterInterface
         foreach ($associations as $associationTypeCode => $associationInfo) {
             /** @var ProductAssociationTypeInterface|null $productAssociationType */
             $productAssociationType = $this->productAssociationTypeRepository->findOneBy(
-                ['code' => $associationTypeCode]
+                ['code' => $associationTypeCode],
             );
 
             if ($productAssociationType === null) {
@@ -83,7 +83,7 @@ final class Importer implements ImporterInterface
             $productModelsToAssociateIdentifiers = $associationInfo['product_models'] ?? [];
             $productAssociationIdentifiers = array_merge(
                 $productsToAssociateIdentifiers,
-                $productModelsToAssociateIdentifiers
+                $productModelsToAssociateIdentifiers,
             );
             /** @var Collection<int|string, BaseProductInterface> $productsToAssociate */
             $productsToAssociate = new ArrayCollection();
@@ -97,7 +97,7 @@ final class Importer implements ImporterInterface
 
             /** @var ProductAssociationInterface|null $productAssociation */
             $productAssociation = $this->productAssociationRepository->findOneBy(
-                ['owner' => $product, 'type' => $productAssociationType]
+                ['owner' => $product, 'type' => $productAssociationType],
             );
             if ($productAssociation === null) {
                 $productAssociation = $this->productAssociationFactory->createNew();
@@ -146,7 +146,7 @@ final class Importer implements ImporterInterface
     private function getProductsToAdd(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
     {
         return $akeneoAssociations->filter(
-            static fn (BaseProductInterface $productToAssociate): bool => !$syliusAssociations->contains($productToAssociate)
+            static fn (BaseProductInterface $productToAssociate): bool => !$syliusAssociations->contains($productToAssociate),
         );
     }
 
@@ -159,7 +159,7 @@ final class Importer implements ImporterInterface
     private function getProductsToRemove(Collection $syliusAssociations, Collection $akeneoAssociations): Collection
     {
         return $syliusAssociations->filter(
-            static fn (BaseProductInterface $productToAssociate): bool => !$akeneoAssociations->contains($productToAssociate)
+            static fn (BaseProductInterface $productToAssociate): bool => !$akeneoAssociations->contains($productToAssociate),
         );
     }
 }

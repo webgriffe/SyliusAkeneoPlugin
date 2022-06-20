@@ -26,7 +26,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
                 $destinationUnitMeasurementCode,
                 $unitMeasurementFamilyToUse['code'],
                 $sourceUnitMeasurementCode,
-                $unitMeasurementFamily['code']
+                $unitMeasurementFamily['code'],
             ));
         }
         /** @var array{array{operator: string, value: string}} $operationsToDefaultUnitMeasurement */
@@ -60,8 +60,8 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
         throw new LogicException(
             sprintf(
                 'Unable to retrieve unit measurement family for the "%s" unit measurement code',
-                $unitMeasurementCode
-            )
+                $unitMeasurementCode,
+            ),
         );
     }
 
@@ -92,7 +92,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
                     throw new LogicException(sprintf(
                         'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
                         $operation['operator'],
-                        implode(', ', self::RECOGNIZED_OPERATORS)
+                        implode(', ', self::RECOGNIZED_OPERATORS),
                     ));
             }
         }
@@ -127,7 +127,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
                     throw new LogicException(sprintf(
                         'Unable to convert value, unrecognized operator. Found "%s", expected: "%s"',
                         $operation['operator'],
-                        implode(', ', self::RECOGNIZED_OPERATORS)
+                        implode(', ', self::RECOGNIZED_OPERATORS),
                     ));
             }
         }

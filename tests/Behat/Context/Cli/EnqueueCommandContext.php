@@ -58,7 +58,7 @@ final class EnqueueCommandContext implements Context
         Assert::isInstanceOf($throwable, Throwable::class);
         Assert::contains(
             $throwable->getMessage(),
-            'One of "--since", "--since-file" or "--all" option must be specified'
+            'One of "--since", "--since-file" or "--all" option must be specified',
         );
     }
 
@@ -146,7 +146,7 @@ final class EnqueueCommandContext implements Context
         $commandTester = $this->getCommandTester();
 
         $commandTester->execute(
-            ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => [$importer]]
+            ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => [$importer]],
         );
     }
 
@@ -159,7 +159,7 @@ final class EnqueueCommandContext implements Context
 
         try {
             $commandTester->execute(
-                ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => ['not_existent']]
+                ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => ['not_existent']],
             );
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);

@@ -12,7 +12,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 final class ValueConverter implements ValueConverterInterface
 {
     public function __construct(
-        private TranslatorInterface $translator
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -49,8 +49,8 @@ final class ValueConverter implements ValueConverterInterface
                     sprintf(
                         'This select attribute can only save existing attribute options. ' .
                         'Attribute option codes [%s] do not exist.',
-                        implode(', ', $invalid)
-                    )
+                        implode(', ', $invalid),
+                    ),
                 );
             }
         }

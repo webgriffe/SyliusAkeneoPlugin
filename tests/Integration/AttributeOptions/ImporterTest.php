@@ -49,7 +49,7 @@ final class ImporterTest extends KernelTestCase
             [__DIR__ . '/../DataFixtures/ORM/resources/ProductAttribute/text_attribute.yaml'],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('text_attribute');
@@ -69,7 +69,7 @@ final class ImporterTest extends KernelTestCase
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductAttribute/material.yaml',
-            ]
+            ],
         );
 
         $this->importer->import('material');
@@ -86,7 +86,7 @@ final class ImporterTest extends KernelTestCase
                 'wool' => ['en_US' => 'wool', 'it_IT' => 'lana'],
                 'cotton' => ['en_US' => 'cotton', 'it_IT' => 'cotone'],
             ],
-            $configuration['choices']
+            $configuration['choices'],
         );
     }
 
@@ -100,7 +100,7 @@ final class ImporterTest extends KernelTestCase
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/ProductAttribute/material.yaml',
-            ]
+            ],
         );
 
         $identifiers = $this->importer->getIdentifiersModifiedSince(new \DateTime());

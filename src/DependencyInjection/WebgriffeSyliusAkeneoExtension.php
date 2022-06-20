@@ -129,7 +129,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $bindArgumentsByName = $config['bind_arguments_by_name'];
 
         $container->addDefinitions(
-            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? [], $bindArgumentsByName)
+            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? [], $bindArgumentsByName),
         );
     }
 
@@ -179,7 +179,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                     static fn (string $argumentValue): Reference => new Reference($argumentValue),
                     $bindArgumentsByName ? self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments'] : array_values(self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments']),
                 ),
-                $bindArgumentsByName ? $options : array_values($options)
+                $bindArgumentsByName ? $options : array_values($options),
             );
             $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $key);
             $definition = new Definition(self::$valueHandlersTypesDefinitionsPrivate[$type]['class'], $arguments);
@@ -207,7 +207,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         }
 
         $valueHandlersResolverDefinition = $container->findDefinition(
-            'webgriffe_sylius_akeneo.product.value_handlers_resolver'
+            'webgriffe_sylius_akeneo.product.value_handlers_resolver',
         );
 
         $taggedValueHandlers = $container->findTaggedServiceIds(self::PRODUCT_VALUE_HANDLER_TAG);

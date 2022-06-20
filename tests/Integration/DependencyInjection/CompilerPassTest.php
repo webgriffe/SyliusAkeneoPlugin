@@ -22,7 +22,7 @@ final class CompilerPassTest extends AbstractCompilerPassTestCase
         $valueHandlersResolverDefinition = new Definition();
         $this->setDefinition(
             'webgriffe_sylius_akeneo.product.value_handlers_resolver',
-            $valueHandlersResolverDefinition
+            $valueHandlersResolverDefinition,
         );
         $taggedValueHandlerDefinition = new Definition(
             GenericPropertyValueHandler::class,
@@ -30,7 +30,7 @@ final class CompilerPassTest extends AbstractCompilerPassTestCase
                 new Reference('property_accessor'),
                 'akeneo_attribute',
                 'sylius_property',
-            ]
+            ],
         );
         $taggedValueHandlerDefinition->addTag('webgriffe_sylius_akeneo.product.value_handler', ['priority' => 42]);
         $this->container->setDefinition('app.my.custom.value_handler', $taggedValueHandlerDefinition);
@@ -41,7 +41,7 @@ final class CompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             'webgriffe_sylius_akeneo.product.value_handlers_resolver',
             'add',
-            [new Reference('app.my.custom.value_handler'), 42]
+            [new Reference('app.my.custom.value_handler'), 42],
         );
     }
 
@@ -61,7 +61,7 @@ final class CompilerPassTest extends AbstractCompilerPassTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             'webgriffe_sylius_akeneo.importer_registry',
             'add',
-            [new Reference('app.my.custom.importer')]
+            [new Reference('app.my.custom.importer')],
         );
     }
 

@@ -24,7 +24,7 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
         private RepositoryInterface $currencyRepository,
         private string $akeneoAttribute,
         private PropertyAccessorInterface $propertyAccessor,
-        private string $syliusPropertyPath = 'price'
+        private string $syliusPropertyPath = 'price',
     ) {
     }
 
@@ -40,8 +40,8 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This channel pricing value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    get_debug_type($subject)
-                )
+                    get_debug_type($subject),
+                ),
             );
         }
 

@@ -21,7 +21,7 @@ final class ProductEnqueueController extends AbstractController
         private QueueItemRepositoryInterface $queueItemRepository,
         private ProductRepositoryInterface $productRepository,
         private UrlGeneratorInterface $urlGenerator,
-        private TranslatorInterface $translator
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -62,13 +62,13 @@ final class ProductEnqueueController extends AbstractController
         foreach ($alreadyEnqueued as $code) {
             $this->addFlash(
                 'error',
-                $this->translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued', ['code' => $code]) // @phpstan-ignore-line
+                $this->translator->trans('webgriffe_sylius_akeneo.ui.product_already_enqueued', ['code' => $code]), // @phpstan-ignore-line
             );
         }
         foreach ($enqueued as $code) {
             $this->addFlash(
                 'success',
-                $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['code' => $code])
+                $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['code' => $code]),
             );
         }
 

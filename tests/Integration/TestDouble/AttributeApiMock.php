@@ -19,7 +19,7 @@ final class AttributeApiMock implements AttributeApiInterface
     public function get(string $code): array
     {
         return ApiClientMock::jsonFileOrHttpNotFoundException(
-            __DIR__ . '/../DataFixtures/ApiClientMock/Attribute/' . $code . '.json'
+            __DIR__ . '/../DataFixtures/ApiClientMock/Attribute/' . $code . '.json',
         );
     }
 

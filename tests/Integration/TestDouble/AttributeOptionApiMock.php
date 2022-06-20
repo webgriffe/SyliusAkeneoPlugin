@@ -14,7 +14,7 @@ final class AttributeOptionApiMock implements AttributeOptionApiInterface
     public function get($attributeCode, $code): array
     {
         return ApiClientMock::jsonFileOrHttpNotFoundException(
-            __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '/' . $code . '.json'
+            __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '/' . $code . '.json',
         );
     }
 
@@ -22,7 +22,7 @@ final class AttributeOptionApiMock implements AttributeOptionApiInterface
         $attributeCode,
         $limit = 10,
         $withCount = false,
-        array $queryParameters = []
+        array $queryParameters = [],
     ): PageInterface {
         // TODO: Implement listPerPage() method.
     }
@@ -30,7 +30,7 @@ final class AttributeOptionApiMock implements AttributeOptionApiInterface
     public function all($attributeCode, $pageSize = 10, array $queryParameters = []): ResourceCursorInterface
     {
         $attributeOptions = $this->jsonDecodeOrNull(
-            __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '.json'
+            __DIR__ . '/../DataFixtures/ApiClientMock/AttributeOption/' . $attributeCode . '.json',
         );
 
         return new class(new ArrayIterator($attributeOptions), $pageSize) implements ResourceCursorInterface {

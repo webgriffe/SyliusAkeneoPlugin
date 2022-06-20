@@ -41,7 +41,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('MUG_DW');
@@ -90,7 +90,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('MUG_SW');
@@ -112,7 +112,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('MUG_DW');
@@ -142,7 +142,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('MUG_DW');
@@ -177,7 +177,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('tshirt-new-m');

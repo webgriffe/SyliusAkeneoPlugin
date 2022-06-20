@@ -39,8 +39,8 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This translatable property value handler only support instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    get_debug_type($subject)
-                )
+                    get_debug_type($subject),
+                ),
             );
         }
 
@@ -90,7 +90,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     private function setValueOnProductVariantAndProductTranslation(
         ProductVariantInterface $variant,
         string $localeCode,
-        $value
+        $value,
     ): void {
         if ($value === null) {
             $this->setNullOnExistingProductVariantAndProductTranslation($variant, $localeCode);
@@ -105,7 +105,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
             $this->propertyAccessor->setValue(
                 $variantTranslation,
                 $this->translationPropertyPath,
-                $value
+                $value,
             );
             $hasBeenSet = true;
         }
@@ -117,7 +117,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
             $this->propertyAccessor->setValue(
                 $productTranslation,
                 $this->translationPropertyPath,
-                $value
+                $value,
             );
             $hasBeenSet = true;
         }
@@ -127,15 +127,15 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                     'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                     $this->translationPropertyPath,
                     ProductVariantTranslationInterface::class,
-                    ProductTranslationInterface::class
-                )
+                    ProductTranslationInterface::class,
+                ),
             );
         }
     }
 
     private function getOrCreateNewProductTranslation(
         ProductInterface $subject,
-        string $localeCode
+        string $localeCode,
     ): ProductTranslationInterface {
         $translation = $subject->getTranslation($localeCode);
         if ($translation->getLocale() !== $localeCode) {
@@ -150,7 +150,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 
     private function getOrCreateNewProductVariantTranslation(
         ProductVariantInterface $subject,
-        string $localeCode
+        string $localeCode,
     ): ProductVariantTranslationInterface {
         $translation = $subject->getTranslation($localeCode);
         if ($translation->getLocale() !== $localeCode) {
@@ -165,7 +165,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 
     private function setNullOnExistingProductVariantAndProductTranslation(
         ProductVariantInterface $variant,
-        string $localeCode
+        string $localeCode,
     ): void {
         /** @var ProductVariantTranslationInterface|null $variantTranslation */
         $variantTranslation = $variant->getTranslations()->get($localeCode);

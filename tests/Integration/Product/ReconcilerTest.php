@@ -52,7 +52,7 @@ final class ReconcilerTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->reconciler->reconcile([]);
@@ -82,7 +82,7 @@ final class ReconcilerTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->reconciler->reconcile(['23423545']);
@@ -112,7 +112,7 @@ final class ReconcilerTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->reconciler->reconcile(['23423545', '567567']);

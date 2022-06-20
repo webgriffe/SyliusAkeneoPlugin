@@ -24,7 +24,7 @@ final class ImageValueHandler implements ValueHandlerInterface
         private RepositoryInterface $productImageRepository,
         private AkeneoPimClientInterface $apiClient,
         private string $akeneoAttributeCode,
-        private string $syliusImageType
+        private string $syliusImageType,
     ) {
     }
 
@@ -46,8 +46,8 @@ final class ImageValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This image value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    get_debug_type($subject)
-                )
+                    get_debug_type($subject),
+                ),
             );
         }
 
@@ -77,7 +77,7 @@ final class ImageValueHandler implements ValueHandlerInterface
 
     private function getExistentProductVariantImage(
         ProductVariantInterface $subject,
-        ProductInterface $product
+        ProductInterface $product,
     ): ?ProductImageInterface {
         $existentProductImages = $this->getExistentProductImages($product);
         foreach ($existentProductImages as $existentProductImage) {
@@ -94,7 +94,7 @@ final class ImageValueHandler implements ValueHandlerInterface
      */
     private function getExistentProductVariantImages(
         ProductVariantInterface $subject,
-        ProductInterface $product
+        ProductInterface $product,
     ): array {
         $images = [];
         $existentProductImages = $this->getExistentProductImages($product);
@@ -114,7 +114,7 @@ final class ImageValueHandler implements ValueHandlerInterface
     private function getExistentProductImages(ProductInterface $product): iterable
     {
         $existentProductImages = $this->productImageRepository->findBy(
-            ['owner' => $product, 'type' => $this->syliusImageType]
+            ['owner' => $product, 'type' => $this->syliusImageType],
         );
         Assert::allIsInstanceOf($existentProductImages, ProductImageInterface::class);
 
@@ -123,7 +123,7 @@ final class ImageValueHandler implements ValueHandlerInterface
 
     private function removeAlreadyExistentVariantImages(
         ProductVariantInterface $subject,
-        ProductInterface $product
+        ProductInterface $product,
     ): void {
         $alreadyExistentImages = $this->getExistentProductVariantImages($subject, $product);
         foreach ($alreadyExistentImages as $alreadyExistentImage) {

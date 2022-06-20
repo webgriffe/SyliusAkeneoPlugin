@@ -39,8 +39,8 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                     'Cannot handle Akeneo attribute "%s". %s only supports Akeneo attribute "%s".',
                     $attribute,
                     self::class,
-                    $this->akeneoAttributeCode
-                )
+                    $this->akeneoAttributeCode,
+                ),
             );
         }
 
@@ -91,8 +91,8 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
                     'Property path "%s" is not writable on both %s and %s but it should be for at least once.',
                     $this->propertyPath,
                     $productVariant::class,
-                    $product::class
-                )
+                    $product::class,
+                ),
             );
         }
     }

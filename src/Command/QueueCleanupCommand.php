@@ -44,7 +44,7 @@ final class QueueCleanupCommand extends Command
                 self::DAYS_ARGUMENT_NAME,
                 InputArgument::OPTIONAL,
                 'Number of days from which to purge the queue of previous items',
-                (string) (self::DEFAULT_DAYS)
+                (string) (self::DEFAULT_DAYS),
             )
         ;
     }

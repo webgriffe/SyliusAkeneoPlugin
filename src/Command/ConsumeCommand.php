@@ -23,7 +23,7 @@ final class ConsumeCommand extends Command
     public function __construct(
         private QueueItemRepositoryInterface $queueItemRepository,
         private ImporterRegistryInterface $importerRegistry,
-        private ManagerRegistry $managerRegistry
+        private ManagerRegistry $managerRegistry,
     ) {
         parent::__construct();
     }
@@ -68,8 +68,8 @@ final class ConsumeCommand extends Command
                         'The error was: <error>%s</error>.',
                         $queueItem->getAkeneoEntity(),
                         $akeneoIdentifier,
-                        $t->getMessage()
-                    )
+                        $t->getMessage(),
+                    ),
                 );
                 if ($output->isVeryVerbose()) {
                     $output->writeln((string) $t);
@@ -81,8 +81,8 @@ final class ConsumeCommand extends Command
                 sprintf(
                     '<info>%s</info> entity with identifier <info>%s</info> has been imported.',
                     $queueItem->getAkeneoEntity(),
-                    $akeneoIdentifier
-                )
+                    $akeneoIdentifier,
+                ),
             );
         }
 

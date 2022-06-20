@@ -21,7 +21,7 @@ final class TemporaryFilesManagerTest extends TestCase
             new Filesystem(),
             new Finder(),
             vfsStream::url('root'),
-            'akeneo-'
+            'akeneo-',
         );
     }
 
@@ -32,7 +32,7 @@ final class TemporaryFilesManagerTest extends TestCase
     {
         $this->assertMatchesRegularExpression(
             '|' . vfsStream::url('root') . '/akeneo-.*|',
-            $this->temporaryFileManager->generateTemporaryFilePath()
+            $this->temporaryFileManager->generateTemporaryFilePath(),
         );
     }
 

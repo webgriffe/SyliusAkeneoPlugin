@@ -31,7 +31,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         private FactoryInterface $productOptionValueTranslationFactory,
         private RepositoryInterface $productOptionValueRepository,
         private TranslationLocaleProviderInterface $translationLocaleProvider,
-        private TranslatorInterface $translator
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -53,8 +53,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This option value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    get_debug_type($productVariant)
-                )
+                    get_debug_type($productVariant),
+                ),
             );
         }
         $product = $productVariant->getProduct();
@@ -67,8 +67,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                     'single value for product options.',
                     $productVariant->getCode(),
                     $product->getCode(),
-                    $optionCode
-                )
+                    $optionCode,
+                ),
             );
         }
 
@@ -84,8 +84,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                         $productVariant->getCode(),
                         $product->getCode(),
                         $optionCode,
-                        $optionCode
-                    )
+                        $optionCode,
+                    ),
                 );
             }
 
@@ -137,8 +137,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                         $productVariant->getCode(),
                         $product->getCode(),
                         $optionCode,
-                        $akeneoValue
-                    )
+                        $akeneoValue,
+                    ),
                 );
             }
 
@@ -223,8 +223,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                     'Cannot import Akeneo product "%s", the option "%s" is not set on the parent product "%s".',
                     (string) $productVariant->getCode(),
                     $optionCode,
-                    (string) $product->getCode()
-                )
+                    (string) $product->getCode(),
+                ),
             );
         }
 
@@ -254,7 +254,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     private function addOptionValueTranslation(
         ProductOptionValueInterface $optionValue,
         string $localeCode,
-        string $label
+        string $label,
     ): ProductOptionValueInterface {
         $optionValueTranslation = $optionValue->getTranslation($localeCode);
         if ($optionValueTranslation->getLocale() !== $localeCode) {

@@ -19,7 +19,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
         private AkeneoPimClientInterface $apiClient,
         private ProductOptionRepositoryInterface $productOptionRepository,
         private FactoryInterface $productOptionFactory,
-        private FactoryInterface $productOptionTranslationFactory
+        private FactoryInterface $productOptionTranslationFactory,
     ) {
     }
 
@@ -35,8 +35,8 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
                 sprintf(
                     'Cannot resolve product options for Akeneo product "%s" because it does not belong to any ' .
                     'product model.',
-                    $akeneoProduct['identifier'] ?? '?'
-                )
+                    $akeneoProduct['identifier'] ?? '?',
+                ),
             );
         }
 
@@ -62,8 +62,8 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
                     sprintf(
                         'Cannot find family variant "%s" within family "%s" on Akeneo.',
                         $familyVariantCode,
-                        $familyCode
-                    )
+                        $familyCode,
+                    ),
                 );
             }
 
@@ -92,8 +92,8 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
                             'Cannot resolve product options for product "%s" because one of its variant attributes, ' .
                             '"%s", cannot be found on Akeneo.',
                             $akeneoProduct['identifier'],
-                            $attributeCode
-                        )
+                            $attributeCode,
+                        ),
                     );
                 }
 

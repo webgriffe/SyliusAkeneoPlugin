@@ -35,7 +35,7 @@ final class EnqueueCommand extends Command
         private QueueItemRepositoryInterface $queueItemRepository,
         private FactoryInterface $queueItemFactory,
         private DateTimeBuilderInterface $dateTimeBuilder,
-        private ImporterRegistryInterface $importerRegistry
+        private ImporterRegistryInterface $importerRegistry,
     ) {
         parent::__construct();
     }
@@ -43,31 +43,31 @@ final class EnqueueCommand extends Command
     protected function configure(): void
     {
         $this->setDescription(
-            'Populate the Queue with Akeneo\'s entities that has been modified since a specified date/datetime'
+            'Populate the Queue with Akeneo\'s entities that has been modified since a specified date/datetime',
         );
         $this->addOption(
             self::SINCE_OPTION_NAME,
             's',
             InputOption::VALUE_REQUIRED,
-            'Date or datetime with format Y-m-d H:i:s'
+            'Date or datetime with format Y-m-d H:i:s',
         );
         $this->addOption(
             self::SINCE_FILE_OPTION_NAME,
             'sf',
             InputOption::VALUE_REQUIRED,
-            'Relative or absolute path to a file containing a datetime'
+            'Relative or absolute path to a file containing a datetime',
         );
         $this->addOption(
             self::ALL_OPTION_NAME,
             'a',
             InputOption::VALUE_NONE,
-            'Enqueue all identifiers regardless their last modified date.'
+            'Enqueue all identifiers regardless their last modified date.',
         );
         $this->addOption(
             self::IMPORTER_OPTION_NAME,
             'i',
             InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-            'Enqueue items only for specified importers'
+            'Enqueue items only for specified importers',
         );
     }
 
@@ -79,7 +79,7 @@ final class EnqueueCommand extends Command
                 $sinceDate = new \DateTime($sinceOptionValue);
             } catch (\Throwable) {
                 throw new \InvalidArgumentException(
-                    sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME)
+                    sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME),
                 );
             }
         } elseif ('' !== $sinceFilePath = (string) $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
@@ -92,8 +92,8 @@ final class EnqueueCommand extends Command
                     'One of "--%s", "--%s" or "--%s" option must be specified',
                     self::SINCE_OPTION_NAME,
                     self::SINCE_FILE_OPTION_NAME,
-                    self::ALL_OPTION_NAME
-                )
+                    self::ALL_OPTION_NAME,
+                ),
             );
         }
 
@@ -111,8 +111,8 @@ final class EnqueueCommand extends Command
                     sprintf(
                         'There are no <info>%s</info> entities modified since <info>%s</info>',
                         $importer->getAkeneoEntity(),
-                        $sinceDate->format('Y-m-d H:i:s')
-                    )
+                        $sinceDate->format('Y-m-d H:i:s'),
+                    ),
                 );
 
                 continue;
@@ -131,8 +131,8 @@ final class EnqueueCommand extends Command
                     sprintf(
                         '<info>%s</info> entity with identifier <info>%s</info> enqueued.',
                         $importer->getAkeneoEntity(),
-                        $identifier
-                    )
+                        $identifier,
+                    ),
                 );
             }
         }
@@ -150,17 +150,17 @@ final class EnqueueCommand extends Command
     {
         if (!file_exists($filepath)) {
             throw new \InvalidArgumentException(
-                sprintf('The file "%s" does not exists', $filepath)
+                sprintf('The file "%s" does not exists', $filepath),
             );
         }
         if (!is_readable($filepath)) {
             throw new \InvalidArgumentException(
-                sprintf('The file "%s" is not readable', $filepath)
+                sprintf('The file "%s" is not readable', $filepath),
             );
         }
         if (!is_writable($filepath)) {
             throw new \InvalidArgumentException(
-                sprintf('The file "%s" is not writable', $filepath)
+                sprintf('The file "%s" is not writable', $filepath),
             );
         }
 
@@ -201,7 +201,7 @@ final class EnqueueCommand extends Command
         }
         $importersCodes = array_map(
             static fn (ImporterInterface $importer): string => $importer->getAkeneoEntity(),
-            $allImporters
+            $allImporters,
         );
 
         $importersToUse = $input->getOption(self::IMPORTER_OPTION_NAME);

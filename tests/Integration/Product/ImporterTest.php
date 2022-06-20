@@ -54,7 +54,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -80,7 +80,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -111,7 +111,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -140,7 +140,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -168,7 +168,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -194,7 +194,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('10627329');
@@ -219,7 +219,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('10627329');
@@ -250,7 +250,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
@@ -294,7 +294,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
@@ -335,7 +335,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -356,7 +356,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -389,7 +389,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('10627329');
@@ -421,7 +421,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('127469');
@@ -452,7 +452,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('127469');
@@ -484,7 +484,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('16466450');
@@ -508,7 +508,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-s');
@@ -531,7 +531,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-s');
@@ -553,7 +553,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -577,16 +577,16 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
         $this->assertTrue(
             $this->filesystem->exists(
                 self::$container->getParameter(
-                    'sylius_core.public_dir'
-                ) . '/media/attachment/product/1/3/9/e/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg'
-            )
+                    'sylius_core.public_dir',
+                ) . '/media/attachment/product/1/3/9/e/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg',
+            ),
         );
     }
 
@@ -602,7 +602,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('10627329');
@@ -633,7 +633,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -659,7 +659,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-l');
@@ -680,7 +680,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         // Product 127469 in fixture does not have a value for the "description" attribute.
@@ -703,7 +703,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('braided-hat-m');
@@ -726,7 +726,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('no-family-product');

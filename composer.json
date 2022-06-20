@@ -62,10 +62,6 @@
             "symfony/thanks": true
         }
     },
-    "conflict": {
-        "sylius-labs/coding-standard": ">=4.2.1",
-        "symplify/easy-coding-standard": "^10"
-    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.11-dev"

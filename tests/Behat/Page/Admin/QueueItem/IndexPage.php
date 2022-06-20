@@ -31,7 +31,7 @@ class IndexPage extends BaseIndexPage implements IndexPageInterface
                 'filter_imported' => '#criteria_imported',
                 'filter_importer' => '#criteria_akeneoEntity_value',
                 'filter_identifier' => '#criteria_akeneoIdentifier_value',
-            ]
+            ],
         );
     }
 }

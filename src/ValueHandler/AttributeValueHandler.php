@@ -28,7 +28,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         private RepositoryInterface $attributeRepository,
         private FactoryInterface $factory,
         private TranslationLocaleProviderInterface $localeProvider,
-        private ValueConverterInterface $valueConverter
+        private ValueConverterInterface $valueConverter,
     ) {
     }
 
@@ -61,8 +61,8 @@ final class AttributeValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This attribute value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
-                    get_debug_type($subject)
-                )
+                    get_debug_type($subject),
+                ),
             );
         }
 
@@ -74,8 +74,8 @@ final class AttributeValueHandler implements ValueHandlerInterface
                 sprintf(
                     'This attribute value handler only supports existing attributes. ' .
                     'Attribute with the given %s code does not exist.',
-                    $attributeCode
-                )
+                    $attributeCode,
+                ),
             );
         }
 
@@ -118,7 +118,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         AttributeInterface $attribute,
         $value,
         string $localeCode,
-        ProductInterface $product
+        ProductInterface $product,
     ): void {
         $attributeCode = $attribute->getCode();
         Assert::notNull($attributeCode);

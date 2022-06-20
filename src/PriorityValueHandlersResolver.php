@@ -13,7 +13,7 @@ final class PriorityValueHandlersResolver implements ValueHandlersResolverInterf
         $this->valueHandlers[] = ['handler' => $valueHandler, 'priority' => $priority];
         usort(
             $this->valueHandlers,
-            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority']
+            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority'],
         );
     }
 

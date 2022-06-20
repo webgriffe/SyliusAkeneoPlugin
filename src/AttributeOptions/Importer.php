@@ -45,7 +45,7 @@ final class Importer implements ImporterInterface
         }
         usort(
             $attributeOptionsOrdered,
-            static fn (array $option1, array $option2): int => ($option1['sort_order'] ?? 0) <=> ($option2['sort_order'] ?? 0)
+            static fn (array $option1, array $option2): int => ($option1['sort_order'] ?? 0) <=> ($option2['sort_order'] ?? 0),
         );
         $configuration = $attribute->getConfiguration();
         $configuration['choices'] = $this->convertAkeneoAttributeOptionsIntoSyliusChoices($attributeOptionsOrdered);
@@ -64,8 +64,8 @@ final class Importer implements ImporterInterface
         $syliusSelectAttributes = array_filter(
             array_map(
                 static fn (ProductAttributeInterface $attribute): ?string => $attribute->getCode(),
-                $syliusSelectAttributes
-            )
+                $syliusSelectAttributes,
+            ),
         );
         $identifiers = [];
         foreach ($akeneoAttributes as $akeneoAttribute) {
