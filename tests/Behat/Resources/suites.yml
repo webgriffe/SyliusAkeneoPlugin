@@ -130,12 +130,10 @@ default:
                 - sylius.behat.context.hook.doctrine_orm
 
                 - sylius.behat.context.transform.shared_storage
-                - webgriffe_sylius_akeneo.behat.context.transform.queue_item
 
                 - sylius.behat.context.setup.admin_security
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items
                 - sylius.behat.context.ui.admin.notification
 
             filters:

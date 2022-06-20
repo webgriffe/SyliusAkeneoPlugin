@@ -11,7 +11,6 @@ use Sylius\Behat\Page\Admin\Product\IndexPageInterface;
 use Sylius\Behat\Service\Helper\JavaScriptTestHelperInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Component\Core\Model\ProductInterface;
-use Webmozart\Assert\Assert;
 
 final class ManagingProductsContext implements Context
 {
@@ -57,17 +56,5 @@ final class ManagingProductsContext implements Context
             NotificationType::success(),
             'Akeneo PIM import for this product has been already scheduled before',
         );
-    }
-
-    /**
-     * @Then /^I should see (\d+), not imported, items? in the Akeneo queue items list$/
-     */
-    public function iShouldSeeNotImportedItemInTheAkeneoQueueItemsList(int $numberOfItems): void
-    {
-        $this->queueItemsIndexPage->open();
-        Assert::same($this->queueItemsIndexPage->countItems(), $numberOfItems);
-        foreach ($this->indexPage->getColumnFields('importedAt') as $columnField) {
-            Assert::eq($columnField, 'No');
-        }
     }
 }

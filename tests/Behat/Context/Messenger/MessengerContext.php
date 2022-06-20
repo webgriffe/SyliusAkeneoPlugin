@@ -24,15 +24,6 @@ final class MessengerContext implements Context
     }
 
     /**
-     * @Given /^the queue item with identifier "([^"]*)" for the "([^"]*)" importer has an error message containing "([^"]*)"$/
-     */
-    public function theQueueItemHasAnErrorMessageContaining(string $identifier, string $importer, string $message): void
-    {
-        $queueItem = $this->getQueueItemByImporterAndIdentifier($importer, $identifier);
-        Assert::contains((string) $queueItem->getErrorMessage(), $message);
-    }
-
-    /**
      * @Then the queue item with identifier :identifier for the :importer importer should not be in the Akeneo queue
      */
     public function theQueueItemWithIdentifierForTheImporterShouldNotBeInTheAkeneoQueue(string $identifier, string $importer): void
@@ -47,8 +38,10 @@ final class MessengerContext implements Context
      */
     public function theQueueItemWithIdentifierForTheImporterShouldBeInTheAkeneoQueue(string $identifier, string $importer): void
     {
+        $envelope = $this->getEnvelopeByImporterAndIdentifier($importer, $identifier);
+        Assert::notNull($envelope);
         Assert::isInstanceOf(
-            $this->getEnvelopeByImporterAndIdentifier($importer, $identifier)->getMessage(),
+            $envelope->getMessage(),
             ItemImport::class,
         );
     }
@@ -70,17 +63,6 @@ final class MessengerContext implements Context
     }
 
     /**
-     * @Then /^there should be only one queue item with identifier "([^"]*)" for the "([^"]*)" importer in the Akeneo queue$/
-     */
-    public function thereShouldBeOnlyOneProductQueueItemForInTheAkeneoQueue(string $identifier, string $importer): void
-    {
-        $items = $this->queueItemRepository->findBy(
-            ['akeneoEntity' => $importer, 'akeneoIdentifier' => $identifier],
-        );
-        Assert::count($items, 1);
-    }
-
-    /**
      * @Then /^there should be (\d+) items for the "([^"]*)" importer in the Akeneo queue$/
      */
     public function thereShouldBeItemsForTheImporterInTheAkeneoQueue(int $count, string $importer): void
@@ -94,8 +76,10 @@ final class MessengerContext implements Context
      */
     public function thereShouldBeItemsForTheImporterOnlyInTheAkeneoQueue(string $importer): void
     {
+        /** @var Envelope[] $envelopes */
+        $envelopes = $this->transport->get();
         $importerItems = $this->getEnvelopesByImporter($importer);
-        Assert::count($this->transport->get(), count($importerItems));
+        Assert::count($envelopes, count($importerItems));
     }
 
     private function getQueueItemByImporterAndIdentifier(string $importer, string $identifier): ItemImport
@@ -146,7 +130,10 @@ final class MessengerContext implements Context
 
     private function getEnvelopesByImporter(string $importer): array
     {
-        return array_filter($this->transport->get(), static function (Envelope $envelope) use ($importer): bool {
+        /** @var Envelope[] $envelopes */
+        $envelopes = $this->transport->get();
+
+        return array_filter($envelopes, static function (Envelope $envelope) use ($importer): bool {
             /** @var ItemImport|mixed $message */
             $message = $envelope->getMessage();
 
@@ -156,7 +143,9 @@ final class MessengerContext implements Context
 
     private function getEnvelopeByImporterAndIdentifier(string $importer, string $identifier): ?Envelope
     {
-        $envelopes = array_filter($this->transport->get(), static function (Envelope $envelope) use ($importer, $identifier): bool {
+        /** @var Envelope[] $envelopes */
+        $envelopes = $this->transport->get();
+        $envelopes = array_filter($envelopes, static function (Envelope $envelope) use ($importer, $identifier): bool {
             /** @var ItemImport|mixed $message */
             $message = $envelope->getMessage();
 

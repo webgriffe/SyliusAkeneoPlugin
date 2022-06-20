@@ -4,9 +4,6 @@
     <services>
         <defaults public="true" />
 
-        <service id="webgriffe_sylius_akeneo.behat.context.transform.queue_item" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Transform\QueueItemContext">
-        </service>
-
         <service id="webgriffe_sylius_akeneo.behat.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
             <argument type="service" id="sylius.behat.shared_storage" />
             <argument type="service" id="messenger.default_bus"/>
@@ -45,10 +42,6 @@
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext" />
-
-        <service id="webgriffe_sylius_akeneo.behat.context.ui.admin.managing_queue_items" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\ManagingQueueItems">
-            <argument type="service" id="sylius.behat.shared_storage" />
-        </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\ManagingProductsContext">
             <argument type="service" id="sylius.behat.page.admin.product.index" />

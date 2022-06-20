@@ -7,7 +7,6 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup;
 use Behat\Behat\Context\Context;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 
 final class QueueContext implements Context
@@ -39,38 +38,5 @@ final class QueueContext implements Context
         $this->messageBus->dispatch($itemImport);
 
         $this->sharedStorage->set('item', $itemImport);
-    }
-
-    /**
-     * @Given /^there is an already imported item with identifier "([^"]*)" for the "([^"]*)" importer in the Akeneo queue$/
-     */
-    public function thereIsAnAlreadyImportedItemWithIdentifierForTheImporterInTheAkeneoQueue(string $identifier, string $importer): void
-    {
-        /** @var QueueItemInterface $queueItem */
-        $queueItem = $this->queueItemFactory->createNew();
-        $queueItem->setAkeneoEntity($importer);
-        $queueItem->setAkeneoIdentifier($identifier);
-        $queueItem->setCreatedAt(new \DateTime());
-        $queueItem->setImportedAt(new \DateTime());
-        $this->queueItemRepository->add($queueItem);
-        $this->sharedStorage->set('item', $queueItem);
-    }
-
-    /**
-     * @Given /^(this item) has been imported (\d+) days ago$/
-     */
-    public function thisItemHasBeenImportedDaysAgo(QueueItemInterface $queueItem, int $days): void
-    {
-        $queueItem->setImportedAt(new \DateTime("$days days ago"));
-        $this->queueItemRepository->add($queueItem);
-    }
-
-    /**
-     * @Given /^(this item) has been imported now$/
-     */
-    public function thisItemHasBeenImportedNow(QueueItemInterface $queueItem): void
-    {
-        $queueItem->setImportedAt(new \DateTime());
-        $this->queueItemRepository->add($queueItem);
     }
 }
