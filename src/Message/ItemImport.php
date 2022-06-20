@@ -8,7 +8,7 @@ final class ItemImport
 {
     public function __construct(
         private string $akeneoEntity,
-        private string $akeneoIdentifier
+        private string $akeneoIdentifier,
     ) {
     }
 

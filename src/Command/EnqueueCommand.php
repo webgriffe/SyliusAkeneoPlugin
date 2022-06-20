@@ -121,7 +121,7 @@ final class EnqueueCommand extends Command
             foreach ($identifiers as $identifier) {
                 $itemImport = new ItemImport(
                     $importer->getAkeneoEntity(),
-                    $identifier
+                    $identifier,
                 );
                 $this->messageBus->dispatch($itemImport);
                 $output->writeln(

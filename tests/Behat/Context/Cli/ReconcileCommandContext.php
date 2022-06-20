@@ -14,7 +14,7 @@ final class ReconcileCommandContext implements Context
 {
     public function __construct(
         private KernelInterface $kernel,
-        private ReconcileCommand $reconcileCommand
+        private ReconcileCommand $reconcileCommand,
     ) {
     }
 
