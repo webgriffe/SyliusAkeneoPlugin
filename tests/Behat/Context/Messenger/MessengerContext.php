@@ -37,7 +37,8 @@ final class MessengerContext implements Context
      */
     public function theQueueItemWithIdentifierForTheImporterShouldNotBeInTheAkeneoQueue(string $identifier, string $importer): void
     {
-        Assert::null($this->getEnvelopeByImporterAndIdentifier($importer, $identifier),
+        Assert::null(
+            $this->getEnvelopeByImporterAndIdentifier($importer, $identifier),
         );
     }
 
@@ -48,7 +49,7 @@ final class MessengerContext implements Context
     {
         Assert::isInstanceOf(
             $this->getEnvelopeByImporterAndIdentifier($importer, $identifier)->getMessage(),
-            ItemImport::class
+            ItemImport::class,
         );
     }
 

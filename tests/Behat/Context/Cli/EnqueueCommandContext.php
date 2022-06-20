@@ -20,7 +20,7 @@ final class EnqueueCommandContext implements Context
     public function __construct(
         private KernelInterface $kernel,
         private EnqueueCommand $enqueueCommand,
-        private SharedStorageInterface $sharedStorage
+        private SharedStorageInterface $sharedStorage,
     ) {
     }
 

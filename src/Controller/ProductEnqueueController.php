@@ -38,7 +38,7 @@ final class ProductEnqueueController extends AbstractController
 
             $queueItem = new ItemImport(
                 'Product',
-                $productVariantCode
+                $productVariantCode,
             );
             $this->messageBus->dispatch($queueItem);
 

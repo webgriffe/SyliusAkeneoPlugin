@@ -20,7 +20,7 @@ final class ManagingProductsContext implements Context
     public function __construct(
         private IndexPageInterface $indexPage,
         private JavaScriptTestHelperInterface $testHelper,
-        private NotificationCheckerInterface $notificationChecker
+        private NotificationCheckerInterface $notificationChecker,
     ) {
     }
 
