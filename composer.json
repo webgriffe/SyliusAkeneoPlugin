@@ -47,7 +47,7 @@
         "symfony/intl": "^4.4 || ^5.2",
         "symfony/web-profiler-bundle": "^4.4 || ^5.2",
         "theofidry/alice-data-fixtures": "^1.1",
-        "vimeo/psalm": "4.7.1",
+        "vimeo/psalm": "4.23.0",
         "polishsymfonycommunity/symfony-mocker-container": "^1.0"
     },
     "config": {
