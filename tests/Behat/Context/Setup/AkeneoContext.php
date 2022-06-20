@@ -22,7 +22,7 @@ final class AkeneoContext implements Context
     /**
      * @Given there is a product :identifier updated at :date on Akeneo
      */
-    public function thereIsAProductUpdatedAtOnAkeneo(string $identifier, \DateTime $date)
+    public function thereIsAProductUpdatedAtOnAkeneo(string $identifier, \DateTime $date): void
     {
         Assert::isInstanceOf($this->apiClient, ApiClientMock::class);
         $this->apiClient->addProductUpdatedAt($identifier, $date);
@@ -32,9 +32,10 @@ final class AkeneoContext implements Context
      * @Given /^there are (\d+) products on Akeneo$/
      * @Given /^there is (\d+) product on Akeneo$/
      */
-    public function thereAreProductsOnAkeneo(int $count)
+    public function thereAreProductsOnAkeneo(int $count): void
     {
         for ($i = 1; $i <= $count; ++$i) {
+            Assert::isInstanceOf($this->apiClient, ApiClientMock::class);
             $this->apiClient->addProductUpdatedAt('product-' . $i, new \DateTime());
         }
     }

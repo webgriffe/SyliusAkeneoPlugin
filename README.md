@@ -590,6 +590,8 @@ Another provided importer is the **attribute options importer** (`\Webgriffe\Syl
 
 To contribute to this plugin clone this repository, create a branch for your feature or bugfix, do your changes and then make sure al tests are passing.
 
+### Traditional
+
     ```bash
     $ (cd tests/Application && yarn install)
     $ (cd tests/Application && yarn build)
@@ -599,7 +601,15 @@ To contribute to this plugin clone this repository, create a branch for your fea
     $ (cd tests/Application && APP_ENV=test bin/console doctrine:schema:create)
     ```
 
-To be able to setup a plugin's database, remember to configure you database credentials in `tests/Application/.env` and `tests/Application/.env.test`.
+To be able to set up a plugin's database, remember to configure you database credentials in `tests/Application/.env` and `tests/Application/.env.test`.
+
+### Docker
+
+1. Execute `docker compose up -d`
+
+2. Initialize plugin `docker compose exec app make init`
+
+3. See your browser `open localhost`
 
 ### Running plugin tests
 
@@ -612,7 +622,7 @@ To be able to setup a plugin's database, remember to configure you database cred
 - Static analysis
 
   ```bash
-  vendor/bin/phpstan analyse -c phpstan.neon -l max src/
+  vendor/bin/phpstan analyse -c phpstan.neon
   ```
 
 - PHPUnit

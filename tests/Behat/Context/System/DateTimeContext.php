@@ -12,7 +12,7 @@ final class DateTimeContext implements Context
     /**
      * @Given /^current date time is "([^"]+)"$/
      */
-    public function currentDateTimeIs($datetime)
+    public function currentDateTimeIs(string $datetime): void
     {
         DateTimeBuilder::$forcedNow = $datetime;
     }
