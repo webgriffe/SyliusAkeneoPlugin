@@ -31,7 +31,7 @@
             <argument type="service" id="sylius.repository.product_association_type" />
         </service>
 
-        <service id="webgriffe_sylius_akeneo.behat.context.db.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Messenger\MessengerContext">
+        <service id="webgriffe_sylius_akeneo.behat.context.messenger" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Messenger\MessengerContext">
             <argument type="service" id="messenger.transport.main"/>
             <argument type="service" id="webgriffe_sylius_akeneo.message_handler.item_import"/>
         </service>

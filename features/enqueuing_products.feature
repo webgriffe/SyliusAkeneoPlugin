@@ -48,7 +48,7 @@ Feature: Enqueuing products
     And there is one item to import with identifier "BRAIDED_HAT_L" for the "Product" importer in the Akeneo queue
     When I browse products
     And I schedule an Akeneo PIM import for the "Braided hat l" product
-    Then I should be notified that it has been already enqueued
+    Then I should be notified that it has been successfully enqueued
 
   @ui
   Scenario: Enqueuing a configurable product

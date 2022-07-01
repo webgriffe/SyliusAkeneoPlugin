@@ -10,7 +10,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
-                - webgriffe_sylius_akeneo.behat.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.messenger
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
 
             filters:
@@ -26,7 +26,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
-                - webgriffe_sylius_akeneo.behat.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.messenger
 
             filters:
                 tags: "@importing_product_associations && @cli"
@@ -42,7 +42,7 @@ default:
 
                 - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
 
-                - webgriffe_sylius_akeneo.behat.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.messenger
 
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
                 - webgriffe_sylius_akeneo.behat.context.system.datetime
@@ -61,7 +61,7 @@ default:
 
                 - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
 
-                - webgriffe_sylius_akeneo.behat.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.messenger
 
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
                 - webgriffe_sylius_akeneo.behat.context.system.datetime
@@ -82,6 +82,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
                 - sylius.behat.context.ui.admin.managing_products
+                - webgriffe_sylius_akeneo.behat.context.messenger
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
             filters:
                 tags: "@enqueuing_products && @ui"
@@ -97,7 +98,7 @@ default:
 
                 - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
 
-                - webgriffe_sylius_akeneo.behat.context.db.queue
+                - webgriffe_sylius_akeneo.behat.context.messenger
 
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
                 - webgriffe_sylius_akeneo.behat.context.system.datetime
