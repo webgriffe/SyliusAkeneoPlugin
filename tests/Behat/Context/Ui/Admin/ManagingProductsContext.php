@@ -45,16 +45,4 @@ final class ManagingProductsContext implements Context
             'Akeneo PIM product import has been successfully scheduled',
         );
     }
-
-    /**
-     * @Given /^I should be notified that it has been already enqueued$/
-     */
-    public function iShouldBeNotifiedThatItHasBeenAlreadyEnqueued(): void
-    {
-        $this->testHelper->waitUntilNotificationPopups(
-            $this->notificationChecker,
-            NotificationType::success(),
-            'Akeneo PIM import for this product has been already scheduled before',
-        );
-    }
 }
