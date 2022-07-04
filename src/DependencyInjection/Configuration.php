@@ -14,6 +14,9 @@ use Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface;
 
 final class Configuration implements ConfigurationInterface
 {
+    /**
+     * @psalm-suppress MixedMethodCall
+     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('webgriffe_sylius_akeneo');
