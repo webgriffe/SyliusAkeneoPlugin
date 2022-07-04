@@ -125,11 +125,8 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
         $loader->load('services.xml');
 
-        /** @var bool $bindArgumentsByName */
-        $bindArgumentsByName = $config['bind_arguments_by_name'];
-
         $container->addDefinitions(
-            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? [], $bindArgumentsByName),
+            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? []),
         );
     }
 
@@ -152,7 +149,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     /**
      * @return array<string, Definition>
      */
-    private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers, bool $bindArgumentsByName): array
+    private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers): array
     {
         /** @var array<string, Definition> $definitions */
         $definitions = [];
@@ -173,13 +170,12 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 $options = $optionsNamed;
             }
 
-            $bindArgumentsByName = $bindArgumentsByName || $type === 'channel_pricing';
             $arguments = array_merge(
                 array_map(
                     static fn (string $argumentValue): Reference => new Reference($argumentValue),
-                    $bindArgumentsByName ? self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments'] : array_values(self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments']),
+                    self::$valueHandlersTypesDefinitionsPrivate[$type]['arguments'],
                 ),
-                $bindArgumentsByName ? $options : array_values($options),
+                $options,
             );
             $id = sprintf('webgriffe_sylius_akeneo.value_handler.product.%s_value_handler', $key);
             $definition = new Definition(self::$valueHandlersTypesDefinitionsPrivate[$type]['class'], $arguments);
