@@ -24,6 +24,7 @@ final class Configuration implements ConfigurationInterface
 
                 ->booleanNode('bind_arguments_by_name')
                     ->defaultFalse()
+                    ->setDeprecated('webgriffe/sylius-akeneo-plugin', '1.15.1', 'The child node "%node%" at path "%path%" is deprecated and will be removed in 2.0.')
                 ->end()
 
                 ->arrayNode('api_client')
