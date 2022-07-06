@@ -105,7 +105,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $this->shouldHaveType(ValueHandlerInterface::class);
     }
 
-    public function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant)
+    public function it_supports_product_variant_as_subject(ProductVariantInterface $productVariant): void
     {
         $this->supports($productVariant, self::OPTION_CODE, [])->shouldReturn(true);
     }
@@ -347,6 +347,54 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $productOptionValue->setOption($productOption)->shouldHaveBeenCalled();
         $productOption->addValue($productOptionValue)->shouldHaveBeenCalled();
         $englishProductOptionValueTranslation->setValue(self::EN_LABEL)->shouldHaveBeenCalled();
+        $italianProductOptionValueTranslation->setLocale('it_IT')->shouldHaveBeenCalled();
+        $italianProductOptionValueTranslation->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($englishProductOptionValueTranslation)->shouldHaveBeenCalled();
+        $productOptionValue->addTranslation($italianProductOptionValueTranslation)->shouldHaveBeenCalled();
+        $productVariant->addOptionValue($productOptionValue)->shouldHaveBeenCalled();
+        $productOptionValueTranslationFactory->createNew()->shouldHaveBeenCalledOnce();
+    }
+
+    public function it_use_akeneo_value_if_label_is_null_for_a_locale(
+        ProductVariantInterface $productVariant,
+        ProductOptionValueInterface $productOptionValue,
+        ProductOptionValueTranslationInterface $englishProductOptionValueTranslation,
+        ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
+        ProductOptionInterface $productOption,
+        RepositoryInterface $productOptionValueRepository,
+        ApiClientInterface $apiClient,
+        FactoryInterface $productOptionValueTranslationFactory
+    ): void {
+        $value = [
+            [
+                'scope' => null,
+                'locale' => null,
+                'data' => self::VALUE_CODE,
+            ],
+        ];
+        $productOptionValueRepository->findOneBy(['code' => self::OPTION_CODE . '_' . self::VALUE_CODE])->willReturn(null);
+        $productVariant->hasOptionValue($productOptionValue)->willReturn(false);
+        $apiClient
+            ->findAttributeOption(self::OPTION_CODE, self::VALUE_CODE)
+            ->willReturn(
+                [
+                    'code' => self::VALUE_CODE,
+                    'attribute' => self::OPTION_CODE,
+                    'sort_order' => 4,
+                    'labels' => [
+                        'en_US' => null,
+                        'it_IT' => self::IT_LABEL,
+                        'de_DE' => 'German Label'
+                    ],
+                ]
+            )
+        ;
+        $this->handle($productVariant, self::OPTION_CODE, $value);
+
+        $productOptionValue->setCode('option-code_value-code')->shouldHaveBeenCalled();
+        $productOptionValue->setOption($productOption)->shouldHaveBeenCalled();
+        $productOption->addValue($productOptionValue)->shouldHaveBeenCalled();
+        $englishProductOptionValueTranslation->setValue(self::VALUE_CODE)->shouldHaveBeenCalled();
         $italianProductOptionValueTranslation->setLocale('it_IT')->shouldHaveBeenCalled();
         $italianProductOptionValueTranslation->setValue(self::IT_LABEL)->shouldHaveBeenCalled();
         $productOptionValue->addTranslation($englishProductOptionValueTranslation)->shouldHaveBeenCalled();

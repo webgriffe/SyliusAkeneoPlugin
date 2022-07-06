@@ -189,6 +189,10 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 )
             );
         }
+        /**
+         * @var string $localeCode
+         * @var ?string $label
+         */
         foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
             if ($this->translationLocaleProvider !== null &&
                 !in_array($localeCode, $this->translationLocaleProvider->getDefinedLocalesCodes(), true)) {
@@ -200,7 +204,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
                 $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
                 $optionValueTranslation->setLocale($localeCode);
             }
-            $optionValueTranslation->setValue($label);
+            $optionValueTranslation->setValue($label ?? $akeneoValue);
             if (!$optionValue->hasTranslation($optionValueTranslation)) {
                 $optionValue->addTranslation($optionValueTranslation);
             }
