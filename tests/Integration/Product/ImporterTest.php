@@ -681,8 +681,10 @@ final class ImporterTest extends KernelTestCase
     {
         $this->fixtureLoader->load(
             [
+                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
                 __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
             ],
             [],
             [],
