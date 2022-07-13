@@ -10,10 +10,12 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use RuntimeException;
 use stdClass;
-use Sylius\Component\Core\Model\Channel;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
+use Sylius\Component\Locale\Provider\LocaleProviderInterface;
 use Sylius\Component\Product\Model\ProductVariantTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
@@ -36,7 +38,11 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         ProductVariantTranslationInterface $italianProductVariantTranslation,
         ProductInterface $product,
         ProductTranslationInterface $englishProductTranslation,
-        ProductTranslationInterface $italianProductTranslation
+        ProductTranslationInterface $italianProductTranslation,
+        LocaleInterface $italianLocale,
+        LocaleInterface $englishLocale,
+        ChannelInterface $commerceChannel,
+        ChannelInterface $supportChannel
     ): void {
         $propertyAccessor->isWritable($englishProductVariantTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
         $propertyAccessor->isWritable($italianProductVariantTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
@@ -44,26 +50,28 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         $propertyAccessor->isWritable($italianProductTranslation, self::TRANSLATION_PROPERTY_PATH)->willReturn(true);
 
         $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
+        $italianLocale->getCode()->willReturn('it_IT');
+        $englishLocale->getCode()->willReturn('en_US');
 
-        $productVariant->getProduct()->willReturn($product);
-        $commerceChannel = new Channel();
-        $commerceChannel->setCode('ecommerce');
-        $supportChannel = new Channel();
-        $supportChannel->setCode('support');
-        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
-        $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
+        $commerceChannel->getCode()->willReturn('ecommerce');
+        $commerceChannel->getLocales()->willReturn(new ArrayCollection([$italianLocale->getWrappedObject(), $englishLocale->getWrappedObject()]));
+        $supportChannel->getCode()->willReturn('support');
+        $supportChannel->getLocales()->willReturn(new ArrayCollection([$italianLocale->getWrappedObject(), $englishLocale->getWrappedObject()]));
 
-        $productVariant->getProduct()->willReturn($product);
         $englishProductVariantTranslation->getLocale()->willReturn('en_US');
         $italianProductVariantTranslation->getLocale()->willReturn('it_IT');
         $englishProductVariantTranslation->getTranslatable()->willReturn($productVariant);
         $italianProductVariantTranslation->getTranslatable()->willReturn($productVariant);
-        $productVariant->getTranslation('en_US')->willReturn($englishProductVariantTranslation);
-        $productVariant->getTranslation('it_IT')->willReturn($italianProductVariantTranslation);
         $englishProductTranslation->getLocale()->willReturn('en_US');
         $italianProductTranslation->getLocale()->willReturn('it_IT');
+
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel->getWrappedObject(), $supportChannel->getWrappedObject()]));
         $product->getTranslation('en_US')->willReturn($englishProductTranslation);
         $product->getTranslation('it_IT')->willReturn($italianProductTranslation);
+
+        $productVariant->getProduct()->willReturn($product);
+        $productVariant->getTranslation('en_US')->willReturn($englishProductVariantTranslation);
+        $productVariant->getTranslation('it_IT')->willReturn($italianProductVariantTranslation);
 
         $this->beConstructedWith(
             $propertyAccessor,
@@ -176,6 +184,21 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
         ProductTranslationInterface $productTranslation,
         PropertyAccessorInterface $propertyAccessor
     ): void {
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
+
+        $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
+        $propertyAccessor->setValue($productTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
+    }
+
+    public function it_skips_locales_not_used_in_any_product_channels(
+        ProductVariantInterface $productVariant,
+        ProductVariantTranslationInterface $productVariantTranslation,
+        ProductTranslationInterface $productTranslation,
+        PropertyAccessorInterface $propertyAccessor,
+        LocaleProviderInterface $localeProvider
+    ): void {
+        $localeProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT', 'es_ES']);
+
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE_CODE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
 
         $propertyAccessor->setValue($productVariantTranslation, self::TRANSLATION_PROPERTY_PATH, 'New value')->shouldNotHaveBeenCalled();
@@ -321,14 +344,14 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
     public function it_throws_when_data_is_not_an_array(ProductVariantInterface $productVariant): void
     {
         $this
-            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: expected an array, "NULL" given.',))
+            ->shouldThrow(new InvalidArgumentException('Invalid Akeneo value data: expected an array, "NULL" given.',))
             ->during('handle', [$productVariant, self::AKENEO_ATTRIBUTE_CODE, [null]]);
     }
 
     public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
     {
         $this
-            ->shouldThrow(new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.',))
+            ->shouldThrow(new InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.',))
             ->during(
                 'handle',
                 [
