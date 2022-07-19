@@ -343,6 +343,6 @@ final class ApiClient implements ApiClientInterface, AttributeOptionsApiClientIn
 
     private function getEncodedProductCode(string $code): string
     {
-        return implode('/', array_map('urlencode', explode('/', $code)));
+        return implode('/', array_map('rawurlencode', explode('/', $code)));
     }
 }
