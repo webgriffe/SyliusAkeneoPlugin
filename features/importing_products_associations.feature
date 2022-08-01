@@ -1,4 +1,4 @@
-@enqueuing_products_associations
+@importing_products_associations
 Feature: Enqueuing products associations
   In order to import my products associations from Akeneo
   As a Store Owner

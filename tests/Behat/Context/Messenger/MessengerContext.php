@@ -7,21 +7,13 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Messenger;
 use Behat\Behat\Context\Context;
 use InvalidArgumentException;
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Throwable;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
-use Webgriffe\SyliusAkeneoPlugin\MessageHandler\ItemImportHandler;
 use Webmozart\Assert\Assert;
 
 final class MessengerContext implements Context
 {
     private array $failedMessages = [];
-
-    public function __construct(
-        private InMemoryTransport $transport,
-        private ItemImportHandler $itemImportHandler,
-    ) {
-    }
 
     /**
      * @Then the queue item with identifier :identifier for the :importer importer should not be in the Akeneo queue

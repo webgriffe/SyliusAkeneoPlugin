@@ -8,9 +8,13 @@ use Behat\Behat\Context\Context;
 use Behat\Mink\Element\NodeElement;
 use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Admin\Product\IndexPageInterface;
+use Sylius\Behat\Page\Admin\Product\UpdateSimpleProductPageInterface;
 use Sylius\Behat\Service\Helper\JavaScriptTestHelperInterface;
 use Sylius\Behat\Service\NotificationCheckerInterface;
 use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Repository\ProductRepositoryInterface;
+use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
+use Webmozart\Assert\Assert;
 
 final class ManagingProductsContext implements Context
 {
@@ -20,6 +24,8 @@ final class ManagingProductsContext implements Context
         private IndexPageInterface $indexPage,
         private JavaScriptTestHelperInterface $testHelper,
         private NotificationCheckerInterface $notificationChecker,
+        private UpdateSimpleProductPageInterface $updateSimpleProductPage,
+        private ProductRepositoryInterface $productRepository,
     ) {
     }
 
@@ -43,6 +49,48 @@ final class ManagingProductsContext implements Context
             $this->notificationChecker,
             NotificationType::success(),
             'Akeneo PIM product import has been successfully scheduled',
+        );
+    }
+
+    /**
+     * @Then the product with code :code should have an association :productAssociationType with product :productName
+     */
+    public function theProductShouldHaveAnAssociationWithProducts(
+        string $code,
+        ProductAssociationTypeInterface $productAssociationType,
+        ...$productsNames,
+    ): void {
+        $product = $this->productRepository->findOneByCode($code);
+        $this->updateSimpleProductPage->open(['id' => $product->getId()]);
+        foreach ($productsNames as $productName) {
+            Assert::true(
+                $this->updateSimpleProductPage->hasAssociatedProduct($productName, $productAssociationType),
+                sprintf(
+                    'This product should have an association %s with product %s.',
+                    $productAssociationType->getName(),
+                    $productName,
+                ),
+            );
+        }
+    }
+
+    /**
+     * @Then the product with code :code should not have an association :productAssociationType with product :productName
+     */
+    public function theProductShouldNotHaveAnAssociationWithProduct(
+        string $code,
+        ProductAssociationTypeInterface $productAssociationType,
+        string $productName,
+    ): void {
+        $product = $this->productRepository->findOneByCode($code);
+        $this->updateSimpleProductPage->open(['id' => $product->getId()]);
+        Assert::false(
+            $this->updateSimpleProductPage->hasAssociatedProduct($productName, $productAssociationType),
+            sprintf(
+                'This product should have an association %s with product %s.',
+                $productAssociationType->getName(),
+                $productName,
+            ),
         );
     }
 }

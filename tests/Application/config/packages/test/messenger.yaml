@@ -1,4 +1,4 @@
 framework:
     messenger:
         transports:
-            main: 'in-memory://'
+            main: 'sync://'
