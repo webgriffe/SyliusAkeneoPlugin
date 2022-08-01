@@ -1,3 +1,3 @@
-webgriffe_sylius_akeneo_product_enqueue:
-    controller: webgriffe_sylius_akeneo.controller.product_enqueue_controller:enqueueAction
-    path: product/{productId}/enqueue
+webgriffe_sylius_akeneo_product_import:
+    controller: webgriffe_sylius_akeneo.controller.product_import_controller:importAction
+    path: product/{productId}/import

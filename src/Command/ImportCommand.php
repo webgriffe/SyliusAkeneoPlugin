@@ -19,7 +19,7 @@ use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webmozart\Assert\Assert;
 
-final class EnqueueCommand extends Command
+final class ImportCommand extends Command
 {
     use LockableTrait;
 
@@ -31,7 +31,7 @@ final class EnqueueCommand extends Command
 
     private const IMPORTER_OPTION_NAME = 'importer';
 
-    protected static $defaultName = 'webgriffe:akeneo:enqueue';
+    protected static $defaultName = 'webgriffe:akeneo:import';
 
     public function __construct(
         private DateTimeBuilderInterface $dateTimeBuilder,
@@ -44,7 +44,7 @@ final class EnqueueCommand extends Command
     protected function configure(): void
     {
         $this->setDescription(
-            'Populate the Queue with Akeneo\'s entities that has been modified since a specified date/datetime',
+            'Import Akeneo\'s entities that has been modified since a specified date/datetime',
         );
         $this->addOption(
             self::SINCE_OPTION_NAME,
@@ -62,13 +62,13 @@ final class EnqueueCommand extends Command
             self::ALL_OPTION_NAME,
             'a',
             InputOption::VALUE_NONE,
-            'Enqueue all identifiers regardless their last modified date.',
+            'Import all identifiers regardless their last modified date.',
         );
         $this->addOption(
             self::IMPORTER_OPTION_NAME,
             'i',
             InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-            'Enqueue items only for specified importers',
+            'Import items only for specified importers',
         );
     }
 
@@ -126,7 +126,7 @@ final class EnqueueCommand extends Command
                 $this->messageBus->dispatch($itemImport);
                 $output->writeln(
                     sprintf(
-                        '<info>%s</info> entity with identifier <info>%s</info> enqueued.',
+                        '<info>%s</info> entity with identifier <info>%s</info> imported.',
                         $importer->getAkeneoEntity(),
                         $identifier,
                     ),

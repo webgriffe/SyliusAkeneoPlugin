@@ -97,9 +97,9 @@ final class MessengerContext implements Context
     }
 
     /**
-     * @When I consume the messages
+     * @When I import all from Akeneo
      */
-    public function iConsumeTheMessages(): void
+    public function IImportAllFromAkeneo(): void
     {
         foreach ($this->transport->get() as $envelope) {
             $message = $envelope->getMessage();

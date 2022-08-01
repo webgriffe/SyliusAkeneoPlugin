@@ -1,7 +1,7 @@
 sylius_grid:
     templates:
         action:
-            enqueueProduct: '@WebgriffeSyliusAkeneoPlugin\Product\Grid\Action\enqueue.html.twig'
+            importProduct: '@WebgriffeSyliusAkeneoPlugin\Product\Grid\Action\import.html.twig'
     grids:
         webgriffe_sylius_akeneo_admin_queue_item:
             driver:
@@ -59,12 +59,12 @@ sylius_grid:
         sylius_admin_product:
             actions:
                 item:
-                    enqueue:
-                        type: enqueueProduct
-                        label: webgriffe_sylius_akeneo.ui.enqueue
+                    import:
+                        type: importProduct
+                        label: webgriffe_sylius_akeneo.ui.import
                         options:
                             link:
-                                route: webgriffe_sylius_akeneo_product_enqueue
+                                route: webgriffe_sylius_akeneo_product_import
                                 parameters:
                                     productId: resource.id
                             icon: cloud download
