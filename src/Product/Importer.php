@@ -104,8 +104,10 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {
-            Assert::string($product['identifier']);
-            $identifiers[] = $product['identifier'];
+            Assert::keyExists($product, 'identifier');
+            $productIdentifier = (string) $product['identifier'];
+            Assert::stringNotEmpty($productIdentifier);
+            $identifiers[] = $productIdentifier;
         }
 
         return $identifiers;

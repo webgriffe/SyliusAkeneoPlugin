@@ -1,4 +1,4 @@
-@enqueuing_products
+@importing_products
 Feature: Enqueuing products
   In order to import my products from Akeneo
   As a Store Owner

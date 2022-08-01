@@ -1,0 +1,82 @@
+{
+    "identifier": "10597353",
+    "enabled": true,
+    "family": "loudspeakers",
+    "categories": [
+        "audio_video_sales",
+        "loudspeakers",
+        "nec"
+    ],
+    "groups": [],
+    "parent": null,
+    "values": {
+        "picture": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "6/5/8/8/65887ee600d9d66e829a75beedf374533b1ff8bc_10597353_1104.jpg",
+                "_links": {
+                    "download": {
+                        "href": "http://127.0.0.1:8081/api/rest/v1/media-files/6/5/8/8/65887ee600d9d66e829a75beedf374533b1ff8bc_10597353_1104.jpg/download"
+                    }
+                }
+            }
+        ],
+        "name": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "NEC SP-4046PV"
+            }
+        ],
+        "description": [
+            {
+                "locale": "de_DE",
+                "scope": "print",
+                "data": "Dem edlen Design der Displays angepasst und mit wenigen Handgriffen montiert bzw. demontiert."
+            },
+            {
+                "locale": "en_US",
+                "scope": "print",
+                "data": "Enhance your Large-Screen Display Speakers without breaking your budget with NEC's SP-4046PV."
+            },
+            {
+                "locale": "fr_FR",
+                "scope": "print",
+                "data": "Adapté au design des moniteurs LCD NEC Public Display, montage et démontage faciles."
+            }
+        ],
+        "release_date": [
+            {
+                "locale": null,
+                "scope": "ecommerce",
+                "data": "2011-08-07T00:00:00+00:00"
+            }
+        ]
+    },
+    "created": "2022-04-14T13:14:05+00:00",
+    "updated": "2022-04-14T13:14:05+00:00",
+    "associations": {
+        "PACK": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "UPSELL": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "X_SELL": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "SUBSTITUTION": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        }
+    },
+    "quantified_associations": {}
+}

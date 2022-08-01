@@ -1,0 +1,84 @@
+{
+    "identifier": "11164822",
+    "enabled": true,
+    "family": "loudspeakers",
+    "categories": [
+        "audio_video_sales",
+        "loudspeakers",
+        "philips"
+    ],
+    "groups": [],
+    "parent": null,
+    "values": {
+        "picture": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "7/3/6/b/736bbc43fd1e384f4badbeababd84389b31159f8_11164822_Philips.jpg",
+                "_links": {
+                    "download": {
+                        "href": "http://127.0.0.1:8081/api/rest/v1/media-files/7/3/6/b/736bbc43fd1e384f4badbeababd84389b31159f8_11164822_Philips.jpg/download"
+                    }
+                }
+            }
+        ],
+        "name": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "Philips AD7000W"
+            }
+        ],
+        "description": [
+            {
+                "locale": "de_DE",
+                "scope": "print",
+                "data": "<b>Eleganz und erstklassige Audio-Qualität, kabellos dank AirPlay</b>\\nBegeistert von Sound\\n\\nDieser kabellose Philips Fidelio-Lautsprecher ermöglicht es Ihnen, Titel direkt von Ihrem iPod/iPhone/iPad und über iTunes auf Ihrem Computer abzuspielen, und das ganze kabellos dank AirPlay. Dieser elegante und kompakte Lautsprecher erfüllt Ihr Zuhause mit großartiger Musik ganz ohne Kabelgewirr.\\n\\nKristallklarer Klang\\n- SoundAvia für eine ausgewogene Klangleistung\\n- 10 W RMS Gesamtausgangsleistung\\n\\nElegant und kompakt\\n- Kompaktes Design mit minimalem Platzbedarf für jeden Lebensstil\\n\\nNoch vielseitiger\\n- Musikübertragung mit kabelloser AirPlay-Technologie\\n- Gleichzeitiges Wiedergeben und Aufladen Ihres iPods/iPhones/iPads\\n- AUX-Eingang für einfaches Anschließen an nahezu jedes elektronische Gerät\\n- Entdecken Sie Musik und weitere Funktionen, und teilen Sie diese über die kostenlose Fidelio\\nApp"
+            },
+            {
+                "locale": "en_US",
+                "scope": "print",
+                "data": "<b>Elegance and superb audio, wirelessly with AirPlay</b>\\nObsessed with sound\\n\\nThis Philips Fidelio wireless speaker gives you the freedom to play songs directly from\\nyour iPod/iPhone/iPad, and from your computer’s iTunes - wirelessly via AirPlay. Elegant\\nand compact, it fills your home with great music, not clutter.\\n\\n<b>Crystal clear sound</b>\\n- SoundAvia for well-balanced sound performance\\n- 10 W RMS total output power\\n\\n<b>Elegant and compact</b>\\n- Compact design for any space, any lifestyle\\n\\n<b>Advanced versatility</b>\\n- Stream music with AirPlay wireless technology\\n- Play and charge your iPod/iPhone/iPad simultaneously\\n- AUX-in for easy connection to almost any electronic device\\n- Discover, share music and more features via free Fidelio app"
+            },
+            {
+                "locale": "fr_FR",
+                "scope": "print",
+                "data": "<b>Élégance et qualité audio exceptionnelle, sans fil avec AirPlay</b>\\nL'obsession du son\\n\\nCette enceinte sans fil Philips Fidelio vous laisse la liberté d'écouter des morceaux directement à partir de votre iPod/iPhone/iPad ou depuis iTunes sur votre ordinateur, tout cela sans fil grâce à AirPlay. Élégante et compacte, elle emplit votre maison d'un son haute qualité, sans l'encombrer inutilement.\\n\\nSon limpide\\n- SoundAvia pour des performances sonores équilibrées\\n- Puissance de sortie totale de 10 W RMS\\n\\nÉlégante et compacte\\n- Design compact pour tous les intérieurs et tous les modes de vie\\n\\nPolyvalence accrue\\n- Technologie de diffusion de la musique sans fil AirPlay\\n- Écoutez et chargez simultanément votre iPod/iPhone/iPad\\n- Entrée AUX, pour une connexion facile à la plupart des périphériques électroniques\\n- Découvrez et partagez de la musique et bien plus via l'appli Fidelio gratuite"
+            }
+        ],
+        "release_date": [
+            {
+                "locale": null,
+                "scope": "ecommerce",
+                "data": "2011-10-09T00:00:00+00:00"
+            }
+        ]
+    },
+    "created": "2022-04-14T13:14:01+00:00",
+    "updated": "2022-04-14T13:14:01+00:00",
+    "associations": {
+        "PACK": {
+            "products": [
+                "10597353"
+            ],
+            "product_models": [],
+            "groups": []
+        },
+        "UPSELL": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "X_SELL": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        },
+        "SUBSTITUTION": {
+            "products": [],
+            "product_models": [],
+            "groups": []
+        }
+    },
+    "quantified_associations": {}
+}
