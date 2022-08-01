@@ -12,41 +12,41 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Throwable;
-use Webgriffe\SyliusAkeneoPlugin\Command\EnqueueCommand;
+use Webgriffe\SyliusAkeneoPlugin\Command\ImportCommand;
 use Webmozart\Assert\Assert;
 
-final class EnqueueCommandContext implements Context
+final class ImportCommandContext implements Context
 {
     public function __construct(
         private KernelInterface $kernel,
-        private EnqueueCommand $enqueueCommand,
+        private ImportCommand $enqueueCommand,
         private SharedStorageInterface $sharedStorage,
     ) {
     }
 
     /**
-     * @When I enqueue items for all importers modified since date :date
+     * @When I import items for all importers modified since date :date
      */
-    public function iRunEnqueueCommandWithSinceDate(DateTime $date): void
+    public function iImportItemsForAllImportersModifiedSinceDate(DateTime $date): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => $date->format('Y-m-d H:i:s')]);
+            $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--since' => $date->format('Y-m-d H:i:s')]);
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
 
     /**
-     * @When I enqueue items for all importers with no since date
+     * @When I import items for all importers with no since date
      */
-    public function iEnqueueItemsForAllImportersWithNoSinceDate(): void
+    public function iImportItemsForAllImportersWithNoSinceDate(): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue']);
+            $commandTester->execute(['command' => 'webgriffe:akeneo:import']);
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
@@ -67,14 +67,14 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When I enqueue items for all importers with invalid since date
+     * @When I import items for all importers with invalid since date
      */
-    public function iEnqueueItemsForAllImportersWithInvalidSinceDate(): void
+    public function iImportItemsForAllImportersWithInvalidSinceDate(): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since' => 'bad date']);
+            $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--since' => 'bad date']);
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
@@ -92,15 +92,15 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When I enqueue items with since date specified from a not existent file
+     * @When I import items with since date specified from a not existent file
      */
-    public function iEnqueueItemsWithSinceDateSpecifiedFromANotExistentFile(): void
+    public function iImportItemsWithSinceDateSpecifiedFromANotExistentFile(): void
     {
         $commandTester = $this->getCommandTester();
         $filepath = vfsStream::url('root/not-existent-file.txt');
 
         try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since-file' => $filepath]);
+            $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--since-file' => $filepath]);
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
@@ -118,52 +118,52 @@ final class EnqueueCommandContext implements Context
     }
 
     /**
-     * @When I enqueue items for all importers modified since date specified from file :file
+     * @When I import items for all importers modified since date specified from file :file
      */
-    public function iEnqueueItemsForAllImportersModifiedSinceDateSpecifiedFromFile(string $file): void
+    public function iImportItemsForAllImportersModifiedSinceDateSpecifiedFromFile(string $file): void
     {
         $commandTester = $this->getCommandTester();
         $filepath = vfsStream::url('root/' . $file);
 
         try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--since-file' => $filepath]);
+            $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--since-file' => $filepath]);
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
         }
     }
 
     /**
-     * @When I enqueue all items for all importers
+     * @When I import all items for all importers
      */
-    public function iEnqueueAllItemsForAllImporters(): void
+    public function iImportAllItemsForAllImporters(): void
     {
         $commandTester = $this->getCommandTester();
 
-        $commandTester->execute(['command' => 'webgriffe:akeneo:enqueue', '--all' => true]);
+        $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--all' => true]);
     }
 
     /**
-     * @When I enqueue all items for the :importer importer
+     * @When I import all items for the :importer importer
      */
-    public function iEnqueueAllItemsForTheImporter(string $importer): void
+    public function iImportAllItemsForTheImporter(string $importer): void
     {
         $commandTester = $this->getCommandTester();
 
         $commandTester->execute(
-            ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => [$importer]],
+            ['command' => 'webgriffe:akeneo:import', '--all' => true, '--importer' => [$importer]],
         );
     }
 
     /**
-     * @When I enqueue all items for a not existent importer
+     * @When I import all items for a not existent importer
      */
-    public function iEnqueueAllItemsForANotExistentImporter(): void
+    public function iImportAllItemsForANotExistentImporter(): void
     {
         $commandTester = $this->getCommandTester();
 
         try {
             $commandTester->execute(
-                ['command' => 'webgriffe:akeneo:enqueue', '--all' => true, '--importer' => ['not_existent']],
+                ['command' => 'webgriffe:akeneo:import', '--all' => true, '--importer' => ['not_existent']],
             );
         } catch (Throwable $t) {
             $this->sharedStorage->set('command_exception', $t);
@@ -185,7 +185,7 @@ final class EnqueueCommandContext implements Context
     {
         $application = new Application($this->kernel);
         $application->add($this->enqueueCommand);
-        $command = $application->find('webgriffe:akeneo:enqueue');
+        $command = $application->find('webgriffe:akeneo:import');
 
         return new CommandTester($command);
     }

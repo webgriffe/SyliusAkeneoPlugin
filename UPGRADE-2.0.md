@@ -64,7 +64,7 @@ Removed all deprecations of the v1.x releases.
 ##### Removed
  - [BC] Property Webgriffe\SyliusAkeneoPlugin\DependencyInjection\WebgriffeSyliusAkeneoExtension::$valueHandlersTypesDefinitions was removed
  - [BC] Removed the service `webgriffe_sylius_akeneo_plugin.repository.cleanable_queue_item`, use the `webgriffe_sylius_akeneo.repository.cleanable_queue_item` instead.
- - [BC] Removed the service `webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller`, use the `webgriffe_sylius_akeneo.controller.product_enqueue_controller` instead.
+ - [BC] Removed the service `webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller`, use the `webgriffe_sylius_akeneo.controller.product_import_controller` instead.
  - [BC] Removed the resource `webgriffe_sylius_akeneo_plugin.queue_item` use the `webgriffe_sylius_akeneo.queue_item` instead.
 
 ### Test changes

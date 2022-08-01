@@ -40,7 +40,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
+                - webgriffe_sylius_akeneo.behat.context.cli.import_command
 
                 - webgriffe_sylius_akeneo.behat.context.messenger
 
@@ -59,7 +59,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
+                - webgriffe_sylius_akeneo.behat.context.cli.import_command
 
                 - webgriffe_sylius_akeneo.behat.context.messenger
 
@@ -96,7 +96,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
 
-                - webgriffe_sylius_akeneo.behat.context.cli.enqueue_command
+                - webgriffe_sylius_akeneo.behat.context.cli.import_command
 
                 - webgriffe_sylius_akeneo.behat.context.messenger
 

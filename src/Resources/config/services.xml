@@ -7,7 +7,7 @@
 
     <services>
         <!-- Commands -->
-        <service id="webgriffe_sylius_akeneo.command.enqueue" class="Webgriffe\SyliusAkeneoPlugin\Command\EnqueueCommand">
+        <service id="webgriffe_sylius_akeneo.command.import" class="Webgriffe\SyliusAkeneoPlugin\Command\ImportCommand">
             <argument type="service" id="webgriffe_sylius_akeneo.date_time_builder"/>
             <argument type="service" id="webgriffe_sylius_akeneo.importer_registry"/>
             <argument type="service" id="messenger.default_bus"/>
@@ -46,7 +46,7 @@
         <service id="webgriffe_sylius_akeneo.slugify" class="Cocur\Slugify\Slugify" />
         <service id="Cocur\Slugify\SlugifyInterface" alias="webgriffe_sylius_akeneo.slugify" />
 
-        <service id="webgriffe_sylius_akeneo.controller.product_enqueue_controller" class="Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController" >
+        <service id="webgriffe_sylius_akeneo.controller.product_import_controller" class="Webgriffe\SyliusAkeneoPlugin\Controller\ProductImportController" >
             <tag name="controller.service_arguments"/>
             <argument type="service" id="sylius.repository.product" />
             <argument type="service" id="messenger.default_bus" />

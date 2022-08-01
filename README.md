@@ -379,7 +379,7 @@ This plugin will also import product associations. It's a zero configuration imp
 
 ### Launch data import from CLI
 
-To actually import data you must first create queue items with the **enqueue command** and then you can import them with the **consume command**.
+To actually import data you must first create queue items with the **import command** and then you can import them with the **consume command**.
 
 #### Schedule Akeneo PIM import button
 
@@ -387,41 +387,41 @@ This button allows you to queue a product directly from the admin index page. By
 
 ![Schedule Akeneo PIM import button](schedule-akeneo-import-button.png)
 
-#### Enqueue command
+#### Import command
 
-To create queue items you can use the `webgriffe:akeneo:enqueue` console command:
+To create queue items you can use the `webgriffe:akeneo:import` console command:
 
 ```bash
-bin/console webgriffe:akeneo:enqueue --since="2020-01-30"
+bin/console webgriffe:akeneo:import --since="2020-01-30"
 ```
 
-This will enqueue all Akeneo entities updated after the provided date.
+This will import all Akeneo entities updated after the provided date.
 
 You can also use a "since file" where to read the since date:
 
 ```bash
 echo "2020-01-30" > var/storage/akeneo-sincefile.txt
-bin/console webgriffe:akeneo:enqueue --since-file="var/storage/akeneo-sincefile.txt"
+bin/console webgriffe:akeneo:import --since-file="var/storage/akeneo-sincefile.txt"
 ```
 
-When run with the since file, the enqueue command will write the current date/time to the since file after the enqueueing process is terminated. This is useful when you put the  enqueue command in cron:
+When run with the since file, the import command will write the current date/time to the since file after the importing process is terminated. This is useful when you put the import command in cron:
 
 ```
-*  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt
+*  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt
 ```
 
-This way the enqueue command is run repeatedly enqueuing only producs modified since the last command execution.
+This way the import command is run repeatedly importing only products modified since the last command execution.
 
-You can also enqueue items only for specific importers:
+You can also import items only for specific importers:
 
 ```bash
-bin/console webgriffe:akeneno:enqueue --importer="Product" --importer="MyImporter" --since="2020-01-30"
+bin/console webgriffe:akeneno:import --importer="Product" --importer="MyImporter" --since="2020-01-30"
 ```
 
-You can also enqueue items regardless of their last update date:
+You can also import items regardless of their last update date:
 
 ```bash
-bin/console webgriffe:akeneno:enqueue --all
+bin/console webgriffe:akeneno:import --all
 ```
 
 #### Consume command
@@ -474,20 +474,20 @@ It could be useful to add also this command to your scheduler to run automatical
 To make all importers and other plugin features work automatically the following is the suggested crontab:
 
 ```
-0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --all --importer="AttributeOptions"
-*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:enqueue --since-file=/path/to/sylius/var/storage/akeneo-enqueue-sincefile.txt --importer="Product" --importer="ProductAssociations"
+0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="AttributeOptions"
+*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductAssociations"
 *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
 0   0   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:cleanup-queue
 0   */6 *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
 ```
 
 This will:
-* Enqueue the update of all attribute options every hour
+* Import the update of all attribute options every hour
 * Import, every minute, all products that have been modified since the last execution, along with their associations
 * Clean the imported items queue older than 10 days, every day at midnight
 * Reconcile Akeneo deleted products every 6 hours
 
-Enqueue, Consume and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents running them if another instance of the same command is already running.
+Import, Consume and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents running them if another instance of the same command is already running.
 
 ## Architecture & customization
 

@@ -8,7 +8,7 @@ webgriffe_sylius_akeneo:
         imported_yes: Yes, at %date%
         imported_no: No
         error_message: Error message
-        enqueue: Schedule Akeneo PIM import
+        import: Schedule Akeneo PIM import
         enqueued_success: Akeneo PIM import for product "{code}" has been successfully scheduled
         product_not_exist: Product not found
         product_already_enqueued: Akeneo PIM import for product "{code}" has been already scheduled before

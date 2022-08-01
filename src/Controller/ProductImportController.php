@@ -14,7 +14,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webmozart\Assert\Assert;
 
-final class ProductEnqueueController extends AbstractController
+final class ProductImportController extends AbstractController
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
@@ -23,7 +23,7 @@ final class ProductEnqueueController extends AbstractController
     ) {
     }
 
-    public function enqueueAction(int $productId): Response
+    public function importAction(int $productId): Response
     {
         /** @var ProductInterface|null $product */
         $product = $this->productRepository->find($productId);

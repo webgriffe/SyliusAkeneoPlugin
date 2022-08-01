@@ -10,7 +10,7 @@ Feature: Importing products from queue
     And the store is also available in "it_IT"
     And there is one item to import with identifier "braided-hat-m" for the "Product" importer in the Akeneo queue
     And there is one item to import with identifier "braided-hat-l" for the "Product" importer in the Akeneo queue
-    When I consume the messages
+    When I import all from Akeneo
     Then the product "model-braided-hat" should exists with the right data
     And the product variant "braided-hat-m" of product "model-braided-hat" should exists with the right data
     And the product variant "braided-hat-l" of product "model-braided-hat" should exists with the right data
@@ -20,7 +20,7 @@ Feature: Importing products from queue
     Given the store operates on a single channel
     And the store is also available in "it_IT"
     And there is one item to import with identifier "NOT_EXISTS" for the "Product" importer in the Akeneo queue
-    When I consume the messages
+    When I import all from Akeneo
     Then the item import message for "NOT_EXISTS" identifier and the "Product" importer should have failed
     And the product "NOT_EXISTS" should not exists
 
@@ -30,7 +30,7 @@ Feature: Importing products from queue
     And the store is also available in "it_IT"
     And there is one item to import with identifier "NOT_EXISTS" for the "Product" importer in the Akeneo queue
     And there is one item to import with identifier "braided-hat-m" for the "Product" importer in the Akeneo queue
-    When I consume the messages
+    When I import all from Akeneo
     Then the item import message for "NOT_EXISTS" identifier and the "Product" importer should have failed
     And the product "NOT_EXISTS" should not exists
     And the product variant "braided-hat-m" of product "model-braided-hat" should exists with the right data
@@ -41,5 +41,5 @@ Feature: Importing products from queue
     And the store is also available in "it_IT"
     And there is one item to import with identifier "braided-hat-m" for the "Product" importer in the Akeneo queue
     And there is one item to import with identifier "braided-hat-l" for the "Product" importer in the Akeneo queue
-    When I consume the messages
+    When I import all from Akeneo
     Then there should not be any temporary file in the temporary files directory
