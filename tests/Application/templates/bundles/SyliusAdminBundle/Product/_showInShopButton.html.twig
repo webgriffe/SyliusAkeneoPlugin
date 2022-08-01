@@ -36,7 +36,7 @@
     {% endif %}
 {% endif %}
 
-<a class="ui labeled icon button violet" href="{{  path('webgriffe_sylius_akeneo_product_enqueue', {'productId': product.id }) }}" >
+<a class="ui labeled icon button violet" href="{{  path('webgriffe_sylius_akeneo_product_import', {'productId': product.id }) }}" >
     <i class="icon cloud download"></i>
-    {{ 'webgriffe_sylius_akeneo.ui.enqueue'|trans }}
+    {{ 'webgriffe_sylius_akeneo.ui.import'|trans }}
 </a>
