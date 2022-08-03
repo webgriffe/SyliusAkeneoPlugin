@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Cocur\Slugify\SlugifyInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -85,6 +86,9 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             if (!in_array($localeCode, $this->translationLocaleProvider->getDefinedLocalesCodes(), true)) {
                 continue;
             }
+            if (!$this->isLocaleUsedInAtLeastOneChannelForTheProduct($product, $localeCode)) {
+                continue;
+            }
 
             $productTranslation = $this->getOrCreateNewProductTranslation($product, $localeCode);
             if ($productTranslation->getSlug() !== null) {
@@ -149,5 +153,19 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         }
 
         return $deduplicatedSlug;
+    }
+
+    private function isLocaleUsedInAtLeastOneChannelForTheProduct(ProductInterface $product, string $localeCode): bool
+    {
+        foreach ($product->getChannels() as $channel) {
+            Assert::isInstanceOf($channel, ChannelInterface::class);
+            foreach ($channel->getLocales() as $locale) {
+                if ($locale->getCode() === $localeCode) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
