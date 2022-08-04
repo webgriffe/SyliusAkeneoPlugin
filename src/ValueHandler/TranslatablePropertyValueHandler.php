@@ -72,6 +72,9 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
             if (!in_array($localeCode, $availableLocalesCodes, true)) {
                 continue;
             }
+            if (!$this->isLocaleUsedInAtLeastOneChannelForTheProduct($product, $localeCode)) {
+                continue;
+            }
 
             $this->setValueOnProductVariantAndProductTranslation($subject, $localeCode, $valueData['data']);
         }
@@ -184,5 +187,19 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 $this->propertyAccessor->setValue($productTranslation, $this->translationPropertyPath, null);
             }
         }
+    }
+
+    private function isLocaleUsedInAtLeastOneChannelForTheProduct(ProductInterface $product, string $localeCode): bool
+    {
+        foreach ($product->getChannels() as $channel) {
+            Assert::isInstanceOf($channel, \Sylius\Component\Core\Model\ChannelInterface::class);
+            foreach ($channel->getLocales() as $locale) {
+                if ($locale->getCode() === $localeCode) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

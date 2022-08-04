@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace spec\Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Cocur\Slugify\SlugifyInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
@@ -28,12 +31,28 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
         SlugifyInterface $slugify,
         FactoryInterface $productTranslationFactory,
         TranslationLocaleProviderInterface $translationLocaleProvider,
-        RepositoryInterface $productTranslationRepository
+        RepositoryInterface $productTranslationRepository,
+        LocaleInterface $italianLocale,
+        LocaleInterface $englishLocale,
+        ChannelInterface $commerceChannel,
+        ChannelInterface $supportChannel,
+        ProductInterface $product
     ) {
         $slugify->slugify(self::VALUE_TO_SLUGIFY)->willReturn(self::SLUGIFIED_VALUE);
         $translationLocaleProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
         $productTranslationRepository->findOneBy(['slug' => self::SLUGIFIED_VALUE, 'locale' => 'en_US'])->willReturn(null);
         $productTranslationRepository->findOneBy(['slug' => self::SLUGIFIED_VALUE, 'locale' => 'it_IT'])->willReturn(null);
+
+        $italianLocale->getCode()->willReturn('it_IT');
+        $englishLocale->getCode()->willReturn('en_US');
+
+        $commerceChannel->getCode()->willReturn('ecommerce');
+        $commerceChannel->getLocales()->willReturn(new ArrayCollection([$italianLocale->getWrappedObject()]));
+        $supportChannel->getCode()->willReturn('support');
+        $supportChannel->getLocales()->willReturn(new ArrayCollection([$italianLocale->getWrappedObject(), $englishLocale->getWrappedObject()]));
+
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel->getWrappedObject(), $supportChannel->getWrappedObject()]));
+
         $this->beConstructedWith(
             $slugify,
             $productTranslationFactory,
@@ -201,6 +220,20 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
         $productVariant->getProduct()->willReturn($product);
 
         $this->handle($productVariant, self::AKENEO_ATTRIBUTE, [['locale' => 'es_ES', 'scope' => null, 'data' => 'New value']]);
+
+        $productTranslation->setSlug(Argument::type('string'))->shouldNotHaveBeenCalled();
+    }
+
+    public function it_skips_locales_not_used_in_any_product_channels(
+        ProductVariantInterface $productVariant,
+        ProductInterface $product,
+        ProductTranslationInterface $productTranslation,
+        ChannelInterface $commerceChannel
+    ): void {
+        $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel->getWrappedObject()]));
+        $productVariant->getProduct()->willReturn($product);
+
+        $this->handle($productVariant, self::AKENEO_ATTRIBUTE, [['locale' => 'en_US', 'scope' => null, 'data' => 'New value']]);
 
         $productTranslation->setSlug(Argument::type('string'))->shouldNotHaveBeenCalled();
     }
