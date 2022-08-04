@@ -377,7 +377,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         ProductOptionValueTranslationInterface $italianProductOptionValueTranslation,
         ProductOptionInterface $productOption,
         RepositoryInterface $productOptionValueRepository,
-        ApiClientInterface $apiClient,
+        AttributeOptionApiInterface $attributeOptionApi,
         FactoryInterface $productOptionValueTranslationFactory
     ): void {
         $value = [
@@ -389,8 +389,9 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         ];
         $productOptionValueRepository->findOneBy(['code' => self::OPTION_CODE . '_' . self::VALUE_CODE])->willReturn(null);
         $productVariant->hasOptionValue($productOptionValue)->willReturn(false);
-        $apiClient
-            ->findAttributeOption(self::OPTION_CODE, self::VALUE_CODE)
+
+        $attributeOptionApi
+            ->get(self::OPTION_CODE, self::VALUE_CODE)
             ->willReturn(
                 [
                     'code' => self::VALUE_CODE,
