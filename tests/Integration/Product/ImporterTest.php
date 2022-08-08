@@ -57,14 +57,14 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $allVariants);
         $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
         $this->assertInstanceOf(ProductInterface::class, $allVariants[0]->getProduct());
-        $this->assertEquals('model-braided-hat', $allVariants[0]->getProduct()->getCode());
+        $this->assertEquals('MODEL_BRAIDED_HAT', $allVariants[0]->getProduct()->getCode());
     }
 
     /**
@@ -83,7 +83,7 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
@@ -114,7 +114,7 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
@@ -143,7 +143,7 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
@@ -171,7 +171,7 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
@@ -259,7 +259,7 @@ final class ImporterTest extends KernelTestCase
         /** @var ChannelInterface $europeChannel */
         $europeChannel = $this->channelRepository->findOneByCode('europe');
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
@@ -303,7 +303,7 @@ final class ImporterTest extends KernelTestCase
         /** @var ChannelInterface $europeChannel */
         $europeChannel = $this->channelRepository->findOneByCode('europe');
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
@@ -338,7 +338,7 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductInterface $product */
         $product = $this->productRepository->findAll()[0];
@@ -359,8 +359,8 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
-        $this->importer->import('braided-hat-l');
+        $this->importer->import('BRAIDED_HAT_M');
+        $this->importer->import('BRAIDED_HAT_L');
 
         /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
@@ -368,7 +368,7 @@ final class ImporterTest extends KernelTestCase
         $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
         $product = $allVariants[0]->getProduct();
         $this->assertInstanceOf(ProductInterface::class, $product);
-        $this->assertEquals('model-braided-hat', $product->getCode());
+        $this->assertEquals('MODEL_BRAIDED_HAT', $product->getCode());
         $this->assertCount(2, $product->getImages());
         /** @var ProductImageInterface $image */
         foreach ($product->getImages() as $image) {
@@ -511,9 +511,9 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-s');
+        $this->importer->import('BRAIDED_HAT_S');
 
-        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
         $this->assertTrue($product->isEnabled());
     }
 
@@ -534,9 +534,9 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-s');
+        $this->importer->import('BRAIDED_HAT_S');
 
-        $productVariant = $this->productVariantRepository->findOneByCode('braided-hat-s');
+        $productVariant = $this->productVariantRepository->findOneByCode('BRAIDED_HAT_S');
         $this->assertFalse($productVariant->isEnabled());
     }
 
@@ -556,10 +556,10 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductInterface $product */
-        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
         $this->assertEquals('cotton', $product->getAttributeByCodeAndLocale('material', 'en_US')->getValue());
         $this->assertEquals('cotone', $product->getAttributeByCodeAndLocale('material', 'it_IT')->getValue());
     }
@@ -580,7 +580,7 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
         $this->assertTrue(
             $this->filesystem->exists(
                 self::$container->getParameter(
@@ -636,9 +636,9 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
-        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
         $this->assertCount(1, $product->getImages());
     }
 
@@ -662,9 +662,9 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-l');
+        $this->importer->import('BRAIDED_HAT_L');
 
-        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
         $this->assertCount(2, $product->getImages());
     }
 
@@ -708,10 +708,10 @@ final class ImporterTest extends KernelTestCase
             PurgeMode::createDeleteMode(),
         );
 
-        $this->importer->import('braided-hat-m');
+        $this->importer->import('BRAIDED_HAT_M');
 
         /** @var ProductInterface $product */
-        $product = $this->productRepository->findOneByCode('model-braided-hat');
+        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
         $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'it_IT'));
         $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'en_US'));
     }
