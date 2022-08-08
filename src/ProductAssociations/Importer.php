@@ -131,6 +131,7 @@ final class Importer implements ImporterInterface
         $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {
+            Assert::isArray($product);
             Assert::keyExists($product, 'identifier');
             $productIdentifier = (string) $product['identifier'];
             Assert::stringNotEmpty($productIdentifier);
