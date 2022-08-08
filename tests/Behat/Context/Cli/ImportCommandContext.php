@@ -134,6 +134,7 @@ final class ImportCommandContext implements Context
 
     /**
      * @When I import all items for all importers
+     * @When I import all from Akeneo
      */
     public function iImportAllItemsForAllImporters(): void
     {
