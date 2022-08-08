@@ -379,7 +379,7 @@ This plugin will also import product associations. It's a zero configuration imp
 
 ### Launch data import from CLI
 
-To actually import data you must first create queue items with the **import command** and then you can import them with the **consume command**.
+To actually import data from CLI you can use the **import command** (see below).
 
 #### Schedule Akeneo PIM import button
 
