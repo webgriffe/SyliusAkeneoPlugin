@@ -29,7 +29,7 @@ Sylius\Component\Core\Model\Product:
     model-braided-hat:
         fallbackLocale: "en_US"
         currentLocale: "en_US"
-        code: "model-braided-hat"
+        code: "MODEL_BRAIDED_HAT"
         translations:
             - "@model-braided-hat_en_US"
             - "@model-braided-hat_it_IT"

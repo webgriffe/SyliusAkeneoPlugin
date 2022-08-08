@@ -1,6 +1,6 @@
 Sylius\Component\Core\Model\ProductVariant:
   braided-hat-m:
-    code: 'braided-hat-m'
+    code: 'BRAIDED_HAT_M'
     product: '@model-braided-hat'
     optionValues:
       - '@size_m'
