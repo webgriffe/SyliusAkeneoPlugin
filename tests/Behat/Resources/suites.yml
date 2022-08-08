@@ -24,9 +24,11 @@ default:
                 - sylius.behat.context.setup.product_association
                 - sylius.behat.context.setup.channel
                 - webgriffe_sylius_akeneo.behat.context.setup.queue
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
-                - webgriffe_sylius_akeneo.behat.context.messenger
+
+                - webgriffe_sylius_akeneo.behat.context.cli.import_command
 
             filters:
                 tags: "@importing_product_associations && @cli"
