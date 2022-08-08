@@ -1,19 +1,19 @@
 {
-    "identifier": "braided-hat-m",
-    "enabled": true,
+    "identifier": "BRAIDED_HAT_S",
+    "enabled": false,
     "family": "accessories",
     "categories": [
         "master_accessories_hats",
         "master_accessories_hats"
     ],
     "groups": [],
-    "parent": "model-braided-hat",
+    "parent": "MODEL_BRAIDED_HAT",
     "values": {
         "size": [
             {
                 "locale": null,
                 "scope": null,
-                "data": "m"
+                "data": "s"
             }
         ],
         "color": [
@@ -25,14 +25,9 @@
         ],
         "material": [
             {
-                "locale": "it_IT",
+                "locale": null,
                 "scope": null,
-                "data": "cotone"
-            },
-            {
-                "locale": "en_US",
-                "scope": null,
-                "data": "cotton"
+                "data": "wool"
             }
         ],
         "collection": [
@@ -63,18 +58,6 @@
                 "locale": "en_US",
                 "scope": null,
                 "data": "Braided hat battleship grey"
-            }
-        ],
-        "attachment": [
-            {
-                "locale": null,
-                "scope": null,
-                "data": "1\/3\/9\/e\/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg",
-                "_links": {
-                    "download": {
-                        "href": "https:\/\/demo.akeneo.com\/api\/rest\/v1\/media-files\/1\/3\/9\/e\/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg\/download"
-                    }
-                }
             }
         ],
         "image": [

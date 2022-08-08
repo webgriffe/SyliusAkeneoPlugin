@@ -1,5 +1,5 @@
 {
-    "identifier": "braided-hat-l",
+    "identifier": "BRAIDED_HAT_M",
     "enabled": true,
     "family": "accessories",
     "categories": [
@@ -7,13 +7,13 @@
         "master_accessories_hats"
     ],
     "groups": [],
-    "parent": "model-braided-hat",
+    "parent": "MODEL_BRAIDED_HAT",
     "values": {
         "size": [
             {
                 "locale": null,
                 "scope": null,
-                "data": "l"
+                "data": "m"
             }
         ],
         "color": [
@@ -25,9 +25,14 @@
         ],
         "material": [
             {
-                "locale": null,
+                "locale": "it_IT",
                 "scope": null,
-                "data": "wool"
+                "data": "cotone"
+            },
+            {
+                "locale": "en_US",
+                "scope": null,
+                "data": "cotton"
             }
         ],
         "collection": [
@@ -43,7 +48,7 @@
             {
                 "locale": null,
                 "scope": null,
-                "data": "1234567890349"
+                "data": "1234567890348"
             }
         ],
         "name": [
@@ -58,6 +63,18 @@
                 "locale": "en_US",
                 "scope": null,
                 "data": "Braided hat battleship grey"
+            }
+        ],
+        "attachment": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": "1\/3\/9\/e\/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg",
+                "_links": {
+                    "download": {
+                        "href": "https:\/\/demo.akeneo.com\/api\/rest\/v1\/media-files\/1\/3\/9\/e\/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg\/download"
+                    }
+                }
             }
         ],
         "image": [
@@ -78,11 +95,11 @@
                 "scope": null,
                 "data": [
                     {
-                        "amount": "30.00",
+                        "amount": "30.99",
                         "currency": "EUR"
                     },
                     {
-                        "amount": "33.00",
+                        "amount": "33.99",
                         "currency": "USD"
                     }
                 ]
