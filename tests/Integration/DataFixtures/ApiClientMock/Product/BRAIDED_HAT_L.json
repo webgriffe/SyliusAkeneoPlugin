@@ -1,19 +1,19 @@
 {
-    "identifier": "braided-hat-s",
-    "enabled": false,
+    "identifier": "BRAIDED_HAT_L",
+    "enabled": true,
     "family": "accessories",
     "categories": [
         "master_accessories_hats",
         "master_accessories_hats"
     ],
     "groups": [],
-    "parent": "model-braided-hat",
+    "parent": "MODEL_BRAIDED_HAT",
     "values": {
         "size": [
             {
                 "locale": null,
                 "scope": null,
-                "data": "s"
+                "data": "l"
             }
         ],
         "color": [
@@ -43,7 +43,7 @@
             {
                 "locale": null,
                 "scope": null,
-                "data": "1234567890348"
+                "data": "1234567890349"
             }
         ],
         "name": [
@@ -78,11 +78,11 @@
                 "scope": null,
                 "data": [
                     {
-                        "amount": "30.99",
+                        "amount": "30.00",
                         "currency": "EUR"
                     },
                     {
-                        "amount": "33.99",
+                        "amount": "33.00",
                         "currency": "USD"
                     }
                 ]
