@@ -58,9 +58,10 @@ final class ManagingProductsContext implements Context
     public function theProductShouldHaveAnAssociationWithProducts(
         string $code,
         ProductAssociationTypeInterface $productAssociationType,
-        ...$productsNames,
+        string ...$productsNames,
     ): void {
         $product = $this->productRepository->findOneByCode($code);
+        Assert::isInstanceOf($product, ProductInterface::class);
         $this->updateSimpleProductPage->open(['id' => $product->getId()]);
         foreach ($productsNames as $productName) {
             Assert::true(
@@ -83,6 +84,7 @@ final class ManagingProductsContext implements Context
         string $productName,
     ): void {
         $product = $this->productRepository->findOneByCode($code);
+        Assert::isInstanceOf($product, ProductInterface::class);
         $this->updateSimpleProductPage->open(['id' => $product->getId()]);
         Assert::false(
             $this->updateSimpleProductPage->hasAssociatedProduct($productName, $productAssociationType),
