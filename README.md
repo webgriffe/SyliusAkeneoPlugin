@@ -476,8 +476,6 @@ To make all importers and other plugin features work automatically the following
 ```
 0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="AttributeOptions"
 *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductAssociations"
-*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
-0   0   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:cleanup-queue
 0   */6 *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
 ```
 
@@ -487,7 +485,7 @@ This will:
 * Clean the imported items queue older than 10 days, every day at midnight
 * Reconcile Akeneo deleted products every 6 hours
 
-Import, Consume and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents running them if another instance of the same command is already running.
+Import and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which prevents running them if another instance of the same command is already running.
 
 ## Architecture & customization
 
