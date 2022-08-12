@@ -423,41 +423,7 @@ You can also import items regardless of their last update date:
 ```bash
 bin/console webgriffe:akeneno:import --all
 ```
-
-#### Consume command
-
-To import the Akeneo entities that are in the queue you can use the `webgriffe:akeneo:consume` console command:
-
-```bash
-bin/console webgriffe:akeneo:consume
-```
-
-This will consume all queue items which are not imported yet.
-
-Of course you can put this command in cron as well:
-
-```
-*  * * * * /usr/bin/php /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:consume
-```
-
-### Browsing queue items in the admin
-
-You can examine the Akeneo import queue from the admin panel at **Catalog -> Akeneo PIM import**. You can filter and sort items and see their error message:
-
-![Akeneo queue items grid](queue_items_grid.png)
-
-### Queue clear
-
-Sometimes it may be a good idea to clear the queue of imported items. This can also be useful in development to keep only items not imported due to errors or yet to be consumed.
-You can clear the queue of elements by launching the following command:
-
-```bash
-bin/console webgriffe:akeneo:cleanup-queue {days}
-```
-
-Where {days} should be replaced by the number of days back from which to start deleting the queue of items.
-If the number is not entered, the default value 10 will be used. 
-So, if for example today is 2020-12-15 and you use the parameter days = 10, all the elements imported before 2020-12-05 will be deleted.
+Import command assume that Symfony Messenger is working as required since Sylius v1.11.
 
 ### Products reconciliation
 
