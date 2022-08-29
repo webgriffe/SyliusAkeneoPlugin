@@ -78,57 +78,6 @@ default:
             filters:
                 tags: "@importing_generic_items && @cli && @ui"
 
-        cli_enqueuing_products:
-            contexts:
-                - sylius.behat.context.hook.doctrine_orm
-
-                - sylius.behat.context.transform.date_time
-
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
-
-                - webgriffe_sylius_akeneo.behat.context.cli.import_command
-
-                - webgriffe_sylius_akeneo.behat.context.system.filesystem
-                - webgriffe_sylius_akeneo.behat.context.system.datetime
-
-            filters:
-                tags: "@enqueuing_products && @cli"
-
-        ui_enqueuing_products:
-            contexts:
-                - sylius.behat.context.hook.doctrine_orm
-
-                - sylius.behat.context.transform.shared_storage
-                - sylius.behat.context.transform.product
-
-                - sylius.behat.context.setup.channel
-                - sylius.behat.context.setup.admin_security
-                - sylius.behat.context.setup.product
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
-
-                - sylius.behat.context.ui.admin.managing_products
-                - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
-            filters:
-                tags: "@enqueuing_products && @ui"
-
-        cli_enqueuing_products_associations:
-            contexts:
-                - sylius.behat.context.hook.doctrine_orm
-
-                - sylius.behat.context.transform.date_time
-
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
-
-                - webgriffe_sylius_akeneo.behat.context.cli.import_command
-
-                - webgriffe_sylius_akeneo.behat.context.system.filesystem
-                - webgriffe_sylius_akeneo.behat.context.system.datetime
-
-            filters:
-                tags: "@enqueuing_products_associations && @cli"
-
         cli_reconcile_products:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
@@ -148,17 +97,3 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.cli.reconcile_command
             filters:
                 tags: "@reconcile_products && @cli"
-
-        ui_managing_queue_items:
-            contexts:
-                - sylius.behat.context.hook.doctrine_orm
-
-                - sylius.behat.context.transform.shared_storage
-
-                - sylius.behat.context.setup.admin_security
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
-
-                - sylius.behat.context.ui.admin.notification
-
-            filters:
-                tags: "@managing_queue_items && @ui"
