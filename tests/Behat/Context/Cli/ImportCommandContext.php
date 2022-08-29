@@ -19,7 +19,7 @@ final class ImportCommandContext implements Context
 {
     public function __construct(
         private KernelInterface $kernel,
-        private ImportCommand $enqueueCommand,
+        private ImportCommand $importCommand,
         private SharedStorageInterface $sharedStorage,
     ) {
     }
@@ -185,7 +185,7 @@ final class ImportCommandContext implements Context
     private function getCommandTester(): CommandTester
     {
         $application = new Application($this->kernel);
-        $application->add($this->enqueueCommand);
+        $application->add($this->importCommand);
         $command = $application->find('webgriffe:akeneo:import');
 
         return new CommandTester($command);

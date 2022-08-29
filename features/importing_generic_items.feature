@@ -56,7 +56,7 @@ Feature: Importing items
     And the product with code "11164822" should not have an association "Pack" with product "10597353"
 
   @cli @ui
-  Scenario: Enqueuing all items for a not existent importer
+  Scenario: Importing all items for a not existent importer
     When I import all items for a not existent importer
     Then I should be notified that the importer does not exists
     When I browse products
