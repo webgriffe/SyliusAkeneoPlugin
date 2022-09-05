@@ -3,11 +3,11 @@ imports:
 
 webgriffe_sylius_akeneo:
   api_client:
-    base_url: 'http://demo.akeneo.com/'
-    username: 'admin'
-    password: 'admin'
-    client_id: '1_demo_client_id'
-    secret: 'demo_secret'
+    base_url: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_BASE_URL)%'
+    username: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_USERNAME)%'
+    password: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_PASSWORD)%'
+    client_id: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_CLIENT_ID)%'
+    secret: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_SECRET)%'
 
   value_handlers:
     product:
