@@ -1,15 +1,4 @@
 webgriffe_sylius_akeneo:
     ui:
-        queue_items: Akeneo PIM import
-        manage_akeneo_queue_items: Manage Akeneo PIM import items
-        importer: Importer type
-        identifier: Identifier
-        imported: Imported
-        imported_yes: Yes, at %date%
-        imported_no: No
-        error_message: Error message
-        import: Schedule Akeneo PIM import
-        enqueued_success: Akeneo PIM import for product "{code}" has been successfully scheduled
-        product_not_exist: Product not found
-        product_already_enqueued: Akeneo PIM import for product "{code}" has been already scheduled before
-        product_without_code: Product does not have code
+        import: 'Schedule Akeneo PIM import'
+        enqueued_success: 'Akeneo PIM import for product "{code}" has been successfully scheduled'
