@@ -4,7 +4,7 @@ services:
         environment:
             APP_ENV: "dev"
             DATABASE_URL: "mysql://root:mysql@mysql/sylius_%kernel.environment%?charset=utf8mb4"
-            #            DATABASE_URL: "pgsql://root:postgres@postgres/sylius_%kernel.environment%?charset=utf8" # When using postgres
+#            DATABASE_URL: "pgsql://root:postgres@postgres/sylius_%kernel.environment%?charset=utf8" # When using postgres
             PHP_DATE_TIMEZONE: "Europe/Warsaw"
         volumes:
             - ./:/app:delegated
@@ -26,7 +26,7 @@ services:
             - ${MYSQL_PORT:-3306}:3306
         networks:
             - sylius
-
+    
 #    postgres:
 #        image: postgres:14-alpine
 #        environment:
