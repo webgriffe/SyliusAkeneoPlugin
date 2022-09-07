@@ -8,18 +8,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTaxonInterface;
+use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
 use Sylius\Component\Product\Factory\ProductVariantFactoryInterface;
+use Sylius\Component\Product\Model\ProductVariantTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webgriffe\SyliusAkeneoPlugin\Product\Exception\ProductTranslationNameNullException;
+use Webgriffe\SyliusAkeneoPlugin\Product\Exception\ProductTranslationSlugNullException;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
 use Webmozart\Assert\Assert;
@@ -154,6 +158,9 @@ final class Importer implements ImporterInterface, ReconcilerInterface
                 $valueHandler->handle($productVariant, $attribute, $value);
             }
         }
+
+        self::assertProductIsValid($product);
+        self::assertProductVariantIsValid($productVariant);
 
         $eventName = $product->getId() ? 'update' : 'create';
         $this->dispatchPreEvent($product, $eventName);
@@ -316,6 +323,41 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         }
 
         return $attributesValues;
+    }
+
+    private static function assertProductIsValid(ProductInterface $product): void
+    {
+        /** @var ProductTranslationInterface $translation */
+        foreach ($product->getTranslations() as $translation) {
+            if ($translation->getName() === null) {
+                throw new ProductTranslationNameNullException(sprintf(
+                    'Unable to import model with code "%s": the name for the locale "%s" is null.',
+                    (string) $product->getCode(),
+                    (string) $translation->getLocale()
+                ));
+            }
+            if ($translation->getSlug() === null) {
+                throw new ProductTranslationSlugNullException(sprintf(
+                    'Unable to import model with code "%s": the slug for the locale "%s" is null.',
+                    (string) $product->getCode(),
+                    (string) $translation->getLocale()
+                ));
+            }
+        }
+    }
+
+    private static function assertProductVariantIsValid(ProductVariantInterface $productVariant): void
+    {
+        /** @var ProductVariantTranslationInterface $translation */
+        foreach ($productVariant->getTranslations() as $translation) {
+            if ($translation->getName() === null) {
+                throw new ProductTranslationNameNullException(sprintf(
+                    'Unable to import product with code "%s": the name for the locale "%s" is null.',
+                    (string) $productVariant->getCode(),
+                    (string) $translation->getLocale()
+                ));
+            }
+        }
     }
 
     public function reconcile(array $identifiersToReconcileWith): void

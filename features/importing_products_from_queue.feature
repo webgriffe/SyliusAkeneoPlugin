@@ -45,3 +45,15 @@ Feature: Importing products from queue
     And there is one item to import with identifier "braided-hat-l" for the "Product" importer in the Akeneo queue
     When I import all items in queue
     Then there should not be any temporary file in the temporary files directory
+
+  @cli
+  Scenario: Preventing database inconsistency errors that will block product imports
+    Given the store operates on a single channel
+    And the store is also available in "it_IT"
+    And there is one item to import with identifier "empty-name-product" for the "Product" importer in the Akeneo queue
+    And there is one item to import with identifier "braided-hat-m" for the "Product" importer in the Akeneo queue
+    When I import all items in queue
+    Then the product "empty-name-product" should not exists
+    And the product variant "braided-hat-m" of product "model-braided-hat" should exists with the right data
+    And the queue item with identifier "empty-name-product" for the "Product" importer has not been marked as imported
+    And the queue item with identifier "braided-hat-m" for the "Product" importer has been marked as imported
