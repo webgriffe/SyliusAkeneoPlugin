@@ -12,7 +12,7 @@
     "values": {
         "name": [
             {
-                "locale": "en_US",
+                "locale": null,
                 "scope": null,
                 "data": "HP LaserJet 1160 Printer"
             }

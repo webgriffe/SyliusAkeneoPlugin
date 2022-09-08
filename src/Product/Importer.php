@@ -22,6 +22,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webgriffe\SyliusAkeneoPlugin\Product\Exception\ProductDoesNotHaveTranslationException;
 use Webgriffe\SyliusAkeneoPlugin\Product\Exception\ProductTranslationNameNullException;
 use Webgriffe\SyliusAkeneoPlugin\Product\Exception\ProductTranslationSlugNullException;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
@@ -327,6 +328,12 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
     private static function assertProductIsValid(ProductInterface $product): void
     {
+        if ($product->getTranslations()->count() === 0) {
+            throw new ProductDoesNotHaveTranslationException(sprintf(
+                'Unable to import model with code "%s": at least one product translation should be provided.',
+                (string) $product->getCode(),
+            ));
+        }
         /** @var ProductTranslationInterface $translation */
         foreach ($product->getTranslations() as $translation) {
             if ($translation->getName() === null) {
@@ -348,6 +355,12 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
     private static function assertProductVariantIsValid(ProductVariantInterface $productVariant): void
     {
+        if ($productVariant->getTranslations()->count() === 0) {
+            throw new ProductDoesNotHaveTranslationException(sprintf(
+                'Unable to import product with code "%s": at least one product variant translation should be provided.',
+                (string) $productVariant->getCode(),
+            ));
+        }
         /** @var ProductVariantTranslationInterface $translation */
         foreach ($productVariant->getTranslations() as $translation) {
             if ($translation->getName() === null) {
