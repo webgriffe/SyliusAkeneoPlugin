@@ -35,13 +35,16 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
     /** @var string */
     private $translationPropertyPath;
 
+    private bool $allowNull = true;
+
     public function __construct(
         PropertyAccessorInterface $propertyAccessor,
         FactoryInterface $productTranslationFactory,
         FactoryInterface $productVariantTranslationFactory,
         TranslationLocaleProviderInterface $localeProvider,
         string $akeneoAttributeCode,
-        string $translationPropertyPath
+        string $translationPropertyPath,
+        bool $allowNull = true
     ) {
         $this->propertyAccessor = $propertyAccessor;
         $this->productTranslationFactory = $productTranslationFactory;
@@ -49,6 +52,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         $this->localeProvider = $localeProvider;
         $this->akeneoAttributeCode = $akeneoAttributeCode;
         $this->translationPropertyPath = $translationPropertyPath;
+        $this->allowNull = $allowNull;
     }
 
     /**
@@ -87,6 +91,13 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
             if (!is_array($valueData)) {
                 throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
             }
+            $data = $valueData['data'];
+            if ($data === null && !$this->allowNull) {
+                throw new \RuntimeException(sprintf(
+                    'Invalid Akeneo value: the attribute "%s" value handler is configured to not be null, but the value from Akeneo is null.',
+                    $attribute,
+                ));
+            }
             if (!array_key_exists('scope', $valueData)) {
                 throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
             }
@@ -108,7 +119,7 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
                 continue;
             }
 
-            $this->setValueOnProductVariantAndProductTranslation($subject, $localeCode, $valueData['data']);
+            $this->setValueOnProductVariantAndProductTranslation($subject, $localeCode, $data);
         }
     }
 

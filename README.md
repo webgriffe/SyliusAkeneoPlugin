@@ -100,11 +100,13 @@ webgriffe_sylius_akeneo:
         options:
           $akeneoAttributeCode: 'name'
           $translationPropertyPath: 'name'
+          $allowNull: false
       short_description:
         type: 'translatable_property'
         options:
           $akeneoAttributeCode: 'short_description'
           $translationPropertyPath: 'shortDescription'
+          $allowNull: true # Not required, it is the default
       description:
         type: 'translatable_property'
         options:
@@ -113,6 +115,8 @@ webgriffe_sylius_akeneo:
 ```
 
 For each `translatable_property` value handler you have to configure, in `$translationPropertyPath`, the Sylius product (and product variant) translation property path of the property where to store the value of the Akeneo attribute whose code is configured with `$akeneoAttributeCode`.
+
+In addition, you can say if the translatable property should be allowed to be null or not. This is strongly recommended for the name property. In fact, if you do not specify this option and there is a name with a null value you will get a database error due to the NOT NULL constraint on the product_translation and product_variant_translation name property that cannot be handled correctly and that will cause a block for the queue consuming.
 
 In the same way you can import other translatable properties values like meta keyword, meta description and other custom translatable properties you possibly added to your store.
 
@@ -188,6 +192,7 @@ webgriffe_sylius_akeneo:
         options:
           $akeneoAttributeCode: 'slug'
           $translationPropertyPath: 'slug'
+          $allowNull: false
 ```
 
 ### Importing product images

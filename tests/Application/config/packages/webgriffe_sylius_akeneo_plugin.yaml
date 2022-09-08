@@ -19,6 +19,7 @@ webgriffe_sylius_akeneo:
         options:
           $akeneoAttributeCode: 'name'
           $translationPropertyPath: 'name'
+          $allowNull: false
       description:
         type: 'translatable_property'
         options:

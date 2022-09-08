@@ -1,5 +1,5 @@
 {
-    "identifier": "empty-name-product",
+    "identifier": "EMPTY_NAME_PRODUCT",
     "enabled": true,
     "family": "pc_monitors",
     "categories": [
@@ -14,7 +14,7 @@
             {
                 "locale": "it_IT",
                 "scope": null,
-                "data": ""
+                "data": null
             }
         ],
         "price": [

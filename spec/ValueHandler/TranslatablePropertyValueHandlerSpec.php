@@ -79,7 +79,8 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
             $productVariantTranslationFactory,
             $localeProvider,
             self::AKENEO_ATTRIBUTE_CODE,
-            self::TRANSLATION_PROPERTY_PATH
+            self::TRANSLATION_PROPERTY_PATH,
+            true,
         );
     }
 
@@ -358,6 +359,35 @@ class TranslatablePropertyValueHandlerSpec extends ObjectBehavior
                     $productVariant,
                     self::AKENEO_ATTRIBUTE_CODE,
                     [['locale' => 'en_US', 'data' => 'New value']],
+                ]
+            );
+    }
+
+    public function it_throws_when_data_is_null_and_the_value_handler_does_not_accept_null_value(
+        ProductVariantInterface $productVariant,
+        PropertyAccessorInterface $propertyAccessor,
+        FactoryInterface $productTranslationFactory,
+        FactoryInterface $productVariantTranslationFactory,
+        LocaleProviderInterface $localeProvider,
+    ): void {
+        $this->beConstructedWith(
+            $propertyAccessor,
+            $productTranslationFactory,
+            $productVariantTranslationFactory,
+            $localeProvider,
+            self::AKENEO_ATTRIBUTE_CODE,
+            self::TRANSLATION_PROPERTY_PATH,
+            false,
+        );
+
+        $this
+            ->shouldThrow(new RuntimeException('Invalid Akeneo value: the attribute "'.self::AKENEO_ATTRIBUTE_CODE.'" value handler is configured to not be null, but the value from Akeneo is null.'))
+            ->during(
+                'handle',
+                [
+                    $productVariant,
+                    self::AKENEO_ATTRIBUTE_CODE,
+                    [['locale' => 'en_US', 'data' => null]],
                 ]
             );
     }
