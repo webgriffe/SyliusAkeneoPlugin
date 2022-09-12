@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\DependencyInjection;
 
-use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler;
@@ -22,7 +23,7 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler;
 use Webmozart\Assert\Assert;
 
-final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension implements CompilerPassInterface
+final class WebgriffeSyliusAkeneoExtension extends Extension implements CompilerPassInterface
 {
     private const PRODUCT_VALUE_HANDLER_TAG = 'webgriffe_sylius_akeneo.product.value_handler';
 
@@ -112,13 +113,10 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         ],
     ];
 
-    /**
-     * @inheritdoc
-     */
-    public function load(array $config, ContainerBuilder $container): void
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
 
         $this->registerApiClientParameters($config['api_client'], $container);
 
@@ -129,6 +127,11 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         );
     }
 
+    public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
+    {
+        return new Configuration();
+    }
+
     public function process(ContainerBuilder $container): void
     {
         $this->addTaggedValueHandlersToResolver($container);
@@ -137,17 +140,13 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $this->registerTemporaryDirectoryParameter($container);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public static function getAllowedValueHandlersTypes(): array
     {
         return array_keys(self::$valueHandlersTypesDefinitionsPrivate);
     }
 
-    /**
-     * @return array<string, Definition>
-     */
+    /** @return array<string, Definition> */
     private function createValueHandlersDefinitionsAndPriorities(array $valueHandlers): array
     {
         /** @var array<string, Definition> $definitions */
@@ -185,9 +184,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         return $definitions;
     }
 
-    /**
-     * @param array<array-key, string|null> $apiClient
-     */
+    /** @param array<array-key, string|null> $apiClient */
     private function registerApiClientParameters(array $apiClient, ContainerBuilder $container): void
     {
         foreach ($apiClient as $key => $value) {

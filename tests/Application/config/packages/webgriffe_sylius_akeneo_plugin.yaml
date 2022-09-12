@@ -1,5 +1,5 @@
 imports:
-  - { resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/config.yaml" }
+  - { resource: "@WebgriffeSyliusAkeneoPlugin/config/config.yaml" }
 
 webgriffe_sylius_akeneo:
   api_client:
