@@ -21,7 +21,7 @@ final class ProductContext implements Context
         private ProductRepositoryInterface $productRepository,
         private ProductVariantRepositoryInterface $productVariantRepository,
         private RepositoryInterface $productAssociationRepository,
-        private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository
+        private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository,
     ) {
     }
 
