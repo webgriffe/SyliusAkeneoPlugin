@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
 use Akeneo\Pim\ApiClient\Api\AttributeApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
@@ -19,7 +19,7 @@ final class AttributeApiMock implements AttributeApiInterface
     public function get(string $code): array
     {
         return ApiClientMock::jsonFileOrHttpNotFoundException(
-            __DIR__ . '/../DataFixtures/ApiClientMock/Attribute/' . $code . '.json',
+            __DIR__ . '/../Data/Attribute/' . $code . '.json',
         );
     }
 
@@ -30,7 +30,7 @@ final class AttributeApiMock implements AttributeApiInterface
 
     public function all(int $pageSize = 10, array $queryParameters = []): ResourceCursorInterface
     {
-        $files = glob(__DIR__ . '/../DataFixtures/ApiClientMock/Attribute/*.json');
+        $files = glob(__DIR__ . '/../Data/Attribute/*.json');
         $attributes = [];
         foreach ($files as $file) {
             $attributes[] = json_decode(file_get_contents($file), true);

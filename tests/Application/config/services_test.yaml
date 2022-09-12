@@ -8,11 +8,12 @@ services:
     Symfony\Component\BrowserKit\AbstractBrowser: '@test.client'
 
     webgriffe_sylius_akeneo.api_client:
-        class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock'
+        class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble\ApiClientMock'
         arguments:
             - '@webgriffe_sylius_akeneo.temporary_file_manager'
+
     webgriffe_sylius_akeneo.date_time_builder:
-        class: 'Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\DateTimeBuilder'
+        class: 'Tests\Webgriffe\SyliusAkeneoPlugin\TestDouble\DateTimeBuilder'
 
     Sylius\Component\Core\Generator\ImagePathGeneratorInterface:
         class: Sylius\Component\Core\Generator\UploadedImagePathGenerator

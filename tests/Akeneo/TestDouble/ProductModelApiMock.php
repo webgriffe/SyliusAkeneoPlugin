@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
-use Akeneo\Pim\ApiClient\Api\FamilyApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductModelApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
 
-final class FamilyApiMock implements FamilyApiInterface
+final class ProductModelApiMock implements ProductModelApiInterface
 {
     public function create(string $code, array $data = []): int
     {
@@ -17,7 +17,9 @@ final class FamilyApiMock implements FamilyApiInterface
 
     public function get(string $code): array
     {
-        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/Family/' . $code . '.json');
+        return ApiClientMock::jsonFileOrHttpNotFoundException(
+            __DIR__ . '/../Data/ProductModel/' . $code . '.json',
+        );
     }
 
     public function listPerPage(int $limit = 10, bool $withCount = false, array $queryParameters = []): PageInterface
@@ -40,15 +42,8 @@ final class FamilyApiMock implements FamilyApiInterface
         // TODO: Implement upsertList() method.
     }
 
-    /**
-     * @return mixed|null
-     */
-    private function jsonDecodeOrNull(string $filename)
+    public function delete(string $code): int
     {
-        if (file_exists($filename)) {
-            return json_decode(file_get_contents($filename), true, 512, \JSON_THROW_ON_ERROR);
-        }
-
-        return null;
+        // TODO: Implement delete() method.
     }
 }

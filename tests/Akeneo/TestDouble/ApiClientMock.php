@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Akeneo\Pim\ApiClient\Api\AssetApiInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
 use Akeneo\Pim\ApiClient\Api\ProductApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
@@ -34,7 +34,7 @@ final class ProductApiMock implements ProductApiInterface
     public function get(string $code, array $queryParameters = []): array
     {
         return ApiClientMock::jsonFileOrHttpNotFoundException(
-            __DIR__ . '/../DataFixtures/ApiClientMock/Product/' . $code . '.json',
+            __DIR__ . '/../Data/Product/' . $code . '.json',
         );
     }
 
