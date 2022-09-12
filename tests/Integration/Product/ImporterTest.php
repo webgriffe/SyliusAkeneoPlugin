@@ -34,12 +34,12 @@ final class ImporterTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->importer = self::$container->get('webgriffe_sylius_akeneo.product.importer');
-        $this->productRepository = self::$container->get('sylius.repository.product');
-        $this->productVariantRepository = self::$container->get('sylius.repository.product_variant');
-        $this->channelRepository = self::$container->get('sylius.repository.channel');
-        $this->fixtureLoader = self::$container->get('fidry_alice_data_fixtures.loader.doctrine');
-        $this->filesystem = self::$container->get('filesystem');
+        $this->importer = self::getContainer()->get('webgriffe_sylius_akeneo.product.importer');
+        $this->productRepository = self::getContainer()->get('sylius.repository.product');
+        $this->productVariantRepository = self::getContainer()->get('sylius.repository.product_variant');
+        $this->channelRepository = self::getContainer()->get('sylius.repository.channel');
+        $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
+        $this->filesystem = self::getContainer()->get('filesystem');
         $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
     }
 
@@ -583,7 +583,7 @@ final class ImporterTest extends KernelTestCase
         $this->importer->import('BRAIDED_HAT_M');
         $this->assertTrue(
             $this->filesystem->exists(
-                self::$container->getParameter(
+                self::getContainer()->getParameter(
                     'sylius_core.public_dir',
                 ) . '/media/attachment/product/1/3/9/e/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg',
             ),
