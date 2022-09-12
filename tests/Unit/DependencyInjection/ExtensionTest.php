@@ -41,7 +41,7 @@ final class ExtensionTest extends AbstractExtensionTestCase
     /**
      * @test
      */
-    public function it_should_register_api_client_parameters_even_if_not_defined()
+    public function it_should_register_api_client_parameters_even_if_not_defined(): void
     {
         $this->load();
 
@@ -54,7 +54,7 @@ final class ExtensionTest extends AbstractExtensionTestCase
     /**
      * @test
      */
-    public function it_should_not_register_any_product_value_handler_when_not_defined()
+    public function it_should_not_register_any_product_value_handler_when_not_defined(): void
     {
         $this->load();
 

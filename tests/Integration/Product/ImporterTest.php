@@ -46,7 +46,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_new_product_variant_and_its_product_when_importing_variant_of_configurable_product()
+    public function it_creates_new_product_variant_and_its_product_when_importing_variant_of_configurable_product(): void
     {
         $this->fixtureLoader->load(
             [
@@ -70,7 +70,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_proper_product_option_value_with_translations_if_missing()
+    public function it_creates_proper_product_option_value_with_translations_if_missing(): void
     {
         $this->fixtureLoader->load(
             [
@@ -99,7 +99,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_alredy_existent_product_option_value()
+    public function it_updates_alredy_existent_product_option_value(): void
     {
         $this->fixtureLoader->load(
             [
@@ -128,7 +128,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_missing_translations_while_updating_alredy_existent_product_option_value()
+    public function it_creates_missing_translations_while_updating_alredy_existent_product_option_value(): void
     {
         $this->fixtureLoader->load(
             [
@@ -157,7 +157,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_missing_option_value_while_updating_alredy_existent_product_variant()
+    public function it_creates_missing_option_value_while_updating_alredy_existent_product_variant(): void
     {
         $this->fixtureLoader->load(
             [
@@ -186,7 +186,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_product_and_product_variant_when_importing_simple_product()
+    public function it_creates_product_and_product_variant_when_importing_simple_product(): void
     {
         $this->fixtureLoader->load(
             [
@@ -210,7 +210,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_already_existent_parent_product_when_importing_simple_product()
+    public function it_updates_already_existent_parent_product_when_importing_simple_product(): void
     {
         $this->fixtureLoader->load(
             [
@@ -233,7 +233,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_sets_channel_price_value_on_product_variant_according_to_channel_currency()
+    public function it_sets_channel_price_value_on_product_variant_according_to_channel_currency(): void
     {
         $this->fixtureLoader->load(
             [
@@ -277,7 +277,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_channel_price_value_on_product_variant_according_channel_currency()
+    public function it_updates_channel_price_value_on_product_variant_according_channel_currency(): void
     {
         $this->fixtureLoader->load(
             [
@@ -321,7 +321,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_sets_all_channels_to_imported_products()
+    public function it_sets_all_channels_to_imported_products(): void
     {
         $this->fixtureLoader->load(
             [
@@ -348,7 +348,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_all_product_images_when_importing_variants_of_configurable_product()
+    public function it_imports_all_product_images_when_importing_variants_of_configurable_product(): void
     {
         $this->fixtureLoader->load(
             [
@@ -380,7 +380,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_already_existent_product_image_without_duplicating_it()
+    public function it_updates_already_existent_product_image_without_duplicating_it(): void
     {
         $this->fixtureLoader->load(
             [
@@ -412,7 +412,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_new_product_image_without_associate_it_with_the_variant_if_product_is_simple()
+    public function it_imports_new_product_image_without_associate_it_with_the_variant_if_product_is_simple(): void
     {
         $this->fixtureLoader->load(
             [
@@ -443,7 +443,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_updated_product_image_without_associate_it_with_the_variant_if_product_is_simple()
+    public function it_imports_updated_product_image_without_associate_it_with_the_variant_if_product_is_simple(): void
     {
         $this->fixtureLoader->load(
             [
@@ -476,7 +476,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_product_as_disabled_if_it_is_disabled_on_akeneo_and_has_not_a_parent_model()
+    public function it_imports_product_as_disabled_if_it_is_disabled_on_akeneo_and_has_not_a_parent_model(): void
     {
         $this->fixtureLoader->load(
             [
@@ -497,7 +497,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_product_as_enabled_even_if_is_disabled_on_akeneo_but_has_a_parent_model()
+    public function it_imports_product_as_enabled_even_if_is_disabled_on_akeneo_but_has_a_parent_model(): void
     {
         $this->fixtureLoader->load(
             [
@@ -520,7 +520,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_variant_of_a_configurable_product_as_disabled_if_it_is_disabled_on_akeneo()
+    public function it_imports_variant_of_a_configurable_product_as_disabled_if_it_is_disabled_on_akeneo(): void
     {
         $this->fixtureLoader->load(
             [
@@ -543,7 +543,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_existing_product_attribute_value()
+    public function it_updates_existing_product_attribute_value(): void
     {
         $this->fixtureLoader->load(
             [
@@ -567,7 +567,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_downloads_file_from_akeneo()
+    public function it_downloads_file_from_akeneo(): void
     {
         $this->fixtureLoader->load(
             [
@@ -593,7 +593,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_sets_product_taxa_from_akeneo_discarding_those_set_on_sylius()
+    public function it_sets_product_taxa_from_akeneo_discarding_those_set_on_sylius(): void
     {
         $this->fixtureLoader->load(
             [
@@ -619,7 +619,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_removes_product_images_removed_on_akeneo()
+    public function it_removes_product_images_removed_on_akeneo(): void
     {
         $this->fixtureLoader->load(
             [
@@ -645,7 +645,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_does_not_remove_product_images_of_other_variants_removed_on_akeneo()
+    public function it_does_not_remove_product_images_of_other_variants_removed_on_akeneo(): void
     {
         $this->fixtureLoader->load(
             [
@@ -671,7 +671,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_does_not_fail_with_empty_translations()
+    public function it_does_not_fail_with_empty_translations(): void
     {
         $this->fixtureLoader->load(
             [
@@ -695,7 +695,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_removes_existing_product_attributes_values_if_they_are_empty_on_akeneo()
+    public function it_removes_existing_product_attributes_values_if_they_are_empty_on_akeneo(): void
     {
         $this->fixtureLoader->load(
             [
@@ -719,7 +719,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_product_without_family()
+    public function it_imports_product_without_family(): void
     {
         $this->fixtureLoader->load(
             [

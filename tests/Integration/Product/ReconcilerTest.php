@@ -19,32 +19,23 @@ final class ReconcilerTest extends KernelTestCase
 {
     private ReconcilerInterface $reconciler;
 
-    private ProductRepositoryInterface $productRepository;
-
     private ProductVariantRepository $productVariantRepository;
 
     private PurgerLoader $fixtureLoader;
-
-    private ChannelRepository $channelRepository;
-
-    private Filesystem $filesystem;
 
     protected function setUp(): void
     {
         self::bootKernel();
         $this->reconciler = self::getContainer()->get('webgriffe_sylius_akeneo.product.importer');
-        $this->productRepository = self::getContainer()->get('sylius.repository.product');
         $this->productVariantRepository = self::getContainer()->get('sylius.repository.product_variant');
-        $this->channelRepository = self::getContainer()->get('sylius.repository.channel');
         $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
-        $this->filesystem = self::getContainer()->get('filesystem');
         $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
     }
 
     /**
      * @test
      */
-    public function it_disable_product_variants_and_product_on_sylius_when_there_are_no_more_product_variants_on_akeneo()
+    public function it_disable_product_variants_and_product_on_sylius_when_there_are_no_more_product_variants_on_akeneo(): void
     {
         $this->fixtureLoader->load(
             [
@@ -74,7 +65,7 @@ final class ReconcilerTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_disable_the_product_variant_on_sylius_when_it_no_longer_exists_on_akeneo()
+    public function it_disable_the_product_variant_on_sylius_when_it_no_longer_exists_on_akeneo(): void
     {
         $this->fixtureLoader->load(
             [
@@ -104,7 +95,7 @@ final class ReconcilerTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_does_not_disable_the_product_variants_on_sylius_when_they_exist_on_akeneo()
+    public function it_does_not_disable_the_product_variants_on_sylius_when_they_exist_on_akeneo(): void
     {
         $this->fixtureLoader->load(
             [

@@ -21,7 +21,7 @@ class ValueConverterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_converts_metric_value_mantaining_significant_decimal(): void
+    public function it_converts_metric_value_keeping_significant_decimal(): void
     {
         $attribute = new ProductAttribute();
         $valueConverted = $this->valueConverter->convert($attribute, [
