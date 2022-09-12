@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
 use Akeneo\Pim\ApiClient\Api\FamilyVariantApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
@@ -13,7 +13,7 @@ final class FamilyVariantApiMock implements FamilyVariantApiInterface
     public function get($familyCode, $familyVariantCode): array
     {
         return ApiClientMock::jsonFileOrHttpNotFoundException(
-            __DIR__ . '/../DataFixtures/ApiClientMock/FamilyVariant/' . $familyCode . '/' . $familyVariantCode . '.json',
+            __DIR__ . '/../Data/FamilyVariant/' . $familyCode . '/' . $familyVariantCode . '.json',
         );
     }
 

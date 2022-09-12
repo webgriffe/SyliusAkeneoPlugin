@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
 use Akeneo\Pim\ApiClient\Api\MeasurementFamilyApiInterface;
 
@@ -10,7 +10,7 @@ final class MeasurementFamilyApiMock implements MeasurementFamilyApiInterface
 {
     public function all(): array
     {
-        return $this->jsonDecodeOrNull(__DIR__ . '/../DataFixtures/ApiClientMock/MeasurementFamilies/MeasurementFamilies.json');
+        return $this->jsonDecodeOrNull(__DIR__ . '/../Data/MeasurementFamilies/MeasurementFamilies.json');
     }
 
     public function upsertList($resources): array

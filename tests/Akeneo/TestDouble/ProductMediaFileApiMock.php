@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
 use Akeneo\Pim\ApiClient\Api\MediaFileApiInterface;
 use Akeneo\Pim\ApiClient\Exception\HttpException;
@@ -17,7 +17,7 @@ final class ProductMediaFileApiMock implements MediaFileApiInterface
     public function download(string $code): ResponseInterface
     {
         // $code should be like 4/a/f/0/4af0dd6fbd5e310a80b6cd2caf413bcf7183d632_1314976_5566.jpg
-        $path = __DIR__ . '/../DataFixtures/ApiClientMock/media-files/' . $code;
+        $path = __DIR__ . '/../Data/media-files/' . $code;
         if (!file_exists($path)) {
             throw new HttpException("File '$path' does not exists.", new Request('GET', '/'), new Response(404));
         }
