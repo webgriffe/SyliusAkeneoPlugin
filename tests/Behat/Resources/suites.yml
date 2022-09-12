@@ -7,7 +7,6 @@ default:
                 - sylius.behat.context.setup.product
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.locale
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
@@ -28,7 +27,6 @@ default:
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.product
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
 
@@ -45,7 +43,6 @@ default:
                 - sylius.behat.context.setup.product
                 - sylius.behat.context.setup.product_association
                 - sylius.behat.context.setup.channel
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
@@ -65,7 +62,6 @@ default:
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.product_association
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
-                - webgriffe_sylius_akeneo.behat.context.setup.queue
 
                 - webgriffe_sylius_akeneo.behat.context.cli.import_command
 
@@ -73,7 +69,6 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
 
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
-                - webgriffe_sylius_akeneo.behat.context.system.datetime
 
             filters:
                 tags: "@importing_generic_items && @cli && @ui"

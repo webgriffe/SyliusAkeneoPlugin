@@ -58,6 +58,6 @@ Feature: Importing items
   @cli @ui
   Scenario: Importing all items for a not existent importer
     When I import all items for a not existent importer
-    Then I should be notified that the importer does not exists
+    Then I should be notified that the importer does not exist
     When I browse products
     Then I should see 0 products in the list

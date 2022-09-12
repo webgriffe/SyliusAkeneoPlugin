@@ -17,12 +17,16 @@ use Webmozart\Assert\Assert;
 
 final class ProductContext implements Context
 {
-    public function __construct(private ProductRepositoryInterface $productRepository, private ProductVariantRepositoryInterface $productVariantRepository, private RepositoryInterface $productAssociationRepository, private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository)
-    {
+    public function __construct(
+        private ProductRepositoryInterface $productRepository,
+        private ProductVariantRepositoryInterface $productVariantRepository,
+        private RepositoryInterface $productAssociationRepository,
+        private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository
+    ) {
     }
 
     /**
-     * @Then /^the product "([^"]*)" should exists with the right data$/
+     * @Then the product :code should exist with the right data
      */
     public function theProductShouldExistsWithTheRightData(string $code): void
     {
@@ -31,7 +35,7 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Given /^the product variant "([^"]*)" of product "([^"]*)" should exists with the right data$/
+     * @Given the product variant :code of product :productCode should exist with the right data
      */
     public function theProductVariantShouldExistsWithTheRightData(string $code, string $productCode): void
     {
@@ -40,16 +44,7 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Then the product :code should not exists
-     */
-    public function theProductShouldNotExists(string $code): void
-    {
-        $product = $this->productRepository->findOneByCode($code);
-        Assert::null($product);
-    }
-
-    /**
-     * @Then /^the product "([^"]*)" should be associated to product "([^"]*)" for association with code "([^"]*)"$/
+     * @Then the product :code should be associated to product :associatedProductCode for association with code :associationTypeCode
      */
     public function theProductShouldBeAssociatedToProductForAssociationWithCode(
         string $code,

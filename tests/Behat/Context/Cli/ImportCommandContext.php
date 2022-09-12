@@ -118,21 +118,6 @@ final class ImportCommandContext implements Context
     }
 
     /**
-     * @When I import items for all importers modified since date specified from file :file
-     */
-    public function iImportItemsForAllImportersModifiedSinceDateSpecifiedFromFile(string $file): void
-    {
-        $commandTester = $this->getCommandTester();
-        $filepath = vfsStream::url('root/' . $file);
-
-        try {
-            $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--since-file' => $filepath]);
-        } catch (Throwable $t) {
-            $this->sharedStorage->set('command_exception', $t);
-        }
-    }
-
-    /**
      * @When I import all items for all importers
      * @When I import all from Akeneo
      */
@@ -172,7 +157,7 @@ final class ImportCommandContext implements Context
     }
 
     /**
-     * @Then I should be notified that the importer does not exists
+     * @Then I should be notified that the importer does not exist
      */
     public function iShouldBeNotifiedThatTheImporterDoesNotExists(): void
     {
