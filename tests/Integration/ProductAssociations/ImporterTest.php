@@ -22,9 +22,9 @@ final class ImporterTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->importer = self::$container->get('webgriffe_sylius_akeneo.product_associations.importer');
-        $this->productRepository = self::$container->get('sylius.repository.product');
-        $this->fixtureLoader = self::$container->get('fidry_alice_data_fixtures.loader.doctrine');
+        $this->importer = self::getContainer()->get('webgriffe_sylius_akeneo.product_associations.importer');
+        $this->productRepository = self::getContainer()->get('sylius.repository.product');
+        $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
     }
 
