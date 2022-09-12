@@ -31,7 +31,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_creates_new_product_association_between_already_existent_products()
+    public function it_creates_new_product_association_between_already_existent_products(): void
     {
         $this->fixtureLoader->load(
             [
@@ -60,7 +60,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_the_product_that_has_being_importer_does_not_exists_on_akeneo()
+    public function it_throws_exception_when_the_product_that_has_being_importer_does_not_exists_on_akeneo(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Cannot find product "NOT-EXISTS-ON-AKENEO" on Akeneo');
@@ -71,7 +71,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_throws_exception_when_the_product_that_has_being_importer_does_not_exists_on_the_store()
+    public function it_throws_exception_when_the_product_that_has_being_importer_does_not_exists_on_the_store(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Cannot find product "MUG_DW" on Sylius.');
@@ -82,7 +82,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_does_not_fail_when_the_product_association_type_does_not_exists()
+    public function it_does_not_fail_when_the_product_association_type_does_not_exists(): void
     {
         $this->fixtureLoader->load(
             [
@@ -103,7 +103,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_does_not_fail_when_a_product_to_associate_does_not_exists_on_the_store()
+    public function it_does_not_fail_when_a_product_to_associate_does_not_exists_on_the_store(): void
     {
         $this->fixtureLoader->load(
             [
@@ -130,7 +130,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_product_association_when_it_already_exists()
+    public function it_updates_product_association_when_it_already_exists(): void
     {
         $this->fixtureLoader->load(
             [
@@ -164,7 +164,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_uses_parent_product_when_the_product_that_is_being_imported_is_a_variant()
+    public function it_uses_parent_product_when_the_product_that_is_being_imported_is_a_variant(): void
     {
         $this->fixtureLoader->load(
             [
