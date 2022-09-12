@@ -26,25 +26,6 @@ final class FilesystemContext implements Context
     }
 
     /**
-     * @Given /^there is a file with name "([^"]+)" and content "([^"]+)"$/
-     */
-    public function thereIsAFileWithNameAndContent(string $filename, string $date): void
-    {
-        Assert::notNull($this->vfsStream);
-        vfsStream::newFile($filename)->at($this->vfsStream)->setContent($date);
-    }
-
-    /**
-     * @Given /^there is a file with name "([^"]+)" that contains "([^"]+)"$/
-     */
-    public function thereIsAFileWithNameThatContains(string $filename, string $content): void
-    {
-        $file = vfsStream::url('root/' . $filename);
-        $actualFileContent = file_get_contents($file);
-        Assert::same($actualFileContent, $content);
-    }
-
-    /**
      * @Then there should not be any temporary file in the temporary files directory
      */
     public function thereShouldNotBeAnyTemporaryFileInTheTemporaryFilesDirectory(): void

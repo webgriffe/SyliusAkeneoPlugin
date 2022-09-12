@@ -4,11 +4,6 @@
     <services>
         <defaults public="true" />
 
-        <service id="webgriffe_sylius_akeneo.behat.context.setup.queue" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext">
-            <argument type="service" id="sylius.behat.shared_storage" />
-            <argument type="service" id="messenger.default_bus"/>
-        </service>
-
         <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
@@ -35,8 +30,6 @@
             <argument>%webgriffe_sylius_akeneo.temporary_directory%</argument>
             <argument>%webgriffe_sylius_akeneo.temporary_files_prefix%</argument>
         </service>
-
-        <service id="webgriffe_sylius_akeneo.behat.context.system.datetime" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext" />
 
         <service id="webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\ManagingProductsContext">
             <argument type="service" id="sylius.behat.page.admin.product.index" />

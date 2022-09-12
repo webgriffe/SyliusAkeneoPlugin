@@ -23,15 +23,4 @@ final class AkeneoContext implements Context
     {
         $this->apiClient->addProductUpdatedAt($identifier, $date ?? new DateTime());
     }
-
-    /**
-     * @Given /^there are (\d+) products on Akeneo$/
-     * @Given /^there is (\d+) product on Akeneo$/
-     */
-    public function thereAreProductsOnAkeneo(int $count): void
-    {
-        for ($i = 1; $i <= $count; ++$i) {
-            $this->apiClient->addProductUpdatedAt('product-' . $i, new DateTime());
-        }
-    }
 }
