@@ -32,7 +32,7 @@
 
     ```yaml
     imports:
-      - { resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/config.yaml" }
+      - { resource: "@WebgriffeSyliusAkeneoPlugin/config/config.yaml" }
     ```
 
 4. Import the plugin routes by creating a file in `config/routes/webgriffe_sylius_akeneo_plugin.yaml` with the following
@@ -40,7 +40,7 @@
 
     ```yaml
     webgriffe_sylius_akeneo_plugin_admin:
-        resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/admin_routing.yaml"
+        resource: "@WebgriffeSyliusAkeneoPlugin/config/admin_routing.yaml"
         prefix: '/%sylius_admin.path_name%'
     ```
 
