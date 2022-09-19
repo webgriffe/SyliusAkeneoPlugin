@@ -8,6 +8,11 @@
 <p align="center">Plugin allowing to import data from Akeneo PIM to your Sylius store.</p>
 <p align="center"><a href="https://github.com/webgriffe/SyliusAkeneoPlugin/actions"><img src="https://github.com/webgriffe/SyliusAkeneoPlugin/workflows/Build/badge.svg" alt="Build Status" /></a></p>
 
+> **Please note!!**<br />
+> This guide refers to the v2.0 version of the plugin.<br />
+> Click [here](UPGRADE-2.0.md) to access the guide on how to upgrade your plugin to v2.0.<br />
+> Or click [here](https://github.com/webgriffe/SyliusAkeneoPlugin/tree/1.15.4) to access the guide for the current version.
+
 ## Requirements
 
 * PHP `^8.0`

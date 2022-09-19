@@ -1,4 +1,18 @@
-# UPGRADE FROM `v1.14.0` TO `v2.0.0`
+# UPGRADE FROM `v1.15.4` TO `v2.0.0`
+
+In the 2.0 version, we have introduced the Symfony Messenger component and removed all deprecations. Symfony Messenger
+has allowed us to remove all the Queue manager infrastructure so that we can now focus only on the Akeneo - Sylius
+exchange. Obviously, the removal of the queue has provoked also the removal of the admin queue page, which is useful for
+some store managers to check for product imports, but we are already working on other solutions to provide a similar
+tool to the administrators!
+
+Here you can find all the passages to upgrade your plugin to v2.0 starting from v1.5.4. Naturally, we have written all
+the passages for a simple project without customizations. In this case, you can find more in the below section [Codebase](#Codebase) which
+contains all the detailed edits applied to this version and, obviously all the BC contained in this major version.
+
+## Simple upgrade
+
+WIP.
 
 ## Codebase
 
@@ -88,3 +102,55 @@ Edits made on test classes during the previous changes.
  - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findFamily() was removed
  - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#getMeasurementFamilies() was removed
  - [BC] These ancestors of Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock have been removed: ["Webgriffe\\SyliusAkeneoPlugin\\ApiClientInterface","Webgriffe\\SyliusAkeneoPlugin\\AttributeOptions\\ApiClientInterface","Webgriffe\\SyliusAkeneoPlugin\\FamilyAwareApiClientInterface","Webgriffe\\SyliusAkeneoPlugin\\MeasurementFamiliesApiClientInterface"]
+
+### Others
+
+#### TL;DR
+- The route `webgriffe_sylius_akeneo_product_enqueue` has been renamed in `webgriffe_sylius_akeneo_product_import`.
+- The grid resource route `webgriffe_sylius_akeneo_admin_queue_item` has been removed.
+- The grid template action `enqueueProduct` has been renamed in `importProduct`.
+- The grid `webgriffe_sylius_akeneo_admin_queue_item` has been removed.
+- The `sylius_admin_product` grid action `enqueue` has been renamed in `import`.
+- A new `Webgriffe\SyliusAkeneoPlugin\Message\ItemImport` Symfony Messenger message has been added.
+- The config `bind_arguments_by_name` under the `webgriffe_sylius_akeneo_plugin` has been removed.
+- The config `resources` under the `webgriffe_sylius_akeneo_plugin` has been removed.
+- Messages are changed, please view the new `translations/messages.en.yaml` file.
+- The commands `webgriffe:akeneo:consume` and `webgriffe:akeneo:queue-cleanup` has been removed.
+- The command `webgriffe:akeneo:enqueue` has been renamed to `webgriffe:akeneo:import`.
+
+#### BC Breaks
+
+##### Changed
+ - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler#__construct() increased from 4 to 5
+ - [BC] The parameter $akeneoAttributeCode of Webgriffe\SyliusAkeneoPlugin\ValueHandler\FileAttributeValueHandler#__construct() changed from string to a non-contravariant Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface
+ - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler#__construct() increased from 5 to 6
+ - [BC] The parameter $akeneoAttributeCode of Webgriffe\SyliusAkeneoPlugin\ValueHandler\ImageValueHandler#__construct() changed from string to a non-contravariant Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface
+
+##### Removed
+ - [BC] Method Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension#registerResources() was removed
+ - [BC] These ancestors of Webgriffe\SyliusAkeneoPlugin\DependencyInjection\WebgriffeSyliusAkeneoExtension have been removed: ["Sylius\\Bundle\\ResourceBundle\\DependencyInjection\\Extension\\AbstractResourceExtension"]
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Menu\AdminMenuListener has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\EventSubscriber\CommandEventSubscriber has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\QueueItemRepository has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Command\ConsumeCommand has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Command\EnqueueCommand has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Command\QueueCleanupCommand has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Repository\CleanableQueueItemRepositoryInterface has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface has been deleted
+ - [BC] Class Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPage has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPageInterface has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\QueueContext has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\QueueCleanupCommandContext has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ConsumeCommandContext has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\EnqueueCommandContext has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System\DateTimeContext has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Transform\QueueItemContext has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\ManagingQueueItems has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DependencyInjection\CompilerPassTest has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DependencyInjection\ExtensionTest has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\DateTimeBuilder has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock has been deleted
+ - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TemporaryFilesManagerTest has been deleted
