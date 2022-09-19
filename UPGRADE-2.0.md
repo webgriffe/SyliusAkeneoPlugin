@@ -16,7 +16,7 @@ WIP.
 
 ## Codebase
 
-### Use PHP 8 syntax (#128)
+### Use PHP 8 syntax ([#128](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/128))
 
 #### TL;DR
 Refactored the codebase to use PHP 8 syntax.
@@ -29,7 +29,7 @@ Refactored the codebase to use PHP 8 syntax.
  - [BC] The parameter $value of Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface#convert() changed from no type to array|bool|int|string
  - [BC] The parameter $value of Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter#convert() changed from no type to a non-contravariant array|bool|int|string
 
-### API client replacement (#125)
+### API client replacement ([#125](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/125))
 
 #### TL;DR
 Removed our API Client interface in favor of the Akeneo PHP SDK client.
@@ -53,7 +53,7 @@ Removed our API Client interface in favor of the Akeneo PHP SDK client.
  - [BC] Class Webgriffe\SyliusAkeneoPlugin\ApiClient has been deleted
  - [BC] Class Webgriffe\SyliusAkeneoPlugin\FamilyAwareApiClientInterface has been deleted
 
-### Remove deprecations (#130)
+### Remove deprecations ([#130](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/130))
 
 #### TL;DR
 Removed all deprecations of the v1.x releases.
@@ -61,8 +61,6 @@ Removed all deprecations of the v1.x releases.
 #### BC Breaks
 
 ##### Changed
- - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController#__construct() increased from 3 to 4
- - [BC] The parameter $translator of Webgriffe\SyliusAkeneoPlugin\Controller\ProductEnqueueController#__construct() changed from Symfony\Contracts\Translation\TranslatorInterface|null to a non-contravariant Symfony\Contracts\Translation\TranslatorInterface
  - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter#__construct() increased from 0 to 1
  - [BC] The parameter $translator of Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverter#__construct() changed from Symfony\Contracts\Translation\TranslatorInterface|null to a non-contravariant Symfony\Contracts\Translation\TranslatorInterface
  - [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\Product\Importer#__construct() increased from 12 to 13
@@ -77,46 +75,21 @@ Removed all deprecations of the v1.x releases.
  
 ##### Removed
  - [BC] Property Webgriffe\SyliusAkeneoPlugin\DependencyInjection\WebgriffeSyliusAkeneoExtension::$valueHandlersTypesDefinitions was removed
- - [BC] Removed the service `webgriffe_sylius_akeneo_plugin.repository.cleanable_queue_item`, use the `webgriffe_sylius_akeneo.repository.cleanable_queue_item` instead.
- - [BC] Removed the service `webgriffe_sylius_akeneo_plugin.controller.product_enqueue_controller`, use the `webgriffe_sylius_akeneo.controller.product_import_controller` instead.
- - [BC] Removed the resource `webgriffe_sylius_akeneo_plugin.queue_item` use the `webgriffe_sylius_akeneo.queue_item` instead.
 
-### Test changes
+### Others ([#134](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/134), [#147](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/147), [#150](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/150))
 
 #### TL;DR
-Edits made on test classes during the previous changes.
-
-#### BC Breaks
-
-##### Removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findProductModel() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findFamilyVariant() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findAttribute() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findProduct() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findAttributeOption() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#downloadFile() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findProductsModifiedSince() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findAllAttributeOptions() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findAllAttributes() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findAllFamilies() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#findFamily() was removed
- - [BC] Method Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock#getMeasurementFamilies() was removed
- - [BC] These ancestors of Tests\Webgriffe\SyliusAkeneoPlugin\Integration\TestDouble\ApiClientMock have been removed: ["Webgriffe\\SyliusAkeneoPlugin\\ApiClientInterface","Webgriffe\\SyliusAkeneoPlugin\\AttributeOptions\\ApiClientInterface","Webgriffe\\SyliusAkeneoPlugin\\FamilyAwareApiClientInterface","Webgriffe\\SyliusAkeneoPlugin\\MeasurementFamiliesApiClientInterface"]
-
-### Others
-
-#### TL;DR
-- The route `webgriffe_sylius_akeneo_product_enqueue` has been renamed in `webgriffe_sylius_akeneo_product_import`.
-- The grid resource route `webgriffe_sylius_akeneo_admin_queue_item` has been removed.
-- The grid template action `enqueueProduct` has been renamed in `importProduct`.
-- The grid `webgriffe_sylius_akeneo_admin_queue_item` has been removed.
-- The `sylius_admin_product` grid action `enqueue` has been renamed in `import`.
-- A new `Webgriffe\SyliusAkeneoPlugin\Message\ItemImport` Symfony Messenger message has been added.
-- The config `bind_arguments_by_name` under the `webgriffe_sylius_akeneo_plugin` has been removed.
-- The config `resources` under the `webgriffe_sylius_akeneo_plugin` has been removed.
-- Messages are changed, please view the new `translations/messages.en.yaml` file.
-- The commands `webgriffe:akeneo:consume` and `webgriffe:akeneo:queue-cleanup` has been removed.
-- The command `webgriffe:akeneo:enqueue` has been renamed to `webgriffe:akeneo:import`.
+ - The route `webgriffe_sylius_akeneo_product_enqueue` has been renamed in `webgriffe_sylius_akeneo_product_import`.
+ - The grid resource route `webgriffe_sylius_akeneo_admin_queue_item` has been removed.
+ - The grid template action `enqueueProduct` has been renamed in `importProduct`.
+ - The grid `webgriffe_sylius_akeneo_admin_queue_item` has been removed.
+ - The `sylius_admin_product` grid action `enqueue` has been renamed in `import`.
+ - A new `Webgriffe\SyliusAkeneoPlugin\Message\ItemImport` Symfony Messenger message has been added.
+ - The config `bind_arguments_by_name` under the `webgriffe_sylius_akeneo_plugin` has been removed.
+ - The config `resources` under the `webgriffe_sylius_akeneo_plugin` has been removed.
+ - Messages are changed, please view the new `translations/messages.en.yaml` file.
+ - The commands `webgriffe:akeneo:consume` and `webgriffe:akeneo:queue-cleanup` has been removed.
+ - The command `webgriffe:akeneo:enqueue` has been renamed to `webgriffe:akeneo:import`.
 
 #### BC Breaks
 
@@ -139,6 +112,15 @@ Edits made on test classes during the previous changes.
  - [BC] Class Webgriffe\SyliusAkeneoPlugin\Repository\CleanableQueueItemRepositoryInterface has been deleted
  - [BC] Class Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface has been deleted
  - [BC] Class Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface has been deleted
+
+### Test changes
+
+#### TL;DR
+Edits made on test classes during the previous changes.
+
+#### BC Breaks
+
+##### Removed
  - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPage has been deleted
  - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\QueueItem\IndexPageInterface has been deleted
  - [BC] Class Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\QueueContext has been deleted
