@@ -1,0 +1,63 @@
+{
+    "code": "shoes",
+    "attributes": [
+        "brand",
+        "collection",
+        "color",
+        "composition",
+        "description",
+        "ean",
+        "erp_name",
+        "eu_shoes_size",
+        "image",
+        "keywords",
+        "material",
+        "meta_description",
+        "meta_title",
+        "name",
+        "notice",
+        "price",
+        "size",
+        "sku",
+        "sole_composition",
+        "supplier",
+        "top_composition",
+        "variation_image",
+        "variation_name",
+        "weight"
+    ],
+    "attribute_as_label": "name",
+    "attribute_as_image": "image",
+    "attribute_requirements": {
+        "ecommerce": [
+            "collection",
+            "description",
+            "ean",
+            "eu_shoes_size",
+            "image",
+            "name",
+            "sku"
+        ],
+        "mobile": [
+            "collection",
+            "ean",
+            "eu_shoes_size",
+            "image",
+            "name",
+            "sku"
+        ],
+        "print": [
+            "collection",
+            "ean",
+            "eu_shoes_size",
+            "image",
+            "name",
+            "sku"
+        ]
+    },
+    "labels": {
+        "en_US": "Shoes",
+        "fr_FR": "Shoes",
+        "de_DE": "Shoes"
+    }
+}
