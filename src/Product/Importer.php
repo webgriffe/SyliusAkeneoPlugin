@@ -198,6 +198,11 @@ final class Importer implements ImporterInterface, ReconcilerInterface
                 $product = $this->createNewProductFromAkeneoProduct($productVariantResponse);
             }
 
+            $oldParentProduct = $this->productRepository->findOneByCode($identifier);
+            if ($oldParentProduct instanceof ProductInterface && count($oldParentProduct->getEnabledVariants()) <= 1) {
+                $oldParentProduct->setEnabled(false);
+            }
+
             return $product;
         }
 

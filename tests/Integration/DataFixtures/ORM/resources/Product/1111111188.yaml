@@ -1,0 +1,22 @@
+Sylius\Component\Core\Model\ProductTranslation:
+    climbingshoe_en_US:
+        locale: "en_US"
+        name: "Climbingshoe"
+        slug: "climbingshoe"
+        description: <paragraph(2)>
+    climbingshoe_it_IT:
+        locale: "it_IT"
+        name: "Scarpa da arrampicata"
+        slug: "scarpa-da-arrampicata"
+        description: <paragraph(2)>
+
+Sylius\Component\Core\Model\Product:
+    climbingshoe:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "1111111188"
+        translations:
+            - "@climbingshoe_en_US"
+            - "@climbingshoe_it_IT"
+        variants:
+            - '@climbingshoe_1111111188'
