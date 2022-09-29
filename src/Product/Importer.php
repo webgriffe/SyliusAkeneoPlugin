@@ -191,6 +191,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
     {
         $identifier = $productVariantResponse['identifier'];
+        Assert::string($identifier);
         $parentCode = $productVariantResponse['parent'];
         if ($parentCode !== null) {
             $product = $this->productRepository->findOneByCode($parentCode);
