@@ -124,6 +124,8 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
         $product = $this->getOrCreateProductFromVariantResponse($productVariantResponse);
 
+        $this->disableOldParentProductIfItHasNotAnyVariants($identifier, $product);
+
         $this->handleChannels($product, $productVariantResponse);
 
         $this->handleTaxons($product, $productVariantResponse);
@@ -197,11 +199,6 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             $product = $this->productRepository->findOneByCode($parentCode);
             if ($product === null) {
                 $product = $this->createNewProductFromAkeneoProduct($productVariantResponse);
-            }
-
-            $oldParentProduct = $this->productRepository->findOneByCode($identifier);
-            if ($oldParentProduct instanceof ProductInterface && count($oldParentProduct->getEnabledVariants()) <= 1) {
-                $oldParentProduct->setEnabled(false);
             }
 
             return $product;
@@ -359,5 +356,28 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             $this->productRepository->add($product);
             $this->dispatchPostEvent($product, 'update');
         }
+    }
+
+    private function disableOldParentProductIfItHasNotAnyVariants(string $identifier, ProductInterface $product): void
+    {
+        $oldParentProduct = $this->productRepository->findOneByCode($identifier);
+        if ($oldParentProduct === null) {
+            return;
+        }
+        if ($oldParentProduct === $product) {
+            return;
+        }
+        if ($oldParentProduct->getVariants()->count() !== 1) {
+            return;
+        }
+        $productVariant = $oldParentProduct->getVariants()->first();
+        if (!$productVariant instanceof ProductVariantInterface) {
+            return;
+        }
+        if ($productVariant->getCode() !== $identifier) {
+            return;
+        }
+
+        $oldParentProduct->setEnabled(false);
     }
 }
