@@ -1,0 +1,14 @@
+Sylius\Component\Product\Model\ProductOption:
+    eu_shoes_size:
+        code: "eu_shoes_size"
+        translations:
+            - "@eu_shoes_size_en_US"
+            - "@eu_shoes_size_it_IT"
+
+Sylius\Component\Product\Model\ProductOptionTranslation:
+    eu_shoes_size_en_US:
+        locale: "en_US"
+        name: "EU Shoes Size"
+    eu_shoes_size_it_IT:
+        locale: "it_IT"
+        name: "Taglia Scarpe EU"

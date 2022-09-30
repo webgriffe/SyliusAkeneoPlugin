@@ -736,4 +736,64 @@ final class ImporterTest extends KernelTestCase
         $product = $this->productRepository->findOneByCode('no-family-product');
         $this->assertNotNull($product);
     }
+
+    /**
+     * @test
+     */
+    public function it_disable_old_product_while_importing_product_variant_from_configurable_that_was_simple(): void
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOption/eu_shoes_size.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/1111111188.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/1111111188.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('1111111188');
+
+        $oldProduct = $this->productRepository->findOneByCode('1111111188');
+        $newProduct = $this->productRepository->findOneByCode('climbingshoe');
+        $productVariant = $this->productVariantRepository->findOneBy(['code' => '1111111188']);
+        self::assertInstanceOf(ProductInterface::class, $oldProduct);
+        self::assertInstanceOf(ProductInterface::class, $newProduct);
+        self::assertInstanceOf(ProductVariantInterface::class, $productVariant);
+
+        self::assertFalse($oldProduct->isEnabled());
+        self::assertTrue($newProduct->isEnabled());
+        self::assertTrue($productVariant->isEnabled());
+    }
+
+    /**
+     * @test
+     */
+    public function it_enables_product_without_variants_while_importing_a_new_one(): void
+    {
+        $this->fixtureLoader->load(
+            [
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/ProductOption/eu_shoes_size.yaml',
+                __DIR__ . '/../DataFixtures/ORM/resources/Product/climbingshoe.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode()
+        );
+
+        $this->importer->import('1111111186');
+
+        $product = $this->productRepository->findOneByCode('climbingshoe');
+        $productVariant = $this->productVariantRepository->findOneBy(['code' => '1111111186']);
+        self::assertInstanceOf(ProductInterface::class, $product);
+        self::assertInstanceOf(ProductVariantInterface::class, $productVariant);
+
+        self::assertTrue($product->isEnabled());
+        self::assertTrue($productVariant->isEnabled());
+    }
 }

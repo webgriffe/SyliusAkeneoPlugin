@@ -57,6 +57,8 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
         $product = $this->getOrCreateProductFromVariantResponse($productVariantResponse);
 
+        $this->disableOldParentProductIfItHasNotAnyVariants($identifier, $product);
+
         $this->handleChannels($product, $productVariantResponse);
 
         $this->handleTaxons($product, $productVariantResponse);
@@ -123,6 +125,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     private function getOrCreateProductFromVariantResponse(array $productVariantResponse): ProductInterface
     {
         $identifier = $productVariantResponse['identifier'];
+        Assert::string($identifier);
         $parentCode = $productVariantResponse['parent'];
         if ($parentCode !== null) {
             $product = $this->productRepository->findOneByCode($parentCode);
@@ -273,5 +276,28 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             $this->productRepository->add($product);
             $this->dispatchPostEvent($product, 'update');
         }
+    }
+
+    private function disableOldParentProductIfItHasNotAnyVariants(string $identifier, ProductInterface $product): void
+    {
+        $oldParentProduct = $this->productRepository->findOneByCode($identifier);
+        if ($oldParentProduct === null) {
+            return;
+        }
+        if ($oldParentProduct === $product) {
+            return;
+        }
+        if ($oldParentProduct->getVariants()->count() !== 1) {
+            return;
+        }
+        $productVariant = $oldParentProduct->getVariants()->first();
+        if (!$productVariant instanceof ProductVariantInterface) {
+            return;
+        }
+        if ($productVariant->getCode() !== $identifier) {
+            return;
+        }
+
+        $oldParentProduct->setEnabled(false);
     }
 }
