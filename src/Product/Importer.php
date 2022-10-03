@@ -57,7 +57,9 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
         $product = $this->getOrCreateProductFromVariantResponse($productVariantResponse);
 
-        $this->disableOldParentProductIfItHasNotAnyVariants($identifier, $product);
+        if ($identifier !== $product->getCode()) {
+            $this->disableOldParentProductIfItHasNotAnyVariants($identifier, $product);
+        }
 
         $this->handleChannels($product, $productVariantResponse);
 
