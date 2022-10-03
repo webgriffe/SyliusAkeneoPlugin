@@ -1,4 +1,0 @@
-Sylius\Component\Core\Model\ProductVariant:
-    climbingshoe_1111111186:
-        code: '1111111186'
-        product: '@climbingshoe'
