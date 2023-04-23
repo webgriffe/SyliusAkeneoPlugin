@@ -18,3 +18,6 @@
 /php.ini
 
 docker-compose.override.yml
+
+!/tests/PIM/.gitkeep
+/tests/PIM/

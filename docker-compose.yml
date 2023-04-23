@@ -31,60 +31,9 @@ services:
         networks:
             - sylius
 
-    akeneo-webserver:
-        container_name: 'WebgriffeSyliusAkeneoPlugin__Akeneo-PIM-Webserver'
-        build:
-            context: .docker/akeneo/webserver/
-        ports:
-            - 8001:80
-            - 8000:443
-        networks:
-            - akeneo
-
-    akeneo-mysql:
-        container_name: 'WebgriffeSyliusAkeneoPlugin__Akeneo-PIM-MySQL'
-        image: mysql:8.0
-        platform: linux/amd64
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_PASSWORD: akeneo_pim
-            MYSQL_DATABASE: akeneo_pim
-            MYSQL_USER: akeneo_pim
-        ports:
-            - 13307:3306
-        volumes:
-            - akeneo-mysql-data:/var/lib/mysql:rw
-        networks:
-            - akeneo
-    
-    akeneo-elasticsearch:
-        container_name: 'WebgriffeSyliusAkeneoPlugin__Akeneo-PIM-Elasticsearch'
-        build:
-            context: .docker/akeneo/elasticsearch/
-        environment:
-            ES_JAVA_OPTS: '${ES_JAVA_OPTS:--Xms1g -Xmx1g}'
-            discovery.type: 'single-node'
-            xpack.security.enabled: 'false'
-            indices.id_field_data.enabled: 'true'
-        volumes:
-            - akeneo-elasticsearch-data:/usr/share/elasticsearch/data:rw
-        ulimits:
-            memlock:
-                soft: -1
-                hard: -1
-        ports:
-            - "9200:9200"
-            - "9300:9300"
-        networks:
-            - akeneo
-
 networks:
     sylius:
-        driver: bridge
-    akeneo:
         driver: bridge
 
 volumes:
     sylius-mysql-data:
-    akeneo-mysql-data:
-    akeneo-elasticsearch-data:
