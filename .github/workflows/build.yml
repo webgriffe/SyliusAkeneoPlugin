@@ -14,7 +14,7 @@ on:
 
 jobs:
     tests:
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-latest
 
         name: "Sylius ${{ matrix.sylius }}, PHP ${{ matrix.php }}, Symfony ${{ matrix.symfony }}, MySQL ${{ matrix.mysql }}"
 
@@ -23,9 +23,9 @@ jobs:
             matrix:
                 php: ["8.0", "8.1"]
                 symfony: ["5.4.*", "^6.3"]
-                sylius: ["^1.11.2", "~1.12"]
-                node: ["16.x"]
-                mysql: ["8.0"]
+                sylius: ["^1.12"]
+                node: ["18.x"]
+                mysql: ["5.7", "8.0"]
 
                 exclude:
                     -
@@ -100,7 +100,13 @@ jobs:
                 name: Configure global composer
                 run: |
                     composer global config --no-plugins allow-plugins.symfony/flex true
-                    composer global require --no-progress --no-scripts --no-plugins "symfony/flex:^1.10"
+                    composer global require --no-progress --no-scripts --no-plugins "symfony/flex:^2.2.2"
+
+            -
+                name: Restrict Symfony version
+                if: matrix.symfony != ''
+                run: |
+                    composer config extra.symfony.require "${{ matrix.symfony }}"
 
             -
                 name: Restrict Sylius version
@@ -141,7 +147,7 @@ jobs:
                 name: Prepare test application assets
                 run: |
                     (cd tests/Application && bin/console assets:install public -vvv)
-                    (cd tests/Application && yarn build)
+                    (cd tests/Application && yarn build:prod)
 
             -
                 name: Prepare test application cache
@@ -165,7 +171,7 @@ jobs:
 
             -
                 name: Run PHPStan
-                run: vendor/bin/phpstan analyse -c phpstan.neon
+                run: vendor/bin/phpstan analyse -c phpstan.neon -l max src/
 
             -
                 name: Run Psalm
