@@ -1,0 +1,12 @@
+sylius_fixtures:
+    suites:
+        akeneo:
+            fixtures:
+
+                color_attribute:
+                    name: product_attribute
+                    options:
+                        custom:
+                            -   name: 'Color'
+                                code: 'color'
+                                type: 'select'

@@ -127,7 +127,7 @@ final class Importer implements ImporterInterface
     public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
         $searchBuilder = new SearchBuilder();
-        $searchBuilder->addFilter('updated_at', '>', $sinceDate->format('Y-m-d H:i:s'));
+        $searchBuilder->addFilter('updated', '>', $sinceDate->format('Y-m-d H:i:s'));
         $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {
