@@ -138,6 +138,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             /** @var ProductVariantInterface $productVariant */
             $productVariant = $this->productVariantFactory->createNew();
             $productVariant->setCode($identifier);
+            $productVariant->setPosition(0);
         }
         $product->addVariant($productVariant);
         $productVariant->setProduct($product);
