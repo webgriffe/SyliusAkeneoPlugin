@@ -11,10 +11,13 @@ use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
-use Webmozart\Assert\Assert;
 
 final class ProductOptionsResolver implements ProductOptionsResolverInterface
 {
+    /**
+     * @param FactoryInterface<ProductOptionInterface> $productOptionFactory
+     * @param FactoryInterface<ProductOptionTranslationInterface> $productOptionTranslationFactory
+     */
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private ProductOptionRepositoryInterface $productOptionRepository,
@@ -23,9 +26,6 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
     ) {
     }
 
-    /**
-     * @inheritdoc
-     */
     public function resolve(array $akeneoProduct): array
     {
         /** @var string|null $parentCode */
@@ -79,7 +79,6 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
                 continue;
             }
             $productOption = $this->productOptionFactory->createNew();
-            Assert::isInstanceOf($productOption, ProductOptionInterface::class);
             $productOption->setCode($attributeCode);
             $productOption->setPosition($position);
 

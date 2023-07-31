@@ -24,6 +24,10 @@ use Webmozart\Assert\Assert;
 
 final class AttributeValueHandler implements ValueHandlerInterface
 {
+    /**
+     * @param RepositoryInterface<AttributeInterface> $attributeRepository
+     * @param FactoryInterface<ProductAttributeValueInterface> $factory
+     */
     public function __construct(
         private RepositoryInterface $attributeRepository,
         private FactoryInterface $factory,
@@ -32,9 +36,6 @@ final class AttributeValueHandler implements ValueHandlerInterface
     ) {
     }
 
-    /**
-     * @inheritdoc
-     */
     public function supports($subject, string $attributeCode, array $value): bool
     {
         if (!$subject instanceof ProductVariantInterface) {
@@ -51,9 +52,6 @@ final class AttributeValueHandler implements ValueHandlerInterface
         return $attribute !== null && $this->hasSupportedType($attribute);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function handle($subject, string $attributeCode, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {

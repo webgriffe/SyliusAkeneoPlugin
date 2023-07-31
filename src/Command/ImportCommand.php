@@ -74,8 +74,11 @@ final class ImportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $sinceFilePath = null;
-        if ('' !== $sinceOptionValue = (string) $input->getOption(self::SINCE_OPTION_NAME)) {
+        $sinceOptionValue = $input->getOption(self::SINCE_OPTION_NAME);
+        $sinceFilePath = $input->getOption(self::SINCE_FILE_OPTION_NAME);
+        Assert::nullOrString($sinceOptionValue);
+        Assert::nullOrString($sinceFilePath);
+        if ($sinceOptionValue !== null && $sinceOptionValue !== '') {
             try {
                 $sinceDate = new DateTime($sinceOptionValue);
             } catch (Throwable) {
@@ -83,7 +86,7 @@ final class ImportCommand extends Command
                     sprintf('The "%s" argument must be a valid date', self::SINCE_OPTION_NAME),
                 );
             }
-        } elseif ('' !== $sinceFilePath = (string) $input->getOption(self::SINCE_FILE_OPTION_NAME)) {
+        } elseif ($sinceFilePath !== null && $sinceFilePath !== '') {
             $sinceDate = $this->getSinceDateByFile($sinceFilePath);
         } elseif ($input->getOption(self::ALL_OPTION_NAME) === true) {
             $sinceDate = (new DateTime())->setTimestamp(0);

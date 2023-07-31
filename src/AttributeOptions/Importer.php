@@ -16,8 +16,13 @@ final class Importer implements ImporterInterface
 
     private const MULTISELECT_TYPE = 'pim_catalog_multiselect';
 
-    public function __construct(private AkeneoPimClientInterface $apiClient, private RepositoryInterface $attributeRepository)
-    {
+    /**
+     * @param RepositoryInterface<ProductAttributeInterface> $attributeRepository
+     */
+    public function __construct(
+        private AkeneoPimClientInterface $apiClient,
+        private RepositoryInterface $attributeRepository,
+    ) {
     }
 
     public function getAkeneoEntity(): string
@@ -27,7 +32,6 @@ final class Importer implements ImporterInterface
 
     public function import(string $identifier): void
     {
-        /** @var ProductAttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $identifier]);
         if (null === $attribute) {
             return;
@@ -54,10 +58,13 @@ final class Importer implements ImporterInterface
         $this->attributeRepository->add($attribute);
     }
 
+    /**
+     * It's not possible to fetch only attributes or attribute options modified since a given date with the Akeneo
+     * REST API. So, the $sinceDate argument it's not used.
+     */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
     {
-        // It's not possible to fetch only attributes or attribute options modified since a given date with the Akeneo
-        // REST API. So, the $sinceDate argument it's not used.
+        /** @var array<array-key, array<string, mixed>> $akeneoAttributes */
         $akeneoAttributes = $this->apiClient->getAttributeApi()->all();
         /** @var ProductAttributeInterface[] $syliusSelectAttributes */
         $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);

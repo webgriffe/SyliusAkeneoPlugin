@@ -17,8 +17,18 @@ use Webmozart\Assert\Assert;
 
 final class TranslatablePropertyValueHandler implements ValueHandlerInterface
 {
-    public function __construct(private PropertyAccessorInterface $propertyAccessor, private FactoryInterface $productTranslationFactory, private FactoryInterface $productVariantTranslationFactory, private TranslationLocaleProviderInterface $localeProvider, private string $akeneoAttributeCode, private string $translationPropertyPath)
-    {
+    /**
+     * @param FactoryInterface<ProductTranslationInterface> $productTranslationFactory
+     * @param FactoryInterface<ProductVariantInterface> $productVariantTranslationFactory
+     */
+    public function __construct(
+        private PropertyAccessorInterface $propertyAccessor,
+        private FactoryInterface $productTranslationFactory,
+        private FactoryInterface $productVariantTranslationFactory,
+        private TranslationLocaleProviderInterface $localeProvider,
+        private string $akeneoAttributeCode,
+        private string $translationPropertyPath,
+    ) {
     }
 
     /**
@@ -143,7 +153,6 @@ final class TranslatablePropertyValueHandler implements ValueHandlerInterface
         $translation = $subject->getTranslation($localeCode);
         if ($translation->getLocale() !== $localeCode) {
             $translation = $this->productTranslationFactory->createNew();
-            Assert::isInstanceOf($translation, ProductTranslationInterface::class);
             $translation->setLocale($localeCode);
             $subject->addTranslation($translation);
         }

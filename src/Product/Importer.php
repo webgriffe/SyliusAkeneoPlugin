@@ -29,6 +29,9 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 {
     private const AKENEO_ENTITY = 'Product';
 
+    /**
+     * @param FactoryInterface<ProductTaxonInterface> $productTaxonFactory
+     */
     public function __construct(
         private ProductVariantFactoryInterface $productVariantFactory,
         private ProductVariantRepositoryInterface $productVariantRepository,

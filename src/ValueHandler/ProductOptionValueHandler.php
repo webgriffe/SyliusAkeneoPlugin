@@ -24,6 +24,11 @@ use Webmozart\Assert\Assert;
 
 final class ProductOptionValueHandler implements ValueHandlerInterface
 {
+    /**
+     * @param FactoryInterface<ProductOptionValueInterface> $productOptionValueFactory
+     * @param FactoryInterface<ProductOptionValueTranslationInterface> $productOptionValueTranslationFactory
+     * @param RepositoryInterface<ProductOptionValueInterface> $productOptionValueRepository
+     */
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private ProductOptionRepositoryInterface $productOptionRepository,

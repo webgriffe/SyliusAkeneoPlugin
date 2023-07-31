@@ -19,8 +19,17 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
 {
     private const MAX_DEDUPLICATION_INCREMENT = 100;
 
-    public function __construct(private SlugifyInterface $slugify, private FactoryInterface $productTranslationFactory, private TranslationLocaleProviderInterface $translationLocaleProvider, private RepositoryInterface $productTranslationRepository, private string $akeneoAttributeToSlugify)
-    {
+    /**
+     * @param FactoryInterface<ProductTranslationInterface> $productTranslationFactory
+     * @param RepositoryInterface<ProductTranslationInterface> $productTranslationRepository
+     */
+    public function __construct(
+        private SlugifyInterface $slugify,
+        private FactoryInterface $productTranslationFactory,
+        private TranslationLocaleProviderInterface $translationLocaleProvider,
+        private RepositoryInterface $productTranslationRepository,
+        private string $akeneoAttributeToSlugify,
+    ) {
     }
 
     /**
@@ -82,7 +91,6 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         $translation = $product->getTranslation($localeCode);
         if ($translation->getLocale() !== $localeCode) {
             $translation = $this->productTranslationFactory->createNew();
-            Assert::isInstanceOf($translation, ProductTranslationInterface::class);
             $translation->setLocale($localeCode);
             $product->addTranslation($translation);
         }

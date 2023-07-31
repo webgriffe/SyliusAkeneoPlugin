@@ -25,6 +25,10 @@ final class Importer implements ImporterInterface
 {
     private const AKENEO_ENTITY = 'ProductAssociations';
 
+    /**
+     * @param RepositoryInterface<ProductAssociationInterface> $productAssociationRepository
+     * @param FactoryInterface<ProductAssociationInterface> $productAssociationFactory
+     */
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private ProductRepositoryInterface $productRepository,
@@ -101,7 +105,6 @@ final class Importer implements ImporterInterface
             );
             if ($productAssociation === null) {
                 $productAssociation = $this->productAssociationFactory->createNew();
-                Assert::isInstanceOf($productAssociation, ProductAssociationInterface::class);
                 $productAssociation->setOwner($product);
                 $productAssociation->setType($productAssociationType);
             }

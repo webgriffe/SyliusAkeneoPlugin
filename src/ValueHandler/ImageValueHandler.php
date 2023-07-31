@@ -21,6 +21,10 @@ use Webmozart\Assert\Assert;
 
 final class ImageValueHandler implements ValueHandlerInterface
 {
+    /**
+     * @param FactoryInterface<ProductImageInterface> $productImageFactory
+     * @param RepositoryInterface<ProductImageInterface> $productImageRepository
+     */
     public function __construct(
         private FactoryInterface $productImageFactory,
         private RepositoryInterface $productImageRepository,
@@ -68,7 +72,6 @@ final class ImageValueHandler implements ValueHandlerInterface
         $productImage = $this->getExistentProductVariantImage($subject, $product);
         if ($productImage === null) {
             $productImage = $this->productImageFactory->createNew();
-            Assert::isInstanceOf($productImage, ProductImageInterface::class);
             $productImage->setType($this->syliusImageType);
             if (!$product->isSimple()) {
                 $subject->addImage($productImage);
@@ -119,7 +122,6 @@ final class ImageValueHandler implements ValueHandlerInterface
         $existentProductImages = $this->productImageRepository->findBy(
             ['owner' => $product, 'type' => $this->syliusImageType],
         );
-        Assert::allIsInstanceOf($existentProductImages, ProductImageInterface::class);
 
         return $existentProductImages;
     }

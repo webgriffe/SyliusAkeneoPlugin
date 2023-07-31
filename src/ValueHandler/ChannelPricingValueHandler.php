@@ -18,6 +18,10 @@ use Webmozart\Assert\Assert;
 
 final class ChannelPricingValueHandler implements ValueHandlerInterface
 {
+    /**
+     * @param FactoryInterface<ChannelPricingInterface> $channelPricingFactory
+     * @param RepositoryInterface<CurrencyInterface> $currencyRepository
+     */
     public function __construct(
         private FactoryInterface $channelPricingFactory,
         private ChannelRepositoryInterface $channelRepository,

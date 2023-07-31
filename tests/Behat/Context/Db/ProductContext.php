@@ -17,6 +17,9 @@ use Webmozart\Assert\Assert;
 
 final class ProductContext implements Context
 {
+    /**
+     * @param RepositoryInterface<ProductAssociationInterface> $productAssociationRepository
+     */
     public function __construct(
         private ProductRepositoryInterface $productRepository,
         private ProductVariantRepositoryInterface $productVariantRepository,
@@ -60,7 +63,6 @@ final class ProductContext implements Context
         /** @var ProductAssociationTypeInterface|mixed|object|null $productAssociationType */
         $productAssociationType = $this->productAssociationTypeRepository->findOneBy(['code' => $associationTypeCode]);
         Assert::isInstanceOf($productAssociationType, ProductAssociationTypeInterface::class);
-        /** @var ProductAssociationInterface|mixed|object|null $productAssociation */
         $productAssociation = $this->productAssociationRepository->findOneBy(
             ['owner' => $product, 'type' => $productAssociationType],
         );
