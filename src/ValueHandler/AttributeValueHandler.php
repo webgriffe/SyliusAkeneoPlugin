@@ -45,8 +45,6 @@ final class AttributeValueHandler implements ValueHandlerInterface
         if ($this->isProductOption($subject, $attributeCode)) {
             return false;
         }
-
-        /** @var AttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
 
         return $attribute !== null && $this->hasSupportedType($attribute);
@@ -64,9 +62,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
             );
         }
 
-        /** @var AttributeInterface|null $attribute */
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
-
         if ($attribute === null) {
             throw new \InvalidArgumentException(
                 sprintf(
@@ -131,7 +127,6 @@ final class AttributeValueHandler implements ValueHandlerInterface
         }
 
         if ($attributeValue === null) {
-            /** @var ProductAttributeValueInterface $attributeValue */
             $attributeValue = $this->factory->createNew();
         }
 

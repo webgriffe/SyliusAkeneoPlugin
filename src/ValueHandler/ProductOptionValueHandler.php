@@ -159,7 +159,6 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             }
             $optionValueTranslation = $optionValue->getTranslation($localeCode);
             if ($optionValueTranslation->getLocale() !== $localeCode) {
-                /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
                 $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
                 $optionValueTranslation->setLocale($localeCode);
             }
@@ -242,10 +241,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
     private function getOrCreateProductOptionValue(string $optionValueCode, ProductOptionInterface $productOption): ProductOptionValueInterface
     {
-        /** @var ProductOptionValueInterface|null $optionValue */
         $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $optionValueCode]);
         if (!$optionValue instanceof ProductOptionValueInterface) {
-            /** @var ProductOptionValueInterface $optionValue */
             $optionValue = $this->productOptionValueFactory->createNew();
             $optionValue->setCode($optionValueCode);
             $optionValue->setOption($productOption);
@@ -267,7 +264,6 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     ): ProductOptionValueInterface {
         $optionValueTranslation = $optionValue->getTranslation($localeCode);
         if ($optionValueTranslation->getLocale() !== $localeCode) {
-            /** @var ProductOptionValueTranslationInterface $optionValueTranslation */
             $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
             $optionValueTranslation->setLocale($localeCode);
         }

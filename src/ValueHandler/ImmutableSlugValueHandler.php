@@ -125,7 +125,6 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             $deduplicatedSlug .= '-' . $_increment;
         }
 
-        /** @var ProductTranslationInterface|null $anotherProductTranslation */
         $anotherProductTranslation = $this->productTranslationRepository->findOneBy(
             ['slug' => $deduplicatedSlug, 'locale' => $localeCode],
         );

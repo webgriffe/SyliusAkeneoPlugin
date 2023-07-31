@@ -66,7 +66,6 @@ final class Importer implements ImporterInterface
     {
         /** @var array<array-key, array<string, mixed>> $akeneoAttributes */
         $akeneoAttributes = $this->apiClient->getAttributeApi()->all();
-        /** @var ProductAttributeInterface[] $syliusSelectAttributes */
         $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);
         $syliusSelectAttributes = array_filter(
             array_map(

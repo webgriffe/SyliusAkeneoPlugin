@@ -54,7 +54,6 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
         foreach ($currenciesPrices as $currencyPrice) {
             $currencyCode = $currencyPrice['currency'];
             $price = $currencyPrice['amount'];
-            /** @var CurrencyInterface|null $currency */
             $currency = $this->currencyRepository->findOneBy(['code' => $currencyCode]);
             if ($currency === null) {
                 continue;
@@ -67,7 +66,6 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
                 $channelPricing = $subject->getChannelPricingForChannel($channel);
                 if ($channelPricing === null) {
                     $isNewChannelPricing = true;
-                    /** @var ChannelPricingInterface $channelPricing */
                     $channelPricing = $this->channelPricingFactory->createNew();
                     $channelPricing->setChannelCode($channel->getCode());
                 }

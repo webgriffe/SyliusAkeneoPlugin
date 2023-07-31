@@ -203,7 +203,6 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             }
         }
         foreach ($toAddTaxons as $toAddTaxon) {
-            /** @var ProductTaxonInterface $productTaxon */
             $productTaxon = $this->productTaxonFactory->createNew();
             $productTaxon->setProduct($product);
             $productTaxon->setTaxon($toAddTaxon);

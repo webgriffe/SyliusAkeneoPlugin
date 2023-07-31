@@ -99,7 +99,6 @@ final class Importer implements ImporterInterface
                 $productsToAssociate->add($productToAssociate);
             }
 
-            /** @var ProductAssociationInterface|null $productAssociation */
             $productAssociation = $this->productAssociationRepository->findOneBy(
                 ['owner' => $product, 'type' => $productAssociationType],
             );

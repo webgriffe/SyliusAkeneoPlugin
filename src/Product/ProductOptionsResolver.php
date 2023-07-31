@@ -105,7 +105,6 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
 
                     continue;
                 }
-                /** @var ProductOptionTranslationInterface $newProductOptionTranslation */
                 $newProductOptionTranslation = $this->productOptionTranslationFactory->createNew();
                 $newProductOptionTranslation->setLocale($locale);
                 $newProductOptionTranslation->setName($label);
