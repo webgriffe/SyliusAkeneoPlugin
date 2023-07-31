@@ -1,6 +1,5 @@
 services:
     sylius-webserver:
-        container_name: 'WebgriffeSyliusAkeneoPlugin__Sylius-Store-Webserver'
         image: sylius/standard:1.11-traditional-alpine
         environment:
             APP_ENV: "dev"
@@ -19,17 +18,12 @@ services:
             - sylius
 
     sylius-mysql-data:
-        container_name: 'WebgriffeSyliusAkeneoPlugin__Sylius-Store-MySQL'
         image: mysql:8.0
         platform: linux/amd64
         environment:
             MYSQL_ROOT_PASSWORD: mysql
-        ports:
-            - ${MYSQL_PORT:-3306}:3306
         volumes:
             - sylius-mysql-data:/var/lib/mysql:rw
-        networks:
-            - sylius
 
 networks:
     sylius:
