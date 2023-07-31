@@ -752,7 +752,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('1111111188');
@@ -783,7 +783,7 @@ final class ImporterTest extends KernelTestCase
             ],
             [],
             [],
-            PurgeMode::createDeleteMode()
+            PurgeMode::createDeleteMode(),
         );
 
         $this->importer->import('1111111186');
