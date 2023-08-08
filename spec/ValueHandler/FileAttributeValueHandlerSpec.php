@@ -145,6 +145,8 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem
     ): void {
+        $filesystem->exists('public/media/attachment/product/path/to/a')->willReturn(false)->shouldBeCalledOnce();
+
         $this->handle(
             $productVariant,
             self::AKENEO_FILE_ATTRIBUTE_CODE,
@@ -159,7 +161,6 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         );
 
         $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
-        $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
     }
@@ -169,6 +170,8 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem
     ): void {
+        $filesystem->exists('public/media/attachment/product/path/to/a')->willReturn(false)->shouldBeCalledOnce();
+
         $this->handle(
             $productVariant,
             self::AKENEO_FILE_ATTRIBUTE_CODE,
@@ -197,7 +200,6 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $productMediaFileApi->download('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
 
         $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
-        $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
     }
@@ -207,6 +209,8 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         MediaFileApiInterface $productMediaFileApi,
         Filesystem $filesystem
     ): void {
+        $filesystem->exists('public/media/attachment/product/path/to/a')->willReturn(false)->shouldBeCalledOnce();
+
         $this->handle(
             $productVariant,
             self::AKENEO_FILE_ATTRIBUTE_CODE,
@@ -235,7 +239,6 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $productMediaFileApi->download('path/to/a/file-not-to-download.jpg')->shouldNotHaveBeenCalled();
 
         $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
-        $filesystem->exists('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
     }
