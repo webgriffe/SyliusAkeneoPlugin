@@ -1,3 +1,3 @@
 webgriffe_sylius_akeneo_product_import:
-    controller: webgriffe_sylius_akeneo.controller.product_import_controller:importAction
+    controller: webgriffe_sylius_akeneo.controller.product_import_controller::importAction
     path: product/{productId}/import

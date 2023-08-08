@@ -48,7 +48,7 @@ final class ProductImportController extends AbstractController
         foreach ($enqueued as $code) {
             $this->addFlash(
                 'success',
-                $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['code' => $code]),
+                $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['{code}' => $code]),
             );
         }
 

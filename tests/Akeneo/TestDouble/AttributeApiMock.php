@@ -41,7 +41,7 @@ final class AttributeApiMock implements AttributeApiInterface
             {
             }
 
-            public function current()
+            public function current(): mixed
             {
                 return $this->iterator->current();
             }

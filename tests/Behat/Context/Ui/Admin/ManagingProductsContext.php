@@ -41,14 +41,14 @@ final class ManagingProductsContext implements Context
     }
 
     /**
-     * @Then I should be notified that it has been successfully enqueued
+     * @Then I should be notified that :variantCode has been successfully enqueued
      */
-    public function iShouldBeNotifiedThatItHasBeenSuccessfullyEnqueued(): void
+    public function iShouldBeNotifiedThatItHasBeenSuccessfullyEnqueued(string $variantCode): void
     {
         $this->testHelper->waitUntilNotificationPopups(
             $this->notificationChecker,
             NotificationType::success(),
-            'Akeneo PIM product import has been successfully scheduled',
+            sprintf('Akeneo PIM import for product "%s" has been successfully scheduled', $variantCode),
         );
     }
 
