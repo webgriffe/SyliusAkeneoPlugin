@@ -7,6 +7,9 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 use Akeneo\Pim\ApiClient\Api\FamilyApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
+use GuzzleHttp\Promise\PromiseInterface;
+use Http\Promise\Promise;
+use Psr\Http\Message\StreamInterface;
 
 final class FamilyApiMock implements FamilyApiInterface
 {
@@ -35,9 +38,19 @@ final class FamilyApiMock implements FamilyApiInterface
         // TODO: Implement upsert() method.
     }
 
+    public function upsertAsync(string $code, array $data = []): PromiseInterface|Promise
+    {
+        // TODO: Implement upsertAsync() method.
+    }
+
     public function upsertList($resources): \Traversable
     {
         // TODO: Implement upsertList() method.
+    }
+
+    public function upsertAsyncList(StreamInterface|array $resources): PromiseInterface|Promise
+    {
+        // TODO: Implement upsertAsyncList() method.
     }
 
     /**

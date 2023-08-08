@@ -24,7 +24,7 @@
 
 ## Installation
 
-1. Run `composer require webgriffe/sylius-akeneo-plugin`.
+1. Run `composer require webgriffe/sylius-akeneo-plugin akeneo/api-php-client`.
 
 2. Add the plugin to the `config/bundles.php` file:
 

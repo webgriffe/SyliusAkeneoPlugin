@@ -7,6 +7,9 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 use Akeneo\Pim\ApiClient\Api\ProductModelApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
+use GuzzleHttp\Promise\PromiseInterface;
+use Http\Promise\Promise;
+use Psr\Http\Message\StreamInterface;
 
 final class ProductModelApiMock implements ProductModelApiInterface
 {
@@ -37,6 +40,11 @@ final class ProductModelApiMock implements ProductModelApiInterface
         // TODO: Implement upsert() method.
     }
 
+    public function upsertAsync(string $code, array $data = []): PromiseInterface|Promise
+    {
+        // TODO: Implement upsertAsync() method.
+    }
+
     public function upsertList($resources): \Traversable
     {
         // TODO: Implement upsertList() method.
@@ -45,5 +53,10 @@ final class ProductModelApiMock implements ProductModelApiInterface
     public function delete(string $code): int
     {
         // TODO: Implement delete() method.
+    }
+
+    public function upsertAsyncList(StreamInterface|array $resources): PromiseInterface|Promise
+    {
+        // TODO: Implement upsertAsyncList() method.
     }
 }

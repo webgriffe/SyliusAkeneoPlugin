@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Akeneo\TestDouble;
 
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Api\AppCatalog\AppCatalogApiInterface;
+use Akeneo\Pim\ApiClient\Api\AppCatalog\AppCatalogProductApiInterface;
 use Akeneo\Pim\ApiClient\Api\AssetApiInterface;
 use Akeneo\Pim\ApiClient\Api\AssetCategoryApiInterface;
 use Akeneo\Pim\ApiClient\Api\AssetManager\AssetApiInterface as AssetManagerApiInterface;
@@ -28,10 +30,13 @@ use Akeneo\Pim\ApiClient\Api\LocaleApiInterface;
 use Akeneo\Pim\ApiClient\Api\MeasureFamilyApiInterface;
 use Akeneo\Pim\ApiClient\Api\MeasurementFamilyApiInterface;
 use Akeneo\Pim\ApiClient\Api\MediaFileApiInterface;
+use Akeneo\Pim\ApiClient\Api\Operation\DownloadableResourceInterface;
 use Akeneo\Pim\ApiClient\Api\ProductApiInterface;
 use Akeneo\Pim\ApiClient\Api\ProductDraftApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductDraftUuidApiInterface;
 use Akeneo\Pim\ApiClient\Api\ProductModelApiInterface;
 use Akeneo\Pim\ApiClient\Api\ProductModelDraftApiInterface;
+use Akeneo\Pim\ApiClient\Api\ProductUuidApiInterface;
 use Akeneo\Pim\ApiClient\Api\PublishedProductApiInterface;
 use Akeneo\Pim\ApiClient\Api\ReferenceEntityApiInterface;
 use Akeneo\Pim\ApiClient\Api\ReferenceEntityAttributeApiInterface;
@@ -259,5 +264,30 @@ final class ApiClientMock implements AkeneoPimClientInterface
     public function getAssetMediaFileApi(): AssetMediaFileApiInterface
     {
         // TODO: Implement getAssetMediaFileApi() method.
+    }
+
+    public function getCategoryMediaFileApi(): DownloadableResourceInterface
+    {
+        // TODO: Implement getCategoryMediaFileApi() method.
+    }
+
+    public function getProductUuidApi(): ProductUuidApiInterface
+    {
+        // TODO: Implement getProductUuidApi() method.
+    }
+
+    public function getProductDraftUuidApi(): ProductDraftUuidApiInterface
+    {
+        // TODO: Implement getProductDraftUuidApi() method.
+    }
+
+    public function getAppCatalogApi(): AppCatalogApiInterface
+    {
+        // TODO: Implement getAppCatalogApi() method.
+    }
+
+    public function getAppCatalogProductApi(): AppCatalogProductApiInterface
+    {
+        // TODO: Implement getAppCatalogProductApi() method.
     }
 }

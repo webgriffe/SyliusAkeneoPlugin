@@ -9,7 +9,10 @@ use Akeneo\Pim\ApiClient\Pagination\PageInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
 use ArrayIterator;
 use DateTime;
+use GuzzleHttp\Promise\PromiseInterface;
+use Http\Promise\Promise;
 use InvalidArgumentException;
+use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 final class ProductApiMock implements ProductApiInterface
@@ -111,7 +114,17 @@ final class ProductApiMock implements ProductApiInterface
         throw new RuntimeException(sprintf('"%s" not implemented yet', __METHOD__));
     }
 
+    public function upsertAsync(string $code, array $data = []): PromiseInterface|Promise
+    {
+        throw new RuntimeException(sprintf('"%s" not implemented yet', __METHOD__));
+    }
+
     public function upsertList($resources): \Traversable
+    {
+        throw new RuntimeException(sprintf('"%s" not implemented yet', __METHOD__));
+    }
+
+    public function upsertAsyncList(StreamInterface|array $resources): PromiseInterface|Promise
     {
         throw new RuntimeException(sprintf('"%s" not implemented yet', __METHOD__));
     }

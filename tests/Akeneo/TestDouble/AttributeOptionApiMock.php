@@ -8,6 +8,8 @@ use Akeneo\Pim\ApiClient\Api\AttributeOptionApiInterface;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
 use ArrayIterator;
+use GuzzleHttp\Promise\PromiseInterface;
+use Http\Promise\Promise;
 
 final class AttributeOptionApiMock implements AttributeOptionApiInterface
 {
@@ -93,5 +95,15 @@ final class AttributeOptionApiMock implements AttributeOptionApiInterface
         }
 
         return null;
+    }
+
+    public function upsertAsync($attributeCode, $attributeOptionCode, array $data = []): PromiseInterface|Promise
+    {
+        // TODO: Implement upsertAsync() method.
+    }
+
+    public function upsertAsyncList($attributeCode, $attributeOptions): PromiseInterface|Promise
+    {
+        // TODO: Implement upsertAsyncList() method.
     }
 }
