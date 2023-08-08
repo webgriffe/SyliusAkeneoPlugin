@@ -1,0 +1,23 @@
+{
+  "code": "shoes_size",
+  "labels": {
+    "de_DE": "Schuhe nach Größe",
+    "en_US": "Shoes by size",
+    "fr_FR": "Chaussures par taille"
+  },
+  "variant_attribute_sets": [
+    {
+      "level": 1,
+      "axes": [
+        "eu_shoes_size"
+      ],
+      "attributes": [
+        "sku",
+        "weight",
+        "size",
+        "eu_shoes_size",
+        "ean"
+      ]
+    }
+  ]
+}
