@@ -1,4 +1,4 @@
-# UPGRADE FROM `v1.15.4` TO `v2.0.0`
+# UPGRADE FROM `v1.16.2` TO `v2.0.0`
 
 In the 2.0 version, we have introduced the Symfony Messenger component and removed all deprecations. Symfony Messenger
 has allowed us to remove all the Queue manager infrastructure so that we can now focus only on the Akeneo - Sylius
@@ -6,13 +6,56 @@ exchange. Obviously, the removal of the queue has provoked also the removal of t
 some store managers to check for product imports, but we are already working on other solutions to provide a similar
 tool to the administrators!
 
-Here you can find all the passages to upgrade your plugin to v2.0 starting from v1.5.4. Naturally, we have written all
+Here you can find all the passages to upgrade your plugin to v2.0 starting from v1.16.2. Naturally, we have written all
 the passages for a simple project without customizations. In this case, you can find more in the below section [Codebase](#Codebase) which
 contains all the detailed edits applied to this version and, obviously all the BC contained in this major version.
 
 ## Simple upgrade
 
-WIP.
+Remove occurrences of `Resources` in `config/packages/webgriffe_sylius_akeneo_plugin.yaml`:
+
+```diff
+-    - { resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/config.yaml" }
++    - { resource: "@WebgriffeSyliusAkeneoPlugin/config/config.yaml" }
+```
+
+Remove occurrences of `Resources` in `config/routes/webgriffe_sylius_akeneo_plugin.yaml` or where you import the plugin routes:
+
+```diff
+webgriffe_sylius_akeneo_plugin_admin:
+-    resource: "@WebgriffeSyliusAkeneoPlugin/Resources/config/admin_routing.yaml"
++    resource: "@WebgriffeSyliusAkeneoPlugin/config/admin_routing.yaml"
+```
+
+Be sure that your configuration in `config/packages/webgriffe_sylius_akeneo_plugin.yaml` is already using the new name arguments
+as specified [here](https://github.com/webgriffe/SyliusAkeneoPlugin/releases/tag/1.13.0).
+
+If you do not have already installed the official Ajeneo PHP SDK client we suggest to follow the installation instructions
+showed [here](https://github.com/akeneo/api-php-client#installation).
+
+After having installed the Akeneo PIM client you can now require the new version of plugin:
+
+```bash
+composer require webgriffe/sylius-akeneo-plugin ^2.0
+```
+
+Run migration diff command and then execute it:
+
+```bash
+bin/console doctrine:migrations:diff
+bin/console doctrine:migrations:migrate
+```
+
+Now you have to update your crontab configuration by following this example:
+
+```
+0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="AttributeOptions"
+*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductAssociations"
+0   */6 *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
+```
+
+If everything works well you have just completed your upgrade! Obviously, we suggest that you check the import of some products,
+product associations and attribute options before considering the upgrade complete 😉.
 
 ## Codebase
 
