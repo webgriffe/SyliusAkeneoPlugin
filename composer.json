@@ -64,6 +64,9 @@
             "php-http/discovery": false
         }
     },
+    "conflict": {
+        "doctrine/orm": ">= 2.15.2"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.12-dev"
