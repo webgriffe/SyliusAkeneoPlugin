@@ -5,12 +5,12 @@ Feature: Importing products
   I want to import products from Akeneo PIM
 
   Background:
-    Given there is a product "BRAIDED_HAT_M" on Akeneo
-    And there is a product "BRAIDED_HAT_L" on Akeneo
+     Given the store operates on a single channel
 
   @cli
   Scenario: Importing single product model and its variants
-    Given the store operates on a single channel
+    Given there is a product "BRAIDED_HAT_M" on Akeneo
+    And there is a product "BRAIDED_HAT_L" on Akeneo
     And the store is also available in "it_IT"
     When I import all from Akeneo
     Then the product "MODEL_BRAIDED_HAT" should exist with the right data
@@ -19,7 +19,8 @@ Feature: Importing products
 
   @cli
   Scenario: Importing products with images should not leave temporary files in temporary files directory
-    Given the store operates on a single channel
+    Given there is a product "BRAIDED_HAT_M" on Akeneo
+    And there is a product "BRAIDED_HAT_L" on Akeneo
     And the store is also available in "it_IT"
     When I import all from Akeneo
     Then there should not be any temporary file in the temporary files directory
@@ -37,7 +38,8 @@ Feature: Importing products
 
   @ui
   Scenario: Importing a configurable product
-    Given the store operates on a single channel
+    Given there is a product "BRAIDED_HAT_M" on Akeneo
+    And there is a product "BRAIDED_HAT_L" on Akeneo
     And the store has a "Model Braided Hat" configurable product
     And this product has "Braided Hat S", "Braided Hat M" and "Braided Hat L" variants
     And I am logged in as an administrator
@@ -50,3 +52,10 @@ Feature: Importing products
     And the product variant "BRAIDED_HAT_S" of product "MODEL_BRAIDED_HAT" should exist with the right data
     And the product variant "BRAIDED_HAT_M" of product "MODEL_BRAIDED_HAT" should exist with the right data
     And the product variant "BRAIDED_HAT_L" of product "MODEL_BRAIDED_HAT" should exist with the right data
+
+    @cli
+    Scenario: Preventing database inconsistency errors that will block product imports
+      Given the store has a product "EMPTY_NAME_PRODUCT"
+      And there is a product "EMPTY_NAME_PRODUCT" on Akeneo
+      When I try to import all from Akeneo
+      Then I should get an error about product name cannot be empty

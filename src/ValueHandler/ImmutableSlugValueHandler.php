@@ -60,6 +60,9 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
         foreach ($value as $item) {
             $localeCode = $item['locale'];
             $valueToSlugify = $item['data'];
+            if ($valueToSlugify === null) {
+                continue;
+            }
             Assert::string($valueToSlugify);
             if (!$localeCode) {
                 $this->setSlugOnAllTranslations($product, $valueToSlugify);

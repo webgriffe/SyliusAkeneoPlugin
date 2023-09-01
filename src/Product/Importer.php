@@ -46,6 +46,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         private StatusResolverInterface $statusResolver,
         private FactoryInterface $productTaxonFactory,
         private StatusResolverInterface $variantStatusResolver,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -95,6 +96,8 @@ final class Importer implements ImporterInterface, ReconcilerInterface
                 $valueHandler->handle($productVariant, $attribute, $value);
             }
         }
+
+        $this->validator->validate($productVariant);
 
         $eventName = $product->getId() ? 'update' : 'create';
         $this->dispatchPreEvent($product, $eventName);

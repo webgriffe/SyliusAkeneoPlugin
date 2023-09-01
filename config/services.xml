@@ -106,6 +106,7 @@
             <argument type="service" id="webgriffe_sylius_akeneo.product.status_resolver" />
             <argument type="service" id="sylius.factory.product_taxon" />
             <argument type="service" id="webgriffe_sylius_akeneo.product.variant_status_resolver" />
+            <argument type="service" id="webgriffe_sylius_akeneo.product.validator" />
             <tag name="webgriffe_sylius_akeneo.importer" />
             <tag name="webgriffe_sylius_akeneo.reconciler" />
         </service>
@@ -141,6 +142,12 @@
             <argument type="service" id="webgriffe_sylius_akeneo.temporary_file_manager"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <tag name="messenger.message_handler"/>
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.product.validator" class="Webgriffe\SyliusAkeneoPlugin\Product\Validator">
+            <argument type="service" id="validator" />
+            <argument>%sylius.form.type.product.validation_groups%</argument>
+            <argument>%sylius.form.type.product_variant.validation_groups%</argument>
         </service>
 
     </services>
