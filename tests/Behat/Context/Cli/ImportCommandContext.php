@@ -129,6 +129,20 @@ final class ImportCommandContext implements Context
     }
 
     /**
+     * @When I try to import all from Akeneo
+     */
+    public function iTryToImportAllFromAkeneo(): void
+    {
+        $commandTester = $this->getCommandTester();
+
+        try {
+            $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--all' => true]);
+        } catch (Throwable $t) {
+            $this->sharedStorage->set('command_exception', $t);
+        }
+    }
+
+    /**
      * @When I import all items for the :importer importer
      */
     public function iImportAllItemsForTheImporter(string $importer): void
@@ -165,6 +179,16 @@ final class ImportCommandContext implements Context
         $throwable = $this->sharedStorage->get('command_exception');
         Assert::isInstanceOf($throwable, Throwable::class);
         Assert::regex($throwable->getMessage(), '/Importer ".*?" does not exists/');
+    }
+
+    /**
+     * @Then /^I should get an error about product name cannot be empty$/
+     */
+    public function iShouldGetAnErrorAboutProductNameNotEmpty(): void
+    {
+        $throwable = $this->sharedStorage->get('command_exception');
+        Assert::isInstanceOf($throwable, Throwable::class);
+        Assert::contains($throwable->getMessage(), 'Please enter product name');
     }
 
     private function getCommandTester(): CommandTester

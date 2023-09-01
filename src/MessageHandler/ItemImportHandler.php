@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\MessageHandler;
 
+use Doctrine\DBAL\Exception as DoctineException;
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
+use Throwable;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
@@ -24,11 +26,18 @@ final class ItemImportHandler
     {
         $akeneoIdentifier = $message->getAkeneoIdentifier();
         $importer = $this->resolveImporter($message->getAkeneoEntity());
-        $importer->import($akeneoIdentifier);
 
-        $this->entityManager->flush();
-
-        $this->temporaryFilesManager->deleteAllTemporaryFiles();
+        try {
+            $importer->import($akeneoIdentifier);
+        } catch (DoctineException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            $this->entityManager->clear();
+            // TODO Log to DB here $this->logger->log($e); - See: https://github.com/webgriffe/SyliusAkeneoPlugin/issues/168
+            throw $e;
+        } finally {
+            $this->temporaryFilesManager->deleteAllTemporaryFiles();
+        }
     }
 
     private function resolveImporter(string $akeneoEntity): ImporterInterface

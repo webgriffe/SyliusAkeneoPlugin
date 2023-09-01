@@ -52,6 +52,18 @@
                     }
                 }
             }
+        ],
+        "price": [
+            {
+                "locale": null,
+                "scope": null,
+                "data": [
+                    {
+                        "amount": "299.99",
+                        "currency": "USD"
+                    }
+                ]
+            }
         ]
     },
     "created": "2021-03-09T10:43:38+00:00",
