@@ -1,5 +1,0 @@
-name: 'Roave BC Check'
-description: 'Roave BC Check'
-runs:
-    using: 'docker'
-    image: 'Dockerfile'
