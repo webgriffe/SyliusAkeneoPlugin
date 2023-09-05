@@ -38,5 +38,10 @@
             <argument type="service" id="sylius.behat.page.admin.product.update_simple" />
             <argument type="service" id="sylius.repository.product" />
         </service>
+
+        <service id="webgriffe_sylius_akeneo.behat.context.db.log" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ItemImportResultContext">
+            <argument type="service" id="webgriffe_sylius_akeneo.repository.item_import_result" />
+            <argument type="service" id="sylius.behat.shared_storage" />
+        </service>
     </services>
 </container>
