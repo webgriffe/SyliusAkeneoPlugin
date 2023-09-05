@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\DependencyInjection;
 
+use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
+use Sylius\Component\Resource\Factory\Factory;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\ItemImportResultRepository;
+use Webgriffe\SyliusAkeneoPlugin\Entity\ItemImportResult;
+use Webgriffe\SyliusAkeneoPlugin\Entity\ItemImportResultInterface;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -44,6 +49,25 @@ final class Configuration implements ConfigurationInterface
                                     ->end()
                                     ->integerNode('priority')
                                         ->defaultValue(0)
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+
+                ->arrayNode('resources')->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('item_import_result')->addDefaultsIfNotSet()
+                            ->children()
+                                ->variableNode('options')->end()
+                                ->arrayNode('classes')->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('model')->defaultValue(ItemImportResult::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('interface')->defaultValue(ItemImportResultInterface::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('factory')->defaultValue(Factory::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('repository')->defaultValue(ItemImportResultRepository::class)->cannotBeEmpty()->end()
                                     ->end()
                                 ->end()
                             ->end()

@@ -59,3 +59,4 @@ Feature: Importing products
       And there is a product "EMPTY_NAME_PRODUCT" on Akeneo
       When I try to import all from Akeneo
       Then I should get an error about product name cannot be empty
+      And this error should also be logged in the database

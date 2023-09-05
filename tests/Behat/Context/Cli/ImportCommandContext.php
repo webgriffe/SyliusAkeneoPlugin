@@ -187,6 +187,7 @@ final class ImportCommandContext implements Context
     public function iShouldGetAnErrorAboutProductNameNotEmpty(): void
     {
         $throwable = $this->sharedStorage->get('command_exception');
+        $this->sharedStorage->set('error', $throwable);
         Assert::isInstanceOf($throwable, Throwable::class);
         Assert::contains($throwable->getMessage(), 'Please enter product name');
     }

@@ -12,6 +12,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.db.product
                 - webgriffe_sylius_akeneo.behat.context.cli.import_command
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
+                - webgriffe_sylius_akeneo.behat.context.db.log
 
             filters:
                 tags: "@importing_products && @cli"

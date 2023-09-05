@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Webgriffe\SyliusAkeneoPlugin\Entity\ItemImportResult" table="webgriffe_sylius_akeneo_plugin_item_import_result">
+        <id name="id" column="id" type="integer">
+            <generator />
+        </id>
+
+        <field name="createdAt" column="created_at" type="datetime" nullable="false" />
+
+        <field name="akeneoEntity" column="akeneo_entity" type="string" nullable="false" />
+
+        <field name="akeneoIdentifier" column="akeneo_identifier" type="string" nullable="false" />
+
+        <field name="successful" column="successful" type="boolean" nullable="false" />
+
+        <field name="message" column="message" type="text" nullable="false" />
+    </entity>
+</doctrine-mapping>

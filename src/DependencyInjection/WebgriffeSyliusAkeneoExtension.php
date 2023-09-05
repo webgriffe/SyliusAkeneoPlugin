@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\DependencyInjection;
 
+use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler;
@@ -23,7 +23,7 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler;
 use Webmozart\Assert\Assert;
 
-final class WebgriffeSyliusAkeneoExtension extends Extension implements CompilerPassInterface
+final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension implements CompilerPassInterface
 {
     private const PRODUCT_VALUE_HANDLER_TAG = 'webgriffe_sylius_akeneo.product.value_handler';
 
@@ -117,6 +117,9 @@ final class WebgriffeSyliusAkeneoExtension extends Extension implements Compiler
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
+
+        Assert::isArray($config['resources']);
+        $this->registerResources('webgriffe_sylius_akeneo', 'doctrine/orm', $config['resources'], $container);
 
         $this->registerApiClientParameters($config['api_client'], $container);
 

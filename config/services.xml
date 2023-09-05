@@ -140,7 +140,6 @@
                  class="Webgriffe\SyliusAkeneoPlugin\MessageHandler\ItemImportHandler">
             <argument type="service" id="webgriffe_sylius_akeneo.importer_registry"/>
             <argument type="service" id="webgriffe_sylius_akeneo.temporary_file_manager"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
             <tag name="messenger.message_handler"/>
         </service>
 
@@ -148,6 +147,12 @@
             <argument type="service" id="validator" />
             <argument>%sylius.form.type.product.validation_groups%</argument>
             <argument>%sylius.form.type.product_variant.validation_groups%</argument>
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.middleware.item_import_result_logging" class="Webgriffe\SyliusAkeneoPlugin\Middleware\ItemImportResultPersisterMiddleware">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="webgriffe_sylius_akeneo.repository.item_import_result"/>
+            <argument type="service" id="monolog.logger.webgriffe_sylius_akeneo_plugin" />
         </service>
 
     </services>
