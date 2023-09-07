@@ -1,3 +1,20 @@
 webgriffe_sylius_akeneo_product_import:
     controller: webgriffe_sylius_akeneo.controller.product_import_controller::importAction
     path: product/{productId}/import
+
+webgriffe_sylius_akeneo_item_import_result:
+    resource: |
+        alias: webgriffe_sylius_akeneo.item_import_result
+        section: admin
+        path: akeneo_item_import_result
+        except: ['update', 'create', 'show']
+        templates: "@SyliusAdmin\\Crud"
+        redirect: update
+        grid: webgriffe_sylius_akeneo_admin_item_import_result
+        vars:
+            all:
+                header: webgriffe_sylius_akeneo.ui.import
+                subheader: webgriffe_sylius_akeneo.ui.view_import_history
+            index:
+                icon: 'cloud download'
+    type: sylius.resource

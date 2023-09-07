@@ -93,3 +93,14 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.cli.reconcile_command
             filters:
                 tags: "@reconcile_products && @cli"
+
+        ui_reviewing_import_history:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+                
+                - sylius.behat.context.setup.admin_security
+                - webgriffe_sylius_akeneo.behat.context.setup.item_import_result
+                
+                - webgriffe_sylius_akeneo.behat.context.ui.admin.browsing_item_import_results
+            filters:
+                tags: "@browsing_import_history && @ui"

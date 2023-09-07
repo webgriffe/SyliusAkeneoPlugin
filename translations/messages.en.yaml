@@ -1,4 +1,11 @@
 webgriffe_sylius_akeneo:
     ui:
-        import: 'Schedule Akeneo PIM import'
+        schedule_import: 'Schedule Akeneo PIM import'
         enqueued_success: 'Akeneo PIM import for product "{code}" has been successfully scheduled'
+        import: 'Akeneo PIM import'
+        view_import_history: 'View Akeneo PIM import history'
+        item_import_results: 'Akeneo PIM import'
+        entity: 'Entity'
+        identifier: 'Identifier'
+        successful: 'Successful'
+        message: 'Message'

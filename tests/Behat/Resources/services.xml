@@ -43,5 +43,17 @@
             <argument type="service" id="webgriffe_sylius_akeneo.repository.item_import_result" />
             <argument type="service" id="sylius.behat.shared_storage" />
         </service>
+
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.item_import_result" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\ItemImportResultContext">
+            <argument type="service" id="webgriffe_sylius_akeneo.repository.item_import_result" />
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.behat.context.ui.admin.browsing_item_import_results" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin\BrowsingItemImportResultsContext">
+            <argument type="service" id="webgriffe_sylius_akeneo.behat.page.admin.item_import_results.index" />
+        </service>
+
+        <service id="webgriffe_sylius_akeneo.behat.page.admin.item_import_results.index" parent="sylius.behat.page.admin.crud.index" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Page\Admin\ItemImportResult\IndexPage" public="false">
+            <argument type="string">webgriffe_sylius_akeneo_admin_item_import_result_index</argument>
+        </service>
     </services>
 </container>
