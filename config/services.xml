@@ -155,5 +155,9 @@
             <argument type="service" id="monolog.logger.webgriffe_sylius_akeneo_plugin" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.event_listener.admin_menu_listener" class="Webgriffe\SyliusAkeneoPlugin\Menu\AdminMenuListener">
+            <tag name="kernel.event_listener" event="sylius.menu.admin.main" method="addAdminMenuItems" />
+        </service>
+
     </services>
 </container>

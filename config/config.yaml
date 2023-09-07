@@ -8,7 +8,7 @@ sylius_grid:
                 item:
                     import:
                         type: importProduct
-                        label: webgriffe_sylius_akeneo.ui.import
+                        label: webgriffe_sylius_akeneo.ui.schedule_import
                         options:
                             link:
                                 route: webgriffe_sylius_akeneo_product_import
@@ -16,6 +16,50 @@ sylius_grid:
                                     productId: resource.id
                             icon: cloud download
                             color: violet
+        webgriffe_sylius_akeneo_admin_item_import_result:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: Webgriffe\SyliusAkeneoPlugin\Entity\ItemImportResult
+            sorting:
+                createdAt: desc
+            fields:
+                createdAt:
+                    type: datetime
+                    label: sylius.ui.created_at
+                    sortable: ~
+                akeneoEntity:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.entity
+                    sortable: ~
+                akeneoIdentifier:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.identifier
+                    sortable: ~
+                successful:
+                    type: twig
+                    label: webgriffe_sylius_akeneo.ui.successful
+                    options:
+                        template: '@WebgriffeSyliusAkeneoPlugin\ItemImportResult\Grid\Field\successful.html.twig'
+                message:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.message
+            filters:
+                createdAt:
+                    type: date
+                    label: sylius.ui.created_at
+                akeneoEntity:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.entity
+                akeneoIdentifier:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.identifier
+                successful:
+                    type: boolean
+                    label: webgriffe_sylius_akeneo.ui.successful
+                message:
+                    type: string
+                    label: webgriffe_sylius_akeneo.ui.message            
 
 framework:
     messenger:
