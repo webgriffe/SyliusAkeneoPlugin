@@ -154,7 +154,7 @@
             <argument>%sylius.form.type.product_variant.validation_groups%</argument>
         </service>
 
-        <service id="webgriffe_sylius_akeneo.middleware.item_import_result_logging" class="Webgriffe\SyliusAkeneoPlugin\Middleware\ItemImportResultPersisterMiddleware">
+        <service id="webgriffe_sylius_akeneo.middleware.item_import_result_persister" class="Webgriffe\SyliusAkeneoPlugin\Middleware\ItemImportResultPersisterMiddleware">
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="webgriffe_sylius_akeneo.repository.item_import_result"/>
             <argument type="service" id="monolog.logger.webgriffe_sylius_akeneo_plugin" />
