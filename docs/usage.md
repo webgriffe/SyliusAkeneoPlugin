@@ -424,6 +424,23 @@ You can also import items regardless of their last update date:
 bin/console webgriffe:akeneno:import --all
 ```
 
+### Browsing item import results in the admin
+
+You can examine the Akeneo import results from the admin panel at **Catalog -> Akeneo PIM import**. You can filter and sort items and see their error message:
+
+![Akeneo queue items grid](images/item_import_results_grid.png)
+
+### Item import results cleanup
+
+Sometimes it may be a good idea to clean old item import results.
+You can clean the item import results older than N days by launching the following command:
+
+```bash
+bin/console webgriffe:akeneo:cleanup-item-import-results {days}
+```
+
+If you do not specify a number of days, the default value of 30 days will be used.
+
 ### Products reconciliation
 
 Product reconciliation can be useful when one or more products are deleted on Akeneo. By default, reconciliation does
@@ -445,6 +462,7 @@ To make all importers and other plugin features work automatically the following
 0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="AttributeOptions"
 *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductAssociations"
 0   */6 *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
+0   0   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:cleanup-item-import-results
 ```
 
 This will:
