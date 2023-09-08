@@ -72,7 +72,7 @@ framework:
                     #      merged with the one defined in
                     #      vendor/sylius/sylius/src/Sylius/Bundle/CoreBundle/Resources/config/app/messenger.yaml
                     #      Maybe we can handle this in a DI extension.
-                    - 'webgriffe_sylius_akeneo.middleware.item_import_result_logging'
+                    - 'webgriffe_sylius_akeneo.middleware.item_import_result_persister'
                     - 'validation'
                     - 'doctrine_transaction'
 
