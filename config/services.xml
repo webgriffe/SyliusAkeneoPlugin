@@ -19,6 +19,11 @@
             <tag name="console.command" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.command.item_import_result_cleanup" class="Webgriffe\SyliusAkeneoPlugin\Command\ItemImportResultCleanupCommand">
+            <argument type="service" id="webgriffe_sylius_akeneo.repository.item_import_result" />
+            <tag name="console.command" />
+        </service>
+
         <!-- General -->
         <service id="webgriffe_sylius_akeneo.api_client.factory" class="Akeneo\Pim\ApiClient\AkeneoPimClientBuilder">
             <argument>%webgriffe_sylius_akeneo.api_client.base_url%</argument>
