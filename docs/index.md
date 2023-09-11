@@ -8,8 +8,8 @@ nav_order: 0
 
 > **Please note!!**<br />
 > This guide refers to the v2.0 version of the plugin.<br />
-> Click [here](../UPGRADE-2.0.md) to access the guide on how to upgrade your plugin to v2.0.<br />
-> Or click [here](https://github.com/webgriffe/SyliusAkeneoPlugin/tree/1.15.4) to access the guide for the current version.
+> Click [here](upgrade/upgrade-2.0.html) to access the guide on how to upgrade your plugin to v2.0.<br />
+> Or click [here](https://github.com/webgriffe/SyliusAkeneoPlugin/tree/1.16.2) to access the guide for the current stable version.
 
 ## What does this plugin do?
 
@@ -33,3 +33,4 @@ new features that this plugin could add. So, let's start! 🚀
 - [Usage](usage.html)
 - [Architecture & customization](architecture_and_customization.html)
 - [Contributing](contributing.html)
+- [Upgrade guide](upgrade.html)

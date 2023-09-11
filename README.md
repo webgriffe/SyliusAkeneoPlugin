@@ -4,7 +4,7 @@
     </a>
 </p>
 
-<h1 align="center">Akeneo Plugin</h1>
+<h1 align="center">Sylius Akeneo Plugin</h1>
 <p align="center">
     Plugin allowing to import data from Akeneo PIM to your Sylius store.
 </p>
@@ -20,11 +20,11 @@ The _SyliusAkeneoPlugin_ takes care of importing and updating products, product 
 
 ## How can I install the plugin on my Sylius store?
 
-Please, check the documentation at the [Installation](docs/installation.html) step.
+Please, check the documentation at the [Installation](https://webgriffe.github.io/SyliusAkeneoPlugin/installation.html) step.
 
 ## Where do I start?
 
-First, we recommend that you read the entire documentation. Then you could start to
+First, we recommend that you read the entire [documentation](https://webgriffe.github.io/SyliusAkeneoPlugin/). Then you could start to
 install the plugin and use the basic features it gives such as the abandoned cart. You could also think to suggest some
 new features that this plugin could add. So, let's start! 🚀
 
