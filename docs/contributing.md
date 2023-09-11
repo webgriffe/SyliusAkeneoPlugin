@@ -1,3 +1,9 @@
+---
+title: Contributing
+layout: page
+nav_order: 6
+---
+
 # Contributing
 
 To contribute to this plugin clone this repository, create a branch for your feature or bugfix, do your changes and then
@@ -162,7 +168,7 @@ bin/console app:taxa-import
 ```
 
 Then create a new connection in Connect > Connection settings with type data destination and save the credentials in you .env.local.
-    
+
 ```dotenv
 WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_BASE_URL=http://localhost:8080/
 WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_CLIENT_ID=SAMPLE
