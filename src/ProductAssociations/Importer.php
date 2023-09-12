@@ -18,6 +18,8 @@ use Sylius\Component\Product\Model\ProductInterface as BaseProductInterface;
 use Sylius\Component\Product\Repository\ProductAssociationTypeRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webmozart\Assert\Assert;
 
@@ -35,6 +37,7 @@ final class Importer implements ImporterInterface
         private RepositoryInterface $productAssociationRepository,
         private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository,
         private FactoryInterface $productAssociationFactory,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -130,6 +133,9 @@ final class Importer implements ImporterInterface
     {
         $searchBuilder = new SearchBuilder();
         $searchBuilder->addFilter('updated', '>', $sinceDate->format('Y-m-d H:i:s'));
+        $this->eventDispatcher->dispatch(
+            new IdentifiersModifiedSinceSearchBuilderBuiltEvent($this, $searchBuilder, $sinceDate),
+        );
         $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {

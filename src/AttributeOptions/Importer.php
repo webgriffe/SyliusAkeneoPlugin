@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Webgriffe\SyliusAkeneoPlugin\AttributeOptions;
 
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use Akeneo\Pim\ApiClient\Search\SearchBuilder;
 use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class Importer implements ImporterInterface
@@ -22,6 +25,7 @@ final class Importer implements ImporterInterface
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private RepositoryInterface $attributeRepository,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -59,13 +63,18 @@ final class Importer implements ImporterInterface
     }
 
     /**
-     * It's not possible to fetch only attributes or attribute options modified since a given date with the Akeneo
-     * REST API. So, the $sinceDate argument it's not used.
+     * As stated at https://api.akeneo.com/documentation/filter.html#by-update-date-3:
+     * > For Simple select and Multiple select attribute, an option update isn't considered as an attribute update.
+     * So, the $sinceDate argument it's not used here.
      */
     public function getIdentifiersModifiedSince(\DateTime $sinceDate): array
     {
+        $searchBuilder = new SearchBuilder();
+        $this->eventDispatcher->dispatch(
+            new IdentifiersModifiedSinceSearchBuilderBuiltEvent($this, $searchBuilder, $sinceDate),
+        );
         /** @var array<array-key, array<string, mixed>> $akeneoAttributes */
-        $akeneoAttributes = $this->apiClient->getAttributeApi()->all();
+        $akeneoAttributes = $this->apiClient->getAttributeApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);
         $syliusSelectAttributes = array_filter(
             array_map(

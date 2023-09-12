@@ -20,6 +20,7 @@ use Sylius\Component\Product\Factory\ProductVariantFactoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
@@ -112,6 +113,9 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     {
         $searchBuilder = new SearchBuilder();
         $searchBuilder->addFilter('updated', '>', $sinceDate->format('Y-m-d H:i:s'));
+        $this->eventDispatcher->dispatch(
+            new IdentifiersModifiedSinceSearchBuilderBuiltEvent($this, $searchBuilder, $sinceDate),
+        );
         $products = $this->apiClient->getProductApi()->all(50, ['search' => $searchBuilder->getFilters()]);
         $identifiers = [];
         foreach ($products as $product) {
