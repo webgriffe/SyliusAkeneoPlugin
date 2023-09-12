@@ -178,3 +178,46 @@ Another provided importer is the **attribute options
 importer** (`\Webgriffe\SyliusAkeneoPlugin\AttributeOptions\Importer`). This importer imports the Akeneo simple select
 and multi select attributes options into Sylius select attributes. The select attributes must already exist on Sylius
 with the same code they have on Akeneo.
+
+## Customize which Akeneo products to import
+
+Each built-in importer described above implements a `getIdentiferModifiedSince()` method.
+This method is used to identify which Akeneo entity identifiers should be imported or reconciled when the corresponding CLI commands run.
+By default, those methods return all the Akeneo identifiers of entities modified since the given date.
+But maybe you want to only import a subset of those Akeneo entities.
+
+For example, you might want to only import Akeneo products that have a not-empty family and a completeness of 100% for the `ecommerce` Akeneo channel.
+To do so you can define an event listener or subscriber for the `Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent` event and add the corresponding filters to the `SearchBuilder` object:
+
+```php
+// src/EventSubscriber/IdentifiersModifiedSinceSearchBuilderBuiltEventSubscriber.php
+
+namespace App\EventSubscriber;
+
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
+use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
+use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
+
+final class IdentifiersModifiedSinceSearchBuilderBuiltEventSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            IdentifiersModifiedSinceSearchBuilderBuiltEvent::class => 'onIdentifiersModifiedSinceSearchBuilderBuilt',
+        ];    
+    }
+    
+    public function onIdentifiersModifiedSinceSearchBuilderBuilt(IdentifiersModifiedSinceSearchBuilderBuiltEvent $event): void
+    {
+        if (!$event->getImporter() instanceof ProductImporter &&
+            !$event->getImporter() instanceof ProductAssociationsImporter) {
+            return;
+        }
+
+        $searchBuilder = $event->getSearchBuilder();
+        $searchBuilder->addFilter('family', 'NOT EMPTY');
+        $searchBuilder->addFilter('completeness', '=', 100, ['scope' => 'ecommerce']);
+    }
+}
+```
