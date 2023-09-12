@@ -19,10 +19,10 @@ final class ItemImportResultContext implements Context
      */
     public function thereIsASuccessfulImportResultForAnItemWithIdentifierForTheEntity(string $successfulOrFailed, string $akeneoIdentifier, string $akeneoEntity): void
     {
-        $successsful = $successfulOrFailed === 'successful';
+        $successful = $successfulOrFailed === 'successful';
 
         $this->itemImportResultRepository->add(
-            new ItemImportResult($akeneoEntity, $akeneoIdentifier, $successsful, ''),
+            new ItemImportResult($akeneoEntity, $akeneoIdentifier, $successful, ''),
         );
     }
 }
