@@ -37,15 +37,6 @@ webgriffe_sylius_akeneo_plugin_admin:
 Be sure that your configuration in `config/packages/webgriffe_sylius_akeneo_plugin.yaml` is already using the new name arguments
 as specified [here](https://github.com/webgriffe/SyliusAkeneoPlugin/releases/tag/1.13.0).
 
-If you do not have already installed the official Ajeneo PHP SDK client we suggest to follow the installation instructions
-showed [here](https://github.com/akeneo/api-php-client#installation).
-
-After having installed the Akeneo PIM client you can now require the new version of plugin:
-
-```bash
-composer require webgriffe/sylius-akeneo-plugin ^2.0
-```
-
 Run migration diff command and then execute it:
 
 ```bash
