@@ -65,16 +65,6 @@ framework:
     messenger:
         routing:
             'Webgriffe\SyliusAkeneoPlugin\Message\ItemImport': main
-        buses:
-            sylius.command_bus:
-                middleware:
-                    # TODO we need to redefine validation and doctrine_transaction middleware because this config is not
-                    #      merged with the one defined in
-                    #      vendor/sylius/sylius/src/Sylius/Bundle/CoreBundle/Resources/config/app/messenger.yaml
-                    #      Maybe we can handle this in a DI extension.
-                    - 'webgriffe_sylius_akeneo.middleware.item_import_result_persister'
-                    - 'validation'
-                    - 'doctrine_transaction'
 
 monolog:
     channels: ['webgriffe_sylius_akeneo_plugin']
