@@ -16,10 +16,6 @@ use Webgriffe\SyliusAkeneoPlugin\Respository\ItemImportResultRepositoryInterface
 
 final class ItemImportResultCleanupCommand extends Command
 {
-    public const SUCCESS = 0;
-
-    public const FAILURE = 1;
-
     private const DEFAULT_DAYS = 30;
 
     private const DAYS_ARGUMENT_NAME = 'days';
@@ -58,7 +54,7 @@ final class ItemImportResultCleanupCommand extends Command
             if (!is_string($numberOfDaysEntered) || (int) $numberOfDaysEntered < 0) {
                 $output->writeln('Sorry, the number of days entered is not valid!');
 
-                return self::FAILURE;
+                return Command::FAILURE;
             }
             $numberOfDays = (int) $numberOfDaysEntered;
         }
@@ -71,7 +67,7 @@ final class ItemImportResultCleanupCommand extends Command
         if (count($itemImportResults) === 0) {
             $output->writeln('There are no items to clean');
 
-            return self::SUCCESS;
+            return Command::SUCCESS;
         }
 
         /** @var ItemImportResultInterface $itemImportResult */
@@ -87,7 +83,7 @@ final class ItemImportResultCleanupCommand extends Command
             ),
         );
 
-        return self::SUCCESS;
+        return Command::SUCCESS;
     }
 
     private function getPreviousDateNDays(int $numberOfDays): DateTime
