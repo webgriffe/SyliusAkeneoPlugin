@@ -123,6 +123,7 @@
             <argument type="service" id="sylius.repository.product_association"/>
             <argument type="service" id="sylius.repository.product_association_type"/>
             <argument type="service" id="sylius.factory.product_association"/>
+            <argument type="service" id="event_dispatcher" />
             <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
 
@@ -130,6 +131,7 @@
         <service id="webgriffe_sylius_akeneo.attribute_options.importer" class="Webgriffe\SyliusAkeneoPlugin\AttributeOptions\Importer">
             <argument type="service" id="webgriffe_sylius_akeneo.api_client"/>
             <argument type="service" id="sylius.repository.product_attribute"/>
+            <argument type="service" id="event_dispatcher" />
             <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
 
