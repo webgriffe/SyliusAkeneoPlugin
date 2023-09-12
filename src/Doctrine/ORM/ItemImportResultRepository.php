@@ -6,7 +6,6 @@ namespace Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM;
 
 use DateTimeInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
-use Webgriffe\SyliusAkeneoPlugin\Entity\ItemImportResultInterface;
 use Webgriffe\SyliusAkeneoPlugin\Respository\ItemImportResultRepositoryInterface;
 use Webmozart\Assert\Assert;
 
