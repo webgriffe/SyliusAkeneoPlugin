@@ -54,7 +54,9 @@ framework:
 
 Be aware to put the `webgriffe_sylius_akeneo.middleware.item_import_result_persister` middleware before all other middlewares defined by Sylius core (you should copy and paste them from `vendor/sylius/sylius/src/Sylius/Bundle/CoreBundle/Resources/config/app/messenger.yaml`).
 
-Replace all occurrences of route name `webgriffe_sylius_akeneo_product_enqueue` with `webgriffe_sylius_akeneo_product_import` in your codebase.
+Replace all occurrences of route name `webgriffe_sylius_akeneo_product_enqueue`
+with `webgriffe_sylius_akeneo_product_import` and translation `webgriffe_sylius_akeneo.ui.enqueue`
+with `webgriffe_sylius_akeneo.ui.schedule_import` in your codebase.
 
 Run migration diff command and then execute it:
 
