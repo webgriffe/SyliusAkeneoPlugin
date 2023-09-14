@@ -7,13 +7,3 @@ framework:
     serializer:
         mapping:
             paths: [ '%kernel.project_dir%/config/serialization' ]
-
-    messenger:
-        buses:
-            sylius.command_bus:
-                middleware:
-                    - 'webgriffe_sylius_akeneo.middleware.item_import_result_persister'
-                    # The following middlewares should be copied and pasted from sylius.command_bus middlewares defined in
-                    # vendor/sylius/sylius/src/Sylius/Bundle/CoreBundle/Resources/config/app/messenger.yaml
-                    - 'validation'
-                    - 'doctrine_transaction'
