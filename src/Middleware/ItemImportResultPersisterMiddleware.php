@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
+use Symfony\Component\Messenger\Stamp\ReceivedStamp;
 use Throwable;
 use Webgriffe\SyliusAkeneoPlugin\Entity\ItemImportResult;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
