@@ -35,6 +35,10 @@ final class ItemImportResultPersisterMiddleware implements MiddlewareInterface
                 return $result;
             }
 
+            if (!$envelope->last(ReceivedStamp::class)) {
+                return $result;
+            }
+
             $this->itemImportResultRepository->add(
                 new ItemImportResult(
                     $message->getAkeneoEntity(),
