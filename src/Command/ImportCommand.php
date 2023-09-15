@@ -129,7 +129,7 @@ final class ImportCommand extends Command
                 $this->messageBus->dispatch($itemImport);
                 $output->writeln(
                     sprintf(
-                        '<info>%s</info> entity with identifier <info>%s</info> imported.',
+                        '<info>%s</info> entity with identifier <info>%s</info> has been scheduled for import.',
                         $importer->getAkeneoEntity(),
                         $identifier,
                     ),
