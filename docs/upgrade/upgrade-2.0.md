@@ -9,6 +9,12 @@ parent: Upgrade
 
 In the 2.0 version, we have introduced the Symfony Messenger component and removed all deprecations.
 
+Also, in the 2.0 version, we introduced, with [this change](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/169), Product and ProductVariant validation.
+So, **all the products will be validated as they would be when you create or update them from the Sylius admin panel**.
+This means that if your Akeneo products have some missing or invalid attribute values, the import will fail.
+For example, on Akeneo PIM, product codes can contain dots (.) but in Sylius, they are not allowed; so if you have a product with a code like `foo.bar` in Akeneo, the import will now fail.
+In such situations you have to customize Sylius Product and ProductVariant validation (for example in this case to allow dots in product codes).
+
 Here you can find all the steps to upgrade your plugin to v2.0 starting from v1.16.2.
 Documented steps are for a simple project without customizations. In this case, you can find more in the below section [Codebase](#Codebase) which
 contains all the detailed changes applied to this version and all the BC breaks contained in this major version.
@@ -32,27 +38,6 @@ webgriffe_sylius_akeneo_plugin_admin:
 
 Be sure that your configuration in `config/packages/webgriffe_sylius_akeneo_plugin.yaml` is already using the new name arguments
 as specified [here](https://github.com/webgriffe/SyliusAkeneoPlugin/releases/tag/1.13.0).
-
-To be able to see Akeneo item import results in Sylius backend you should enable our dedicated Symfony Messenger middleware for the `sylius.command_bus`.
-To do so you have to add the following configuration in `config/framework.yaml`:
-
-```yaml
-# ...
-
-framework:
-    # ...
-    messenger:
-        # ...
-        sylius.command_bus:
-            middleware:
-                - 'webgriffe_sylius_akeneo.middleware.item_import_result_persister'
-                # The following middlewares should be copied and pasted from sylius.command_bus middlewares defined in
-                # vendor/sylius/sylius/src/Sylius/Bundle/CoreBundle/Resources/config/app/messenger.yaml
-                - 'validation'
-                - 'doctrine_transaction'        
-```
-
-Be aware to put the `webgriffe_sylius_akeneo.middleware.item_import_result_persister` middleware before all other middlewares defined by Sylius core (you should copy and paste them from `vendor/sylius/sylius/src/Sylius/Bundle/CoreBundle/Resources/config/app/messenger.yaml`).
 
 Replace all occurrences of route name `webgriffe_sylius_akeneo_product_enqueue`
 with `webgriffe_sylius_akeneo_product_import` and translation `webgriffe_sylius_akeneo.ui.enqueue`
