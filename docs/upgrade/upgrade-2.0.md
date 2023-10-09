@@ -161,6 +161,22 @@ Removed all deprecations of the v1.x releases.
 - [BC] Class Webgriffe\SyliusAkeneoPlugin\Repository\QueueItemRepositoryInterface has been deleted
 - [BC] Class Webgriffe\SyliusAkeneoPlugin\Entity\QueueItemInterface has been deleted
 
+### Remove only temporary files from current akeneo entity import ([#176](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/176))
+
+#### TL;DR
+
+Now, the Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface service requires a file identifier to remove only
+the temporary files related to the current Akeneo entity import.
+
+#### BC Breaks
+
+##### Changed
+- [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager#generateTemporaryFilePath() increased from 0 to 1
+- [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager#deleteAllTemporaryFiles() increased from 0 to 1
+- [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface#generateTemporaryFilePath() increased from 0 to 1
+- [BC] The number of required arguments for Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface#deleteAllTemporaryFiles() increased from 0 to 1
+
+
 ### Test changes
 
 #### TL;DR

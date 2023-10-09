@@ -9,6 +9,7 @@ use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
 final class ItemImportHandler
 {
@@ -26,7 +27,7 @@ final class ItemImportHandler
         try {
             $importer->import($akeneoIdentifier);
         } finally {
-            $this->temporaryFilesManager->deleteAllTemporaryFiles();
+            $this->temporaryFilesManager->deleteAllTemporaryFiles(TemporaryFilesManagerInterface::PRODUCT_VARIANT_PREFIX . $akeneoIdentifier);
         }
     }
 

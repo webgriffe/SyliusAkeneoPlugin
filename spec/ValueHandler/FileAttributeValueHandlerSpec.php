@@ -41,11 +41,12 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $supportChannel->setCode('support');
         $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
         $productVariant->getProduct()->willReturn($product);
+        $productVariant->getCode()->willReturn('VARIANT_1');
         $apiClient->getAttributeApi()->willReturn($attributeApi);
         $apiClient->getProductMediaFileApi()->willReturn($productMediaFileApi);
         $productMediaFileApi->download(Argument::type('string'))->willReturn(new Response(200, [], '__FILE_CONTENT__'));
         $attributeApi->get('allegato_1')->willReturn(['type' => 'pim_catalog_file']);
-        $temporaryFilesManager->generateTemporaryFilePath()->willReturn('tempfile');
+        $temporaryFilesManager->generateTemporaryFilePath('product-variant-VARIANT_1')->willReturn('tempfile');
         $this->beConstructedWith($apiClient, $filesystem, $temporaryFilesManager, 'allegato_1', 'public/media/attachment/product/');
     }
 

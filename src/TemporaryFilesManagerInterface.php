@@ -6,7 +6,9 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 interface TemporaryFilesManagerInterface
 {
-    public function generateTemporaryFilePath(): string;
+    public const PRODUCT_VARIANT_PREFIX = 'product-variant-';
 
-    public function deleteAllTemporaryFiles(): void;
+    public function generateTemporaryFilePath(string $fileIdentifier): string;
+
+    public function deleteAllTemporaryFiles(string $fileIdentifier): void;
 }

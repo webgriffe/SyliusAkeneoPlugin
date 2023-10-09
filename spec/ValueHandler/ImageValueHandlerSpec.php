@@ -65,10 +65,11 @@ class ImageValueHandlerSpec extends ObjectBehavior
         $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel, $supportChannel]));
         $productVariant->addImage($productImage)->hasReturnVoid();
         $productVariant->getProduct()->willReturn($product);
+        $productVariant->getCode()->willReturn('VARIANT_1');
         $productImageRepository
             ->findBy(['owner' => $product, 'type' => self::SYLIUS_IMAGE_TYPE])
             ->willReturn(new ArrayCollection([]));
-        $temporaryFilesManager->generateTemporaryFilePath()->willReturn('tempfile');
+        $temporaryFilesManager->generateTemporaryFilePath('product-variant-VARIANT_1')->willReturn('tempfile');
         $this->beConstructedWith(
             $productImageFactory,
             $productImageRepository,

@@ -25,6 +25,14 @@ final class ImportCommandContext implements Context
     }
 
     /**
+     * @BeforeScenario
+     */
+    public function before(): void
+    {
+        vfsStream::setup();
+    }
+
+    /**
      * @When I import items for all importers modified since date :date
      */
     public function iImportItemsForAllImportersModifiedSinceDate(DateTime $date): void
