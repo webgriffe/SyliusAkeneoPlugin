@@ -30,31 +30,33 @@ final class TemporaryFilesManagerTest extends TestCase
     {
         $this->assertMatchesRegularExpression(
             '|' . vfsStream::url('root') . '/akeneo-.*|',
-            $this->temporaryFileManager->generateTemporaryFilePath(),
+            $this->temporaryFileManager->generateTemporaryFilePath('VARIANT_1'),
         );
     }
 
     /** @test */
     public function it_deletes_all_temporary_files(): void
     {
-        touch(vfsStream::url('root') . '/akeneo-temp1');
-        touch(vfsStream::url('root') . '/akeneo-temp2');
-        touch(vfsStream::url('root') . '/akeneo-temp3');
+        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-temp1');
+        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-temp2');
+        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-temp3');
 
-        $this->temporaryFileManager->deleteAllTemporaryFiles();
+        $this->temporaryFileManager->deleteAllTemporaryFiles('VARIANT_1');
 
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-temp1');
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-temp2');
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-temp3');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-temp1');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-temp2');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-temp3');
     }
 
     /** @test */
     public function it_does_not_delete_not_managed_temporary_files(): void
     {
         touch(vfsStream::url('root') . '/not-managed-temp-file');
+        touch(vfsStream::url('root') . '/VARIANT_1-not-managed-temp-file');
 
-        $this->temporaryFileManager->deleteAllTemporaryFiles();
+        $this->temporaryFileManager->deleteAllTemporaryFiles('VARIANT_1');
 
         $this->assertFileExists(vfsStream::url('root') . '/not-managed-temp-file');
+        $this->assertFileExists(vfsStream::url('root') . '/VARIANT_1-not-managed-temp-file');
     }
 }

@@ -86,7 +86,9 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
             // TODO remove existing image? See https://github.com/webgriffe/SyliusAkeneoPlugin/issues/61
             return;
         }
-        $downloadedFile = $this->downloadFile($mediaCode);
+        $fileIdentifier = $subject->getCode();
+        Assert::notNull($fileIdentifier);
+        $downloadedFile = $this->downloadFile($mediaCode, $fileIdentifier);
 
         $relativeFilePath = $mediaCode;
         $this->moveFileToAttachmentFolder($relativeFilePath, $downloadedFile);
@@ -133,7 +135,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
         throw new InvalidArgumentException('Invalid Akeneo attachment data: cannot find the media code.');
     }
 
-    private function downloadFile(string $mediaCode): SplFileInfo
+    private function downloadFile(string $mediaCode, string $fileIdentifier): SplFileInfo
     {
         $response = $this->apiClient->getProductMediaFileApi()->download($mediaCode);
         $statusClass = (int) ($response->getStatusCode() / 100);
@@ -144,14 +146,9 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
 
             throw new SymfonyHttpException((int) $responseResult['code'], (string) $responseResult['message']);
         }
-        $tempName = $this->generateTempFilePath();
+        $tempName = $this->temporaryFilesManager->generateTemporaryFilePath(TemporaryFilesManagerInterface::PRODUCT_VARIANT_PREFIX . $fileIdentifier);
         file_put_contents($tempName, $bodyContents);
 
         return new File($tempName);
-    }
-
-    private function generateTempFilePath(): string
-    {
-        return $this->temporaryFilesManager->generateTemporaryFilePath();
     }
 }

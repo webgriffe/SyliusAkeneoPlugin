@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\System;
 
 use Behat\Behat\Context\Context;
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamContainer;
 use Webmozart\Assert\Assert;
 
 final class FilesystemContext implements Context
 {
-    /** @phpstan-ignore-next-line */
-    private ?vfsStreamContainer $vfsStream = null;
-
     public function __construct(private string $temporaryDirectory, private string $temporaryFilesPrefix)
     {
     }
@@ -23,7 +18,9 @@ final class FilesystemContext implements Context
      */
     public function before(): void
     {
-        $this->vfsStream = vfsStream::setup('root');
+        if (!file_exists($this->temporaryDirectory)) {
+            mkdir($this->temporaryDirectory);
+        }
     }
 
     /**
