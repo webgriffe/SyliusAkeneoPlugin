@@ -8,6 +8,7 @@ use RuntimeException;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
+use Webgriffe\SyliusAkeneoPlugin\Product\Importer;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
@@ -27,7 +28,9 @@ final class ItemImportHandler
         try {
             $importer->import($akeneoIdentifier);
         } finally {
-            $this->temporaryFilesManager->deleteAllTemporaryFiles(TemporaryFilesManagerInterface::PRODUCT_VARIANT_PREFIX . $akeneoIdentifier);
+            if ($message->getAkeneoEntity() === Importer::AKENEO_ENTITY) {
+                $this->temporaryFilesManager->deleteAllTemporaryFiles(TemporaryFilesManagerInterface::PRODUCT_VARIANT_PREFIX . $akeneoIdentifier);
+            }
         }
     }
 

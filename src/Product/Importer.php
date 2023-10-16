@@ -28,7 +28,7 @@ use Webmozart\Assert\Assert;
 
 final class Importer implements ImporterInterface, ReconcilerInterface
 {
-    private const AKENEO_ENTITY = 'Product';
+    public const AKENEO_ENTITY = 'Product';
 
     /**
      * @param FactoryInterface<ProductTaxonInterface> $productTaxonFactory
