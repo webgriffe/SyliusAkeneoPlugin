@@ -9,7 +9,7 @@ nav_order: 0
 > **Please note!!**<br />
 > This guide refers to the v2.0 version of the plugin.<br />
 > Click [here](upgrade/upgrade-2.0.html) to access the guide on how to upgrade your plugin to v2.0.<br />
-> Or click [here](https://github.com/webgriffe/SyliusAkeneoPlugin/tree/1.16.2) to access the guide for the current stable version.
+> Or click [here](https://github.com/webgriffe/SyliusAkeneoPlugin/tree/1.17.0) to access the guide for the current stable version.
 
 ## What does this plugin do?
 

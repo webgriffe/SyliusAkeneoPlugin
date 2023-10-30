@@ -5,7 +5,7 @@ nav_order: 0
 parent: Upgrade
 ---
 
-# Upgrade from `v1.16.2` to `v2.0.0`
+# Upgrade from `v1.17.0` to `v2.0.0`
 
 In the 2.0 version, we have introduced the Symfony Messenger component and removed all deprecations.
 
