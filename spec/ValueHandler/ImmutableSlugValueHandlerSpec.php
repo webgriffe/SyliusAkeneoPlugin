@@ -52,6 +52,7 @@ class ImmutableSlugValueHandlerSpec extends ObjectBehavior
         $supportChannel->getLocales()->willReturn(new ArrayCollection([$italianLocale->getWrappedObject(), $englishLocale->getWrappedObject()]));
 
         $product->getChannels()->willReturn(new ArrayCollection([$commerceChannel->getWrappedObject(), $supportChannel->getWrappedObject()]));
+        $product->getCode()->willReturn('PRODUCT');
 
         $this->beConstructedWith(
             $slugify,
