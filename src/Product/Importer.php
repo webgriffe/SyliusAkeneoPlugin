@@ -160,12 +160,15 @@ final class Importer implements ImporterInterface, ReconcilerInterface
             }
         }
 
-        $eventName = $product->getId() ? 'update' : 'create';
-        $this->dispatchPreEvent($product, $eventName);
+        $productEventName = $product->getId() ? 'update' : 'create';
+        $productVariantEventName = $productVariant->getId() ? 'update' : 'create';
+        $this->dispatchPreEvent($productVariant, 'product_variant', $productVariantEventName);
+        $this->dispatchPreEvent($product, 'product', $productEventName);
         // TODO We should handle $event->isStopped() where $event is the return value of the dispatchPreEvent method.
         //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
         $this->productRepository->add($product);
-        $this->dispatchPostEvent($product, $eventName);
+        $this->dispatchPostEvent($productVariant, 'product_variant', $productVariantEventName);
+        $this->dispatchPostEvent($product, 'product', $productEventName);
     }
 
     /**
@@ -217,21 +220,21 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         return $product;
     }
 
-    private function dispatchPreEvent(ResourceInterface $product, string $eventName): ResourceControllerEvent
+    private function dispatchPreEvent(ResourceInterface $product, string $resourceName, string $eventName): ResourceControllerEvent
     {
         $event = new ResourceControllerEvent($product);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
-        $this->eventDispatcher->dispatch($event, sprintf('sylius.product.pre_%s', $eventName));
+        $this->eventDispatcher->dispatch($event, sprintf('sylius.%s.pre_%s', $resourceName, $eventName));
 
         return $event;
     }
 
-    private function dispatchPostEvent(ResourceInterface $product, string $eventName): ResourceControllerEvent
+    private function dispatchPostEvent(ResourceInterface $product, string $resourceName, string $eventName): ResourceControllerEvent
     {
         $event = new ResourceControllerEvent($product);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
         /** @psalm-suppress InvalidArgument */
-        $this->eventDispatcher->dispatch($event, sprintf('sylius.product.post_%s', $eventName));
+        $this->eventDispatcher->dispatch($event, sprintf('sylius.%s.post_%s', $resourceName, $eventName));
 
         return $event;
     }
@@ -353,11 +356,13 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
             $product->setEnabled(false);
 
-            $this->dispatchPreEvent($product, 'update');
+            $this->dispatchPreEvent($productVariantIdentifierToDisable, 'product_variant', 'update');
+            $this->dispatchPreEvent($product, 'product', 'update');
             // TODO We should handle $event->isStopped() where $event is the return value of the dispatchPreEvent method.
             //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
             $this->productRepository->add($product);
-            $this->dispatchPostEvent($product, 'update');
+            $this->dispatchPostEvent($productVariantIdentifierToDisable, 'product_variant', 'update');
+            $this->dispatchPostEvent($product, 'product', 'update');
         }
     }
 
