@@ -356,12 +356,12 @@ final class Importer implements ImporterInterface, ReconcilerInterface
 
             $product->setEnabled(false);
 
-            $this->dispatchPreEvent($productVariantIdentifierToDisable, 'product_variant', 'update');
+            $this->dispatchPreEvent($productVariantToDisable, 'product_variant', 'update');
             $this->dispatchPreEvent($product, 'product', 'update');
             // TODO We should handle $event->isStopped() where $event is the return value of the dispatchPreEvent method.
             //      See \Sylius\Bundle\ResourceBundle\Controller\ResourceController.
             $this->productRepository->add($product);
-            $this->dispatchPostEvent($productVariantIdentifierToDisable, 'product_variant', 'update');
+            $this->dispatchPostEvent($productVariantToDisable, 'product_variant', 'update');
             $this->dispatchPostEvent($product, 'product', 'update');
         }
     }
