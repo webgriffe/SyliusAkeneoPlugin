@@ -51,12 +51,26 @@ final class TemporaryFilesManagerTest extends TestCase
     /** @test */
     public function it_does_not_delete_not_managed_temporary_files(): void
     {
-        touch(vfsStream::url('root') . '/not-managed-temp-file');
-        touch(vfsStream::url('root') . '/VARIANT_1-not-managed-temp-file');
+        touch(vfsStream::url('root') . '/not-managed-temp_file');
+        touch(vfsStream::url('root') . '/VARIANT_1-not_managed_temp_file');
+        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-managed_temp_file');
 
         $this->temporaryFileManager->deleteAllTemporaryFiles('VARIANT_1');
 
-        $this->assertFileExists(vfsStream::url('root') . '/not-managed-temp-file');
-        $this->assertFileExists(vfsStream::url('root') . '/VARIANT_1-not-managed-temp-file');
+        $this->assertFileExists(vfsStream::url('root') . '/not-managed-temp_file');
+        $this->assertFileExists(vfsStream::url('root') . '/VARIANT_1-not_managed_temp_file');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-managed_temp_file');
+    }
+
+    /** @test */
+    public function it_does_not_delete_not_managed_temporary_files_with_same_product_code_prefix(): void
+    {
+        touch(vfsStream::url('root') . '/akeneo-CSV1-fCZfOu');
+        touch(vfsStream::url('root') . '/akeneo-CSV1-A3-324234');
+
+        $this->temporaryFileManager->deleteAllTemporaryFiles('CSV1');
+
+        $this->assertFileExists(vfsStream::url('root') . '/akeneo-CSV1-A3-324234');
+        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-CSV1-fCZfOu');
     }
 }
