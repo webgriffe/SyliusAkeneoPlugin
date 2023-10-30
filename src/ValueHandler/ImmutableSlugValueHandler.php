@@ -63,7 +63,11 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             if ($valueToSlugify === null) {
                 continue;
             }
-            Assert::string($valueToSlugify);
+            Assert::stringNotEmpty($valueToSlugify, sprintf(
+                'Unable to generate slug for product "%s". The attribute "%s" used for generating the slug must be a not empty string.',
+                $product->getCode(),
+                $attribute,
+            ));
             if (!$localeCode) {
                 $this->setSlugOnAllTranslations($product, $valueToSlugify);
 
