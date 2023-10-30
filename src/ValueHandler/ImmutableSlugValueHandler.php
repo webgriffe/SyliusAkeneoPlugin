@@ -65,7 +65,7 @@ final class ImmutableSlugValueHandler implements ValueHandlerInterface
             }
             Assert::stringNotEmpty($valueToSlugify, sprintf(
                 'Unable to generate slug for product "%s". The attribute "%s" used for generating the slug must be a not empty string.',
-                $product->getCode(),
+                (string) $product->getCode(),
                 $attribute,
             ));
             if (!$localeCode) {
