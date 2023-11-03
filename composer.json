@@ -71,12 +71,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Webgriffe\\SyliusAkeneoPlugin\\": "src/",
-            "Tests\\Webgriffe\\SyliusAkeneoPlugin\\": "tests/"
+            "Webgriffe\\SyliusAkeneoPlugin\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
+            "Tests\\Webgriffe\\SyliusAkeneoPlugin\\": "tests/",
             "Tests\\Webgriffe\\SyliusAkeneoPlugin\\Sylius\\": "tests/Application/src/"
         },
         "classmap": [
