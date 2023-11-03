@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration;
+namespace Tests\Webgriffe\SyliusAkeneoPlugin\Unit;
 
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
