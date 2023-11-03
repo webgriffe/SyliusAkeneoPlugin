@@ -221,5 +221,5 @@ jobs:
                 run: composer require --dev roave/backward-compatibility-check --no-plugins
 
             -   name: Run roave/backward-compatibility-check.
-                run: vendor/bin/roave-backward-compatibility-check --format=github-actions --install-development-dependencies
+                run: vendor/bin/roave-backward-compatibility-check --format=github-actions
 
