@@ -99,6 +99,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         /** @var string|array|bool|int $akeneoValueData */
         $akeneoValueData = $akeneoValue[0]['data'];
 
+        $productVariant->getOptionValues()->clear();
+
         $productOption = $this->getProductOption($optionCode, $productVariant, $product);
 
         /** @var string $attributeType */

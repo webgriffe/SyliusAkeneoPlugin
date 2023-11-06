@@ -13,9 +13,22 @@ use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
+use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeOptionApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Attribute;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeOption;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeType;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\InMemoryAkeneoPimClient;
+use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DataFixtures\DataFixture;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver;
+use Webgriffe\SyliusAkeneoPlugin\Product\Importer;
+use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 
 final class ImporterTest extends KernelTestCase
 {
@@ -795,5 +808,88 @@ final class ImporterTest extends KernelTestCase
 
         self::assertTrue($product->isEnabled());
         self::assertTrue($productVariant->isEnabled());
+    }
+
+    /**
+     * @test
+     *
+     * @TODO This tests adds also the new in memory implementation of Akeneo API client.
+     * To use that only on this specific test we have overriden the importer definition.
+     * Obviously, when the new implementation will be the default one, all this rewrite should be removed!
+     */
+    public function it_does_not_duplicate_product_option_values_when_changed(): void
+    {
+        $this->fixtureLoader->load(
+            [
+                DataFixture::path . '/ORM/resources/Locale/en_US.yaml',
+                DataFixture::path . '/ORM/resources/Product/box.yaml',
+            ],
+            [],
+            [],
+            PurgeMode::createDeleteMode(),
+        );
+        $akeneoPimClient = new InMemoryAkeneoPimClient();
+        $productOptionValueHandler = new ProductOptionValueHandler(
+            $akeneoPimClient,
+            self::getContainer()->get('sylius.repository.product_option'),
+            self::getContainer()->get('sylius.factory.product_option_value'),
+            self::getContainer()->get('sylius.factory.product_option_value_translation'),
+            self::getContainer()->get('sylius.repository.product_option_value'),
+            self::getContainer()->get('sylius.translation_locale_provider'),
+            self::getContainer()->get('translator'),
+        );
+        $valueHandlersResolver = new PriorityValueHandlersResolver();
+        $valueHandlersResolver->add($productOptionValueHandler);
+        $this->importer = new Importer(
+            self::getContainer()->get('sylius.factory.product_variant'),
+            self::getContainer()->get('sylius.repository.product_variant'),
+            self::getContainer()->get('sylius.repository.product'),
+            $akeneoPimClient,
+            $valueHandlersResolver,
+            self::getContainer()->get('sylius.factory.product'),
+            self::getContainer()->get('webgriffe_sylius_akeneo.product.taxons_resolver'),
+            self::getContainer()->get('webgriffe_sylius_akeneo.product.product_options_resolver'),
+            self::getContainer()->get('event_dispatcher'),
+            self::getContainer()->get('webgriffe_sylius_akeneo.product.channels_resolver'),
+            self::getContainer()->get('webgriffe_sylius_akeneo.product.status_resolver'),
+            self::getContainer()->get('sylius.factory.product_taxon'),
+            self::getContainer()->get('webgriffe_sylius_akeneo.product.variant_status_resolver'),
+            self::getContainer()->get('webgriffe_sylius_akeneo.product.validator'),
+        );
+        $akeneoProduct = Product::create('BOX_VARIANT', [
+            'values' => ['format' => [[
+                'locale' => null,
+                'scope' => null,
+                'data' => '133x48',
+            ]]],
+            'parent' => 'BOX',
+        ]);
+        InMemoryProductApi::addResource($akeneoProduct);
+        $akeneoFormatAttribute = Attribute::create('format', [
+            'type' => AttributeType::SIMPLE_SELECT,
+        ]);
+        InMemoryAttributeApi::addResource($akeneoFormatAttribute);
+        $akeneoFormatAttributeOption = AttributeOption::create(
+            $akeneoFormatAttribute->getIdentifier(),
+            '133x48',
+            1,
+            ['en_US' => 'Format 133x48'],
+        );
+        InMemoryAttributeOptionApi::addResource($akeneoFormatAttributeOption);
+
+        $this->importer->import('BOX_VARIANT');
+
+        /** @var ProductVariantInterface[] $allVariants */
+        $allVariants = $this->productVariantRepository->findAll();
+        $this->assertCount(1, $allVariants);
+        $variant = reset($allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $this->assertInstanceOf(ProductInterface::class, $variant->getProduct());
+        $this->assertEquals('BOX', $variant->getProduct()->getCode());
+        $this->assertCount(1, $variant->getOptionValues());
+        $optionValue = $variant->getOptionValues()->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $optionValue);
+        $this->assertEquals('format', $optionValue->getOptionCode());
+        $this->assertEquals('Format 133x48', $optionValue->getValue());
     }
 }
