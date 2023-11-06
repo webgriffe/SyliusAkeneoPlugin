@@ -23,7 +23,6 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Webgriffe\SyliusAkeneoPlugin\ApiClientInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 
@@ -61,6 +60,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
     ): void {
         $productVariant->getCode()->willReturn(self::VARIANT_CODE);
         $productVariant->getProduct()->willReturn($product);
+        $productVariant->getOptionValues()->willReturn(new ArrayCollection());
         $product->getCode()->willReturn(self::PRODUCT_CODE);
         $product->getOptions()->willReturn(new ArrayCollection([$productOption->getWrappedObject()]));
         $productOption->getCode()->willReturn(self::OPTION_CODE);
