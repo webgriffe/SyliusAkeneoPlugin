@@ -1,0 +1,35 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: "size"
+
+Sylius\Component\Product\Model\ProductOptionTranslation:
+    size_en_US:
+        translatable: "@size"
+        locale: "en_US"
+        name: "Size"
+    size_it_IT:
+        translatable: "@size"
+        locale: "it_IT"
+        name: "Taglia"
+
+Sylius\Component\Product\Model\ProductOptionValue:
+    size_m:
+        option: "@size"
+        code: "size_m"
+        translations:
+            - "@size_m_en_US"
+            - "@size_m_it_IT"
+
+Sylius\Component\Product\Model\ProductOptionValueTranslation:
+    size_m_en_US:
+        locale: "en_US"
+        value: "Medium"
+    size_m_it_IT:
+        locale: "it_IT"
+        value: "Media"

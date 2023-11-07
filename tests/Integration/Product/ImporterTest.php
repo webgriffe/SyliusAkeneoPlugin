@@ -18,16 +18,26 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeOptionApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryFamilyApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryFamilyVariantApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductModelApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Attribute;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeOption;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeType;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Family;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\FamilyVariant;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\ProductModel;
 use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DataFixtures\DataFixture;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class ImporterTest extends KernelTestCase
 {
+    private const STAR_WARS_TSHIRT_MODEL_CODE = 'STAR_WARS_TSHIRT';
+
+    private const STAR_WARS_TSHIRT_M_PRODUCT_CODE = 'STAR_WARS_TSHIRT_M';
+
     private ImporterInterface $importer;
 
     private ProductRepositoryInterface $productRepository;
@@ -40,6 +50,16 @@ final class ImporterTest extends KernelTestCase
 
     private Filesystem $filesystem;
 
+    private Product $startWarsTShirtMAkeneoProduct;
+
+    private Attribute $sizeAttribute;
+
+    private ProductModel $starWarsTShirtProductModel;
+
+    private Family $tShirtFamily;
+
+    private AttributeOption $sizeLAttributeOption;
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -50,6 +70,82 @@ final class ImporterTest extends KernelTestCase
         $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->filesystem = self::getContainer()->get('filesystem');
         $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
+
+        $this->tShirtFamily = Family::create('t-shirt', [
+            'attributes' => ['variation_image', 'supplier'],
+        ]);
+        InMemoryFamilyApi::addResource($this->tShirtFamily);
+
+        $attachmentAttribute = Attribute::create('attachment', [
+            'type' => AttributeType::FILE,
+        ]);
+        InMemoryAttributeApi::addResource($attachmentAttribute);
+        $skuAttribute = Attribute::create('sku', [
+            'type' => AttributeType::TEXT,
+            'labels' => ['en_US' => 'SKU'],
+        ]);
+        InMemoryAttributeApi::addResource($skuAttribute);
+        $this->sizeAttribute = Attribute::create('size', [
+            'type' => AttributeType::SIMPLE_SELECT,
+            'labels' => ['en_US' => 'Size'],
+        ]);
+        InMemoryAttributeApi::addResource($this->sizeAttribute);
+
+        $sizeMAttributeOption = AttributeOption::create($this->sizeAttribute->code, 'm', 0, [
+            'en_US' => 'M', 'it_IT' => 'M',
+        ]);
+        InMemoryAttributeOptionApi::addResource($sizeMAttributeOption);
+
+        $this->sizeLAttributeOption = AttributeOption::create($this->sizeAttribute->code, 'l', 0, [
+            'en_US' => 'L', 'it_IT' => 'L',
+        ]);
+        InMemoryAttributeOptionApi::addResource($this->sizeLAttributeOption);
+
+        $tShirtBySizeFamilyVariant = FamilyVariant::create('t-shirt_by_size', [
+            'variant_attribute_sets' => [
+                [
+                    'level' => 1,
+                    'axes' => [$this->sizeAttribute->code],
+                    'attributes' => [$skuAttribute->code, $this->sizeAttribute->code],
+                ],
+            ],
+        ]);
+        InMemoryFamilyVariantApi::addResource($this->tShirtFamily->code, $tShirtBySizeFamilyVariant);
+
+        $this->starWarsTShirtProductModel = ProductModel::create(self::STAR_WARS_TSHIRT_MODEL_CODE, [
+            'family' => $this->tShirtFamily->code,
+            'family_variant' => $tShirtBySizeFamilyVariant->code,
+        ]);
+        InMemoryProductModelApi::addResource($this->starWarsTShirtProductModel);
+
+        $this->startWarsTShirtMAkeneoProduct = Product::create(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, [
+            'family' => $this->tShirtFamily->code,
+            'parent' => $this->starWarsTShirtProductModel->code,
+            'values' => [
+                $this->sizeAttribute->code => [
+                    [
+                        'locale' => null,
+                        'scope' => null,
+                        'data' => $sizeMAttributeOption->code,
+                    ],
+                ],
+            ],
+        ]);
+        InMemoryProductApi::addResource($this->startWarsTShirtMAkeneoProduct);
+
+        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/Product/' . $this->getName() . '.yaml';
+        if (file_exists($ORMResourceFixturePath)) {
+            $this->fixtureLoader->load(
+                [$ORMResourceFixturePath],
+                [],
+                [],
+                PurgeMode::createDeleteMode(),
+            );
+        }
+
+        $this->filesystem->remove(
+            self::getContainer()->getParameter('sylius_core.public_dir') . '/media/',
+        );
     }
 
     /**
@@ -57,139 +153,89 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_creates_new_product_variant_and_its_product_when_importing_variant_of_configurable_product(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $this->importer->import('BRAIDED_HAT_M');
-
-        /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $allVariants);
-        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
-        $this->assertInstanceOf(ProductInterface::class, $allVariants[0]->getProduct());
-        $this->assertEquals('MODEL_BRAIDED_HAT', $allVariants[0]->getProduct()->getCode());
+        $variant = $allVariants[0];
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $this->assertInstanceOf(ProductInterface::class, $variant->getProduct());
+        $this->assertEquals(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $variant->getCode());
+        $this->assertEquals(self::STAR_WARS_TSHIRT_MODEL_CODE, $variant->getProduct()->getCode());
     }
 
     /**
      * @test
      */
-    public function it_creates_proper_product_option_value_with_translations_if_missing(): void
+    public function it_creates_proper_product_option_value_with_translations(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
-
-        $this->importer->import('BRAIDED_HAT_M');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
         /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
         $this->assertCount(1, $variant->getOptionValues());
-        $this->assertEquals('size_m', $variant->getOptionValues()[0]->getCode());
-        $this->assertCount(2, $variant->getOptionValues()[0]->getTranslations());
-        $this->assertEquals('it_IT', $variant->getOptionValues()[0]->getTranslation('it_IT')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('it_IT')->getValue());
-        $this->assertEquals('en_US', $variant->getOptionValues()[0]->getTranslation('en_US')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('en_US')->getValue());
+        $productVariantOptionValue = $variant->getOptionValues()->first();
+        $this->assertEquals('size_m', $productVariantOptionValue->getCode());
+        $this->assertCount(2, $productVariantOptionValue->getTranslations());
+        $this->assertEquals('it_IT', $productVariantOptionValue->getTranslation('it_IT')->getLocale());
+        $this->assertEquals('M', $productVariantOptionValue->getTranslation('it_IT')->getValue());
+        $this->assertEquals('en_US', $productVariantOptionValue->getTranslation('en_US')->getLocale());
+        $this->assertEquals('M', $productVariantOptionValue->getTranslation('en_US')->getValue());
     }
 
     /**
      * @test
      */
-    public function it_updates_alredy_existent_product_option_value(): void
+    public function it_updates_already_existent_product_option_value(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $this->importer->import('BRAIDED_HAT_M');
-
-        /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
-        $this->assertCount(2, $variant->getOptionValues()[0]->getTranslations());
-        $this->assertEquals('it_IT', $variant->getOptionValues()[0]->getTranslation('it_IT')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('it_IT')->getValue());
-        $this->assertEquals('en_US', $variant->getOptionValues()[0]->getTranslation('en_US')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('en_US')->getValue());
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $variantOptionValues = $variant->getOptionValues();
+        $this->assertCount(1, $variantOptionValues);
+        $variantOptionValue = $variantOptionValues->first();
+        $this->assertCount(2, $variantOptionValue->getTranslations());
+        $this->assertEquals('it_IT', $variantOptionValue->getTranslation('it_IT')->getLocale());
+        $this->assertEquals('M', $variantOptionValue->getTranslation('it_IT')->getValue());
+        $this->assertEquals('en_US', $variantOptionValue->getTranslation('en_US')->getLocale());
+        $this->assertEquals('M', $variantOptionValue->getTranslation('en_US')->getValue());
     }
 
     /**
      * @test
      */
-    public function it_creates_missing_translations_while_updating_alredy_existent_product_option_value(): void
+    public function it_creates_missing_translations_while_updating_already_existent_product_option_value(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/without-it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $this->importer->import('BRAIDED_HAT_M');
-
-        /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
-        $this->assertCount(2, $variant->getOptionValues()[0]->getTranslations());
-        $this->assertEquals('it_IT', $variant->getOptionValues()[0]->getTranslation('it_IT')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('it_IT')->getValue());
-        $this->assertEquals('en_US', $variant->getOptionValues()[0]->getTranslation('en_US')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('en_US')->getValue());
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $variantOptionValues = $variant->getOptionValues();
+        $this->assertCount(1, $variantOptionValues);
+        $variantOptionValue = $variantOptionValues->first();
+        $this->assertCount(2, $variantOptionValue->getTranslations());
+        $this->assertEquals('it_IT', $variantOptionValue->getTranslation('it_IT')->getLocale());
+        $this->assertEquals('M', $variantOptionValue->getTranslation('it_IT')->getValue());
+        $this->assertEquals('en_US', $variantOptionValue->getTranslation('en_US')->getLocale());
+        $this->assertEquals('M', $variantOptionValue->getTranslation('en_US')->getValue());
     }
 
     /**
      * @test
      */
-    public function it_creates_missing_option_value_while_updating_alredy_existent_product_variant(): void
+    public function it_creates_missing_option_value_while_updating_already_existent_product_variant(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m/without-option-values.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $this->importer->import('BRAIDED_HAT_M');
-
-        /** @var ProductVariantInterface $variant */
         $variant = $this->productVariantRepository->findAll()[0];
         $this->assertCount(1, $variant->getOptionValues());
-        $this->assertCount(2, $variant->getOptionValues()[0]->getTranslations());
-        $this->assertEquals('it_IT', $variant->getOptionValues()[0]->getTranslation('it_IT')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('it_IT')->getValue());
-        $this->assertEquals('en_US', $variant->getOptionValues()[0]->getTranslation('en_US')->getLocale());
-        $this->assertEquals('M', $variant->getOptionValues()[0]->getTranslation('en_US')->getValue());
+        $productVariantOptionValue = $variant->getOptionValues()->first();
+        $this->assertCount(2, $productVariantOptionValue->getTranslations());
+        $this->assertEquals('it_IT', $productVariantOptionValue->getTranslation('it_IT')->getLocale());
+        $this->assertEquals('M', $productVariantOptionValue->getTranslation('it_IT')->getValue());
+        $this->assertEquals('en_US', $productVariantOptionValue->getTranslation('en_US')->getLocale());
+        $this->assertEquals('M', $productVariantOptionValue->getTranslation('en_US')->getValue());
     }
 
     /**
@@ -197,23 +243,20 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_creates_product_and_product_variant_when_importing_simple_product(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->parent = null;
 
-        $this->importer->import('10627329');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
         $variants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $variants);
-        $this->assertInstanceOf(ProductVariantInterface::class, $variants[0]);
+        $variant = reset($variants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $this->assertEquals(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $variant->getCode());
         $products = $this->productRepository->findAll();
         $this->assertCount(1, $products);
-        $this->assertInstanceOf(ProductInterface::class, $products[0]);
+        $product = reset($products);
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $product->getCode());
     }
 
     /**
@@ -221,22 +264,22 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_updates_already_existent_parent_product_when_importing_simple_product(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/10627329.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->parent = null;
+        $this->startWarsTShirtMAkeneoProduct->values = [
+            'name' => [[
+                'locale' => null,
+                'scope' => null,
+                'data' => 'Star Wars T-Shirt M',
+            ]],
+        ];
 
-        $this->importer->import('10627329');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
         $products = $this->productRepository->findAll();
-        /** @var ProductInterface $parentProduct */
-        $parentProduct = $products[0];
-        $this->assertEquals('NEC EX201W', $parentProduct->getName());
+        $this->assertCount(1, $products);
+        $parentProduct = reset($products);
+        $this->assertInstanceOf(ProductInterface::class, $parentProduct);
+        $this->assertEquals('Star Wars T-Shirt M', $parentProduct->getName());
     }
 
     /**
@@ -244,23 +287,23 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_sets_channel_price_value_on_product_variant_according_to_channel_currency(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Currency/EUR.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->values = [
+            'price' => [[
+                'locale' => null,
+                'scope' => null,
+                'data' => [
+                    [
+                        'amount' => 30.99,
+                        'currency' => 'EUR',
+                    ],
+                    [
+                        'amount' => 33.99,
+                        'currency' => 'USD',
+                    ],
+                ],
+            ]],
+        ];
+
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
@@ -268,10 +311,12 @@ final class ImporterTest extends KernelTestCase
         /** @var ChannelInterface $europeChannel */
         $europeChannel = $this->channelRepository->findOneByCode('europe');
 
-        $this->importer->import('BRAIDED_HAT_M');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductVariantInterface $variant */
-        $variant = $this->productVariantRepository->findAll()[0];
+        $variants = $this->productVariantRepository->findAll();
+        $this->assertCount(1, $variants);
+        $variant = reset($variants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
         $channelPricing = $variant->getChannelPricingForChannel($italyChannel);
         $this->assertNotNull($channelPricing);
         $this->assertEquals(3099, $channelPricing->getPrice());
@@ -288,23 +333,23 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_updates_channel_price_value_on_product_variant_according_channel_currency(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Currency/EUR.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m/with-M-size-values.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m/with-channel-pricings.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->values = [
+            'price' => [[
+                'locale' => null,
+                'scope' => null,
+                'data' => [
+                    [
+                        'amount' => 30.99,
+                        'currency' => 'EUR',
+                    ],
+                    [
+                        'amount' => 33.99,
+                        'currency' => 'USD',
+                    ],
+                ],
+            ]],
+        ];
+
         /** @var ChannelInterface $italyChannel */
         $italyChannel = $this->channelRepository->findOneByCode('italy');
         /** @var ChannelInterface $usaChannel */
@@ -312,10 +357,12 @@ final class ImporterTest extends KernelTestCase
         /** @var ChannelInterface $europeChannel */
         $europeChannel = $this->channelRepository->findOneByCode('europe');
 
-        $this->importer->import('BRAIDED_HAT_M');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductVariantInterface $variant */
-        $variant = $this->productVariantRepository->findAll()[0];
+        $variants = $this->productVariantRepository->findAll();
+        $this->assertCount(1, $variants);
+        $variant = reset($variants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
         $channelPricings = $variant->getChannelPricingForChannel($italyChannel);
         $this->assertNotNull($channelPricings);
         $this->assertEquals(3099, $channelPricings->getPrice());
@@ -332,25 +379,27 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_sets_all_channels_to_imported_products(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Currency/EUR.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/italy.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/europe.yaml',
+        $this->startWarsTShirtMAkeneoProduct->values['price'] = [[
+            'locale' => null,
+            'scope' => null,
+            'data' => [
+                [
+                    'amount' => 30.99,
+                    'currency' => 'EUR',
+                ],
+                [
+                    'amount' => 33.99,
+                    'currency' => 'USD',
+                ],
             ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        ]];
 
-        $this->importer->import('BRAIDED_HAT_M');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductInterface $product */
-        $product = $this->productRepository->findAll()[0];
+        $products = $this->productRepository->findAll();
+        $this->assertCount(1, $products);
+        $product = reset($products);
+        $this->assertInstanceOf(ProductInterface::class, $product);
         $this->assertCount(3, $product->getChannels());
     }
 
@@ -359,29 +408,49 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_imports_all_product_images_when_importing_variants_of_configurable_product(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
+        $this->startWarsTShirtMAkeneoProduct->values = [
+            'image' => [[
+                'locale' => null,
+                'scope' => null,
+                'data' => 'star_wars_m.jpeg',
+            ]],
+        ];
+        $startWarsTShirtLAkeneoProduct = Product::create('STAR_WARS_TSHIRT_L', [
+            'family' => $this->tShirtFamily->code,
+            'parent' => $this->starWarsTShirtProductModel->code,
+            'values' => [
+                $this->sizeAttribute->code => [
+                    [
+                        'locale' => null,
+                        'scope' => null,
+                        'data' => $this->sizeLAttributeOption->code,
+                    ],
+                ],
+                'image' => [[
+                    'locale' => null,
+                    'scope' => null,
+                    'data' => 'star_wars_l.jpeg',
+                ]],
             ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        ]);
+        InMemoryProductApi::addResource($startWarsTShirtLAkeneoProduct);
 
-        $this->importer->import('BRAIDED_HAT_M');
-        $this->importer->import('BRAIDED_HAT_L');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+        $this->importer->import('STAR_WARS_TSHIRT_L');
 
-        /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
         $this->assertCount(2, $allVariants);
-        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
-        $product = $allVariants[0]->getProduct();
+        $mVariant = $allVariants[0];
+        $lVariant = $allVariants[1];
+        $this->assertInstanceOf(ProductVariantInterface::class, $mVariant);
+        $this->assertInstanceOf(ProductVariantInterface::class, $lVariant);
+        $product = $mVariant->getProduct();
         $this->assertInstanceOf(ProductInterface::class, $product);
-        $this->assertEquals('MODEL_BRAIDED_HAT', $product->getCode());
+        $this->assertEquals(self::STAR_WARS_TSHIRT_MODEL_CODE, $product->getCode());
         $this->assertCount(2, $product->getImages());
         /** @var ProductImageInterface $image */
         foreach ($product->getImages() as $image) {
-            $this->assertTrue($image->hasProductVariant($allVariants[0]) || $image->hasProductVariant($allVariants[1]));
+            $this->assertTrue($image->hasProductVariant($mVariant) || $image->hasProductVariant($lVariant));
             $this->assertEquals('image', $image->getType());
         }
     }
@@ -391,31 +460,30 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_updates_already_existent_product_image_without_duplicating_it(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/10627329.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->parent = null;
+        $this->startWarsTShirtMAkeneoProduct->values['picture'] = [[
+            'locale' => null,
+            'scope' => null,
+            'data' => 'star_wars_m.jpeg',
+        ]];
 
-        $this->importer->import('10627329');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $allVariants);
-        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
-        $product = $allVariants[0]->getProduct();
+        $variant = reset($allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $product = $variant->getProduct();
         $this->assertInstanceOf(ProductInterface::class, $product);
-        $this->assertEquals('10627329', $product->getCode());
-        $this->assertCount(1, $product->getImages());
-        /** @var ProductImageInterface $image */
-        $image = $product->getImages()[0];
-        $this->assertTrue($image->hasProductVariant($allVariants[0]));
+        $this->assertEquals(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $product->getCode());
+
+        $productImages = $product->getImages();
+        $this->assertCount(1, $productImages);
+        $image = $productImages->first();
+        $this->assertInstanceOf(ProductImageInterface::class, $image);
+        $this->assertTrue($image->hasProductVariant($variant));
         $this->assertEquals('picture', $image->getType());
-        $this->assertNotEquals('path/to/existent-image/10627329.jpg', $image->getPath());
+        $this->assertNotEquals('path/to/existent-image.jpg', $image->getPath());
     }
 
     /**
@@ -423,30 +491,29 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_imports_new_product_image_without_associate_it_with_the_variant_if_product_is_simple(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/127469.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->parent = null;
+        $this->startWarsTShirtMAkeneoProduct->values['picture'] = [[
+            'locale' => null,
+            'scope' => null,
+            'data' => 'star_wars_m.jpeg',
+        ]];
 
-        $this->importer->import('127469');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $allVariants);
-        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
-        $product = $allVariants[0]->getProduct();
+        $variant = reset($allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $product = $variant->getProduct();
         $this->assertInstanceOf(ProductInterface::class, $product);
-        $this->assertEquals('127469', $product->getCode());
-        $this->assertCount(1, $product->getImages());
-        $this->assertCount(0, $allVariants[0]->getImages());
-        /** @var ProductImageInterface $image */
-        $image = $product->getImages()[0];
-        $this->assertFalse($image->hasProductVariant($allVariants[0]));
+        $this->assertEquals(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $product->getCode());
+        $productImages = $product->getImages();
+        $this->assertCount(1, $productImages);
+        $this->assertCount(0, $variant->getImages());
+
+        $productImage = $productImages->first();
+        $this->assertInstanceOf(ProductImageInterface::class, $productImage);
+        $this->assertFalse($productImage->hasProductVariant($variant));
     }
 
     /**
@@ -454,32 +521,80 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_imports_updated_product_image_without_associate_it_with_the_variant_if_product_is_simple(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/127469-with-image.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->parent = null;
+        $this->startWarsTShirtMAkeneoProduct->values['picture'] = [[
+            'locale' => null,
+            'scope' => null,
+            'data' => 'star_wars_m.jpeg',
+        ]];
 
-        $this->importer->import('127469');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
         $this->assertCount(1, $allVariants);
-        $this->assertInstanceOf(ProductVariantInterface::class, $allVariants[0]);
-        $product = $allVariants[0]->getProduct();
+
+        $variant = reset($allVariants);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $product = $variant->getProduct();
         $this->assertInstanceOf(ProductInterface::class, $product);
-        $this->assertEquals('127469', $product->getCode());
-        $this->assertCount(1, $product->getImages());
-        $this->assertCount(0, $allVariants[0]->getImages());
-        /** @var ProductImageInterface $image */
-        $image = $product->getImages()[0];
-        $this->assertFalse($image->hasProductVariant($allVariants[0]));
+
+        $this->assertEquals(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $product->getCode());
+        $productImages = $product->getImages();
+        $this->assertCount(1, $productImages);
+        $this->assertCount(0, $variant->getImages());
+
+        $image = $productImages->first();
+        $this->assertInstanceOf(ProductImageInterface::class, $image);
+        $this->assertFalse($image->hasProductVariant($variant));
         $this->assertEquals('picture', $image->getType());
-        $this->assertNotEquals('path/to/existent-image/127469.jpg', $image->getPath());
+        $this->assertNotEquals('path/to/existent-image.jpg', $image->getPath());
+    }
+
+    /**
+     * @test
+     */
+    public function it_removes_product_images_removed_on_akeneo(): void
+    {
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertCount(0, $product->getImages());
+
+        $variant = $product->getVariants()->first();
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $this->assertCount(0, $variant->getImages());
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_remove_product_images_of_other_variants(): void
+    {
+        $startWarsTShirtLAkeneoProduct = Product::create('STAR_WARS_TSHIRT_L', [
+            'family' => $this->tShirtFamily->code,
+            'parent' => $this->starWarsTShirtProductModel->code,
+            'values' => [
+                $this->sizeAttribute->code => [
+                    [
+                        'locale' => null,
+                        'scope' => null,
+                        'data' => $this->sizeLAttributeOption->code,
+                    ],
+                ],
+                'image' => [[
+                    'locale' => null,
+                    'scope' => null,
+                    'data' => 'star_wars_l.jpeg',
+                ]],
+            ],
+        ]);
+        InMemoryProductApi::addResource($startWarsTShirtLAkeneoProduct);
+
+        $this->importer->import('STAR_WARS_TSHIRT_L');
+
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
+        $this->assertCount(2, $product->getImages());
     }
 
     /**
@@ -487,18 +602,12 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_imports_product_as_disabled_if_it_is_disabled_on_akeneo_and_has_not_a_parent_model(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->parent = null;
+        $this->startWarsTShirtMAkeneoProduct->enabled = false;
 
-        $this->importer->import('16466450');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $product = $this->productRepository->findOneByCode('16466450');
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
         $this->assertFalse($product->isEnabled());
         $this->assertFalse($product->getVariants()->first()->isEnabled());
     }
@@ -506,46 +615,16 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_product_as_enabled_even_if_is_disabled_on_akeneo_but_has_a_parent_model(): void
+    public function it_enables_product_if_product_model_is_enabled_but_disable_variant_if_akeneo_product_is_disabled(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->enabled = false;
 
-        $this->importer->import('BRAIDED_HAT_S');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
         $this->assertTrue($product->isEnabled());
-    }
 
-    /**
-     * @test
-     */
-    public function it_imports_variant_of_a_configurable_product_as_disabled_if_it_is_disabled_on_akeneo(): void
-    {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
-
-        $this->importer->import('BRAIDED_HAT_S');
-
-        $productVariant = $this->productVariantRepository->findOneByCode('BRAIDED_HAT_S');
+        $productVariant = $this->productVariantRepository->findOneByCode(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
         $this->assertFalse($productVariant->isEnabled());
     }
 
@@ -554,21 +633,23 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_updates_existing_product_attribute_value(): void
     {
-        $this->fixtureLoader->load(
+        $this->startWarsTShirtMAkeneoProduct->values['material'] = [
             [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
+                'locale' => 'it_IT',
+                'scope' => null,
+                'data' => 'cotone',
             ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+            [
+                'locale' => 'en_US',
+                'scope' => null,
+                'data' => 'cotton',
+            ],
+        ];
 
-        $this->importer->import('BRAIDED_HAT_M');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductInterface $product */
-        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
+        $this->assertInstanceOf(ProductInterface::class, $product);
         $this->assertEquals('cotton', $product->getAttributeByCodeAndLocale('material', 'en_US')->getValue());
         $this->assertEquals('cotone', $product->getAttributeByCodeAndLocale('material', 'it_IT')->getValue());
     }
@@ -578,23 +659,19 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_downloads_file_from_akeneo(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->values['attachment'] = [[
+            'locale' => null,
+            'scope' => null,
+            'data' => 'sample.pdf',
+        ]];
 
-        $this->importer->import('BRAIDED_HAT_M');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+
         $this->assertTrue(
             $this->filesystem->exists(
                 self::getContainer()->getParameter(
                     'sylius_core.public_dir',
-                ) . '/media/attachment/product/1/3/9/e/139e9b32956237c28b5d9a36d00a34254075316f_media_11556.jpeg',
+                ) . '/media/attachment/product/sample.pdf',
             ),
         );
     }
@@ -604,77 +681,20 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_sets_product_taxa_from_akeneo_discarding_those_set_on_sylius(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/10627329-with-taxa.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->categories = [
+            'nec',
+            'pc_monitors',
+            'tvs_projectors_sales',
+        ];
 
-        $this->importer->import('10627329');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        /** @var ProductInterface[] $allProducts */
         $allProducts = $this->productRepository->findAll();
         $this->assertCount(1, $allProducts);
-        $product = $allProducts[0];
+        $product = reset($allProducts);
         $this->assertInstanceOf(ProductInterface::class, $product);
-        $this->assertEquals('10627329', $product->getCode());
+        $this->assertEquals(self::STAR_WARS_TSHIRT_MODEL_CODE, $product->getCode());
         $this->assertCount(3, $product->getTaxons());
-    }
-
-    /**
-     * @test
-     */
-    public function it_removes_product_images_removed_on_akeneo(): void
-    {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat-with-variation-image.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_l.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-l.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
-
-        $this->importer->import('BRAIDED_HAT_M');
-
-        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
-        $this->assertCount(1, $product->getImages());
-    }
-
-    /**
-     * @test
-     */
-    public function it_does_not_remove_product_images_of_other_variants_removed_on_akeneo(): void
-    {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat-with-variation-image.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOptionValue/size_l.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-m.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/braided-hat-l.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
-
-        $this->importer->import('BRAIDED_HAT_L');
-
-        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
-        $this->assertCount(2, $product->getImages());
     }
 
     /**
@@ -682,22 +702,19 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_does_not_fail_with_empty_translations(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Currency/USD.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Channel/usa.yaml',
+        $this->startWarsTShirtMAkeneoProduct->values['price'] = [[
+            'locale' => null,
+            'scope' => null,
+            'data' => [
+                [
+                    'amount' => 299.99,
+                    'currency' => 'USD',
+                ],
             ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        ]];
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        // Product 127469 in fixture does not have a value for the "description" attribute.
-        $this->importer->import('127469');
-
-        $product = $this->productRepository->findOneByCode('127469');
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
         $this->assertNotNull($product);
     }
 
@@ -706,21 +723,10 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_removes_existing_product_attributes_values_if_they_are_empty_on_akeneo(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/model-braided-hat.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $this->importer->import('BRAIDED_HAT_M');
-
-        /** @var ProductInterface $product */
-        $product = $this->productRepository->findOneByCode('MODEL_BRAIDED_HAT');
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
+        $this->assertInstanceOf(ProductInterface::class, $product);
         $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'it_IT'));
         $this->assertFalse($product->hasAttributeByCodeAndLocale('supplier', 'en_US'));
     }
@@ -730,19 +736,11 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_imports_product_without_family(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->startWarsTShirtMAkeneoProduct->family = null;
 
-        $this->importer->import('no-family-product');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $product = $this->productRepository->findOneByCode('no-family-product');
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
         $this->assertNotNull($product);
     }
 
@@ -751,24 +749,11 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_disable_old_product_while_importing_product_variant_from_configurable_that_was_simple(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOption/eu_shoes_size.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/1111111188.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductVariant/1111111188.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $this->importer->import('1111111188');
-
-        $oldProduct = $this->productRepository->findOneByCode('1111111188');
-        $newProduct = $this->productRepository->findOneByCode('climbingshoe');
-        $productVariant = $this->productVariantRepository->findOneBy(['code' => '1111111188']);
+        $oldProduct = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+        $newProduct = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
+        $productVariant = $this->productVariantRepository->findOneBy(['code' => self::STAR_WARS_TSHIRT_M_PRODUCT_CODE]);
         self::assertInstanceOf(ProductInterface::class, $oldProduct);
         self::assertInstanceOf(ProductInterface::class, $newProduct);
         self::assertInstanceOf(ProductVariantInterface::class, $productVariant);
@@ -781,24 +766,12 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_enables_product_without_variants_while_importing_a_new_one(): void
+    public function it_enables_an_already_existing_disabled_product_without_variants_while_importing_a_new_one_variant_for_that(): void
     {
-        $this->fixtureLoader->load(
-            [
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/en_US.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Locale/it_IT.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/ProductOption/eu_shoes_size.yaml',
-                __DIR__ . '/../DataFixtures/ORM/resources/Product/climbingshoe.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
-        $this->importer->import('1111111186');
-
-        $product = $this->productRepository->findOneByCode('climbingshoe');
-        $productVariant = $this->productVariantRepository->findOneBy(['code' => '1111111186']);
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
+        $productVariant = $this->productVariantRepository->findOneBy(['code' => self::STAR_WARS_TSHIRT_M_PRODUCT_CODE]);
         self::assertInstanceOf(ProductInterface::class, $product);
         self::assertInstanceOf(ProductVariantInterface::class, $productVariant);
 
@@ -808,44 +781,10 @@ final class ImporterTest extends KernelTestCase
 
     /**
      * @test
-     *
-     * @TODO This tests adds also the new in memory implementation of Akeneo API client.
-     * To use that only on this specific test we have overriden the importer definition.
-     * Obviously, when the new implementation will be the default one, all this rewrite should be removed!
      */
     public function it_does_not_duplicate_product_option_values_when_changed(): void
     {
-        $this->fixtureLoader->load(
-            [
-                DataFixture::path . '/ORM/resources/Locale/en_US.yaml',
-                DataFixture::path . '/ORM/resources/Product/box.yaml',
-            ],
-            [],
-            [],
-            PurgeMode::createDeleteMode(),
-        );
-        $akeneoProduct = Product::create('BOX_VARIANT', [
-            'values' => ['format' => [[
-                'locale' => null,
-                'scope' => null,
-                'data' => '133x48',
-            ]]],
-            'parent' => 'BOX',
-        ]);
-        InMemoryProductApi::addResource($akeneoProduct);
-        $akeneoFormatAttribute = Attribute::create('format', [
-            'type' => AttributeType::SIMPLE_SELECT,
-        ]);
-        InMemoryAttributeApi::addResource($akeneoFormatAttribute);
-        $akeneoFormatAttributeOption = AttributeOption::create(
-            $akeneoFormatAttribute->getIdentifier(),
-            '133x48',
-            1,
-            ['en_US' => 'Format 133x48'],
-        );
-        InMemoryAttributeOptionApi::addResource($akeneoFormatAttributeOption);
-
-        $this->importer->import('BOX_VARIANT');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
         /** @var ProductVariantInterface[] $allVariants */
         $allVariants = $this->productVariantRepository->findAll();
@@ -853,11 +792,13 @@ final class ImporterTest extends KernelTestCase
         $variant = reset($allVariants);
         $this->assertInstanceOf(ProductVariantInterface::class, $variant);
         $this->assertInstanceOf(ProductInterface::class, $variant->getProduct());
-        $this->assertEquals('BOX', $variant->getProduct()->getCode());
+        $this->assertEquals(self::STAR_WARS_TSHIRT_MODEL_CODE, $variant->getProduct()->getCode());
         $this->assertCount(1, $variant->getOptionValues());
+
         $optionValue = $variant->getOptionValues()->first();
         $this->assertInstanceOf(ProductOptionValueInterface::class, $optionValue);
-        $this->assertEquals('format', $optionValue->getOptionCode());
-        $this->assertEquals('Format 133x48', $optionValue->getValue());
+        $this->assertEquals($this->sizeAttribute->code, $optionValue->getOptionCode());
+        $this->assertEquals('M', $optionValue->getValue());
+        $this->assertEquals('size_m', $optionValue->getCode());
     }
 }

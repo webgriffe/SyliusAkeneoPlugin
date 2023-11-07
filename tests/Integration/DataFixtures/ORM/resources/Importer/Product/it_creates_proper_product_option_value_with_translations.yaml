@@ -1,3 +1,5 @@
 Sylius\Component\Locale\Model\Locale:
     en_US:
         code: "en_US"
+    it_IT:
+        code: "it_IT"

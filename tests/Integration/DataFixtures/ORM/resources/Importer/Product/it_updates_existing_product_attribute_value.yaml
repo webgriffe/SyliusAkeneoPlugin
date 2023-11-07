@@ -1,0 +1,38 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: "size"
+
+Sylius\Component\Core\Model\Product:
+    product:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "STAR_WARS_TSHIRT"
+        options:
+            - "@size"
+        attributes:
+            - "@material_it_IT"
+            - "@material_en_US"
+
+Sylius\Component\Product\Model\ProductAttribute:
+    material:
+        code: "material"
+        type: "text"
+        storage_type: "text"
+
+Sylius\Component\Product\Model\ProductAttributeValue:
+    material_it_IT:
+        attribute: "@material"
+        product: "@product"
+        locale_code: "it_IT"
+        value: "lana"
+    material_en_US:
+        attribute: "@material"
+        product: "@product"
+        locale_code: "en_US"
+        value: "wool"

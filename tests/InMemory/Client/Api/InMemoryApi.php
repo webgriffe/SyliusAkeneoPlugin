@@ -59,7 +59,7 @@ abstract class InMemoryApi implements
     public function delete(string $code): int
     {
         if (!array_key_exists($code, self::$resources)) {
-            throw $this->createNotFoundException();
+            throw $this->createNotFoundException($code);
         }
         unset(self::$resources[$code]);
 
@@ -113,10 +113,10 @@ abstract class InMemoryApi implements
     public function get(string $code, array $queryParameters = []): array
     {
         if (!array_key_exists($code, self::$resources)) {
-            throw $this->createNotFoundException();
+            throw $this->createNotFoundException($code);
         }
 
-        return (array) self::$resources[$code];
+        return self::$resources[$code]->__serialize();
     }
 
     public function upsert(string $code, array $data = []): int
@@ -139,8 +139,8 @@ abstract class InMemoryApi implements
         // TODO: Implement upsertAsyncList() method.
     }
 
-    private function createNotFoundException(): NotFoundHttpException
+    private function createNotFoundException(string $resource): NotFoundHttpException
     {
-        return new NotFoundHttpException('Resource not found', new Request('GET', '/'), new Response(404));
+        return new NotFoundHttpException(sprintf('Resource %s not found', $resource), new Request('GET', '/'), new Response(404));
     }
 }

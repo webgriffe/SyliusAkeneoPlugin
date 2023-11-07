@@ -6,26 +6,25 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use Webmozart\Assert\Assert;
 
-final class Product implements ResourceInterface
+final class ProductModel implements ResourceInterface
 {
     public DateTimeInterface $created;
     public DateTimeInterface $updated;
 
     /**
      * @param string[] $categories
-     * @param string[] $groups
      * @param array<string, array{'locale': ?string, 'scope': ?string, 'data': mixed}> $values
      * @param array<string, array{'products': string[], 'product_models': string[], 'groups': string[]}> $associations
      * @param array $quantifiedAssociations
      */
     private function __construct(
-        public string $identifier,
-        public bool $enabled = true,
+        public string $code,
         public ?string $family = null,
-        public array $categories = [],
-        public array $groups = [],
+        public ?string $familyVariant = null,
         public ?string $parent = null,
+        public array $categories = [],
         public array $values = [],
         public array $associations = [],
         public array $quantifiedAssociations = [],
@@ -37,13 +36,17 @@ final class Product implements ResourceInterface
 
     public static function create(string $code, array $data = []): self
     {
+        Assert::keyExists($data, 'family');
+        Assert::keyExists($data, 'family_variant');
+        $family = $data['family'];
+        $familyVariant = $data['family_variant'];
+
         return new self(
             $code,
-            $data['enabled'] ?? true,
-            $data['family'] ?? null,
-            $data['categories'] ?? [],
-            $data['groups'] ?? [],
+            $family,
+            $familyVariant,
             $data['parent'] ?? null,
+        $data['categories'] ?? [],
             $data['values'] ?? [],
             $data['associations'] ?? [],
             $data['quantifiedAssociations'] ?? [],
@@ -52,18 +55,17 @@ final class Product implements ResourceInterface
 
     public function getIdentifier(): string
     {
-        return $this->identifier;
+        return $this->code;
     }
 
     public function __serialize(): array
     {
         return [
-            'identifier' => $this->identifier,
-            'enabled' => $this->enabled,
+            'code' => $this->code,
             'family' => $this->family,
-            'categories' => $this->categories,
-            'groups' => $this->groups,
+            'family_variant' => $this->familyVariant,
             'parent' => $this->parent,
+            'categories' => $this->categories,
             'values' => $this->values,
             'created' => $this->created->format('c'),
             'updated' => $this->updated->format('c'),

@@ -1,0 +1,10 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+
+Sylius\Component\Core\Model\Product:
+    product:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "STAR_WARS_TSHIRT"
+        enabled: false

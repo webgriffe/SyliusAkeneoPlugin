@@ -42,7 +42,7 @@ final class Attribute implements ResourceInterface
     ) {
     }
 
-    public static function create(string $code, array $data = []): ResourceInterface
+    public static function create(string $code, array $data = []): self
     {
         return new self(
             $code,

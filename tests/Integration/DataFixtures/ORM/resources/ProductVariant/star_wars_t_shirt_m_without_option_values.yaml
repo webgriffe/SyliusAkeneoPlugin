@@ -1,0 +1,4 @@
+Sylius\Component\Core\Model\ProductVariant:
+    star-wars-t-shirt-m:
+        code: 'STAR_WARS_TSHIRT_M'
+        product: '@star-wars-t-shirt'
