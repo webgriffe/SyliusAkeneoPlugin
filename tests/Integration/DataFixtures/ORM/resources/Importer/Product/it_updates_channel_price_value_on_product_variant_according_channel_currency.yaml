@@ -1,0 +1,84 @@
+Sylius\Component\Currency\Model\Currency:
+    EUR:
+        code: 'EUR'
+    USD:
+        code: 'USD'
+
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Core\Model\Channel:
+    europe:
+        code: 'europe'
+        name: 'Europe'
+        enabled: true
+        description: 'Europe'
+        defaultLocale: '@en_US'
+        locales: [ '@en_US', '@it_IT' ]
+        baseCurrency: '@EUR'
+        currencies: [ '@EUR' ]
+        taxCalculationStrategy: 'order_items_based'
+    italy:
+        code: 'italy'
+        name: 'Italy'
+        enabled: true
+        description: 'Italy'
+        defaultLocale: '@it_IT'
+        locales: [ '@it_IT' ]
+        baseCurrency: '@EUR'
+        currencies: [ '@EUR' ]
+        taxCalculationStrategy: 'order_items_based'
+    usa:
+        code: 'usa'
+        name: 'United States'
+        enabled: true
+        description: 'United States'
+        defaultLocale: '@en_US'
+        locales: [ '@en_US' ]
+        baseCurrency: '@USD'
+        currencies: [ '@USD' ]
+        taxCalculationStrategy: 'order_items_based'
+
+Sylius\Component\Core\Model\Product:
+    product:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "STAR_WARS_TSHIRT_M"
+        variants:
+            - "@product-variant"
+        options:
+            - "@size"
+
+Sylius\Component\Core\Model\ProductVariant:
+    product-variant:
+        code: "STAR_WARS_TSHIRT_M"
+        product: "@product"
+        optionValues:
+            - '@size_m'
+        channelPricings:
+            - "@product-variant-price-italy"
+            - "@product-variant-price-usa"
+            - "@product-variant-price-europe"
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: "size"
+
+Sylius\Component\Product\Model\ProductOptionValue:
+    size_m:
+        option: "@size"
+        code: "size_m"
+
+Sylius\Component\Core\Model\ChannelPricing:
+    product-variant-price-italy:
+        price: 2099
+        channelCode: 'italy'
+    product-variant-price-usa:
+        price: 1099
+        channelCode: 'usa'
+    product-variant-price-europe:
+        price: 2599
+        channelCode: 'europe'

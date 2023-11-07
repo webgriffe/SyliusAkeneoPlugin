@@ -45,7 +45,11 @@ use Akeneo\Pim\ApiClient\Api\ReferenceEntityMediaFileApiInterface;
 use Akeneo\Pim\ApiClient\Api\ReferenceEntityRecordApiInterface;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeOptionApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryFamilyApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryFamilyVariantApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductMediaFileApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductModelApi;
 
 final class InMemoryAkeneoPimClient implements AkeneoPimClientInterface
 {
@@ -86,10 +90,12 @@ final class InMemoryAkeneoPimClient implements AkeneoPimClientInterface
 
     public function getFamilyApi(): FamilyApiInterface
     {
+        return new InMemoryFamilyApi();
     }
 
     public function getProductMediaFileApi(): MediaFileApiInterface
     {
+        return new InMemoryProductMediaFileApi();
     }
 
     public function getLocaleApi(): LocaleApiInterface
@@ -118,10 +124,12 @@ final class InMemoryAkeneoPimClient implements AkeneoPimClientInterface
 
     public function getFamilyVariantApi(): FamilyVariantApiInterface
     {
+        return new InMemoryFamilyVariantApi();
     }
 
     public function getProductModelApi(): ProductModelApiInterface
     {
+        return new InMemoryProductModelApi();
     }
 
     public function getPublishedProductApi(): PublishedProductApiInterface

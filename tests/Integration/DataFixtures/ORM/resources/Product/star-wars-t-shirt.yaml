@@ -1,0 +1,22 @@
+Sylius\Component\Core\Model\Product:
+    star-wars-t-shirt:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "STAR_WARS_TSHIRT"
+        options:
+            - "@size"
+        attributes:
+            - "@material_it_IT"
+            - "@material_en_US"
+
+Sylius\Component\Core\Model\ProductTranslation:
+    model-braided-hat_en_US:
+        locale: "en_US"
+        name: "Braided Hat"
+        slug: "braided-hat"
+        description: <paragraph(2)>
+    model-braided-hat_it_IT:
+        locale: "it_IT"
+        name: "Cappello Intrecciato"
+        slug: "cappello-intrecciato"
+        description: <paragraph(2)>

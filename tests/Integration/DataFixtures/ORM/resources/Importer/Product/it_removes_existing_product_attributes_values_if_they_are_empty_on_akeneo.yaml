@@ -1,0 +1,38 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: "size"
+
+Sylius\Component\Core\Model\Product:
+    product:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "STAR_WARS_TSHIRT"
+        options:
+            - "@size"
+        attributes:
+            - "@supplier_it_IT"
+            - "@supplier_en_US"
+
+Sylius\Component\Product\Model\ProductAttribute:
+    supplier:
+        code: "supplier"
+        type: "text"
+        storage_type: "text"
+
+Sylius\Component\Product\Model\ProductAttributeValue:
+    supplier_it_IT:
+        attribute: "@supplier"
+        product: "@product"
+        locale_code: "it_IT"
+        value: "Marchio di moda"
+    supplier_en_US:
+        attribute: "@supplier"
+        product: "@product"
+        locale_code: "en_US"
+        value: "Fashion brand"

@@ -1,0 +1,22 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Core\Model\ProductVariant:
+    star-wars-t-shirt-m:
+        code: 'STAR_WARS_TSHIRT_M'
+        product: '@star-wars-t-shirt'
+
+Sylius\Component\Core\Model\Product:
+    star-wars-t-shirt:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "STAR_WARS_TSHIRT"
+        options:
+            - "@size"
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: "size"

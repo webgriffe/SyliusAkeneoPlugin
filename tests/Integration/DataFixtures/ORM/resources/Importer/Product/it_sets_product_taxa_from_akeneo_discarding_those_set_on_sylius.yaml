@@ -1,0 +1,45 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+
+Sylius\Component\Core\Model\Product:
+    product:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "STAR_WARS_TSHIRT"
+        variants:
+            - "@product-variant"
+        productTaxons:
+            - "@product-taxon-electronics"
+            - "@product-taxon-pc_monitors"
+
+Sylius\Component\Core\Model\ProductVariant:
+    product-variant:
+        code: "STAR_WARS_TSHIRT_M"
+        product: "@product"
+
+Sylius\Component\Core\Model\Taxon:
+    taxon-electronics:
+        code: "electronics"
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+    taxon-nec:
+        code: "nec"
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+    taxon-pc_monitors:
+        code: "pc_monitors"
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+    taxon-tvs_projectors_sales:
+        code: "tvs_projectors_sales"
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+
+Sylius\Component\Core\Model\ProductTaxon:
+    product-taxon-electronics:
+        product: "@product"
+        taxon: "@taxon-electronics"
+    product-taxon-pc_monitors:
+        product: "@product"
+        taxon: "@taxon-pc_monitors"
