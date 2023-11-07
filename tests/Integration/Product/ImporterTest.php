@@ -23,12 +23,8 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Attribute;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeOption;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeType;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
-use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\InMemoryAkeneoPimClient;
 use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DataFixtures\DataFixture;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
-use Webgriffe\SyliusAkeneoPlugin\PriorityValueHandlersResolver;
-use Webgriffe\SyliusAkeneoPlugin\Product\Importer;
-use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 
 final class ImporterTest extends KernelTestCase
 {
@@ -827,34 +823,6 @@ final class ImporterTest extends KernelTestCase
             [],
             [],
             PurgeMode::createDeleteMode(),
-        );
-        $akeneoPimClient = new InMemoryAkeneoPimClient();
-        $productOptionValueHandler = new ProductOptionValueHandler(
-            $akeneoPimClient,
-            self::getContainer()->get('sylius.repository.product_option'),
-            self::getContainer()->get('sylius.factory.product_option_value'),
-            self::getContainer()->get('sylius.factory.product_option_value_translation'),
-            self::getContainer()->get('sylius.repository.product_option_value'),
-            self::getContainer()->get('sylius.translation_locale_provider'),
-            self::getContainer()->get('translator'),
-        );
-        $valueHandlersResolver = new PriorityValueHandlersResolver();
-        $valueHandlersResolver->add($productOptionValueHandler);
-        $this->importer = new Importer(
-            self::getContainer()->get('sylius.factory.product_variant'),
-            self::getContainer()->get('sylius.repository.product_variant'),
-            self::getContainer()->get('sylius.repository.product'),
-            $akeneoPimClient,
-            $valueHandlersResolver,
-            self::getContainer()->get('sylius.factory.product'),
-            self::getContainer()->get('webgriffe_sylius_akeneo.product.taxons_resolver'),
-            self::getContainer()->get('webgriffe_sylius_akeneo.product.product_options_resolver'),
-            self::getContainer()->get('event_dispatcher'),
-            self::getContainer()->get('webgriffe_sylius_akeneo.product.channels_resolver'),
-            self::getContainer()->get('webgriffe_sylius_akeneo.product.status_resolver'),
-            self::getContainer()->get('sylius.factory.product_taxon'),
-            self::getContainer()->get('webgriffe_sylius_akeneo.product.variant_status_resolver'),
-            self::getContainer()->get('webgriffe_sylius_akeneo.product.validator'),
         );
         $akeneoProduct = Product::create('BOX_VARIANT', [
             'values' => ['format' => [[
