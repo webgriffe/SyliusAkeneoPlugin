@@ -32,7 +32,6 @@ final class ImporterTest extends KernelTestCase
         $this->importer = self::getContainer()->get('webgriffe_sylius_akeneo.attribute_options.importer');
         $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->attributeRepository = self::getContainer()->get('sylius.repository.product_attribute');
-        $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
 
         InMemoryAttributeApi::addResource(new Attribute('material', AttributeType::SIMPLE_SELECT));
         InMemoryAttributeApi::addResource(new Attribute('text_attribute', AttributeType::TEXT));
@@ -66,6 +65,8 @@ final class ImporterTest extends KernelTestCase
                 [],
                 PurgeMode::createDeleteMode(),
             );
+        } else {
+            $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
         }
     }
 

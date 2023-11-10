@@ -1,0 +1,36 @@
+Sylius\Component\Product\Model\ProductAssociationType:
+    UPSELL-association-type:
+        code: 'UPSELL'
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: "size"
+
+Sylius\Component\Product\Model\ProductOptionValue:
+    size_m:
+        option: "@size"
+        code: "size_m"
+
+Sylius\Component\Core\Model\Product:
+    MUG_SW:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "MUG_SW"
+        variants:
+            - "@MUG_SW-variant"
+    tshirt-new:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "tshirt-new"
+        options:
+            - "@size"
+
+Sylius\Component\Core\Model\ProductVariant:
+    MUG_SW-variant:
+        code: "MUG_SW"
+        product: "@MUG_SW"
+    tshirt-new-m:
+        code: 'tshirt-new-m'
+        product: '@tshirt-new'
+        optionValues:
+            - '@size_m'
