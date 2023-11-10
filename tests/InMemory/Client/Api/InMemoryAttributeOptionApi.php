@@ -8,6 +8,7 @@ use Akeneo\Pim\ApiClient\Api\AttributeOptionApiInterface;
 use Akeneo\Pim\ApiClient\Exception\NotFoundHttpException;
 use Akeneo\Pim\ApiClient\Pagination\PageInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
+use ArrayIterator;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -53,7 +54,45 @@ final class InMemoryAttributeOptionApi implements AttributeOptionApiInterface
 
     public function all($attributeCode, $pageSize = 10, array $queryParameters = []): ResourceCursorInterface
     {
-        // TODO: Implement all() method.
+        $attributeOptions = [];
+        foreach (self::$attributeOptions[$attributeCode] as $attributeOption) {
+            $attributeOptions[] = $attributeOption->__serialize();
+        }
+        return new class(new ArrayIterator($attributeOptions), $pageSize) implements ResourceCursorInterface {
+            public function __construct(private ArrayIterator $iterator, private int $pageSize)
+            {
+            }
+
+            public function current()
+            {
+                return $this->iterator->current();
+            }
+
+            public function next(): void
+            {
+                $this->iterator->next();
+            }
+
+            public function key(): mixed
+            {
+                return $this->iterator->key();
+            }
+
+            public function valid(): bool
+            {
+                return $this->iterator->valid();
+            }
+
+            public function rewind(): void
+            {
+                $this->iterator->rewind();
+            }
+
+            public function getPageSize(): ?int
+            {
+                return $this->pageSize;
+            }
+        };
     }
 
     public function upsert($attributeCode, $attributeOptionCode, array $data = []): int
