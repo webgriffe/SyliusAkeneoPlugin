@@ -73,7 +73,11 @@ abstract class InMemoryApi implements
 
     public function all(int $pageSize = 100, array $queryParameters = []): ResourceCursorInterface
     {
-        return new class(new ArrayIterator(self::$resources), $pageSize) implements ResourceCursorInterface {
+        $resources = [];
+        foreach (self::$resources as $resource) {
+            $resources[] = $resource->__serialize();
+        }
+        return new class(new ArrayIterator($resources), $pageSize) implements ResourceCursorInterface {
             public function __construct(private ArrayIterator $iterator, private int $pageSize)
             {
             }
