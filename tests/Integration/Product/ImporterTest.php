@@ -69,7 +69,6 @@ final class ImporterTest extends KernelTestCase
         $this->channelRepository = self::getContainer()->get('sylius.repository.channel');
         $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->filesystem = self::getContainer()->get('filesystem');
-        $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
 
         $this->tShirtFamily = Family::create('t-shirt', [
             'attributes' => ['variation_image', 'supplier'],
@@ -141,6 +140,8 @@ final class ImporterTest extends KernelTestCase
                 [],
                 PurgeMode::createDeleteMode(),
             );
+        } else {
+            $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
         }
 
         $this->filesystem->remove(

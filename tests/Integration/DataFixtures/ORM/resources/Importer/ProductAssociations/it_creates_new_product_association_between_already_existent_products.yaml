@@ -1,0 +1,25 @@
+Sylius\Component\Product\Model\ProductAssociationType:
+    UPSELL-association-type:
+        code: 'UPSELL'
+
+Sylius\Component\Core\Model\Product:
+    MUG_SW:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "MUG_SW"
+        variants:
+            - "@MUG_SW-variant"
+    MUG_DW:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "MUG_DW"
+        variants:
+            - "@MUG_DW-variant"
+
+Sylius\Component\Core\Model\ProductVariant:
+    MUG_SW-variant:
+        code: "MUG_SW"
+        product: "@MUG_SW"
+    MUG_DW-variant:
+        code: "MUG_DW"
+        product: "@MUG_DW"

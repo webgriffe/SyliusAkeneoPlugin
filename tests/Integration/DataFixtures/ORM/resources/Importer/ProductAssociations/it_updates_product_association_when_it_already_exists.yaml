@@ -1,0 +1,41 @@
+Sylius\Component\Product\Model\ProductAssociationType:
+    UPSELL-association-type:
+        code: 'UPSELL'
+
+Sylius\Component\Core\Model\Product:
+    MUG_DW:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "MUG_DW"
+        variants:
+            - "@MUG_DW-variant"
+    MUG_SW:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "MUG_SW"
+        variants:
+            - "@MUG_SW-variant"
+    MUG_ANOTHER:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "MUG_ANOTHER"
+        variants:
+            - "@MUG_ANOTHER-variant"
+
+Sylius\Component\Core\Model\ProductVariant:
+    MUG_SW-variant:
+        code: "MUG_SW"
+        product: "@MUG_SW"
+    MUG_DW-variant:
+        code: "MUG_DW"
+        product: "@MUG_DW"
+    MUG_ANOTHER-variant:
+        code: "MUG_ANOTHER"
+        product: "@MUG_ANOTHER"
+
+Sylius\Component\Product\Model\ProductAssociation:
+    MUG_DW_UPSELL-product-association:
+        owner: '@MUG_DW'
+        type: '@UPSELL-association-type'
+        associatedProducts:
+            - '@MUG_ANOTHER'
