@@ -1,0 +1,17 @@
+Sylius\Component\Core\Model\Product:
+    product-10627329:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
+        code: "10627329"
+        variants:
+            - "@product-variant-23423545"
+            - "@product-variant-567567"
+
+Sylius\Component\Core\Model\ProductVariant:
+    product-variant-23423545:
+        code: "23423545"
+        product: "@product-10627329"
+    
+    product-variant-567567:
+        code: "567567"
+        product: "@product-10627329"
