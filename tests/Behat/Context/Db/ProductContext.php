@@ -29,7 +29,7 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Then the product :code should exist with the right data
+     * @Then the product :code should exist
      */
     public function theProductShouldExistsWithTheRightData(string $code): void
     {
@@ -38,7 +38,7 @@ final class ProductContext implements Context
     }
 
     /**
-     * @Given the product variant :code of product :productCode should exist with the right data
+     * @Given the product variant :code of product :productCode should exist
      */
     public function theProductVariantShouldExistsWithTheRightData(string $code, string $productCode): void
     {

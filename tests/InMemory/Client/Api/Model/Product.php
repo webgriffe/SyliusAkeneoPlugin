@@ -19,7 +19,7 @@ final class Product implements ResourceInterface
      * @param array<string, array{'products': string[], 'product_models': string[], 'groups': string[]}> $associations
      * @param array $quantifiedAssociations
      */
-    private function __construct(
+    public function __construct(
         public string $identifier,
         public bool $enabled = true,
         public ?string $family = null,
@@ -29,10 +29,12 @@ final class Product implements ResourceInterface
         public array $values = [],
         public array $associations = [],
         public array $quantifiedAssociations = [],
+        ?DateTimeInterface $created = null,
+        ?DateTimeInterface $updated = null,
     ) {
         $now = new DateTimeImmutable();
-        $this->created = $now;
-        $this->updated = $now;
+        $this->created = $created ?? $now;
+        $this->updated = $updated ?? $now;
     }
 
     public static function create(string $code, array $data = []): self
@@ -47,6 +49,8 @@ final class Product implements ResourceInterface
             $data['values'] ?? [],
             $data['associations'] ?? [],
             $data['quantifiedAssociations'] ?? [],
+            $data['created'] ?? null,
+            $data['updated'] ?? null,
         );
     }
 

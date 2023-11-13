@@ -34,34 +34,33 @@ abstract class InMemoryApi implements
     DeletableResourceInterface
 {
     /**
-     * @var array<string, T>
+     * @return array<string, T>
      */
-    public static array $resources = [];
+    abstract public function getResources(): array;
 
     /** @return class-string */
     abstract protected function getResourceClass(): string;
 
-    public static function addResource(ResourceInterface $resource)
-    {
-        self::$resources[$resource->getIdentifier()] = $resource;
-    }
+    abstract public static function addResource(ResourceInterface $resource): void;
 
     public function create(string $code, array $data = []): int
     {
         $class = $this->getResourceClass();
         Assert::isInstanceOf($class, ResourceInterface::class);
 
-        self::$resources[] = call_user_func([$class, 'create'], [$code, $data]);
+        $resources = $this->getResources();
+        $resources[$code] = call_user_func([$class, 'create'], [$code, $data]);
 
         return 201;
     }
 
     public function delete(string $code): int
     {
-        if (!array_key_exists($code, self::$resources)) {
+        $resources = $this->getResources();
+        if (!array_key_exists($code, $resources)) {
             throw $this->createNotFoundException($code);
         }
-        unset(self::$resources[$code]);
+        unset($resources[$code]);
 
         return 204;
     }
@@ -74,15 +73,25 @@ abstract class InMemoryApi implements
     public function all(int $pageSize = 100, array $queryParameters = []): ResourceCursorInterface
     {
         $resources = [];
-        foreach (self::$resources as $resource) {
+        foreach ($this->getResources() as $resource) {
             $resources[] = $resource->__serialize();
         }
+        /*if ($queryParameters !== []) {
+            Assert::count($queryParameters['search'], 1, 'Only one query parameter is supported');
+            $search = $queryParameters['search'];
+            Assert::keyExists($search, 'updated', 'Only updated search is supported');
+            $searchUpdated = $search['updated'];
+            $resources = array_filter($resources, static function (array $resource) use ($searchUpdated): bool {
+                return new DateTime($resource['updated']) >= new DateTime($searchUpdated[0]['value']);
+            });
+        }*/
+
         return new class(new ArrayIterator($resources), $pageSize) implements ResourceCursorInterface {
             public function __construct(private ArrayIterator $iterator, private int $pageSize)
             {
             }
 
-            public function current()
+            public function current(): mixed
             {
                 return $this->iterator->current();
             }
@@ -116,11 +125,12 @@ abstract class InMemoryApi implements
 
     public function get(string $code, array $queryParameters = []): array
     {
-        if (!array_key_exists($code, self::$resources)) {
+        $resources = $this->getResources();
+        if (!array_key_exists($code, $resources)) {
             throw $this->createNotFoundException($code);
         }
 
-        return self::$resources[$code]->__serialize();
+        return $resources[$code]->__serialize();
     }
 
     public function upsert(string $code, array $data = []): int

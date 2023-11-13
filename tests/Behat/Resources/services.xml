@@ -11,6 +11,12 @@
             <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo_product_model" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoProductModelContext"/>
+
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo_family_variant" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoFamilyVariantContext"/>
+
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoAttributeContext"/>
+
         <service id="webgriffe_sylius_akeneo.behat.context.cli.import_command" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Cli\ImportCommandContext">
             <argument type="service" id="kernel" />
             <argument type="service" id="webgriffe_sylius_akeneo.command.import" />

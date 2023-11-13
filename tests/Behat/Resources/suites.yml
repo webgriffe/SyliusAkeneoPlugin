@@ -8,6 +8,9 @@ default:
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.locale
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product_model
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_family_variant
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
                 - webgriffe_sylius_akeneo.behat.context.cli.import_command
