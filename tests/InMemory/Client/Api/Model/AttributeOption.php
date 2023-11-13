@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model;
 
-use Webmozart\Assert\Assert;
-
 final class AttributeOption
 {
     public function __construct(

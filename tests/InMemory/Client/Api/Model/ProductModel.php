@@ -11,13 +11,13 @@ use Webmozart\Assert\Assert;
 final class ProductModel implements ResourceInterface
 {
     public DateTimeInterface $created;
+
     public DateTimeInterface $updated;
 
     /**
      * @param string[] $categories
      * @param array<string, array{'locale': ?string, 'scope': ?string, 'data': mixed}> $values
      * @param array<string, array{'products': string[], 'product_models': string[], 'groups': string[]}> $associations
-     * @param array $quantifiedAssociations
      */
     private function __construct(
         public string $code,
@@ -46,7 +46,7 @@ final class ProductModel implements ResourceInterface
             $family,
             $familyVariant,
             $data['parent'] ?? null,
-        $data['categories'] ?? [],
+            $data['categories'] ?? [],
             $data['values'] ?? [],
             $data['associations'] ?? [],
             $data['quantifiedAssociations'] ?? [],

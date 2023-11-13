@@ -11,9 +11,7 @@ use Webmozart\Assert\Assert;
 
 final class InMemoryProductApi extends InMemoryApi implements ProductApiInterface
 {
-    /**
-     * @var array<string, Product>
-     */
+    /** @var array<string, Product> */
     public static array $products = [];
 
     public function getResources(): array

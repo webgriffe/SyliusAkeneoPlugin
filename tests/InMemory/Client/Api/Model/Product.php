@@ -10,6 +10,7 @@ use DateTimeInterface;
 final class Product implements ResourceInterface
 {
     public DateTimeInterface $created;
+
     public DateTimeInterface $updated;
 
     /**
@@ -17,7 +18,6 @@ final class Product implements ResourceInterface
      * @param string[] $groups
      * @param array<string, array{'locale': ?string, 'scope': ?string, 'data': mixed}> $values
      * @param array<string, array{'products': string[], 'product_models': string[], 'groups': string[]}> $associations
-     * @param array $quantifiedAssociations
      */
     public function __construct(
         public string $identifier,

@@ -11,9 +11,7 @@ use Webmozart\Assert\Assert;
 
 final class InMemoryAttributeApi extends InMemoryApi implements AttributeApiInterface
 {
-    /**
-     * @var array<string, Attribute>
-     */
+    /** @var array<string, Attribute> */
     public static array $attributes = [];
 
     protected function getResourceClass(): string

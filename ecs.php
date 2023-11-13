@@ -12,4 +12,14 @@ return static function (ECSConfig $ecsConfig): void {
     $ecsConfig->parameters()->set(Option::SKIP, [
         VisibilityRequiredFixer::class => ['*Spec.php'],
     ]);
+
+    $ecsConfig->paths([
+        'src',
+        'tests/Akeneo',
+        'tests/Behat',
+        'tests/InMemory',
+        'tests/Integration',
+        'tests/TestDouble',
+        'tests/Unit',
+    ]);
 };
