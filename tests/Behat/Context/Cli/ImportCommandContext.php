@@ -126,14 +126,21 @@ final class ImportCommandContext implements Context
     }
 
     /**
-     * @When I import all items for all importers
      * @When I import all from Akeneo
+     * @When I import all "ProductAssociations" from Akeneo
      */
-    public function iImportAllItemsForAllImporters(): void
+    public function iImportAllItemsForAllImporters(?string $importer = null): void
     {
         $commandTester = $this->getCommandTester();
 
-        $commandTester->execute(['command' => 'webgriffe:akeneo:import', '--all' => true]);
+        $params = [
+            'command' => 'webgriffe:akeneo:import',
+            '--all' => true,
+        ];
+        if ($importer !== null) {
+            $params['--importer'] = [$importer];
+        }
+        $commandTester->execute($params);
     }
 
     /**
