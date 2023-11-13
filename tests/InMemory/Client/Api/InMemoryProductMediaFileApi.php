@@ -11,7 +11,7 @@ use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
-use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DataFixtures\DataFixture;
+use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
 
 final class InMemoryProductMediaFileApi implements MediaFileApiInterface
 {

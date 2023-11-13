@@ -15,7 +15,7 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeOpti
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Attribute;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeOption;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeType;
-use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DataFixtures\DataFixture;
+use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class ImporterTest extends KernelTestCase

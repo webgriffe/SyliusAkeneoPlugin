@@ -29,7 +29,7 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Family;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\FamilyVariant;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\ProductModel;
-use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DataFixtures\DataFixture;
+use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class ImporterTest extends KernelTestCase
