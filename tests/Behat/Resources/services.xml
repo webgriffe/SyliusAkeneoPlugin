@@ -7,9 +7,7 @@
     <services>
         <defaults public="true" />
 
-        <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoContext">
-            <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
-        </service>
+        <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo_product" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoProductContext"/>
 
         <service id="webgriffe_sylius_akeneo.behat.context.setup.akeneo_product_model" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Setup\AkeneoProductModelContext"/>
 

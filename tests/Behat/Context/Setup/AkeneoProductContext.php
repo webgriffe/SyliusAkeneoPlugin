@@ -11,13 +11,8 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\InMemoryAkeneoPimClient;
 use Webmozart\Assert\Assert;
 
-final class AkeneoContext implements Context
+final class AkeneoProductContext implements Context
 {
-    public function __construct(
-        private InMemoryAkeneoPimClient $apiClient,
-    ) {
-    }
-
     /**
      * @BeforeScenario
      */
@@ -32,9 +27,7 @@ final class AkeneoContext implements Context
      */
     public function thereIsAProductUpdatedAtOnAkeneo(string $identifier, DateTime $date = null): void
     {
-        $productsApi = $this->apiClient->getProductApi();
-        Assert::isInstanceOf($productsApi, InMemoryProductApi::class);
-        $productsApi::addResource(Product::create($identifier, ['updated' => $date]));
+        InMemoryProductApi::addResource(Product::create($identifier, ['updated' => $date]));
     }
 
     /**
