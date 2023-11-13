@@ -10,9 +10,9 @@ use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
-use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 
 final class ImporterTest extends KernelTestCase

@@ -15,7 +15,6 @@ return static function (ECSConfig $ecsConfig): void {
 
     $ecsConfig->paths([
         'src',
-        'tests/Akeneo',
         'tests/Behat',
         'tests/InMemory',
         'tests/Integration',
