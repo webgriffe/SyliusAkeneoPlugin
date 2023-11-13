@@ -20,7 +20,6 @@ use GuzzleHttp\Psr7\Response;
 use Http\Promise\Promise;
 use Psr\Http\Message\StreamInterface;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\ResourceInterface;
-use Webmozart\Assert\Assert;
 
 /**
  * @template T of ResourceInterface
@@ -46,8 +45,6 @@ abstract class InMemoryApi implements
     public function create(string $code, array $data = []): int
     {
         $class = $this->getResourceClass();
-        Assert::isInstanceOf($class, ResourceInterface::class);
-
         $resources = $this->getResources();
         $resources[$code] = call_user_func([$class, 'create'], [$code, $data]);
 
