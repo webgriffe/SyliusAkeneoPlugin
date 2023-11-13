@@ -17,9 +17,7 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\AttributeOption
 
 final class InMemoryAttributeOptionApi implements AttributeOptionApiInterface
 {
-    /**
-     * @var array<string, <string, AttributeOption>>
-     */
+    /** @var array<string, <string, AttributeOption>> */
     public static array $attributeOptions = [];
 
     public static function addResource(AttributeOption $attributeOption): void
@@ -58,6 +56,7 @@ final class InMemoryAttributeOptionApi implements AttributeOptionApiInterface
         foreach (self::$attributeOptions[$attributeCode] as $attributeOption) {
             $attributeOptions[] = $attributeOption->__serialize();
         }
+
         return new class(new ArrayIterator($attributeOptions), $pageSize) implements ResourceCursorInterface {
             public function __construct(private ArrayIterator $iterator, private int $pageSize)
             {

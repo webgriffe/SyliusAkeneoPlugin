@@ -167,7 +167,7 @@ jobs:
 
             -
                 name: Run ECS
-                run: vendor/bin/ecs check src/ tests/Behat tests/Integration
+                run: vendor/bin/ecs check
 
             -
                 name: Run PHPStan

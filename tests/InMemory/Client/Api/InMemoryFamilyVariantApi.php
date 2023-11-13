@@ -16,9 +16,7 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\FamilyVariant;
 
 final class InMemoryFamilyVariantApi implements FamilyVariantApiInterface
 {
-    /**
-     * @var array<string, <string, FamilyVariant>>
-     */
+    /** @var array<string, <string, FamilyVariant>> */
     public static array $familyVariants = [];
 
     public static function addResource(string $familyCode, FamilyVariant $familyVariant): void

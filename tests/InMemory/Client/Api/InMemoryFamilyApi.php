@@ -11,9 +11,7 @@ use Webmozart\Assert\Assert;
 
 final class InMemoryFamilyApi extends InMemoryApi implements FamilyApiInterface
 {
-    /**
-     * @var array<string, Family>
-     */
+    /** @var array<string, Family> */
     public static array $families = [];
 
     protected function getResourceClass(): string
