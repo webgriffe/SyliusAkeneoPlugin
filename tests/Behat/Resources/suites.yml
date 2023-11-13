@@ -7,7 +7,7 @@ default:
                 - sylius.behat.context.setup.product
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.locale
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product_model
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_family_variant
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute
@@ -30,7 +30,7 @@ default:
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.product
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
 
@@ -47,7 +47,7 @@ default:
                 - sylius.behat.context.setup.product
                 - sylius.behat.context.setup.product_association
                 - sylius.behat.context.setup.channel
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
 
@@ -65,7 +65,7 @@ default:
 
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.product_association
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product
 
                 - webgriffe_sylius_akeneo.behat.context.cli.import_command
 
@@ -89,7 +89,7 @@ default:
 
                 - sylius.behat.context.setup.channel
                 - sylius.behat.context.setup.product
-                - webgriffe_sylius_akeneo.behat.context.setup.akeneo
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
 
