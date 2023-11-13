@@ -1,5 +1,0 @@
-Sylius\Component\Product\Model\ProductAttribute:
-    text_attribute:
-        code: 'text_attribute'
-        type: 'text'
-        storageType: 'text'

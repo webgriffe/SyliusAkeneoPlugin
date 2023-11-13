@@ -9,7 +9,7 @@ use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Tests\Webgriffe\SyliusAkeneoPlugin\Integration\DataFixtures\DataFixture;
+use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 
 final class ReconcilerTest extends KernelTestCase
