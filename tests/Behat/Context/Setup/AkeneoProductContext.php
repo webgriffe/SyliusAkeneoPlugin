@@ -8,8 +8,6 @@ use Behat\Behat\Context\Context;
 use DateTime;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
-use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\InMemoryAkeneoPimClient;
-use Webmozart\Assert\Assert;
 
 final class AkeneoProductContext implements Context
 {
