@@ -19,11 +19,14 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
 final class ProductOptionValueHandler implements ValueHandlerInterface
 {
+    use ProductOptionHelperTrait;
+
     /**
      * @param FactoryInterface<ProductOptionValueInterface> $productOptionValueFactory
      * @param FactoryInterface<ProductOptionValueTranslationInterface> $productOptionValueTranslationFactory
@@ -128,7 +131,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
     private function handleSelectOption(ProductOptionInterface $productOption, string $optionCode, string $akeneoValue, ProductInterface $product, ProductVariantInterface $productVariant): void
     {
-        $optionValueCode = $this->createOptionValueCode($optionCode, $akeneoValue);
+        $optionValueCode = $this->getSyliusProductOptionValueCode($optionCode, $akeneoValue);
 
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
@@ -184,7 +187,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             throw new LogicException('Unit key not found');
         }
         $unit = (string) $akeneoDataValue['unit'];
-        $optionValueCode = $this->createOptionValueCode($optionCode, $floatAmount, $unit);
+        $optionValueCode = $this->getSyliusProductOptionValueCode($optionCode, $floatAmount, $unit);
 
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
@@ -202,7 +205,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
     private function handleBooleanOption(ProductOptionInterface $productOption, string $optionCode, bool $akeneoDataValue, ProductVariantInterface $productVariant): void
     {
-        $optionValueCode = $this->createOptionValueCode($optionCode, (string) $akeneoDataValue);
+        $optionValueCode = $this->getSyliusProductOptionValueCode($optionCode, (string) $akeneoDataValue);
 
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
@@ -275,15 +278,6 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
 
         return $optionValue;
-    }
-
-    private function createOptionValueCode(string ...$pieces): string
-    {
-        $slugifiedPieces = array_map(static function (string $word): string {
-            return str_replace(['.', ','], '', $word);
-        }, $pieces);
-
-        return implode('_', $slugifiedPieces);
     }
 
     private function isVariantOption(ProductVariantInterface $productVariant, string $attribute): bool
