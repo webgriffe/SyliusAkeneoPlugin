@@ -53,7 +53,7 @@
         "symfony/intl": "^5.4 || ^6.0",
         "symfony/web-profiler-bundle": "^5.4 || ^6.0",
         "theofidry/alice-data-fixtures": "^1.1",
-        "vimeo/psalm": "4.27.0"
+        "vimeo/psalm": "^5.15"
     },
     "config": {
         "sort-packages": true,
