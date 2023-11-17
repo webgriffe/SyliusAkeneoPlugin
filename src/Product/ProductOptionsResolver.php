@@ -12,6 +12,9 @@ use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 
+/**
+ * @psalm-type AkeneoFamilyVariant array{code: string, labels: array<string, ?string>, variant_attribute_sets: list<array{level: int, axes: list<string>, attributes: list<string>}>}
+ */
 final class ProductOptionsResolver implements ProductOptionsResolverInterface
 {
     /**
@@ -55,6 +58,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
         $familyVariantCode = $productResponse['family_variant'];
 
         try {
+            /** @var AkeneoFamilyVariant $familyVariantResponse */
             $familyVariantResponse = $this->apiClient->getFamilyVariantApi()->get($familyCode, $familyVariantCode);
         } catch (HttpException $e) {
             if ($e->getResponse()->getStatusCode() === 404) {
