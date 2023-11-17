@@ -10,7 +10,8 @@
     <projectFiles>
         <directory name="src" />
         <ignoreFiles>
-            <directory name="vendor" />
+            <directory name="vendor"/>
+            <file name="src/DependencyInjection/Configuration.php"/>
         </ignoreFiles>
     </projectFiles>
 

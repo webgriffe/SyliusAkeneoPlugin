@@ -36,7 +36,7 @@ final class ItemImportResultPersisterMiddleware implements MiddlewareInterface
                 return $result;
             }
 
-            if (!$envelope->last(ReceivedStamp::class)) {
+            if (null === $envelope->last(ReceivedStamp::class)) {
                 return $result;
             }
 
