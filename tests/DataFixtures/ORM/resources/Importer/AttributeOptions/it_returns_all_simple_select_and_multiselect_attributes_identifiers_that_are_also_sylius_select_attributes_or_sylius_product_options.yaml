@@ -5,7 +5,11 @@ Sylius\Component\Locale\Model\Locale:
         code: "it_IT"
 
 Sylius\Component\Product\Model\ProductAttribute:
-    finitura:
+    material:
         code: 'material'
         type: 'select'
         storageType: 'json'
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: 'size'

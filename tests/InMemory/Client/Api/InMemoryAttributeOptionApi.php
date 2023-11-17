@@ -62,7 +62,7 @@ final class InMemoryAttributeOptionApi implements AttributeOptionApiInterface
             {
             }
 
-            public function current()
+            public function current(): mixed
             {
                 return $this->iterator->current();
             }
