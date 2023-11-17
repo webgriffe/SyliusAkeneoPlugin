@@ -7,6 +7,9 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\AttributeOptions;
 use DateTime;
 use Fidry\AliceDataFixtures\Persistence\PurgeMode;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
+use Sylius\Component\Product\Model\ProductOptionInterface;
+use Sylius\Component\Product\Model\ProductOptionValueInterface;
+use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
@@ -23,15 +26,25 @@ final class ImporterTest extends KernelTestCase
 
     private RepositoryInterface $attributeRepository;
 
+    private ProductOptionRepositoryInterface $optionRepository;
+
     protected function setUp(): void
     {
         self::bootKernel();
         $this->importer = self::getContainer()->get('webgriffe_sylius_akeneo.attribute_options.importer');
         $fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->attributeRepository = self::getContainer()->get('sylius.repository.product_attribute');
+        $this->optionRepository = self::getContainer()->get('sylius.repository.product_option');
 
         InMemoryAttributeApi::addResource(new Attribute('material', AttributeType::SIMPLE_SELECT));
         InMemoryAttributeApi::addResource(new Attribute('text_attribute', AttributeType::TEXT));
+        InMemoryAttributeApi::addResource(Attribute::create('size', [
+            'type' => AttributeType::SIMPLE_SELECT,
+            'labels' => [
+                'en_US' => 'Size',
+                'it_IT' => 'Taglia',
+            ],
+        ]));
 
         InMemoryAttributeOptionApi::addResource(new AttributeOption('cotton', 'material', 5, [
             'en_US' => 'cotton',
@@ -52,6 +65,14 @@ final class ImporterTest extends KernelTestCase
         InMemoryAttributeOptionApi::addResource(new AttributeOption('leather', 'material', 2, [
             'en_US' => 'leather',
             'it_IT' => 'cuoio',
+        ]));
+        InMemoryAttributeOptionApi::addResource(new AttributeOption('small', 'size', 1, [
+            'en_US' => 'Small',
+            'it_IT' => 'Piccola',
+        ]));
+        InMemoryAttributeOptionApi::addResource(new AttributeOption('large', 'size', 2, [
+            'en_US' => 'Large',
+            'it_IT' => 'Grande',
         ]));
 
         $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/AttributeOptions/' . $this->getName() . '.yaml';
@@ -92,7 +113,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_import_all_options_from_akeneo_retaining_sort_order(): void
+    public function it_import_all_options_from_akeneo_to_sylius_attribute_retaining_sort_order(): void
     {
         $this->importer->import('material');
 
@@ -115,10 +136,72 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_returns_all_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes(): void
+    public function it_import_all_options_from_akeneo_to_sylius_option(): void
+    {
+        $this->importer->import('size');
+
+        $option = $this->optionRepository->findOneBy(['code' => 'size']);
+        $this->assertInstanceOf(ProductOptionInterface::class, $option);
+        $this->assertEquals('Size', $option->getTranslation('en_US')->getName());
+        $this->assertEquals('Taglia', $option->getTranslation('it_IT')->getName());
+        $optionValues = $option->getValues();
+        $this->assertCount(2, $optionValues);
+
+        $smallOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'size_small');
+        $this->assertCount(1, $smallOptionValues);
+        $smallOptionValue = $smallOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $smallOptionValue);
+        $this->assertCount(2, $smallOptionValue->getTranslations());
+        $this->assertEquals('Small', $smallOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('Piccola', $smallOptionValue->getTranslation('it_IT')->getValue());
+
+        $smallOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'size_large');
+        $this->assertCount(1, $smallOptionValues);
+        $smallOptionValue = $smallOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $smallOptionValue);
+        $this->assertCount(2, $smallOptionValue->getTranslations());
+        $this->assertEquals('Large', $smallOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('Grande', $smallOptionValue->getTranslation('it_IT')->getValue());
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_all_options_from_akeneo_to_sylius_option(): void
+    {
+        $this->importer->import('size');
+
+        $option = $this->optionRepository->findOneBy(['code' => 'size']);
+        $this->assertInstanceOf(ProductOptionInterface::class, $option);
+        $this->assertEquals('Size', $option->getTranslation('en_US')->getName());
+        $this->assertEquals('Taglia', $option->getTranslation('it_IT')->getName());
+        $optionValues = $option->getValues();
+        $this->assertCount(2, $optionValues);
+
+        $smallOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'size_small');
+        $this->assertCount(1, $smallOptionValues);
+        $smallOptionValue = $smallOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $smallOptionValue);
+        $this->assertCount(2, $smallOptionValue->getTranslations());
+        $this->assertEquals('Small', $smallOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('Piccola', $smallOptionValue->getTranslation('it_IT')->getValue());
+
+        $smallOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'size_large');
+        $this->assertCount(1, $smallOptionValues);
+        $smallOptionValue = $smallOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $smallOptionValue);
+        $this->assertCount(2, $smallOptionValue->getTranslations());
+        $this->assertEquals('Large', $smallOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('Grande', $smallOptionValue->getTranslation('it_IT')->getValue());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_all_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes_or_sylius_product_options(): void
     {
         $identifiers = $this->importer->getIdentifiersModifiedSince(new DateTime());
 
-        $this->assertEquals(['material'], $identifiers);
+        $this->assertEquals(['material', 'size'], $identifiers);
     }
 }

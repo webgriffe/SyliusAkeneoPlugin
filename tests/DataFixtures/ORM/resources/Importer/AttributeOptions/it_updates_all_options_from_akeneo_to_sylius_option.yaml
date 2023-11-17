@@ -1,0 +1,54 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: 'en_US'
+    it_IT:
+        code: 'it_IT'
+
+Sylius\Component\Product\Model\ProductOption:
+    size:
+        code: 'size'
+        translations:
+            - '@size_en_US'
+            - '@size_it_IT'
+
+Sylius\Component\Product\Model\ProductOptionTranslation:
+    size_en_US:
+        name: 'Format'
+        locale: 'en_US'
+        translatable: '@size'
+    size_it_IT:
+        name: 'Formato'
+        locale: 'it_IT'
+        translatable: '@size'
+        
+Sylius\Component\Product\Model\ProductOptionValue:
+    small:
+        code: 'size_small'
+        option: '@size'
+        translations:
+            - '@small_it_IT'
+            - '@small_en_US'
+    large:
+        code: 'size_large'
+        option: '@size'
+        translations:
+            - '@large_it_IT'
+            - '@large_en_US'
+
+Sylius\Component\Product\Model\ProductOptionValueTranslation:
+    small_it_IT:
+        value: 'S'
+        locale: 'it_IT'
+        translatable: '@small'
+    small_en_US:
+        value: 'S'
+        locale: 'en_US'
+        translatable: '@small'
+    large_it_IT:
+        value: 'L'
+        locale: 'it_IT'
+        translatable: '@large'
+    large_en_US:
+        value: 'L'
+        locale: 'en_US'
+        translatable: '@large'
