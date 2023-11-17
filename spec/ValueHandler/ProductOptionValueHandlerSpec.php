@@ -85,6 +85,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         );
         $productOptionRepository->findOneBy(['code' => self::OPTION_CODE])->willReturn($productOption);
         $productOptionValueFactory->createNew()->willReturn($productOptionValue);
+        $productOptionValue->getCode()->willReturn(self::VALUE_CODE);
         $productOptionValue->getTranslation('en_US')->willReturn($englishProductOptionValueTranslation);
         $productOptionValue->getTranslation('it_IT')->willReturn($englishProductOptionValueTranslation);
         $productOptionValueTranslationFactory->createNew()->willReturn($italianProductOptionValueTranslation);

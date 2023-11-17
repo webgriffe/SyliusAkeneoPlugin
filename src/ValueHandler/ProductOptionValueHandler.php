@@ -23,6 +23,9 @@ use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
+/**
+ * @psalm-type AkeneoAttributeOption array{_links: array, code: string, attribute: string, sort_order: int, labels: array<string, ?string>}
+ */
 final class ProductOptionValueHandler implements ValueHandlerInterface
 {
     use ProductOptionHelperTrait;
@@ -136,6 +139,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         $optionValue = $this->getOrCreateProductOptionValue($optionValueCode, $productOption);
 
         try {
+            /** @var AkeneoAttributeOption $akeneoAttributeOption */
             $akeneoAttributeOption = $this->apiClient->getAttributeOptionApi()->get($optionCode, $akeneoValue);
         } catch (HttpException $e) {
             $response = $e->getResponse();
@@ -154,24 +158,8 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
             throw $e;
         }
-        /**
-         * @var string $localeCode
-         * @var ?string $label
-         */
-        foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
-            if (!in_array($localeCode, $this->translationLocaleProvider->getDefinedLocalesCodes(), true)) {
-                continue;
-            }
-            $optionValueTranslation = $optionValue->getTranslation($localeCode);
-            if ($optionValueTranslation->getLocale() !== $localeCode) {
-                $optionValueTranslation = $this->productOptionValueTranslationFactory->createNew();
-                $optionValueTranslation->setLocale($localeCode);
-            }
-            $optionValueTranslation->setValue($label ?? $akeneoValue);
-            if (!$optionValue->hasTranslation($optionValueTranslation)) {
-                $optionValue->addTranslation($optionValueTranslation);
-            }
-        }
+
+        $this->importProductOptionValueTranslations($akeneoAttributeOption, $optionValue);
         if (!$productVariant->hasOptionValue($optionValue)) {
             $productVariant->addOptionValue($optionValue);
         }
@@ -291,5 +279,18 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
 
         return false;
+    }
+
+    private function getDefinedLocaleCodes(): array
+    {
+        return $this->translationLocaleProvider->getDefinedLocalesCodes();
+    }
+
+    /**
+     * @return FactoryInterface<ProductOptionValueTranslationInterface>
+     */
+    private function getProductOptionValueTranslationFactory(): FactoryInterface
+    {
+        return $this->productOptionValueTranslationFactory;
     }
 }
