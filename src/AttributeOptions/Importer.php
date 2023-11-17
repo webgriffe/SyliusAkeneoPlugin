@@ -21,6 +21,7 @@ use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInte
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
 use Webmozart\Assert\Assert;
 
 /**
@@ -29,6 +30,8 @@ use Webmozart\Assert\Assert;
  */
 final class Importer implements ImporterInterface
 {
+    use ProductOptionHelperTrait;
+
     private const SIMPLESELECT_TYPE = 'pim_catalog_simpleselect';
 
     private const MULTISELECT_TYPE = 'pim_catalog_multiselect';
@@ -224,7 +227,7 @@ final class Importer implements ImporterInterface
         $attributeOptions = $this->getSortedAkeneoAttributeOptionsByAttributeCode($attributeCode);
 
         foreach ($attributeOptions as $attributeOption) {
-            $optionValueCode = $attributeCode . '_' . $attributeOption['code'];
+            $optionValueCode = $this->getSyliusProductOptionValueCode($attributeCode, $attributeOption['code']);
             $optionValue = null;
             foreach ($option->getValues() as $value) {
                 if ($value->getCode() === $optionValueCode) {
