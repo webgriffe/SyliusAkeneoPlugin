@@ -247,27 +247,10 @@ final class Importer implements ImporterInterface
             }
 
             // We can assume that if we are here is because the option repository has been injected, so event these services should be!
-            $translationLocaleProvider = $this->translationLocaleProvider;
-            Assert::isInstanceOf($translationLocaleProvider, TranslationLocaleProviderInterface::class);
-            $definedLocalesCodes = $translationLocaleProvider->getDefinedLocalesCodes();
-
             $productOptionValueTranslationFactory = $this->productOptionValueTranslationFactory;
             Assert::isInstanceOf($productOptionValueTranslationFactory, FactoryInterface::class);
 
-            foreach ($attributeOption['labels'] as $localeCode => $label) {
-                if (!in_array($localeCode, $definedLocalesCodes, true)) {
-                    continue;
-                }
-                $optionValueTranslation = $optionValue->getTranslation($localeCode);
-                if ($optionValueTranslation->getLocale() !== $localeCode) {
-                    $optionValueTranslation = $productOptionValueTranslationFactory->createNew();
-                    $optionValueTranslation->setLocale($localeCode);
-                }
-                $optionValueTranslation->setValue($label ?? $optionValue->getCode());
-                if (!$optionValue->hasTranslation($optionValueTranslation)) {
-                    $optionValue->addTranslation($optionValueTranslation);
-                }
-            }
+            $this->importProductOptionValueTranslations($attributeOption, $optionValue);
         }
     }
 
@@ -319,5 +302,31 @@ final class Importer implements ImporterInterface
             $newProductOptionTranslation->setName($label);
             $productOption->addTranslation($newProductOptionTranslation);
         }
+    }
+
+    /**
+     * This method should be called only if the productOptionRepository is injected, so we can assume
+     * that this factory is injected too.
+     */
+    private function getDefinedLocaleCodes(): array
+    {
+        $translationLocaleProvider = $this->translationLocaleProvider;
+        Assert::isInstanceOf($translationLocaleProvider, TranslationLocaleProviderInterface::class);
+
+        return $translationLocaleProvider->getDefinedLocalesCodes();
+    }
+
+    /**
+     * This method should be called only if the productOptionRepository is injected, so we can assume
+     * that this factory is injected too.
+     *
+     * @return FactoryInterface<ProductOptionValueTranslationInterface>
+     */
+    private function getProductOptionValueTranslationFactory(): FactoryInterface
+    {
+        $productOptionValueTranslationFactory = $this->productOptionValueTranslationFactory;
+        Assert::isInstanceOf($productOptionValueTranslationFactory, FactoryInterface::class);
+
+        return $productOptionValueTranslationFactory;
     }
 }
