@@ -53,8 +53,10 @@ final class InMemoryAttributeOptionApi implements AttributeOptionApiInterface
     public function all($attributeCode, $pageSize = 10, array $queryParameters = []): ResourceCursorInterface
     {
         $attributeOptions = [];
-        foreach (self::$attributeOptions[$attributeCode] as $attributeOption) {
-            $attributeOptions[] = $attributeOption->__serialize();
+        if (array_key_exists($attributeCode, self::$attributeOptions)) {
+            foreach (self::$attributeOptions[$attributeCode] as $attributeOption) {
+                $attributeOptions[] = $attributeOption->__serialize();
+            }
         }
 
         return new class(new ArrayIterator($attributeOptions), $pageSize) implements ResourceCursorInterface {
