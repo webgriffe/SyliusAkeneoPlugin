@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Akeneo\Pim\ApiClient\Exception\HttpException;
+use Akeneo\Pim\Structure\Component\AttributeTypes;
 use InvalidArgumentException;
 use LogicException;
 use RuntimeException;
@@ -24,6 +25,7 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
 /**
+ * @psalm-type AkeneoAttribute array{code: string, type: string, labels: array<string, ?string>}
  * @psalm-type AkeneoAttributeOption array{_links: array, code: string, attribute: string, sort_order: int, labels: array<string, ?string>}
  */
 final class ProductOptionValueHandler implements ValueHandlerInterface
@@ -84,6 +86,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         }
 
         try {
+            /** @var AkeneoAttribute $akeneoAttribute */
             $akeneoAttribute = $this->apiClient->getAttributeApi()->get($optionCode);
         } catch (HttpException $e) {
             $response = $e->getResponse();
@@ -109,20 +112,22 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
 
         $productOption = $this->getProductOption($optionCode, $productVariant, $product);
 
-        /** @var string $attributeType */
+        /**
+         * See https://help.akeneo.com/serenity-build-your-catalog/30-serenity-manage-your-families-and-variant-families?from_search=132874388#manage-family-variants:~:text=An%20attribute%20of%20the%20family%20could%20be%20a%C2%A0variant%20axis%C2%A0only%20if%20its%20attribute%20type%20is%20one%20of%20the%20following%3A
+         */
         $attributeType = $akeneoAttribute['type'];
         switch ($attributeType) {
-            case 'pim_catalog_simpleselect':
+            case AttributeTypes::OPTION_SIMPLE_SELECT:
                 Assert::string($akeneoValueData);
                 $this->handleSelectOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
 
                 break;
-            case 'pim_catalog_metric':
+            case AttributeTypes::METRIC:
                 Assert::isArray($akeneoValueData);
                 $this->handleMetricOption($productOption, $optionCode, $akeneoValueData, $productVariant);
 
                 break;
-            case 'pim_catalog_boolean':
+            case AttributeTypes::BOOLEAN:
                 Assert::boolean($akeneoValueData);
                 $this->handleBooleanOption($productOption, $optionCode, $akeneoValueData, $productVariant);
 
