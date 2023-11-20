@@ -237,13 +237,8 @@ final class Importer implements ImporterInterface
                 }
             }
             if ($optionValue === null) {
-                // We can assume that if we are here is because the option repository has been injected, so event this factory should be!
-                $productOptionValueFactory = $this->productOptionValueFactory;
-                Assert::isInstanceOf($productOptionValueFactory, FactoryInterface::class);
-                $optionValue = $productOptionValueFactory->createNew();
+                $optionValue = $this->createNewOptionValue($optionValueCode, $option);
                 // TODO handle translations
-                $optionValue->setCode($optionValueCode);
-                $option->addValue($optionValue);
             }
 
             // We can assume that if we are here is because the option repository has been injected, so event these services should be!
@@ -328,5 +323,19 @@ final class Importer implements ImporterInterface
         Assert::isInstanceOf($productOptionValueTranslationFactory, FactoryInterface::class);
 
         return $productOptionValueTranslationFactory;
+    }
+
+    /**
+     * This method should be called only if the productOptionRepository is injected, so we can assume
+     * that this factory is injected too.
+     *
+     * @return FactoryInterface<ProductOptionValueInterface>
+     */
+    private function getProductOptionValueFactory(): FactoryInterface
+    {
+        $productOptionValueFactory = $this->productOptionValueFactory;
+        Assert::isInstanceOf($productOptionValueFactory, FactoryInterface::class);
+
+        return $productOptionValueFactory;
     }
 }
