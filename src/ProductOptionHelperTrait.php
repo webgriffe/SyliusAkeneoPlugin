@@ -6,8 +6,6 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
-use Sylius\Component\Product\Model\ProductOptionValueInterface;
-use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 
 /**
@@ -17,68 +15,9 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 trait ProductOptionHelperTrait
 {
     /**
-     * @return string[]
-     */
-    abstract private function getDefinedLocaleCodes(): array;
-
-    /**
      * @return FactoryInterface<ProductOptionTranslationInterface>
      */
     abstract private function getProductOptionTranslationFactory(): FactoryInterface;
-
-    /**
-     * @return FactoryInterface<ProductOptionValueTranslationInterface>
-     */
-    abstract private function getProductOptionValueTranslationFactory(): FactoryInterface;
-
-    /**
-     * @return FactoryInterface<ProductOptionValueInterface>
-     */
-    abstract private function getProductOptionValueFactory(): FactoryInterface;
-
-    protected function getSyliusProductOptionValueCode(string ...$pieces): string
-    {
-        $slugifiedPieces = array_map(static function (string $word): string {
-            return str_replace(['.', ','], '', $word);
-        }, $pieces);
-
-        return implode('_', $slugifiedPieces);
-    }
-
-    /**
-     * @param AkeneoAttributeOption $akeneoAttributeOption
-     */
-    protected function importProductOptionValueTranslations(array $akeneoAttributeOption, ProductOptionValueInterface $optionValue): void
-    {
-        $productOptionValueTranslationFactory = $this->getProductOptionValueTranslationFactory();
-
-        foreach ($akeneoAttributeOption['labels'] as $localeCode => $label) {
-            if (!in_array($localeCode, $this->getDefinedLocaleCodes(), true)) {
-                continue;
-            }
-            $productOptionValueTranslation = $optionValue->getTranslation($localeCode);
-            if ($productOptionValueTranslation->getLocale() !== $localeCode) {
-                $productOptionValueTranslation = $productOptionValueTranslationFactory->createNew();
-                $productOptionValueTranslation->setLocale($localeCode);
-            }
-            $productOptionValueTranslation->setValue($label ?? $optionValue->getCode());
-            if (!$optionValue->hasTranslation($productOptionValueTranslation)) {
-                $optionValue->addTranslation($productOptionValueTranslation);
-            }
-        }
-    }
-
-    private function createNewOptionValue(
-        string $optionValueCode,
-        ProductOptionInterface $productOption,
-    ): ProductOptionValueInterface {
-        $optionValue = $this->getProductOptionValueFactory()->createNew();
-        $optionValue->setCode($optionValueCode);
-        $optionValue->setOption($productOption);
-        $productOption->addValue($optionValue);
-
-        return $optionValue;
-    }
 
     /**
      * @param AkeneoAttribute $akeneoAttribute

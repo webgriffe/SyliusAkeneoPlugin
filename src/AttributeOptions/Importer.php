@@ -22,6 +22,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
+use Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait;
 use Webmozart\Assert\Assert;
 
 /**
@@ -30,7 +31,7 @@ use Webmozart\Assert\Assert;
  */
 final class Importer implements ImporterInterface
 {
-    use ProductOptionHelperTrait;
+    use ProductOptionHelperTrait, ProductOptionValueHelperTrait;
 
     private const SIMPLESELECT_TYPE = 'pim_catalog_simpleselect';
 
@@ -237,8 +238,7 @@ final class Importer implements ImporterInterface
                 }
             }
             if ($optionValue === null) {
-                $optionValue = $this->createNewOptionValue($optionValueCode, $option);
-                // TODO handle translations
+                $optionValue = $this->createNewProductOptionValue($optionValueCode, $option);
             }
 
             // We can assume that if we are here is because the option repository has been injected, so event these services should be!
@@ -279,24 +279,9 @@ final class Importer implements ImporterInterface
         $productOptionCode = $productOption->getCode();
         Assert::notNull($productOptionCode);
 
-        // We can assume that if we are here is because the option repository has been injected, so event this factory should be!
-        $productOptionTranslationFactory = $this->productOptionTranslationFactory;
-        Assert::isInstanceOf($productOptionTranslationFactory, FactoryInterface::class);
-
         /** @var AkeneoAttribute $attributeResponse */
         $attributeResponse = $this->apiClient->getAttributeApi()->get($productOptionCode);
-        foreach ($attributeResponse['labels'] as $locale => $label) {
-            $productOptionTranslation = $productOption->getTranslation($locale);
-            if ($productOptionTranslation->getLocale() === $locale) {
-                $productOptionTranslation->setName($label);
-
-                continue;
-            }
-            $newProductOptionTranslation = $productOptionTranslationFactory->createNew();
-            $newProductOptionTranslation->setLocale($locale);
-            $newProductOptionTranslation->setName($label);
-            $productOption->addTranslation($newProductOptionTranslation);
-        }
+        $this->importProductOptionTranslations($attributeResponse, $productOption);
     }
 
     /**
