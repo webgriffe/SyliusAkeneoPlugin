@@ -236,10 +236,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     {
         $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $optionValueCode]);
         if (!$optionValue instanceof ProductOptionValueInterface) {
-            $optionValue = $this->productOptionValueFactory->createNew();
-            $optionValue->setCode($optionValueCode);
-            $optionValue->setOption($productOption);
-            $productOption->addValue($optionValue);
+            $optionValue = $this->createNewOptionValue($optionValueCode, $productOption);
         }
 
         return $optionValue;
@@ -292,5 +289,13 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     private function getProductOptionValueTranslationFactory(): FactoryInterface
     {
         return $this->productOptionValueTranslationFactory;
+    }
+
+    /**
+     * @return FactoryInterface<ProductOptionValueInterface>
+     */
+    private function getProductOptionValueFactory(): FactoryInterface
+    {
+        return $this->productOptionValueFactory;
     }
 }

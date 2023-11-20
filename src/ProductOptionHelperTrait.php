@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin;
 
+use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
@@ -22,6 +23,11 @@ trait ProductOptionHelperTrait
      * @return FactoryInterface<ProductOptionValueTranslationInterface>
      */
     abstract private function getProductOptionValueTranslationFactory(): FactoryInterface;
+
+    /**
+     * @return FactoryInterface<ProductOptionValueInterface>
+     */
+    abstract private function getProductOptionValueFactory(): FactoryInterface;
 
     protected function getSyliusProductOptionValueCode(string ...$pieces): string
     {
@@ -53,5 +59,17 @@ trait ProductOptionHelperTrait
                 $optionValue->addTranslation($productOptionValueTranslation);
             }
         }
+    }
+
+    private function createNewOptionValue(
+        string $optionValueCode,
+        ProductOptionInterface $productOption,
+    ): ProductOptionValueInterface {
+        $optionValue = $this->getProductOptionValueFactory()->createNew();
+        $optionValue->setCode($optionValueCode);
+        $optionValue->setOption($productOption);
+        $productOption->addValue($optionValue);
+
+        return $optionValue;
     }
 }
