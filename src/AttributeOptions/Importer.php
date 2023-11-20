@@ -315,6 +315,20 @@ final class Importer implements ImporterInterface
      * This method should be called only if the productOptionRepository is injected, so we can assume
      * that this factory is injected too.
      *
+     * @return FactoryInterface<ProductOptionTranslationInterface>
+     */
+    private function getProductOptionTranslationFactory(): FactoryInterface
+    {
+        $productOptionTranslationFactory = $this->productOptionTranslationFactory;
+        Assert::isInstanceOf($productOptionTranslationFactory, FactoryInterface::class);
+
+        return $productOptionTranslationFactory;
+    }
+
+    /**
+     * This method should be called only if the productOptionRepository is injected, so we can assume
+     * that this factory is injected too.
+     *
      * @return FactoryInterface<ProductOptionValueTranslationInterface>
      */
     private function getProductOptionValueTranslationFactory(): FactoryInterface

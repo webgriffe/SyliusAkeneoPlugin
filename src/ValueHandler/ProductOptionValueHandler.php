@@ -12,6 +12,7 @@ use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
+use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
 use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
@@ -297,5 +298,13 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     private function getProductOptionValueFactory(): FactoryInterface
     {
         return $this->productOptionValueFactory;
+    }
+
+    /**
+     * @return FactoryInterface<ProductOptionTranslationInterface>
+     */
+    private function getProductOptionTranslationFactory(): FactoryInterface
+    {
+        throw new RuntimeException('This method should not be invoked in this context.');
     }
 }
