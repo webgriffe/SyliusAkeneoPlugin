@@ -240,11 +240,6 @@ final class Importer implements ImporterInterface
             if ($optionValue === null) {
                 $optionValue = $this->createNewProductOptionValue($optionValueCode, $option);
             }
-
-            // We can assume that if we are here is because the option repository has been injected, so event these services should be!
-            $productOptionValueTranslationFactory = $this->productOptionValueTranslationFactory;
-            Assert::isInstanceOf($productOptionValueTranslationFactory, FactoryInterface::class);
-
             $this->importProductOptionValueTranslations($attributeOption, $optionValue);
         }
     }
