@@ -9,14 +9,20 @@ use Akeneo\Pim\ApiClient\Exception\HttpException;
 use RuntimeException;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
+use Sylius\Component\Product\Model\ProductOptionValueInterface;
+use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
+use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
 
 /**
+ * @psalm-type AkeneoAttribute array{code: string, type: string, labels: array<string, ?string>}
  * @psalm-type AkeneoFamilyVariant array{code: string, labels: array<string, ?string>, variant_attribute_sets: list<array{level: int, axes: list<string>, attributes: list<string>}>}
  */
 final class ProductOptionsResolver implements ProductOptionsResolverInterface
 {
+    use ProductOptionHelperTrait;
+
     /**
      * @param FactoryInterface<ProductOptionInterface> $productOptionFactory
      * @param FactoryInterface<ProductOptionTranslationInterface> $productOptionTranslationFactory
@@ -87,7 +93,8 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
             $productOption->setPosition($position);
 
             try {
-                $attributeResponse = $this->apiClient->getAttributeApi()->get($attributeCode);
+                /** @var AkeneoAttribute $akeneoAttribute */
+                $akeneoAttribute = $this->apiClient->getAttributeApi()->get($attributeCode);
             } catch (HttpException $e) {
                 if ($e->getResponse()->getStatusCode() === 404) {
                     throw new RuntimeException(
@@ -102,22 +109,40 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
 
                 throw $e;
             }
-            foreach ($attributeResponse['labels'] as $locale => $label) {
-                $productOptionTranslation = $productOption->getTranslation($locale);
-                if ($productOptionTranslation->getLocale() === $locale) {
-                    $productOptionTranslation->setName($label);
-
-                    continue;
-                }
-                $newProductOptionTranslation = $this->productOptionTranslationFactory->createNew();
-                $newProductOptionTranslation->setLocale($locale);
-                $newProductOptionTranslation->setName($label);
-                $productOption->addTranslation($newProductOptionTranslation);
-            }
+            $this->importProductOptionTranslations($akeneoAttribute, $productOption);
             $this->productOptionRepository->add($productOption);
             $productOptions[] = $productOption;
         }
 
         return $productOptions;
+    }
+
+    private function getDefinedLocaleCodes(): array
+    {
+        throw new RuntimeException('This method should not be invoked in this context.');
+    }
+
+    /**
+     * @return FactoryInterface<ProductOptionTranslationInterface>
+     */
+    private function getProductOptionTranslationFactory(): FactoryInterface
+    {
+        return $this->productOptionTranslationFactory;
+    }
+
+    /**
+     * @return FactoryInterface<ProductOptionValueTranslationInterface>
+     */
+    private function getProductOptionValueTranslationFactory(): FactoryInterface
+    {
+        throw new RuntimeException('This method should not be invoked in this context.');
+    }
+
+    /**
+     * @return FactoryInterface<ProductOptionValueInterface>
+     */
+    private function getProductOptionValueFactory(): FactoryInterface
+    {
+        throw new RuntimeException('This method should not be invoked in this context.');
     }
 }
