@@ -9,8 +9,6 @@ use Akeneo\Pim\ApiClient\Exception\HttpException;
 use RuntimeException;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
-use Sylius\Component\Product\Model\ProductOptionValueInterface;
-use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
@@ -117,32 +115,11 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
         return $productOptions;
     }
 
-    private function getDefinedLocaleCodes(): array
-    {
-        throw new RuntimeException('This method should not be invoked in this context.');
-    }
-
     /**
      * @return FactoryInterface<ProductOptionTranslationInterface>
      */
     private function getProductOptionTranslationFactory(): FactoryInterface
     {
         return $this->productOptionTranslationFactory;
-    }
-
-    /**
-     * @return FactoryInterface<ProductOptionValueTranslationInterface>
-     */
-    private function getProductOptionValueTranslationFactory(): FactoryInterface
-    {
-        throw new RuntimeException('This method should not be invoked in this context.');
-    }
-
-    /**
-     * @return FactoryInterface<ProductOptionValueInterface>
-     */
-    private function getProductOptionValueFactory(): FactoryInterface
-    {
-        throw new RuntimeException('This method should not be invoked in this context.');
     }
 }

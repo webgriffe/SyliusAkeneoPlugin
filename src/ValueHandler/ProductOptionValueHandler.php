@@ -12,7 +12,6 @@ use RuntimeException;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
-use Sylius\Component\Product\Model\ProductOptionTranslationInterface;
 use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Sylius\Component\Product\Model\ProductOptionValueTranslationInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
@@ -20,7 +19,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
+use Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
@@ -29,7 +28,7 @@ use Webmozart\Assert\Assert;
  */
 final class ProductOptionValueHandler implements ValueHandlerInterface
 {
-    use ProductOptionHelperTrait;
+    use ProductOptionValueHelperTrait;
 
     /**
      * @param FactoryInterface<ProductOptionValueInterface> $productOptionValueFactory
@@ -237,7 +236,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     {
         $optionValue = $this->productOptionValueRepository->findOneBy(['code' => $optionValueCode]);
         if (!$optionValue instanceof ProductOptionValueInterface) {
-            $optionValue = $this->createNewOptionValue($optionValueCode, $productOption);
+            $optionValue = $this->createNewProductOptionValue($optionValueCode, $productOption);
         }
 
         return $optionValue;
@@ -298,13 +297,5 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     private function getProductOptionValueFactory(): FactoryInterface
     {
         return $this->productOptionValueFactory;
-    }
-
-    /**
-     * @return FactoryInterface<ProductOptionTranslationInterface>
-     */
-    private function getProductOptionTranslationFactory(): FactoryInterface
-    {
-        throw new RuntimeException('This method should not be invoked in this context.');
     }
 }
