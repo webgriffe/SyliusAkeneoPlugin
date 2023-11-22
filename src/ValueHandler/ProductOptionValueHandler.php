@@ -6,7 +6,6 @@ namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Akeneo\Pim\ApiClient\Exception\HttpException;
-use Akeneo\Pim\Structure\Component\AttributeTypes;
 use InvalidArgumentException;
 use LogicException;
 use RuntimeException;
