@@ -117,17 +117,17 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
          */
         $attributeType = $akeneoAttribute['type'];
         switch ($attributeType) {
-            case AttributeTypes::OPTION_SIMPLE_SELECT:
+            case 'pim_catalog_simpleselect':
                 Assert::string($akeneoValueData);
                 $this->handleSelectOption($productOption, $optionCode, $akeneoValueData, $product, $productVariant);
 
                 break;
-            case AttributeTypes::METRIC:
+            case 'pim_catalog_metric':
                 Assert::isArray($akeneoValueData);
                 $this->handleMetricOption($productOption, $optionCode, $akeneoValueData, $productVariant);
 
                 break;
-            case AttributeTypes::BOOLEAN:
+            case 'pim_catalog_boolean':
                 Assert::boolean($akeneoValueData);
                 $this->handleBooleanOption($productOption, $optionCode, $akeneoValueData, $productVariant);
 

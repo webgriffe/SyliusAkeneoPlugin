@@ -11,4 +11,6 @@ final class AttributeType
     public const SIMPLE_SELECT = 'pim_catalog_simpleselect';
 
     public const FILE = 'pim_catalog_file';
+
+    public const METRIC = 'pim_catalog_metric';
 }

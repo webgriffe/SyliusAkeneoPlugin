@@ -1,0 +1,22 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductOption:
+    length:
+        code: 'length'
+        translations:
+            - '@length_en_US'
+            - '@length_it_IT'
+
+Sylius\Component\Product\Model\ProductOptionTranslation:
+    length_en_US:
+        name: 'Large'
+        locale: 'en_US'
+        translatable: '@length'
+    length_it_IT:
+        name: 'Larghezza'
+        locale: 'it_IT'
+        translatable: '@length'

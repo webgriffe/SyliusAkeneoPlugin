@@ -45,6 +45,15 @@ final class ImporterTest extends KernelTestCase
                 'it_IT' => 'Taglia',
             ],
         ]));
+        InMemoryAttributeApi::addResource(Attribute::create('length', [
+            'type' => AttributeType::METRIC,
+            'metric_family' => 'Length',
+            'default_metric_unit' => 'CENTIMETER',
+            'labels' => [
+                'en_US' => 'Length',
+                'it_IT' => 'Lunghezza',
+            ],
+        ]));
 
         InMemoryAttributeOptionApi::addResource(new AttributeOption('cotton', 'material', 5, [
             'en_US' => 'cotton',
@@ -136,7 +145,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_import_all_options_from_akeneo_to_sylius_option(): void
+    public function it_import_all_select_attribute_options_from_akeneo_to_sylius_option(): void
     {
         $this->importer->import('size');
 
@@ -167,7 +176,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_updates_all_options_from_akeneo_to_sylius_option(): void
+    public function it_updates_all_select_attribute_options_from_akeneo_to_sylius_option(): void
     {
         $this->importer->import('size');
 
@@ -198,10 +207,36 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_returns_all_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes_or_sylius_product_options(): void
+    public function it_imports_metric_attribute_labels_from_akeneo_to_sylius_option_translation(): void
+    {
+        $this->importer->import('length');
+
+        $option = $this->optionRepository->findOneBy(['code' => 'length']);
+        $this->assertInstanceOf(ProductOptionInterface::class, $option);
+        $this->assertEquals('Length', $option->getTranslation('en_US')->getName());
+        $this->assertEquals('Lunghezza', $option->getTranslation('it_IT')->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_metric_attribute_labels_from_akeneo_to_sylius_option_translation(): void
+    {
+        $this->importer->import('length');
+
+        $option = $this->optionRepository->findOneBy(['code' => 'length']);
+        $this->assertInstanceOf(ProductOptionInterface::class, $option);
+        $this->assertEquals('Length', $option->getTranslation('en_US')->getName());
+        $this->assertEquals('Lunghezza', $option->getTranslation('it_IT')->getName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_all_metric_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes_or_sylius_product_options(): void
     {
         $identifiers = $this->importer->getIdentifiersModifiedSince(new DateTime());
 
-        $this->assertEquals(['material', 'size'], $identifiers);
+        $this->assertEquals(['material', 'size', 'length'], $identifiers);
     }
 }
