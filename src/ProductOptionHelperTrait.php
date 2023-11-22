@@ -22,7 +22,7 @@ trait ProductOptionHelperTrait
     /**
      * @param AkeneoAttribute $akeneoAttribute
      */
-    protected function importProductOptionTranslations(array $akeneoAttribute, ProductOptionInterface $productOption): void
+    private function importProductOptionTranslations(array $akeneoAttribute, ProductOptionInterface $productOption): void
     {
         foreach ($akeneoAttribute['labels'] as $locale => $label) {
             $productOptionTranslation = $productOption->getTranslation($locale);

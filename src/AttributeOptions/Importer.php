@@ -19,6 +19,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
@@ -37,6 +38,8 @@ final class Importer implements ImporterInterface
 
     private const MULTISELECT_TYPE = 'pim_catalog_multiselect';
 
+    private const BOOLEAN_TYPE = 'pim_catalog_boolean';
+
     /**
      * @param RepositoryInterface<ProductAttributeInterface> $attributeRepository
      * @param ?FactoryInterface<ProductOptionValueTranslationInterface> $productOptionValueTranslationFactory
@@ -52,6 +55,7 @@ final class Importer implements ImporterInterface
         private ?FactoryInterface $productOptionValueTranslationFactory = null,
         private ?FactoryInterface $productOptionValueFactory = null,
         private ?FactoryInterface $productOptionTranslationFactory = null,
+        private ?TranslatorInterface $translator = null,
     ) {
         if ($this->optionRepository === null) {
             trigger_deprecation(
@@ -80,6 +84,15 @@ final class Importer implements ImporterInterface
                 self::class,
             );
         }
+        if ($this->translator === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                'v2.2.0',
+                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
+                TranslatorInterface::class,
+                self::class,
+            );
+        }
     }
 
     public function getAkeneoEntity(): string
@@ -101,8 +114,12 @@ final class Importer implements ImporterInterface
         if (!$option instanceof ProductOptionInterface) {
             return;
         }
-        $this->updateProductOption($option);
-        $this->importOptionValues($identifier, $option);
+        /** @var AkeneoAttribute $attributeResponse */
+        $attributeResponse = $this->apiClient->getAttributeApi()->get($identifier);
+
+        // TODO: Update also the position of the option? The problem is that this position is on family variant entity!
+        $this->importProductOptionTranslations($attributeResponse, $option);
+        $this->importOptionValues($attributeResponse, $option);
     }
 
     /**
@@ -223,8 +240,38 @@ final class Importer implements ImporterInterface
         return $choices;
     }
 
-    private function importOptionValues(string $attributeCode, ProductOptionInterface $option): void
+    /**
+     * @param AkeneoAttribute $akeneoAttribute
+     */
+    private function importOptionValues(array $akeneoAttribute, ProductOptionInterface $option): void
     {
+        if ($akeneoAttribute['type'] !== self::SIMPLESELECT_TYPE &&
+            $akeneoAttribute['type'] !== self::MULTISELECT_TYPE &&
+            $akeneoAttribute['type'] !== self::BOOLEAN_TYPE
+        ) {
+            return;
+        }
+        $attributeCode = $akeneoAttribute['code'];
+
+        if ($akeneoAttribute['type'] === self::BOOLEAN_TYPE) {
+            foreach ([true, false] as $booleanValue) {
+                $optionValueCode = $this->getSyliusProductOptionValueCode($attributeCode, (string) $booleanValue);
+                $productOptionValue = null;
+                foreach ($option->getValues() as $value) {
+                    if ($value->getCode() === $optionValueCode) {
+                        $productOptionValue = $value;
+
+                        break;
+                    }
+                }
+                if ($productOptionValue === null) {
+                    $productOptionValue = $this->createNewProductOptionValue($optionValueCode, $option);
+                }
+                $this->addBooleanProductOptionValueTranslations($booleanValue, $productOptionValue);
+            }
+
+            return;
+        }
         $attributeOptions = $this->getSortedAkeneoAttributeOptionsByAttributeCode($attributeCode);
 
         foreach ($attributeOptions as $attributeOption) {
@@ -266,17 +313,6 @@ final class Importer implements ImporterInterface
         );
 
         return $attributeOptionsOrdered;
-    }
-
-    private function updateProductOption(ProductOptionInterface $productOption): void
-    {
-        // TODO: Update also the position of the option? The problem is that this position is on family variant entity!
-        $productOptionCode = $productOption->getCode();
-        Assert::notNull($productOptionCode);
-
-        /** @var AkeneoAttribute $attributeResponse */
-        $attributeResponse = $this->apiClient->getAttributeApi()->get($productOptionCode);
-        $this->importProductOptionTranslations($attributeResponse, $productOption);
     }
 
     /**
@@ -331,5 +367,17 @@ final class Importer implements ImporterInterface
         Assert::isInstanceOf($productOptionValueFactory, FactoryInterface::class);
 
         return $productOptionValueFactory;
+    }
+
+    /**
+     * This method should be called only if the productOptionRepository is injected, so we can assume
+     * that this translator is injected too.
+     */
+    private function getTranslator(): TranslatorInterface
+    {
+        $translator = $this->translator;
+        Assert::isInstanceOf($translator, TranslatorInterface::class);
+
+        return $translator;
     }
 }
