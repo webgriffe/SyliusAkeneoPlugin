@@ -15,7 +15,7 @@
         "http-interop/http-factory-guzzle": "^1.0",
         "php-http/guzzle6-adapter": "^2.0",
         "sylius/mailer-bundle": "^1.8 || ^2.0",
-        "sylius/sylius": "^1.12",
+        "sylius/sylius": "^1.12.11",
         "symfony/deprecation-contracts": "^2.2",
         "symfony/lock": "^5.4 || ^6.0",
         "symfony/webpack-encore-bundle": "^1.15"
