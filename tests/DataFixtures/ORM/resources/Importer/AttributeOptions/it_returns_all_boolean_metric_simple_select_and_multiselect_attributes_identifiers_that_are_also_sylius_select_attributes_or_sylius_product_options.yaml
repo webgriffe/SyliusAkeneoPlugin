@@ -15,3 +15,5 @@ Sylius\Component\Product\Model\ProductOption:
         code: 'size'
     length:
         code: 'length'
+    sellable:
+        code: 'sellable'

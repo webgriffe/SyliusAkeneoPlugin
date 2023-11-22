@@ -13,4 +13,6 @@ final class AttributeType
     public const FILE = 'pim_catalog_file';
 
     public const METRIC = 'pim_catalog_metric';
+
+    public const BOOLEAN = 'pim_catalog_boolean';
 }
