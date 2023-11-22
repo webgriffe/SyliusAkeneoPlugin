@@ -54,6 +54,13 @@ final class ImporterTest extends KernelTestCase
                 'it_IT' => 'Lunghezza',
             ],
         ]));
+        InMemoryAttributeApi::addResource(Attribute::create('sellable', [
+            'type' => AttributeType::BOOLEAN,
+            'labels' => [
+                'en_US' => 'Sellable',
+                'it_IT' => 'Vendibile',
+            ],
+        ]));
 
         InMemoryAttributeOptionApi::addResource(new AttributeOption('cotton', 'material', 5, [
             'en_US' => 'cotton',
@@ -233,10 +240,10 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_returns_all_metric_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes_or_sylius_product_options(): void
+    public function it_returns_all_boolean_metric_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes_or_sylius_product_options(): void
     {
         $identifiers = $this->importer->getIdentifiersModifiedSince(new DateTime());
 
-        $this->assertEquals(['material', 'size', 'length'], $identifiers);
+        $this->assertEquals(['material', 'size', 'length', 'sellable'], $identifiers);
     }
 }
