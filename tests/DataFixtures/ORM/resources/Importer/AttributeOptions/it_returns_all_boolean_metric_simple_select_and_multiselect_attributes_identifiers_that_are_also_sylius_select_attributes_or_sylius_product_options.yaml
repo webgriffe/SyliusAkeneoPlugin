@@ -17,3 +17,5 @@ Sylius\Component\Product\Model\ProductOption:
         code: 'length'
     sellable:
         code: 'sellable'
+    product_option_of_wrong_type:
+        code: 'product_option_of_wrong_type'
