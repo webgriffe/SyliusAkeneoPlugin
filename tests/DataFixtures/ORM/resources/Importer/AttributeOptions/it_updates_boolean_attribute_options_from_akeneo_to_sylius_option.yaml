@@ -1,0 +1,54 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductOption:
+    sellable:
+        code: 'sellable'
+        translations:
+            - '@sellable_it_IT'
+            - '@sellable_en_US'
+
+Sylius\Component\Product\Model\ProductOptionTranslation:
+    sellable_en_US:
+        name: 'Enabled'
+        locale: 'en_US'
+        translatable: '@sellable'
+    sellable_it_IT:
+        name: 'Abilitato'
+        locale: 'it_IT'
+        translatable: '@sellable'
+
+Sylius\Component\Product\Model\ProductOptionValue:
+    sellable_yes:
+        code: 'sellable_1'
+        option: '@sellable'
+        translations:
+            - '@sellable_yes_it_IT'
+            - '@sellable_yes_en_US'
+    sellable_no:
+        code: 'sellable_'
+        option: '@sellable'
+        translations:
+            - '@sellable_no_it_IT'
+            - '@sellable_no_en_US'
+
+Sylius\Component\Product\Model\ProductOptionValueTranslation:
+    sellable_yes_it_IT:
+        value: 'S'
+        locale: 'it_IT'
+        translatable: '@sellable_yes'
+    sellable_yes_en_US:
+        value: 'S'
+        locale: 'en_US'
+        translatable: '@sellable_yes'
+    sellable_no_it_IT:
+        value: 'N'
+        locale: 'it_IT'
+        translatable: '@sellable_no'
+    sellable_no_en_US:
+        value: 'N'
+        locale: 'en_US'
+        translatable: '@sellable_no'

@@ -240,6 +240,68 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
+    public function it_imports_boolean_attribute_options_from_akeneo_to_sylius_option(): void
+    {
+        $this->importer->import('sellable');
+
+        $option = $this->optionRepository->findOneBy(['code' => 'sellable']);
+        $this->assertInstanceOf(ProductOptionInterface::class, $option);
+        $this->assertEquals('Sellable', $option->getTranslation('en_US')->getName());
+        $this->assertEquals('Vendibile', $option->getTranslation('it_IT')->getName());
+        $optionValues = $option->getValues();
+        $this->assertCount(2, $optionValues);
+
+        $yesOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'sellable_1');
+        $this->assertCount(1, $yesOptionValues);
+        $yesOptionValue = $yesOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $yesOptionValue);
+        $this->assertCount(2, $yesOptionValue->getTranslations());
+        $this->assertEquals('Yes', $yesOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('Sì', $yesOptionValue->getTranslation('it_IT')->getValue());
+
+        $noOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'sellable_');
+        $this->assertCount(1, $noOptionValues);
+        $noOptionValue = $noOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $noOptionValue);
+        $this->assertCount(2, $noOptionValue->getTranslations());
+        $this->assertEquals('No', $noOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('No', $noOptionValue->getTranslation('it_IT')->getValue());
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_boolean_attribute_options_from_akeneo_to_sylius_option(): void
+    {
+        $this->importer->import('sellable');
+
+        $option = $this->optionRepository->findOneBy(['code' => 'sellable']);
+        $this->assertInstanceOf(ProductOptionInterface::class, $option);
+        $this->assertEquals('Sellable', $option->getTranslation('en_US')->getName());
+        $this->assertEquals('Vendibile', $option->getTranslation('it_IT')->getName());
+        $optionValues = $option->getValues();
+        $this->assertCount(2, $optionValues);
+
+        $yesOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'sellable_1');
+        $this->assertCount(1, $yesOptionValues);
+        $yesOptionValue = $yesOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $yesOptionValue);
+        $this->assertCount(2, $yesOptionValue->getTranslations());
+        $this->assertEquals('Yes', $yesOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('Sì', $yesOptionValue->getTranslation('it_IT')->getValue());
+
+        $noOptionValues = $optionValues->filter(static fn (ProductOptionValueInterface $optionValue): bool => $optionValue->getCode() === 'sellable_');
+        $this->assertCount(1, $noOptionValues);
+        $noOptionValue = $noOptionValues->first();
+        $this->assertInstanceOf(ProductOptionValueInterface::class, $noOptionValue);
+        $this->assertCount(2, $noOptionValue->getTranslations());
+        $this->assertEquals('No', $noOptionValue->getTranslation('en_US')->getValue());
+        $this->assertEquals('No', $noOptionValue->getTranslation('it_IT')->getValue());
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_all_boolean_metric_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes_or_sylius_product_options(): void
     {
         $identifiers = $this->importer->getIdentifiersModifiedSince(new DateTime());

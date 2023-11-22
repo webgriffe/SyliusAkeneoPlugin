@@ -137,6 +137,7 @@
             <argument type="service" id="sylius.factory.product_option_value_translation" />
             <argument type="service" id="sylius.factory.product_option_value" />
             <argument type="service" id="sylius.factory.product_option_translation" />
+            <argument type="service" id="translator" />
             <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
 
