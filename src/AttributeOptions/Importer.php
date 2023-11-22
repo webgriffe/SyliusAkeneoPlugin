@@ -40,6 +40,8 @@ final class Importer implements ImporterInterface
 
     private const BOOLEAN_TYPE = 'pim_catalog_boolean';
 
+    private const METRIC_TYPE = 'pim_catalog_metric';
+
     /**
      * @param RepositoryInterface<ProductAttributeInterface> $attributeRepository
      * @param ?FactoryInterface<ProductOptionValueTranslationInterface> $productOptionValueTranslationFactory
@@ -199,6 +201,9 @@ final class Importer implements ImporterInterface
         $akeneoAttributeCodes = [];
         /** @var AkeneoAttribute $akeneoAttribute */
         foreach ($akeneoAttributes as $akeneoAttribute) {
+            if (!in_array($akeneoAttribute['type'], [self::SIMPLESELECT_TYPE, self::MULTISELECT_TYPE, self::BOOLEAN_TYPE, self::METRIC_TYPE], true)) {
+                continue;
+            }
             $akeneoAttributeCodes[] = $akeneoAttribute['code'];
         }
         $syliusOptions = $productOptionRepository->findByCodes($akeneoAttributeCodes);
@@ -256,14 +261,7 @@ final class Importer implements ImporterInterface
         if ($akeneoAttribute['type'] === self::BOOLEAN_TYPE) {
             foreach ([true, false] as $booleanValue) {
                 $optionValueCode = $this->getSyliusProductOptionValueCode($attributeCode, (string) $booleanValue);
-                $productOptionValue = null;
-                foreach ($option->getValues() as $value) {
-                    if ($value->getCode() === $optionValueCode) {
-                        $productOptionValue = $value;
-
-                        break;
-                    }
-                }
+                $productOptionValue = $this->getProductOptionValueFromOption($option, $optionValueCode);
                 if ($productOptionValue === null) {
                     $productOptionValue = $this->createNewProductOptionValue($optionValueCode, $option);
                 }
@@ -276,14 +274,7 @@ final class Importer implements ImporterInterface
 
         foreach ($attributeOptions as $attributeOption) {
             $optionValueCode = $this->getSyliusProductOptionValueCode($attributeCode, $attributeOption['code']);
-            $optionValue = null;
-            foreach ($option->getValues() as $value) {
-                if ($value->getCode() === $optionValueCode) {
-                    $optionValue = $value;
-
-                    break;
-                }
-            }
+            $optionValue = $this->getProductOptionValueFromOption($option, $optionValueCode);
             if ($optionValue === null) {
                 $optionValue = $this->createNewProductOptionValue($optionValueCode, $option);
             }
@@ -379,5 +370,21 @@ final class Importer implements ImporterInterface
         Assert::isInstanceOf($translator, TranslatorInterface::class);
 
         return $translator;
+    }
+
+    private function getProductOptionValueFromOption(
+        ProductOptionInterface $option,
+        string $optionValueCode,
+    ): ?ProductOptionValueInterface {
+        $productOptionValue = null;
+        foreach ($option->getValues() as $value) {
+            if ($value->getCode() === $optionValueCode) {
+                $productOptionValue = $value;
+
+                break;
+            }
+        }
+
+        return $productOptionValue;
     }
 }
