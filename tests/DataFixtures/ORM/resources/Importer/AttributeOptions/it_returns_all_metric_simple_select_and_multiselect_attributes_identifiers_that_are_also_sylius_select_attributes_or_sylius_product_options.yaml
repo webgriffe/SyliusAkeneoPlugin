@@ -13,3 +13,5 @@ Sylius\Component\Product\Model\ProductAttribute:
 Sylius\Component\Product\Model\ProductOption:
     size:
         code: 'size'
+    length:
+        code: 'length'
