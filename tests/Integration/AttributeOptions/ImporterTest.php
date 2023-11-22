@@ -122,7 +122,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_import_all_options_from_akeneo_to_sylius_attribute_retaining_sort_order(): void
+    public function it_imports_all_options_from_akeneo_to_sylius_attribute_retaining_sort_order(): void
     {
         $this->importer->import('material');
 
@@ -145,7 +145,7 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_import_all_select_attribute_options_from_akeneo_to_sylius_option(): void
+    public function it_imports_all_select_attribute_options_from_akeneo_to_sylius_option(): void
     {
         $this->importer->import('size');
 
