@@ -46,7 +46,7 @@ trait ProductOptionValueHelperTrait
     /**
      * @param AkeneoAttributeOption $akeneoAttributeOption
      */
-    private function importProductOptionValueTranslations(
+    private function importSelectProductOptionValueTranslations(
         array $akeneoAttributeOption,
         ProductOptionValueInterface $productOptionValue,
     ): void {
