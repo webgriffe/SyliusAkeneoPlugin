@@ -287,7 +287,7 @@ final class Importer implements ImporterInterface
             if ($optionValue === null) {
                 $optionValue = $this->createNewProductOptionValue($optionValueCode, $option);
             }
-            $this->importProductOptionValueTranslations($attributeOption, $optionValue);
+            $this->importSelectProductOptionValueTranslations($attributeOption, $optionValue);
         }
     }
 

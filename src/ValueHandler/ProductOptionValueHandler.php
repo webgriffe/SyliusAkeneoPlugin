@@ -163,7 +163,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
             throw $e;
         }
 
-        $this->importProductOptionValueTranslations($akeneoAttributeOption, $optionValue);
+        $this->importSelectProductOptionValueTranslations($akeneoAttributeOption, $optionValue);
         if (!$productVariant->hasOptionValue($optionValue)) {
             $productVariant->addOptionValue($optionValue);
         }
