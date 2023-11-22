@@ -94,6 +94,7 @@ class ProductOptionValueHandlerSpec extends ObjectBehavior
         $englishProductOptionValueTranslation->getLocale()->willReturn('en_US');
         $translationLocaleProvider->getDefinedLocalesCodes()->willReturn(['en_US', 'it_IT']);
 
+        $existentProductOptionValue->getCode()->willReturn('already-existing');
         $productOptionValueRepository->findOneBy(['code' => self::OPTION_CODE . '_' . self::VALUE_CODE])->willReturn($existentProductOptionValue);
 
         $this->beConstructedWith(
