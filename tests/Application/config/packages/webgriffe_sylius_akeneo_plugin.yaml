@@ -8,6 +8,8 @@ webgriffe_sylius_akeneo:
         password: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_PASSWORD)%'
         client_id: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_CLIENT_ID)%'
         secret: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_SECRET)%'
+        
+    webhook_secret: '%env(WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_WEBHOOK_SECRET)%'
     
     value_handlers:
         product:

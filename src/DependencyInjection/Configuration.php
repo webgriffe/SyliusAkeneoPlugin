@@ -33,6 +33,9 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
 
+                ->scalarNode('webhook_secret')
+                ->end()
+
                 ->arrayNode('value_handlers')
                     ->children()
                         ->arrayNode('product')

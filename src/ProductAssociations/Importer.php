@@ -25,7 +25,7 @@ use Webmozart\Assert\Assert;
 
 final class Importer implements ImporterInterface
 {
-    private const AKENEO_ENTITY = 'ProductAssociations';
+    public const AKENEO_ENTITY = 'ProductAssociations';
 
     /**
      * @param RepositoryInterface<ProductAssociationInterface> $productAssociationRepository

@@ -61,6 +61,16 @@
             </call>
         </service>
 
+        <service id="webgriffe_sylius_akeneo.controller.webhook" class="Webgriffe\SyliusAkeneoPlugin\Controller\WebhookController" >
+            <tag name="controller.service_arguments"/>
+            <argument type="service" id="monolog.logger.webgriffe_sylius_akeneo_plugin" />
+            <argument type="service" id="webgriffe_sylius_akeneo.command_bus" />
+            <argument type="string">%webgriffe_sylius_akeneo.webhook_secret%</argument>
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
         <service id="webgriffe_sylius_akeneo.temporary_file_manager" class="Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager">
             <argument type="service" id="filesystem" />
             <argument type="service">
