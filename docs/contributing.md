@@ -1,7 +1,7 @@
 ---
 title: Contributing
 layout: page
-nav_order: 6
+nav_order: 7
 ---
 
 # Contributing
@@ -175,6 +175,7 @@ WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_CLIENT_ID=SAMPLE
 WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_SECRET=SAMPLE
 WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_USERNAME=SAMPLE
 WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_PASSWORD=SAMPLE
+WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_WEBHOOK_SECRET=WEBHOOK_SECRET
 ```
 
 Now, if you want you can import products from Akeneo to Sylius by launching the command:

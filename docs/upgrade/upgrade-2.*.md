@@ -1,9 +1,14 @@
 ---
-title: Upgrade to 2.0
+title: Upgrade to 2.*
 layout: page
 nav_order: 0
 parent: Upgrade
 ---
+
+# Upgrade from `v2.2.0` to `v2.3.0`
+
+The v2.3.0 version introduces the support for webhooks. To enable check the new documentation [here](../webhook.html).
+It is highly recommended to remove the import command that runs every minute from your crontab and use the webhook instead.
 
 # Upgrade from `v1.17.0` to `v2.0.0`
 

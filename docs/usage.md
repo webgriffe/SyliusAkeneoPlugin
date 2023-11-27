@@ -471,6 +471,9 @@ This will:
 * Import, every minute, all products that have been modified since the last execution, along with their associations
 * Reconcile Akeneo deleted products every 6 hours
 
+> *NB*: The line that imports products and product associations every minute should be added only if you do not use the
+> webhook feature (see next chapter). Otherwise, the products will be imported twice.
+
 Import and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which
 prevents running them if another instance of the same command is already running.
 {% endraw %}
