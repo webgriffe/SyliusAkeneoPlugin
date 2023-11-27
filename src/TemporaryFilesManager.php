@@ -27,6 +27,9 @@ final class TemporaryFilesManager implements TemporaryFilesManagerInterface
 
     public function deleteAllTemporaryFiles(string $fileIdentifier): void
     {
+        if (!$this->filesystem->exists($this->temporaryDirectory)) {
+            return;
+        }
         $tempFiles = $this->finder->in($this->temporaryDirectory)->depth('== 0')->files()->name(
             '/^' . str_replace('*', '\*', $this->getFilePrefix($fileIdentifier)) . '[\w]+$/',
         );
