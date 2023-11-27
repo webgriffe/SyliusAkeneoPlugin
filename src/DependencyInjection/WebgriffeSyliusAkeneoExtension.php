@@ -115,6 +115,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
     public function load(array $configs, ContainerBuilder $container): void
     {
+        /** @var array{resources: array|mixed, api_client: array<array-key, ?string>, webhook: array{secret: ?string}, value_handlers: array} $config */
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
 
@@ -254,6 +255,9 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $container->setParameter($parameterKey, sys_get_temp_dir());
     }
 
+    /**
+     * @param array{secret: ?string} $webhook
+     */
     private function registerWebhookParameters(array $webhook, ContainerBuilder $container): void
     {
         $container->setParameter('webgriffe_sylius_akeneo.webhook.secret', $webhook['secret']);

@@ -82,8 +82,13 @@ final class WebhookController extends AbstractController
             return new Response('', Response::HTTP_UNAUTHORIZED);
         }
 
+        /**
+         * @psalm-suppress UnnecessaryVarAnnotation
+         *
+         * @var string|resource $body on Symfony 5 the annotation is resource|string
+         */
         $body = $request->getContent();
-        $expectedSignature = hash_hmac('sha256', $timestamp . '.' . $body, $this->secret);
+        $expectedSignature = hash_hmac('sha256', $timestamp . '.' . (string) $body, $this->secret);
         if (false === hash_equals($signature, $expectedSignature)) {
             $this->logger->debug('The hash does not match! The request is not from Akeneo or the secret is wrong.');
 
@@ -100,7 +105,7 @@ final class WebhookController extends AbstractController
          *
          * @var AkeneoEvents $akeneoEvents
          */
-        $akeneoEvents = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $akeneoEvents = json_decode((string) $body, true, 512, JSON_THROW_ON_ERROR);
 
         foreach ($akeneoEvents['events'] as $akeneoEvent) {
             $this->logger->debug(sprintf('Received event %s with id "%s"', $akeneoEvent['action'], $akeneoEvent['event_id']));
