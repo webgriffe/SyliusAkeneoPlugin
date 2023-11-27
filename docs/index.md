@@ -31,6 +31,7 @@ new features that this plugin could add. So, let's start! 🚀
 - [Installation](installation.html)
 - [Configuration](configuration.html)
 - [Usage](usage.html)
+- [Webhook](webhook.html)
 - [Architecture & customization](architecture_and_customization.html)
 - [Contributing](contributing.html)
 - [Upgrade guide](upgrade.html)

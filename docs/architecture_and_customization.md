@@ -1,7 +1,7 @@
 ---
 title: Architecture & customization
 layout: page
-nav_order: 5
+nav_order: 6
 ---
 
 # Architecture & customization
@@ -9,12 +9,13 @@ nav_order: 5
 > This plugin makes use of [Symfony Messenger](https://symfony.com/doc/current/messenger.html) component. It is highly
 > recommended to have a minimum knowledge of these component to understand how this integration works.
 
-This plugin has basically two entry points:
+This plugin has basically three entry points:
 
 * The UI admin import button, this will import only products
 * The Import CLI command, this will import both product, product associations and attribute options
+* The Webhook controller, this will import product and product associations when created/updated on Akeneo
 
-Both this entry points deals to identify entities to import from Akeneo. When they have collected them they dispatch
+These entry points deals to identify entities to import from Akeneo. When they have collected them they dispatch
 an `Webgriffe\SyliusAkeneoPlugin\Message\ItemImport` message on the messenger default bus.
 By default, in the configuration this message is handled by the main bus, the same bus used as default by Sylius for
 catalog promotions. This means that, if you have configured the main bus to run synchronously the import will be
