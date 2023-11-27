@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Controller;
 
+use const JSON_THROW_ON_ERROR;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -76,28 +77,34 @@ final class WebhookController extends AbstractController
         $timestamp = $request->headers->get('x-akeneo-request-timestamp');
         $signature = $request->headers->get('x-akeneo-request-signature');
         if (null === $timestamp || null === $signature) {
+            $this->logger->debug('The hash does not exists on the request! The request is not from Akeneo.');
+
             return new Response('', Response::HTTP_UNAUTHORIZED);
         }
 
         $body = $request->getContent();
         $expectedSignature = hash_hmac('sha256', $timestamp . '.' . $body, $this->secret);
         if (false === hash_equals($signature, $expectedSignature)) {
+            $this->logger->debug('The hash does not match! The request is not from Akeneo or the secret is wrong.');
+
             return new Response('', Response::HTTP_UNAUTHORIZED);
         }
         if (time() - (int) $timestamp > 300) {
+            $this->logger->debug('The request is too old (> 5min)');
+
             throw new RuntimeException('Request is too old (> 5min)');
         }
-
-        $this->logger->debug($body);
 
         /**
          * @TODO Could this be improved by using serializer? Is it necessary or overwork?
          *
          * @var AkeneoEvents $akeneoEvents
          */
-        $akeneoEvents = json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
+        $akeneoEvents = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         foreach ($akeneoEvents['events'] as $akeneoEvent) {
+            $this->logger->debug(sprintf('Received event %s with id "%s"', $akeneoEvent['action'], $akeneoEvent['event_id']));
+
             $resource = $akeneoEvent['data']['resource'];
             if (array_key_exists('identifier', $resource)) {
                 $productCode = $resource['identifier'];
