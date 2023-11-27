@@ -33,7 +33,11 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
 
-                ->scalarNode('webhook_secret')
+                ->arrayNode('webhook')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('secret')->isRequired()->cannotBeEmpty()->defaultNull()->end()
+                    ->end()
                 ->end()
 
                 ->arrayNode('value_handlers')

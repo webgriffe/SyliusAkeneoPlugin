@@ -122,7 +122,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $this->registerResources('webgriffe_sylius_akeneo', 'doctrine/orm', $config['resources'], $container);
 
         $this->registerApiClientParameters($config['api_client'], $container);
-        $this->registerWebhookParameters($config['webhook_secret'], $container);
+        $this->registerWebhookParameters($config['webhook'], $container);
 
         $loader->load('services.xml');
 
@@ -254,8 +254,8 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $container->setParameter($parameterKey, sys_get_temp_dir());
     }
 
-    private function registerWebhookParameters(string $webhookSecret, ContainerBuilder $container): void
+    private function registerWebhookParameters(array $webhook, ContainerBuilder $container): void
     {
-        $container->setParameter('webgriffe_sylius_akeneo.webhook_secret', $webhookSecret);
+        $container->setParameter('webgriffe_sylius_akeneo.webhook.secret', $webhook['secret']);
     }
 }
