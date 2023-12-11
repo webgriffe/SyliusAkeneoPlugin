@@ -100,6 +100,12 @@ final class WebhookController extends AbstractController
             throw new RuntimeException('Request is too old (> 5min)');
         }
 
+        if ($body === '') {
+            $this->logger->debug('The request body is empty, probably this request is a test from Event Subscription page on Akeneo.');
+
+            return new Response();
+        }
+
         /**
          * @TODO Could this be improved by using serializer? Is it necessary or overwork?
          *
