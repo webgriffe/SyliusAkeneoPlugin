@@ -8,7 +8,9 @@ use Fidry\AliceDataFixtures\Persistence\PurgeMode;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductApi;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryProductModelApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
+use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\ProductModel;
 use Webgriffe\SyliusAkeneoPlugin\Controller\WebhookController;
 use Webgriffe\SyliusAkeneoPlugin\Respository\ItemImportResultRepositoryInterface;
 
@@ -29,6 +31,11 @@ final class WebhookControllerTest extends KernelTestCase
         $fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
 
         InMemoryProductApi::addResource(Product::create('PRODUCT'));
+
+        InMemoryProductModelApi::addResource(ProductModel::create('PRODUCT_MODEL', [
+            'family' => 'family',
+            'family_variant' => 'family_variant',
+        ]));
     }
 
     /** @test */
@@ -58,6 +65,35 @@ final class WebhookControllerTest extends KernelTestCase
         self::assertCount(2, $itemImportResults);
         self::assertEquals('Successfully imported item "Product" with identifier "PRODUCT" from Akeneo.', $itemImportResults[0]->getMessage());
         self::assertEquals('Successfully imported item "ProductAssociations" with identifier "PRODUCT" from Akeneo.', $itemImportResults[1]->getMessage());
+    }
+
+    /** @test */
+    public function it_imports_created_product_models_on_akeneo(): void
+    {
+        $body = ['events' => [
+            [
+                'action' => 'product_model.created',
+                'event_id' => '1',
+                'data' => [
+                    'resource' => [
+                        'code' => 'PRODUCT_MODEL',
+                    ],
+                ],
+            ],
+        ]];
+        $request = new Request([], [], [], [], [], [], json_encode($body, \JSON_THROW_ON_ERROR));
+
+        $timestamp = (string) time();
+        $signature = hash_hmac('sha256', $timestamp . '.' . json_encode($body, \JSON_THROW_ON_ERROR), '');
+
+        $request->headers->set('x-akeneo-request-timestamp', $timestamp);
+        $request->headers->set('x-akeneo-request-signature', $signature);
+        $this->webhookController->postAction($request);
+
+        $itemImportResults = $this->itemImportResultRepository->findAll();
+        self::assertCount(2, $itemImportResults);
+        self::assertEquals('Successfully imported item "Product" with identifier "PRODUCT" from Akeneo.', $itemImportResults[0]->getMessage());
+        self::assertEquals('Successfully imported item "ProductModel" with identifier "PRODUCT_MODEL" from Akeneo.', $itemImportResults[1]->getMessage());
     }
 
     /** @test */
