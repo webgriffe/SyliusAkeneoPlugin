@@ -166,6 +166,13 @@ app.my_custom_value_handler:
         - { name: 'webgriffe_sylius_akeneo.product.value_handler', priority: 42 }
 ```
 
+### Product models importer
+
+Another provided importer is the **product models
+importer** (`Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer`). This importer imports the Akeneo product models
+to the corresponding Sylius products and product variants. Basically, it dispatch an `ItemImport` message for each
+product, on Akeneo, belonging to the product model. So it uses the same logic of the product importer described above.
+
 ### Product associations importer
 
 Another provided importer is the **product associations

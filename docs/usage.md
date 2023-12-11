@@ -460,7 +460,7 @@ To make all importers and other plugin features work automatically the following
 
 ```
 0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="AttributeOptions"
-*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductAssociations"
+*   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductModel" --importer="ProductAssociations"
 0   */6 *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
 0   0   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:cleanup-item-import-results
 ```
@@ -468,10 +468,10 @@ To make all importers and other plugin features work automatically the following
 This will:
 
 * Import the update of all attribute options every hour
-* Import, every minute, all products that have been modified since the last execution, along with their associations
+* Import, every minute, all products and product models that have been modified since the last execution, along with their associations
 * Reconcile Akeneo deleted products every 6 hours
 
-> *NB*: The line that imports products and product associations every minute should be added only if you do not use the
+> *NB*: The line that imports products, product models and product associations every minute should be added only if you do not use the
 > webhook feature (see next chapter). Otherwise, the products will be imported twice.
 
 Import and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which

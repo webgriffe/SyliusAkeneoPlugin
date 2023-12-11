@@ -5,6 +5,16 @@ nav_order: 0
 parent: Upgrade
 ---
 
+# Upgrade from `v2.3.0` to `v2.4.0`
+
+The v2.4.0 version introduces the Product Model importer. If you are using the webhook no changes are requested as it will be automatically enqueued on every update.
+If you are using the cronjob, you have to add the `--importer="ProductModel"` option to the command that imports every minute:
+
+```git
+- *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductAssociations"
++ *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductModel" --importer="ProductAssociations"
+```
+
 # Upgrade from `v2.2.0` to `v2.3.0`
 
 The v2.3.0 version introduces the support for webhooks. To enable check the new documentation [here](../webhook.html).
