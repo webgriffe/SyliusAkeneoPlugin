@@ -14,6 +14,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
 use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
+use Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer as ProductModelImporter;
 
 /**
  * @psalm-type AkeneoEventProduct = array{
@@ -134,6 +135,17 @@ final class WebhookController extends AbstractController
                 $this->messageBus->dispatch(new ItemImport(
                     ProductAssociationsImporter::AKENEO_ENTITY,
                     $productCode,
+                ));
+            }
+            if (array_key_exists('code', $resource)) {
+                $productModelCode = $resource['code'];
+                $this->logger->debug(sprintf(
+                    'Dispatching product model import message for %s',
+                    $productModelCode,
+                ));
+                $this->messageBus->dispatch(new ItemImport(
+                    ProductModelImporter::AKENEO_ENTITY,
+                    $productModelCode,
                 ));
             }
         }
