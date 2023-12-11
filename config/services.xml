@@ -182,5 +182,12 @@
             <tag name="kernel.event_listener" event="sylius.menu.admin.main" method="addAdminMenuItems" />
         </service>
 
+        <service id="webgriffe_sylius_akeneo.product_model.importer" class="Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer">
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="webgriffe_sylius_akeneo.command_bus" />
+            <tag name="webgriffe_sylius_akeneo.importer" />
+        </service>
+
     </services>
 </container>
