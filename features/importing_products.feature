@@ -84,9 +84,7 @@ Feature: Importing products
         And I am logged in as an administrator
         When I browse products
         And I schedule an Akeneo PIM import for the "Model Braided Hat" product
-        Then I should be notified that "BRAIDED_HAT_S" has been successfully enqueued
-        And I should be notified that "BRAIDED_HAT_M" has been successfully enqueued
-        And I should be notified that "BRAIDED_HAT_L" has been successfully enqueued
+        Then I should be notified that "MODEL_BRAIDED_HAT" has been successfully enqueued
         And the product "MODEL_BRAIDED_HAT" should exist
         And the product variant "BRAIDED_HAT_S" of product "MODEL_BRAIDED_HAT" should exist
         And the product variant "BRAIDED_HAT_M" of product "MODEL_BRAIDED_HAT" should exist
