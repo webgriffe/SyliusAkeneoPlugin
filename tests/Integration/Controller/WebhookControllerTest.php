@@ -86,4 +86,19 @@ final class WebhookControllerTest extends KernelTestCase
         $itemImportResults = $this->itemImportResultRepository->findAll();
         self::assertCount(0, $itemImportResults);
     }
+
+    /** @test */
+    public function it_accepts_test_webhook_from_akeneo(): void
+    {
+        $request = new Request([], [], [], [], [], [], null);
+
+        $timestamp = (string) time();
+        $signature = hash_hmac('sha256', $timestamp . '.', '');
+
+        $request->headers->set('x-akeneo-request-timestamp', $timestamp);
+        $request->headers->set('x-akeneo-request-signature', $signature);
+        $response = $this->webhookController->postAction($request);
+
+        self::assertEquals(200, $response->getStatusCode());
+    }
 }
