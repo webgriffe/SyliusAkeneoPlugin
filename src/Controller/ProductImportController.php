@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
+use Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer;
 use Webmozart\Assert\Assert;
 
 final class ProductImportController extends AbstractController
@@ -30,28 +31,18 @@ final class ProductImportController extends AbstractController
         if ($product === null) {
             throw new NotFoundHttpException('Product not found');
         }
+        $productCode = $product->getCode();
+        Assert::string($productCode);
+        $this->messageBus->dispatch(new ItemImport(
+            Importer::AKENEO_ENTITY,
+            $productCode,
+        ));
 
-        $enqueued = [];
-        foreach ($product->getVariants() as $productVariant) {
-            $productVariantCode = $productVariant->getCode();
-            Assert::notNull($productVariantCode);
+        $this->addFlash(
+            'success',
+            $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['{code}' => $productCode]),
+        );
 
-            $queueItem = new ItemImport(
-                'Product',
-                $productVariantCode,
-            );
-            $this->messageBus->dispatch($queueItem);
-
-            $enqueued[] = $productVariantCode;
-        }
-
-        foreach ($enqueued as $code) {
-            $this->addFlash(
-                'success',
-                $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['{code}' => $code]),
-            );
-        }
-
-        return $this->redirectToRoute('sylius_admin_product_index');
+        return $this->redirectToRoute('webgriffe_sylius_akeneo_admin_item_import_result_index');
     }
 }
