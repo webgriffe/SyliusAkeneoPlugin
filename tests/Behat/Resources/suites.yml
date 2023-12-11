@@ -40,6 +40,25 @@ default:
             filters:
                 tags: "@importing_products && @ui"
 
+        cli_importing_product_models:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+
+                - sylius.behat.context.setup.product
+                - sylius.behat.context.setup.channel
+                - sylius.behat.context.setup.locale
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product_model
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_family_variant
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute
+
+                - webgriffe_sylius_akeneo.behat.context.db.product
+                - webgriffe_sylius_akeneo.behat.context.cli.import_command
+                - webgriffe_sylius_akeneo.behat.context.system.filesystem
+                - webgriffe_sylius_akeneo.behat.context.db.log
+            filters:
+                tags: "@importing_product_models && @cli"
+
         cli_importing_product_associations:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
