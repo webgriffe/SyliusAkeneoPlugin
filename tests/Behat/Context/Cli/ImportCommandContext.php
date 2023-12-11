@@ -128,6 +128,7 @@ final class ImportCommandContext implements Context
     /**
      * @When I import all from Akeneo
      * @When I import all "ProductAssociations" from Akeneo
+     * @When I import all "ProductModels" from Akeneo
      */
     public function iImportAllItemsForAllImporters(?string $importer = null): void
     {
