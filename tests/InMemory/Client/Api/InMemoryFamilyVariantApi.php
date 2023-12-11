@@ -24,6 +24,11 @@ final class InMemoryFamilyVariantApi implements FamilyVariantApiInterface
         self::$familyVariants[$familyCode][$familyVariant->code] = $familyVariant;
     }
 
+    public static function clear(): void
+    {
+        self::$familyVariants = [];
+    }
+
     public function get($familyCode, $familyVariantCode): array
     {
         if (!array_key_exists($familyCode, self::$familyVariants)) {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\ProductModel;
 
 use DateTime;
-use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Fidry\AliceDataFixtures\Persistence\PurgeMode;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ProductInterface;
@@ -13,7 +12,6 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Filesystem\Filesystem;
 use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeApi;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\InMemoryAttributeOptionApi;
@@ -44,18 +42,6 @@ final class ImporterTest extends KernelTestCase
 
     private ChannelRepositoryInterface $channelRepository;
 
-    private PurgerLoader $fixtureLoader;
-
-    private Filesystem $filesystem;
-
-    private Family $tShirtFamily;
-
-    private AttributeOption $sizeLAttributeOption;
-
-    private ProductModel $starWarsTShirtProductModel;
-
-    private Product $startWarsTShirtMAkeneoProduct;
-
     protected function setUp(): void
     {
         self::bootKernel();
@@ -63,18 +49,24 @@ final class ImporterTest extends KernelTestCase
         $this->productRepository = self::getContainer()->get('sylius.repository.product');
         $this->productVariantRepository = self::getContainer()->get('sylius.repository.product_variant');
         $this->channelRepository = self::getContainer()->get('sylius.repository.channel');
-        $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
-        $this->filesystem = self::getContainer()->get('filesystem');
+        $fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
+        $filesystem = self::getContainer()->get('filesystem');
 
-        $this->tShirtFamily = Family::create('t-shirt', [
+        /**
+         * @TODO: Move this methods to a generic class on some events on PHPUnit?
+         */
+        InMemoryFamilyApi::clear();
+        InMemoryAttributeApi::clear();
+        InMemoryAttributeOptionApi::clear();
+        InMemoryFamilyVariantApi::clear();
+        InMemoryProductModelApi::clear();
+        InMemoryProductApi::clear();
+
+        $tShirtFamily = Family::create('t-shirt', [
             'attributes' => ['variation_image', 'supplier'],
         ]);
-        InMemoryFamilyApi::addResource($this->tShirtFamily);
+        InMemoryFamilyApi::addResource($tShirtFamily);
 
-        $attachmentAttribute = Attribute::create('attachment', [
-            'type' => AttributeType::FILE,
-        ]);
-        InMemoryAttributeApi::addResource($attachmentAttribute);
         $skuAttribute = Attribute::create('sku', [
             'type' => AttributeType::TEXT,
             'labels' => ['en_US' => 'SKU'],
@@ -91,11 +83,6 @@ final class ImporterTest extends KernelTestCase
         ]);
         InMemoryAttributeOptionApi::addResource($sizeMAttributeOption);
 
-        $this->sizeLAttributeOption = AttributeOption::create($this->sizeAttribute->code, 'l', 0, [
-            'en_US' => 'L', 'it_IT' => 'L',
-        ]);
-        InMemoryAttributeOptionApi::addResource($this->sizeLAttributeOption);
-
         $tShirtBySizeFamilyVariant = FamilyVariant::create('t-shirt_by_size', [
             'variant_attribute_sets' => [
                 [
@@ -105,17 +92,17 @@ final class ImporterTest extends KernelTestCase
                 ],
             ],
         ]);
-        InMemoryFamilyVariantApi::addResource($this->tShirtFamily->code, $tShirtBySizeFamilyVariant);
+        InMemoryFamilyVariantApi::addResource($tShirtFamily->code, $tShirtBySizeFamilyVariant);
 
-        $this->starWarsTShirtProductModel = ProductModel::create(self::STAR_WARS_TSHIRT_MODEL_CODE, [
-            'family' => $this->tShirtFamily->code,
+        $starWarsTShirtProductModel = ProductModel::create(self::STAR_WARS_TSHIRT_MODEL_CODE, [
+            'family' => $tShirtFamily->code,
             'family_variant' => $tShirtBySizeFamilyVariant->code,
         ]);
-        InMemoryProductModelApi::addResource($this->starWarsTShirtProductModel);
+        InMemoryProductModelApi::addResource($starWarsTShirtProductModel);
 
-        $this->startWarsTShirtMAkeneoProduct = Product::create(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, [
-            'family' => $this->tShirtFamily->code,
-            'parent' => $this->starWarsTShirtProductModel->code,
+        $startWarsTShirtMAkeneoProduct = Product::create(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, [
+            'family' => $tShirtFamily->code,
+            'parent' => $starWarsTShirtProductModel->code,
             'values' => [
                 $this->sizeAttribute->code => [
                     [
@@ -126,21 +113,21 @@ final class ImporterTest extends KernelTestCase
                 ],
             ],
         ]);
-        InMemoryProductApi::addResource($this->startWarsTShirtMAkeneoProduct);
+        InMemoryProductApi::addResource($startWarsTShirtMAkeneoProduct);
 
         $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/ProductModel/' . $this->getName() . '.yaml';
         if (file_exists($ORMResourceFixturePath)) {
-            $this->fixtureLoader->load(
+            $fixtureLoader->load(
                 [$ORMResourceFixturePath],
                 [],
                 [],
                 PurgeMode::createDeleteMode(),
             );
         } else {
-            $this->fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
+            $fixtureLoader->load([], [], [], PurgeMode::createDeleteMode());
         }
 
-        $this->filesystem->remove(
+        $filesystem->remove(
             self::getContainer()->getParameter('sylius_core.public_dir') . '/media/',
         );
     }

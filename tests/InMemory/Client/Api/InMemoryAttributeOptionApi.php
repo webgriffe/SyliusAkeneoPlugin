@@ -25,6 +25,11 @@ final class InMemoryAttributeOptionApi implements AttributeOptionApiInterface
         self::$attributeOptions[$attributeOption->attribute][$attributeOption->code] = $attributeOption;
     }
 
+    public static function clear(): void
+    {
+        self::$attributeOptions = [];
+    }
+
     public function get($attributeCode, $code): array
     {
         if (!array_key_exists($attributeCode, self::$attributeOptions)) {

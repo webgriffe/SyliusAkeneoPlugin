@@ -36,6 +36,12 @@ final class ImporterTest extends KernelTestCase
         $this->attributeRepository = self::getContainer()->get('sylius.repository.product_attribute');
         $this->optionRepository = self::getContainer()->get('sylius.repository.product_option');
 
+        /**
+         * @TODO: Move this methods to a generic class on some events on PHPUnit?
+         */
+        InMemoryAttributeApi::clear();
+        InMemoryAttributeOptionApi::clear();
+
         InMemoryAttributeApi::addResource(new Attribute('material', AttributeType::SIMPLE_SELECT));
         InMemoryAttributeApi::addResource(new Attribute('text_attribute', AttributeType::TEXT));
         InMemoryAttributeApi::addResource(Attribute::create('size', [
