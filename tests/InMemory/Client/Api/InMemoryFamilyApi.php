@@ -19,6 +19,11 @@ final class InMemoryFamilyApi extends InMemoryApi implements FamilyApiInterface
         return Family::class;
     }
 
+    public static function clear(): void
+    {
+        self::$families = [];
+    }
+
     public function getResources(): array
     {
         return self::$families;

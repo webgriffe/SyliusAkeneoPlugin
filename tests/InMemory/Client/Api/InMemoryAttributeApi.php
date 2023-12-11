@@ -19,6 +19,11 @@ final class InMemoryAttributeApi extends InMemoryApi implements AttributeApiInte
         return Attribute::class;
     }
 
+    public static function clear(): void
+    {
+        self::$attributes = [];
+    }
+
     public function getResources(): array
     {
         return self::$attributes;

@@ -70,6 +70,16 @@ final class ImporterTest extends KernelTestCase
         $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
         $this->filesystem = self::getContainer()->get('filesystem');
 
+        /**
+         * @TODO: Move this methods to a generic class on some events on PHPUnit?
+         */
+        InMemoryFamilyApi::clear();
+        InMemoryAttributeApi::clear();
+        InMemoryAttributeOptionApi::clear();
+        InMemoryFamilyVariantApi::clear();
+        InMemoryProductModelApi::clear();
+        InMemoryProductApi::clear();
+
         $this->tShirtFamily = Family::create('t-shirt', [
             'attributes' => ['variation_image', 'supplier'],
         ]);

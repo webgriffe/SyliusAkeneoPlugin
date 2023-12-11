@@ -37,6 +37,8 @@ abstract class InMemoryApi implements
      */
     abstract public function getResources(): array;
 
+    abstract public static function clear(): void;
+
     /** @return class-string */
     abstract protected function getResourceClass(): string;
 

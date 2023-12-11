@@ -36,6 +36,11 @@ final class ImporterTest extends KernelTestCase
         $this->productRepository = self::getContainer()->get('sylius.repository.product');
         $this->fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
 
+        /**
+         * @TODO: Move this methods to a generic class on some events on PHPUnit?
+         */
+        InMemoryProductApi::clear();
+
         InMemoryProductApi::addResource(Product::create(self::MUG_DW_PRODUCT_CODE, [
             'family' => 'mugs',
             'parent' => null,

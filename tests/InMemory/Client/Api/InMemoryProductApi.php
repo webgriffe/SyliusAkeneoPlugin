@@ -19,6 +19,11 @@ final class InMemoryProductApi extends InMemoryApi implements ProductApiInterfac
         return self::$products;
     }
 
+    public static function clear(): void
+    {
+        self::$products = [];
+    }
+
     protected function getResourceClass(): string
     {
         return Product::class;

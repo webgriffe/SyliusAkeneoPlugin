@@ -19,6 +19,11 @@ final class InMemoryProductModelApi extends InMemoryApi implements ProductModelA
         return ProductModel::class;
     }
 
+    public static function clear(): void
+    {
+        self::$productModels = [];
+    }
+
     public function getResources(): array
     {
         return self::$productModels;
