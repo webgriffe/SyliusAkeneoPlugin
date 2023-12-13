@@ -180,12 +180,21 @@ importer** (`Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer`). This i
 associations to the corresponding Sylius products associations. The association types must already exist on Sylius with
 the same code they have on Akeneo.
 
+### Attribute importer
+
+Another provided importer is the **attribute importer** (`\Webgriffe\SyliusAkeneoPlugin\Attribute\Importer`). This
+importer imports the Akeneo attribute translations into Sylius attribute and option translations.
+The attributes and options must already exist on Sylius with the same code they have on Akeneo to be imported.
+
 ### Attribute options importer
 
-Another provided importer is the **attribute options
-importer** (`\Webgriffe\SyliusAkeneoPlugin\AttributeOptions\Importer`). This importer imports the Akeneo simple select
-and multi select attributes options into Sylius select attributes. The select attributes must already exist on Sylius
-with the same code they have on Akeneo.
+Another provided importer is the **attribute options importer** 
+(`\Webgriffe\SyliusAkeneoPlugin\AttributeOptions\Importer`). This importer imports the Akeneo simple select
+and multi select attributes options into Sylius select attributes. It imports also all attribute options that are used 
+on Sylius as product options. If the attribute has metrical type the values will not be imported because they could be
+any value, it will be created by the ProductOptionValueResolver during product variant import.
+The select attributes and the product options must already exist on Sylius
+with the same code they have on Akeneo to be imported.
 
 ## Customize which Akeneo products to import
 
