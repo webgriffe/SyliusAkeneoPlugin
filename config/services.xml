@@ -190,5 +190,16 @@
             <tag name="webgriffe_sylius_akeneo.importer" />
         </service>
 
+        <!-- Attribute Importer -->
+        <service id="webgriffe_sylius_akeneo.attribute.importer" class="Webgriffe\SyliusAkeneoPlugin\Attribute\Importer">
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="webgriffe_sylius_akeneo.api_client"/>
+            <argument type="service" id="sylius.repository.product_option" />
+            <argument type="service" id="sylius.factory.product_option_translation" />
+            <argument type="service" id="sylius.repository.product_attribute"/>
+            <argument type="service" id="sylius.factory.product_attribute_translation" />
+            <tag name="webgriffe_sylius_akeneo.importer" />
+        </service>
+
     </services>
 </container>

@@ -7,19 +7,6 @@ Sylius\Component\Locale\Model\Locale:
 Sylius\Component\Product\Model\ProductOption:
     sellable:
         code: 'sellable'
-        translations:
-            - '@sellable_it_IT'
-            - '@sellable_en_US'
-
-Sylius\Component\Product\Model\ProductOptionTranslation:
-    sellable_en_US:
-        name: 'Enabled'
-        locale: 'en_US'
-        translatable: '@sellable'
-    sellable_it_IT:
-        name: 'Abilitato'
-        locale: 'it_IT'
-        translatable: '@sellable'
 
 Sylius\Component\Product\Model\ProductOptionValue:
     sellable_yes:
