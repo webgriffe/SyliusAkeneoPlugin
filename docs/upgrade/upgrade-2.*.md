@@ -5,6 +5,16 @@ nav_order: 0
 parent: Upgrade
 ---
 
+# Upgrade from `v2.5.0` to `v2.6.0`
+
+The v2.6.0 version introduces the Attribute importer.
+If you want to import attribute and options translations from Akeneo you have to add the `--importer="Attribute"` option to the command that imports once a hour:
+
+```diff
+- 0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="AttributeOptions"
++ 0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="Attribute" --importer="AttributeOptions"
+```
+
 # Upgrade from `v2.4.0` to `v2.5.0`
 
 The v2.5.0 version now allow you to choose which product and product model to import through webhook entry point.
@@ -15,7 +25,7 @@ Take a look at the [customization documentation](../architecture_and_customizati
 The v2.4.0 version introduces the Product Model importer. If you are using the webhook no changes are requested as it will be automatically enqueued on every update.
 If you are using the cronjob, you have to add the `--importer="ProductModel"` option to the command that imports every minute:
 
-```git
+```diff
 - *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductAssociations"
 + *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductModel" --importer="ProductAssociations"
 ```
