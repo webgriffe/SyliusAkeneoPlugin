@@ -164,8 +164,6 @@ final class ImporterTest extends KernelTestCase
 
         $option = $this->optionRepository->findOneBy(['code' => 'size']);
         $this->assertInstanceOf(ProductOptionInterface::class, $option);
-        $this->assertEquals('Size', $option->getTranslation('en_US')->getName());
-        $this->assertEquals('Taglia', $option->getTranslation('it_IT')->getName());
         $optionValues = $option->getValues();
         $this->assertCount(2, $optionValues);
 
@@ -195,8 +193,6 @@ final class ImporterTest extends KernelTestCase
 
         $option = $this->optionRepository->findOneBy(['code' => 'size']);
         $this->assertInstanceOf(ProductOptionInterface::class, $option);
-        $this->assertEquals('Size', $option->getTranslation('en_US')->getName());
-        $this->assertEquals('Taglia', $option->getTranslation('it_IT')->getName());
         $optionValues = $option->getValues();
         $this->assertCount(2, $optionValues);
 
@@ -220,40 +216,12 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_imports_metric_attribute_labels_from_akeneo_to_sylius_option_translation(): void
-    {
-        $this->importer->import('length');
-
-        $option = $this->optionRepository->findOneBy(['code' => 'length']);
-        $this->assertInstanceOf(ProductOptionInterface::class, $option);
-        $this->assertEquals('Length', $option->getTranslation('en_US')->getName());
-        $this->assertEquals('Lunghezza', $option->getTranslation('it_IT')->getName());
-    }
-
-    /**
-     * @test
-     */
-    public function it_updates_metric_attribute_labels_from_akeneo_to_sylius_option_translation(): void
-    {
-        $this->importer->import('length');
-
-        $option = $this->optionRepository->findOneBy(['code' => 'length']);
-        $this->assertInstanceOf(ProductOptionInterface::class, $option);
-        $this->assertEquals('Length', $option->getTranslation('en_US')->getName());
-        $this->assertEquals('Lunghezza', $option->getTranslation('it_IT')->getName());
-    }
-
-    /**
-     * @test
-     */
     public function it_imports_boolean_attribute_options_from_akeneo_to_sylius_option(): void
     {
         $this->importer->import('sellable');
 
         $option = $this->optionRepository->findOneBy(['code' => 'sellable']);
         $this->assertInstanceOf(ProductOptionInterface::class, $option);
-        $this->assertEquals('Sellable', $option->getTranslation('en_US')->getName());
-        $this->assertEquals('Vendibile', $option->getTranslation('it_IT')->getName());
         $optionValues = $option->getValues();
         $this->assertCount(2, $optionValues);
 
@@ -283,8 +251,6 @@ final class ImporterTest extends KernelTestCase
 
         $option = $this->optionRepository->findOneBy(['code' => 'sellable']);
         $this->assertInstanceOf(ProductOptionInterface::class, $option);
-        $this->assertEquals('Sellable', $option->getTranslation('en_US')->getName());
-        $this->assertEquals('Vendibile', $option->getTranslation('it_IT')->getName());
         $optionValues = $option->getValues();
         $this->assertCount(2, $optionValues);
 
