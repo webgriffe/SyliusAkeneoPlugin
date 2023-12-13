@@ -14,6 +14,7 @@ use Webgriffe\SyliusAkeneoPlugin\Event\ProductWithParentSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
+use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
 use Webmozart\Assert\Assert;
 
 /**
@@ -78,6 +79,10 @@ final class Importer implements ImporterInterface
         foreach ($products as $product) {
             $this->messageBus->dispatch(new ItemImport(
                 ProductImporter::AKENEO_ENTITY,
+                $product['identifier'],
+            ));
+            $this->messageBus->dispatch(new ItemImport(
+                ProductAssociationsImporter::AKENEO_ENTITY,
                 $product['identifier'],
             ));
         }
