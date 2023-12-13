@@ -14,6 +14,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
+use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
 use Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer as ProductModelImporter;
 use Webmozart\Assert\Assert;
 
@@ -50,6 +51,10 @@ final class ProductImportController extends AbstractController
             Assert::string($productVariantCode);
             $this->messageBus->dispatch(new ItemImport(
                 ProductImporter::AKENEO_ENTITY,
+                $productVariantCode,
+            ));
+            $this->messageBus->dispatch(new ItemImport(
+                ProductAssociationsImporter::AKENEO_ENTITY,
                 $productVariantCode,
             ));
             $this->addFlash(

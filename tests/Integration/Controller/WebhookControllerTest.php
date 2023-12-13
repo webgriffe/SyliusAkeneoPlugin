@@ -91,9 +91,10 @@ final class WebhookControllerTest extends KernelTestCase
         $this->webhookController->postAction($request);
 
         $itemImportResults = $this->itemImportResultRepository->findAll();
-        self::assertCount(2, $itemImportResults);
+        self::assertCount(3, $itemImportResults);
         self::assertEquals('Successfully imported item "Product" with identifier "PRODUCT" from Akeneo.', $itemImportResults[0]->getMessage());
-        self::assertEquals('Successfully imported item "ProductModel" with identifier "PRODUCT_MODEL" from Akeneo.', $itemImportResults[1]->getMessage());
+        self::assertEquals('Successfully imported item "ProductAssociations" with identifier "PRODUCT" from Akeneo.', $itemImportResults[1]->getMessage());
+        self::assertEquals('Successfully imported item "ProductModel" with identifier "PRODUCT_MODEL" from Akeneo.', $itemImportResults[2]->getMessage());
     }
 
     /** @test */
