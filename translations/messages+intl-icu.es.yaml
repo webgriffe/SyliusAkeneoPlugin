@@ -1,14 +1,14 @@
 webgriffe_sylius_akeneo:
     ui:
-        schedule_import: 'Programma importazione da Akeneo PIM'
-        enqueued_success: 'L''importazione del prodotto "{code}" da Akeneo PIM è stata correttamente programmata'
-        import: 'Importazione da Akeneo PIM'
-        view_import_history: 'Visualizza la cronologia dell''importazione da Akeneo PIM'
-        item_import_results: 'Importazione da Akeneo PIM'
-        entity: 'Entità'
-        identifier: 'Identificatore'
-        successful: 'Riuscito'
-        message: 'Messaggio'
+        schedule_import: 'Programa de importación desde Akeneo PIM'
+        enqueued_success: 'La importación del producto "{code}" desde Akeneo PIM se ha programado correctamente'
+        import: 'Importar desde Akeneo PIM'
+        view_import_history: 'Ver el historial de importaciones desde Akeneo PIM'
+        item_import_results: 'Importar desde Akeneo PIM'
+        entity: 'Entidad'
+        identifier: 'Identificador'
+        successful: 'Tuvo éxito'
+        message: 'Mensaje'
         metric_amount_unit: >-
             {unit, select,
                 SQUARE_MILLIMETER {{amount, number} mm²}
