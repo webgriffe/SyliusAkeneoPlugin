@@ -245,9 +245,7 @@ value of the property ignorable of the event based on given product:
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
-use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
-use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
+use Webgriffe\SyliusAkeneoPlugin\Event\AkeneoProductChangedEvent;
 
 final class AkeneoProductChangedEventSubscriber implements EventSubscriberInterface
 {
