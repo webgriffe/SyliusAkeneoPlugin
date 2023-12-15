@@ -5,6 +5,11 @@ nav_order: 0
 parent: Upgrade
 ---
 
+# Upgrade from `v2.4.0` to `v2.5.0`
+
+The v2.5.0 version now allow you to choose which product and product model to import through webhook entry point.
+Take a look at the [customization documentation](../architecture_and_customization.html) to see how to configure it.
+
 # Upgrade from `v2.3.0` to `v2.4.0`
 
 The v2.4.0 version introduces the Product Model importer. If you are using the webhook no changes are requested as it will be automatically enqueued on every update.

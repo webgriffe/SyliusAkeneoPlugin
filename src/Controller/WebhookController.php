@@ -8,9 +8,12 @@ use const JSON_THROW_ON_ERROR;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Webgriffe\SyliusAkeneoPlugin\Event\AkeneoProductChangedEvent;
+use Webgriffe\SyliusAkeneoPlugin\Event\AkeneoProductModelChangedEvent;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
 use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
@@ -21,7 +24,7 @@ use Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer as ProductModelImporter;
  *     uuid: string,
  *     identifier: string,
  *     enabled: bool,
- *     family: string,
+ *     family: ?string,
  *     categories: string[],
  *     groups: string[],
  *     parent: ?string,
@@ -64,7 +67,17 @@ final class WebhookController extends AbstractController
         private LoggerInterface $logger,
         private MessageBusInterface $messageBus,
         private string $secret,
+        private ?EventDispatcherInterface $eventDispatcher = null,
     ) {
+        if ($this->eventDispatcher === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                'v2.5.0',
+                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
+                EventDispatcherInterface::class,
+                self::class,
+            );
+        }
     }
 
     /**
@@ -117,39 +130,59 @@ final class WebhookController extends AbstractController
         foreach ($akeneoEvents['events'] as $akeneoEvent) {
             $this->logger->debug(sprintf('Received event %s with id "%s"', $akeneoEvent['action'], $akeneoEvent['event_id']));
 
-            $resource = $akeneoEvent['data']['resource'];
-            if (array_key_exists('identifier', $resource)) {
-                $productCode = $resource['identifier'];
-                $this->logger->debug(sprintf(
-                    'Dispatching product import message for %s',
-                    $productCode,
-                ));
-                $this->messageBus->dispatch(new ItemImport(
-                    ProductImporter::AKENEO_ENTITY,
-                    $productCode,
-                ));
-                $this->logger->debug(sprintf(
-                    'Dispatching product associations import message for %s',
-                    $productCode,
-                ));
-                $this->messageBus->dispatch(new ItemImport(
-                    ProductAssociationsImporter::AKENEO_ENTITY,
-                    $productCode,
-                ));
+            if (array_key_exists('identifier', $akeneoEvent['data']['resource'])) {
+                /** @var AkeneoEventProduct $resource */
+                $resource = $akeneoEvent['data']['resource'];
+                $event = new AkeneoProductChangedEvent($resource, $akeneoEvent);
+                $this->eventDispatcher?->dispatch($event);
+                if (!$event->isIgnorable()) {
+                    $this->importProduct($resource['identifier']);
+                }
             }
-            if (array_key_exists('code', $resource)) {
-                $productModelCode = $resource['code'];
-                $this->logger->debug(sprintf(
-                    'Dispatching product model import message for %s',
-                    $productModelCode,
-                ));
-                $this->messageBus->dispatch(new ItemImport(
-                    ProductModelImporter::AKENEO_ENTITY,
-                    $productModelCode,
-                ));
+            if (array_key_exists('code', $akeneoEvent['data']['resource'])) {
+                /** @var AkeneoEventProductModel $resource */
+                $resource = $akeneoEvent['data']['resource'];
+                $event = new AkeneoProductModelChangedEvent($resource, $akeneoEvent);
+                $this->eventDispatcher?->dispatch($event);
+                if (!$event->isIgnorable()) {
+                    $this->importProductModel($resource['code']);
+                }
             }
         }
 
         return new Response();
+    }
+
+    private function importProduct(string $productCode): void
+    {
+        $this->logger->debug(sprintf(
+            'Dispatching product import message for %s',
+            $productCode,
+        ));
+        $this->messageBus->dispatch(new ItemImport(
+            ProductImporter::AKENEO_ENTITY,
+            $productCode,
+        ));
+
+        $this->logger->debug(sprintf(
+            'Dispatching product associations import message for %s',
+            $productCode,
+        ));
+        $this->messageBus->dispatch(new ItemImport(
+            ProductAssociationsImporter::AKENEO_ENTITY,
+            $productCode,
+        ));
+    }
+
+    private function importProductModel(string $productModelCode): void
+    {
+        $this->logger->debug(sprintf(
+            'Dispatching product model import message for %s',
+            $productModelCode,
+        ));
+        $this->messageBus->dispatch(new ItemImport(
+            ProductModelImporter::AKENEO_ENTITY,
+            $productModelCode,
+        ));
     }
 }
