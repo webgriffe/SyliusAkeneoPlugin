@@ -189,6 +189,8 @@ with the same code they have on Akeneo.
 
 ## Customize which Akeneo products to import
 
+### Customize Akeneo products to import from the command
+
 Each built-in importer described above implements a `getIdentiferModifiedSince()` method.
 This method is used to identify which Akeneo entity identifiers should be imported or reconciled when the corresponding CLI commands run.
 By default, those methods return all the Akeneo identifiers of entities modified since the given date.
@@ -229,3 +231,41 @@ final class IdentifiersModifiedSinceSearchBuilderBuiltEventSubscriber implements
     }
 }
 ```
+
+### Customize Akeneo products to import from the webhook
+
+By default, the webhook is configured to import all the Akeneo products and product model that have been created or
+updated on Akeneo. But maybe you want to only import a subset of those Akeneo entities. In this case you can define an
+event listener or subscriber for the `Webgriffe\SyliusAkeneoPlugin\Event\AkeneoProductChangedEvent` event and change the
+value of the property ignorable of the event based on given product:
+
+```php
+// src/EventSubscriber/AkeneoProductChangedEventSubscriber.php
+
+namespace App\EventSubscriber;
+
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
+use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
+use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
+
+final class AkeneoProductChangedEventSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            AkeneoProductChangedEvent::class => 'onAkeneoProductChanged',
+        ];    
+    }
+    
+    public function onAkeneoProductChanged(AkeneoProductChangedEvent $event): void
+    {
+        $akeneoProduct = $event->getAkeneoProduct();
+        if ($akeneoProduct['family'] === null) {
+            $event->setIgnorable(true);
+        }
+    }
+}
+```
+
+The same can be applied to the `Webgriffe\SyliusAkeneoPlugin\Event\AkeneoProductModelChangedEvent` event.
