@@ -156,14 +156,17 @@ final class ImporterTest extends KernelTestCase
     /**
      * @test
      */
-    public function it_returns_all_boolean_metric_simple_select_and_multiselect_attributes_identifiers_that_are_also_sylius_select_attributes_or_sylius_product_options(): void
+    public function it_returns_all_option_and_attributes_identifiers_that_are_also_sylius_attributes_or_sylius_product_options(): void
     {
         InMemoryAttributeApi::addResource(Attribute::create('product_option_of_wrong_type', [
+            'type' => AttributeType::TEXT,
+        ]));
+        InMemoryAttributeApi::addResource(Attribute::create('other_attribute', [
             'type' => AttributeType::TEXT,
         ]));
 
         $identifiers = $this->importer->getIdentifiersModifiedSince(new DateTime());
 
-        $this->assertEquals(['material', 'size', 'length', 'sellable'], $identifiers);
+        $this->assertEquals(['material', 'other_attribute', 'size', 'length', 'sellable'], $identifiers);
     }
 }

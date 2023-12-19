@@ -1,14 +1,18 @@
 Sylius\Component\Locale\Model\Locale:
     en_US:
-        code: "en_US"
+        code: 'en_US'
     it_IT:
-        code: "it_IT"
+        code: 'it_IT'
 
 Sylius\Component\Product\Model\ProductAttribute:
     material:
         code: 'material'
         type: 'select'
         storageType: 'json'
+    other_attribute:
+        code: 'other_attribute'
+        type: 'text'
+        storageType: 'text'
 
 Sylius\Component\Product\Model\ProductOption:
     size:

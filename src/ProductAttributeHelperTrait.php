@@ -9,7 +9,6 @@ use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
 use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Webgriffe\SyliusAkeneoPlugin\Attribute\Importer as AttributeImporter;
 
 /**
  * @psalm-type AkeneoAttribute array{code: string, type: string, labels: array<string, ?string>}
@@ -37,6 +36,22 @@ trait ProductAttributeHelperTrait
     abstract private function getProductAttributeRepository(): RepositoryInterface;
 
     /**
+     * Return the list of Akeneo attribute codes whose code is used as a code for a Sylius SELECT attribute
+     *
+     * @psalm-suppress TooManyTemplateParams
+     *
+     * @param ResourceCursorInterface<array-key, AkeneoAttribute> $akeneoAttributes
+     *
+     * @return string[]
+     */
+    private function filterBySyliusSelectAttributeCodes(ResourceCursorInterface $akeneoAttributes): array
+    {
+        $syliusSelectAttributes = $this->getProductAttributeRepository()->findBy(['type' => SelectAttributeType::TYPE]);
+
+        return $this->filterBySyliusAttributes($syliusSelectAttributes, $akeneoAttributes);
+    }
+
+    /**
      * Return the list of Akeneo attribute codes whose code is used as a code for a Sylius attribute
      *
      * @psalm-suppress TooManyTemplateParams
@@ -47,20 +62,31 @@ trait ProductAttributeHelperTrait
      */
     private function filterBySyliusAttributeCodes(ResourceCursorInterface $akeneoAttributes): array
     {
-        $syliusSelectAttributes = $this->getProductAttributeRepository()->findBy(['type' => SelectAttributeType::TYPE]);
-        $syliusSelectAttributes = array_filter(
+        $syliusAttributes = $this->getProductAttributeRepository()->findAll();
+
+        return $this->filterBySyliusAttributes($syliusAttributes, $akeneoAttributes);
+    }
+
+    /**
+     * @psalm-suppress TooManyTemplateParams
+     *
+     * @param ProductAttributeInterface[] $syliusAttributes
+     * @param ResourceCursorInterface<array-key, AkeneoAttribute> $akeneoAttributes
+     *
+     * @return string[]
+     */
+    private function filterBySyliusAttributes(array $syliusAttributes, ResourceCursorInterface $akeneoAttributes): array
+    {
+        $syliusAttributes = array_filter(
             array_map(
                 static fn (ProductAttributeInterface $attribute): ?string => $attribute->getCode(),
-                $syliusSelectAttributes,
+                $syliusAttributes,
             ),
         );
         $attributeCodes = [];
         /** @var AkeneoAttribute $akeneoAttribute */
         foreach ($akeneoAttributes as $akeneoAttribute) {
-            if (!in_array($akeneoAttribute['code'], $syliusSelectAttributes, true)) {
-                continue;
-            }
-            if ($akeneoAttribute['type'] !== AttributeImporter::SIMPLESELECT_TYPE && $akeneoAttribute['type'] !== AttributeImporter::MULTISELECT_TYPE) {
+            if (!in_array($akeneoAttribute['code'], $syliusAttributes, true)) {
                 continue;
             }
             $attributeCodes[] = $akeneoAttribute['code'];
