@@ -459,7 +459,7 @@ It could be useful to add also this command to your scheduler to run automatical
 To make all importers and other plugin features work automatically the following is the suggested crontab:
 
 ```
-0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="AttributeOptions"
+0   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --all --importer="Attribute" --importer="AttributeOptions"
 *   *   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:import --since-file=/path/to/sylius/var/storage/akeneo-import-sincefile.txt --importer="Product" --importer="ProductModel" --importer="ProductAssociations"
 0   */6 *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:reconcile
 0   0   *  *  *  /path/to/sylius/bin/console -e prod -q webgriffe:akeneo:cleanup-item-import-results
@@ -467,7 +467,7 @@ To make all importers and other plugin features work automatically the following
 
 This will:
 
-* Import the update of all attribute options every hour
+* Import the attribute/option translations and import all attribute/option values every hour
 * Import, every minute, all products and product models that have been modified since the last execution, along with their associations
 * Reconcile Akeneo deleted products every 6 hours
 

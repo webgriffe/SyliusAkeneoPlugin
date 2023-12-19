@@ -5,18 +5,18 @@ Sylius\Component\Locale\Model\Locale:
         code: "it_IT"
 
 Sylius\Component\Product\Model\ProductOption:
-    length:
-        code: 'length'
+    size:
+        code: 'size'
         translations:
-            - '@length_en_US'
-            - '@length_it_IT'
+            - '@size_en_US'
+            - '@size_it_IT'
 
 Sylius\Component\Product\Model\ProductOptionTranslation:
-    length_en_US:
-        name: 'Large'
+    size_en_US:
+        name: 'Format'
         locale: 'en_US'
-        translatable: '@length'
-    length_it_IT:
-        name: 'Larghezza'
+        translatable: '@size'
+    size_it_IT:
+        name: 'Formato'
         locale: 'it_IT'
-        translatable: '@length'
+        translatable: '@size'

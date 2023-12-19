@@ -122,4 +122,9 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
     {
         return $this->productOptionTranslationFactory;
     }
+
+    private function getProductOptionRepository(): ProductOptionRepositoryInterface
+    {
+        return $this->productOptionRepository;
+    }
 }

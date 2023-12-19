@@ -7,19 +7,6 @@ Sylius\Component\Locale\Model\Locale:
 Sylius\Component\Product\Model\ProductOption:
     size:
         code: 'size'
-        translations:
-            - '@size_en_US'
-            - '@size_it_IT'
-
-Sylius\Component\Product\Model\ProductOptionTranslation:
-    size_en_US:
-        name: 'Format'
-        locale: 'en_US'
-        translatable: '@size'
-    size_it_IT:
-        name: 'Formato'
-        locale: 'it_IT'
-        translatable: '@size'
         
 Sylius\Component\Product\Model\ProductOptionValue:
     small:

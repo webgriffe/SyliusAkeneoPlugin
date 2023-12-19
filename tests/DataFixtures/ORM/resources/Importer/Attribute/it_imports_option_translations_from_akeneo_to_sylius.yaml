@@ -5,5 +5,5 @@ Sylius\Component\Locale\Model\Locale:
         code: "it_IT"
 
 Sylius\Component\Product\Model\ProductOption:
-    length:
-        code: 'length'
+    size:
+        code: 'size'
