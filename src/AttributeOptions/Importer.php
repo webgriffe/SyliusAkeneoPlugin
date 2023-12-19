@@ -119,7 +119,7 @@ final class Importer implements ImporterInterface
         $akeneoAttributes = $this->apiClient->getAttributeApi()->all(50, ['search' => $searchBuilder->getFilters()]);
 
         return array_merge(
-            $this->filterBySyliusAttributeCodes($akeneoAttributes),
+            $this->filterBySyliusSelectAttributeCodes($akeneoAttributes),
             $this->filterSyliusOptionCodes($akeneoAttributes),
         );
     }
