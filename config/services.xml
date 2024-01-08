@@ -29,6 +29,12 @@
             <argument type="service" id="sylius.repository.product_attribute"/>
             <argument type="service" id="sylius.repository.product_option"/>
             <argument type="service" id="service_container"/>
+            <argument type="service" id="property_accessor"/>
+            <argument type="service" id="sylius.factory.product"/>
+            <argument type="service" id="sylius.factory.product_variant"/>
+            <argument type="service" id="sylius.factory.channel_pricing"/>
+            <argument type="service" id="sylius.factory.product_translation"/>
+            <argument type="service" id="sylius.factory.product_variant_translation"/>
             <tag name="console.command" />
         </service>
 

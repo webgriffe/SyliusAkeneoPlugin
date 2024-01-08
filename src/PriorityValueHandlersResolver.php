@@ -33,9 +33,4 @@ final class PriorityValueHandlersResolver implements ValueHandlersResolverInterf
 
         return $supportedHandlers;
     }
-
-    public function getValueHandlers(): array
-    {
-        return array_column($this->valueHandlers, 'handler');
-    }
 }

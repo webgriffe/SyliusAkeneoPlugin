@@ -12,9 +12,4 @@ interface ValueHandlersResolverInterface
      * @return ValueHandlerInterface[]
      */
     public function resolve($subject, string $attribute, array $value): array;
-
-    /**
-     * @return ValueHandlerInterface[]
-     */
-    public function getValueHandlers(): array;
 }

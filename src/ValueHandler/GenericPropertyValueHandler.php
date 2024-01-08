@@ -15,8 +15,11 @@ use Webmozart\Assert\Assert;
 
 final class GenericPropertyValueHandler implements ValueHandlerInterface
 {
-    public function __construct(private PropertyAccessorInterface $propertyAccessor, private string $akeneoAttributeCode, private string $propertyPath)
-    {
+    public function __construct(
+        private PropertyAccessorInterface $propertyAccessor,
+        private string $akeneoAttributeCode,
+        private string $propertyPath,
+    ) {
     }
 
     /**
