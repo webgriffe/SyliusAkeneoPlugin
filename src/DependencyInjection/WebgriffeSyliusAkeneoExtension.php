@@ -10,7 +10,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ChannelPricingValueHandler;
@@ -117,7 +117,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     {
         /** @var array{resources: array|mixed, api_client: array<array-key, ?string>, webhook: array{secret: ?string}, value_handlers: array} $config */
         $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
 
         Assert::isArray($config['resources']);
         $this->registerResources('webgriffe_sylius_akeneo', 'doctrine/orm', $config['resources'], $container);
@@ -125,7 +125,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         $this->registerApiClientParameters($config['api_client'], $container);
         $this->registerWebhookParameters($config['webhook'], $container);
 
-        $loader->load('services.xml');
+        $loader->load('services.php');
 
         $container->addDefinitions(
             $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? []),
