@@ -16,8 +16,13 @@ use Webmozart\Assert\Assert;
 
 final class MetricPropertyValueHandler implements ValueHandlerInterface
 {
-    public function __construct(private PropertyAccessorInterface $propertyAccessor, private UnitMeasurementValueConverterInterface $unitMeasurementValueConverter, private string $akeneoAttributeCode, private string $propertyPath, private ?string $akeneoUnitMeasurementCode = null)
-    {
+    public function __construct(
+        private PropertyAccessorInterface $propertyAccessor,
+        private UnitMeasurementValueConverterInterface $unitMeasurementValueConverter,
+        private string $akeneoAttributeCode,
+        private string $propertyPath,
+        private ?string $akeneoUnitMeasurementCode = null,
+    ) {
     }
 
     /**

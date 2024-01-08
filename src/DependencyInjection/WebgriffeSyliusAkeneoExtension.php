@@ -127,9 +127,13 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
 
         $loader->load('services.xml');
 
+        /** @var array $productValueHandlers */
+        $productValueHandlers = $config['value_handlers']['product'] ?? [];
         $container->addDefinitions(
-            $this->createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? []),
+            $this->createValueHandlersDefinitionsAndPriorities($productValueHandlers),
         );
+
+        $container->setParameter('webgriffe_sylius_akeneo_plugin.value_handlers.product', $productValueHandlers);
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
