@@ -13,6 +13,8 @@ return static function (ContainerConfigurator $containerConfigurator) {
     $services->set('webgriffe_sylius_akeneo.converter.value', ValueConverter::class)
         ->args([
             service('translator'),
+            service('webgriffe_sylius_akeneo.api_client'),
+            service('sylius.repository.product_attribute'),
         ])
     ;
 

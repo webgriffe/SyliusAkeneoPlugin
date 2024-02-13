@@ -1,0 +1,17 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductAttribute:
+    material:
+        code: "material"
+        type: "select"
+        storage_type: "json"
+        translatable: false
+        configuration:
+            min: null
+            max: null
+            multiple: false
+            choices: {}
