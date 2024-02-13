@@ -6,6 +6,7 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Integration\Product;
 
 use Fidry\AliceDataFixtures\Loader\PurgerLoader;
 use Fidry\AliceDataFixtures\Persistence\PurgeMode;
+use InvalidArgumentException;
 use Sylius\Bundle\ChannelBundle\Doctrine\ORM\ChannelRepository;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -811,5 +812,66 @@ final class ImporterTest extends KernelTestCase
         $this->assertEquals($this->sizeAttribute->code, $optionValue->getOptionCode());
         $this->assertEquals('M', $optionValue->getValue());
         $this->assertEquals('size_m', $optionValue->getCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_missing_product_attribute_values_while_importing_product(): void
+    {
+        $materialAttribute = Attribute::create('material', [
+            'type' => AttributeType::SIMPLE_SELECT,
+            'labels' => ['en_US' => 'Material'],
+        ]);
+        InMemoryAttributeApi::addResource($materialAttribute);
+
+        $materialCottonAttributeOption = AttributeOption::create($materialAttribute->code, 'cotton', 0, [
+            'en_US' => 'Cotton', 'it_IT' => 'Cotone',
+        ]);
+        InMemoryAttributeOptionApi::addResource($materialCottonAttributeOption);
+
+        $this->startWarsTShirtMAkeneoProduct->values['material'] = [
+            [
+                'locale' => null,
+                'scope' => null,
+                'data' => 'cotton',
+            ],
+        ];
+
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+
+        $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
+        $this->assertInstanceOf(ProductInterface::class, $product);
+        $this->assertEquals(['cotton'], $product->getAttributeByCodeAndLocale('material', 'en_US')->getValue());
+        $this->assertEquals(['cotton'], $product->getAttributeByCodeAndLocale('material', 'it_IT')->getValue());
+    }
+
+    /**
+     * @test
+     */
+    public function it_fails_if_product_attribute_value_does_not_exists_even_on_akeneo(): void
+    {
+        $materialAttribute = Attribute::create('material', [
+            'type' => AttributeType::SIMPLE_SELECT,
+            'labels' => ['en_US' => 'Material'],
+        ]);
+        InMemoryAttributeApi::addResource($materialAttribute);
+
+        $materialCottonAttributeOption = AttributeOption::create($materialAttribute->code, 'cotton', 0, [
+            'en_US' => 'Cotton', 'it_IT' => 'Cotone',
+        ]);
+        InMemoryAttributeOptionApi::addResource($materialCottonAttributeOption);
+
+        $this->startWarsTShirtMAkeneoProduct->values['material'] = [
+            [
+                'locale' => null,
+                'scope' => null,
+                'data' => 'wool',
+            ],
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('This select attribute can only save existing attribute options. Attribute option codes [wool] for attribute "material" does not exist');
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
     }
 }
