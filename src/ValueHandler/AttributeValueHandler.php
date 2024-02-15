@@ -4,28 +4,33 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\ValueHandler;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
+use InvalidArgumentException;
 use Sylius\Component\Attribute\AttributeType\CheckboxAttributeType;
 use Sylius\Component\Attribute\AttributeType\IntegerAttributeType;
 use Sylius\Component\Attribute\AttributeType\SelectAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextareaAttributeType;
 use Sylius\Component\Attribute\AttributeType\TextAttributeType;
-use Sylius\Component\Attribute\Model\AttributeInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Product\Model\ProductAttributeInterface;
 use Sylius\Component\Product\Model\ProductAttributeValueInterface;
 use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Webgriffe\SyliusAkeneoPlugin\Converter\ValueConverterInterface;
+use Webgriffe\SyliusAkeneoPlugin\ProductAttributeHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlerInterface;
 use Webmozart\Assert\Assert;
 
 final class AttributeValueHandler implements ValueHandlerInterface
 {
+    use ProductAttributeHelperTrait;
+
     /**
-     * @param RepositoryInterface<AttributeInterface> $attributeRepository
+     * @param RepositoryInterface<ProductAttributeInterface> $attributeRepository
      * @param FactoryInterface<ProductAttributeValueInterface> $factory
      */
     public function __construct(
@@ -33,7 +38,17 @@ final class AttributeValueHandler implements ValueHandlerInterface
         private FactoryInterface $factory,
         private TranslationLocaleProviderInterface $localeProvider,
         private ValueConverterInterface $valueConverter,
+        private ?AkeneoPimClientInterface $akeneoPimClient = null,
     ) {
+        if ($this->akeneoPimClient === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                'v2.6.0',
+                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
+                AkeneoPimClientInterface::class,
+                self::class,
+            );
+        }
     }
 
     public function supports($subject, string $attributeCode, array $value): bool
@@ -53,7 +68,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
     public function handle($subject, string $attributeCode, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'This attribute value handler only supports instances of %s, %s given.',
                     ProductVariantInterface::class,
@@ -64,13 +79,19 @@ final class AttributeValueHandler implements ValueHandlerInterface
 
         $attribute = $this->attributeRepository->findOneBy(['code' => $attributeCode]);
         if ($attribute === null) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     'This attribute value handler only supports existing attributes. ' .
                     'Attribute with the given %s code does not exist.',
                     $attributeCode,
                 ),
             );
+        }
+        // TODO: Find a way to update attribute options only when they change or when needed, not every time
+        if ($this->akeneoPimClient !== null &&
+            $attribute->getType() === SelectAttributeType::TYPE
+        ) {
+            $this->importAttributeConfiguration($attributeCode, $attribute);
         }
 
         $availableLocalesCodes = $this->localeProvider->getDefinedLocalesCodes();
@@ -83,10 +104,10 @@ final class AttributeValueHandler implements ValueHandlerInterface
 
         foreach ($value as $valueData) {
             if (!is_array($valueData)) {
-                throw new \InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
+                throw new InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
             }
             if (!array_key_exists('scope', $valueData)) {
-                throw new \InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
+                throw new InvalidArgumentException('Invalid Akeneo value data: required "scope" information was not found.');
             }
             if ($valueData['scope'] !== null && !in_array($valueData['scope'], $productChannelCodes, true)) {
                 continue;
@@ -109,7 +130,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
      * @param array|int|string|bool|null $value
      */
     private function handleAttributeValue(
-        AttributeInterface $attribute,
+        ProductAttributeInterface $attribute,
         $value,
         string $localeCode,
         ProductInterface $product,
@@ -137,7 +158,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         $product->addAttribute($attributeValue);
     }
 
-    private function hasSupportedType(AttributeInterface $attribute): bool
+    private function hasSupportedType(ProductAttributeInterface $attribute): bool
     {
         return $attribute->getType() === TextareaAttributeType::TYPE ||
             $attribute->getType() === TextAttributeType::TYPE ||
@@ -155,5 +176,21 @@ final class AttributeValueHandler implements ValueHandlerInterface
         $productOptions = $options->filter(fn (ProductOptionInterface $option): bool => $option->getCode() === $attributeCode);
 
         return !$productOptions->isEmpty();
+    }
+
+    private function getAkeneoPimClient(): AkeneoPimClientInterface
+    {
+        $akeneoPimClient = $this->akeneoPimClient;
+        Assert::notNull($akeneoPimClient);
+
+        return $akeneoPimClient;
+    }
+
+    /**
+     * @return RepositoryInterface<ProductAttributeInterface>
+     */
+    private function getAttributeRepository(): RepositoryInterface
+    {
+        return $this->attributeRepository;
     }
 }

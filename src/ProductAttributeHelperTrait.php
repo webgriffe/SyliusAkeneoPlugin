@@ -14,7 +14,6 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
  */
 trait ProductAttributeHelperTrait
 {
-
     abstract private function getAkeneoPimClient(): AkeneoPimClientInterface;
 
     /**
