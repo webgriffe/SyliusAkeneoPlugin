@@ -185,12 +185,4 @@ final class AttributeValueHandler implements ValueHandlerInterface
 
         return $akeneoPimClient;
     }
-
-    /**
-     * @return RepositoryInterface<ProductAttributeInterface>
-     */
-    private function getAttributeRepository(): RepositoryInterface
-    {
-        return $this->attributeRepository;
-    }
 }

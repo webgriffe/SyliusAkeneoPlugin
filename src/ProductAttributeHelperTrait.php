@@ -7,7 +7,6 @@ namespace Webgriffe\SyliusAkeneoPlugin;
 use Akeneo\Pim\ApiClient\AkeneoPimClientInterface;
 use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 /**
  * @psalm-type AkeneoAttributeOption array{_links: array, code: string, attribute: string, sort_order: int, labels: array<string, ?string>}
@@ -15,11 +14,6 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 trait ProductAttributeHelperTrait
 {
     abstract private function getAkeneoPimClient(): AkeneoPimClientInterface;
-
-    /**
-     * @return RepositoryInterface<ProductAttributeInterface>
-     */
-    abstract private function getAttributeRepository(): RepositoryInterface;
 
     private function importAttributeConfiguration(string $attributeCode, ProductAttributeInterface $attribute): void
     {
@@ -30,7 +24,7 @@ trait ProductAttributeHelperTrait
         );
         $attribute->setConfiguration($configuration);
 
-        $this->getAttributeRepository()->add($attribute);
+        // Do not flush any change here, otherwise we will cause a potential MySQL error irreversible.
     }
 
     /**

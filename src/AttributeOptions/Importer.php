@@ -338,12 +338,4 @@ final class Importer implements ImporterInterface
     {
         return $this->apiClient;
     }
-
-    /**
-     * @return RepositoryInterface<ProductAttributeInterface>
-     */
-    private function getAttributeRepository(): RepositoryInterface
-    {
-        return $this->attributeRepository;
-    }
 }
