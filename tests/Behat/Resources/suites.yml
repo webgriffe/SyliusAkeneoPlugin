@@ -11,6 +11,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product_model
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_family_variant
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute_option
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
                 - webgriffe_sylius_akeneo.behat.context.cli.import_command
@@ -51,6 +52,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product_model
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_family_variant
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute
+                - webgriffe_sylius_akeneo.behat.context.setup.akeneo_attribute_option
 
                 - webgriffe_sylius_akeneo.behat.context.db.product
                 - webgriffe_sylius_akeneo.behat.context.cli.import_command
