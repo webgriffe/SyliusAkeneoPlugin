@@ -1,6 +1,6 @@
 <?php
 
-return [
+$bundles = [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
@@ -61,3 +61,8 @@ return [
     Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true],
     League\FlysystemBundle\FlysystemBundle::class => ['all' => true],
 ];
+if (class_exists(Sylius\Abstraction\StateMachine\SyliusStateMachineAbstractionBundle::class)) {
+    $bundles[Sylius\Abstraction\StateMachine\SyliusStateMachineAbstractionBundle::class] = ['all' => true];
+}
+
+return $bundles;

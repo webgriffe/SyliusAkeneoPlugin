@@ -143,7 +143,7 @@ final class ImporterTest extends KernelTestCase
         ]);
         InMemoryProductApi::addResource($this->startWarsTShirtMAkeneoProduct);
 
-        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/Product/' . $this->getName() . '.yaml';
+        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/Product/' . $this->name() . '.yaml';
         if (file_exists($ORMResourceFixturePath)) {
             $this->fixtureLoader->load(
                 [$ORMResourceFixturePath],
@@ -420,13 +420,16 @@ final class ImporterTest extends KernelTestCase
      */
     public function it_imports_all_product_images_when_importing_variants_of_configurable_product(): void
     {
-        $this->startWarsTShirtMAkeneoProduct->values = [
-            'image' => [[
-                'locale' => null,
-                'scope' => null,
-                'data' => 'star_wars_m.jpeg',
-            ]],
-        ];
+        $this->startWarsTShirtMAkeneoProduct->values = array_merge_recursive(
+            $this->startWarsTShirtMAkeneoProduct->values,
+            [
+                'image' => [[
+                    'locale' => null,
+                    'scope' => null,
+                    'data' => 'star_wars_m.jpeg',
+                ]],
+            ],
+        );
         $startWarsTShirtLAkeneoProduct = Product::create('STAR_WARS_TSHIRT_L', [
             'family' => $this->tShirtFamily->code,
             'parent' => $this->starWarsTShirtProductModel->code,

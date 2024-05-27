@@ -54,7 +54,7 @@ final class ImporterTest extends KernelTestCase
             ],
         ]));
 
-        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/ProductAssociations/' . $this->getName() . '.yaml';
+        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/ProductAssociations/' . $this->name() . '.yaml';
         if (file_exists($ORMResourceFixturePath)) {
             $this->fixtureLoader->load(
                 [$ORMResourceFixturePath],

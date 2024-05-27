@@ -97,7 +97,7 @@ final class ImporterTest extends KernelTestCase
             'it_IT' => 'Grande',
         ]));
 
-        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/AttributeOptions/' . $this->getName() . '.yaml';
+        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/AttributeOptions/' . $this->name() . '.yaml';
         if (file_exists($ORMResourceFixturePath)) {
             $fixtureLoader->load(
                 [$ORMResourceFixturePath],

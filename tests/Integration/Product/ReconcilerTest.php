@@ -25,7 +25,7 @@ final class ReconcilerTest extends KernelTestCase
         $this->productVariantRepository = self::getContainer()->get('sylius.repository.product_variant');
         $fixtureLoader = self::getContainer()->get('fidry_alice_data_fixtures.loader.doctrine');
 
-        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Reconciler/Product/' . $this->getName() . '.yaml';
+        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Reconciler/Product/' . $this->name() . '.yaml';
         if (file_exists($ORMResourceFixturePath)) {
             $fixtureLoader->load(
                 [$ORMResourceFixturePath],
