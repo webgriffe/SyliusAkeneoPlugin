@@ -115,7 +115,7 @@ final class ImporterTest extends KernelTestCase
         ]);
         InMemoryProductApi::addResource($startWarsTShirtMAkeneoProduct);
 
-        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/ProductModel/' . $this->getName() . '.yaml';
+        $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/ProductModel/' . $this->name() . '.yaml';
         if (file_exists($ORMResourceFixturePath)) {
             $fixtureLoader->load(
                 [$ORMResourceFixturePath],

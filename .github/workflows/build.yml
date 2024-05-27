@@ -21,16 +21,11 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: ["8.0", "8.1", "8.2"]
+                php: ["8.1", "8.2", "8.3"]
                 symfony: ["^5.4", "^6.4"]
-                sylius: ["^1.12.13"]
+                sylius: ["1.12.16", "1.13.1"]
                 node: ["18.x"]
                 mysql: ["8.0"]
-
-                exclude:
-                    -
-                        php: "8.0"
-                        symfony: "^6.4"
 
         env:
             APP_ENV: test
@@ -51,7 +46,7 @@ jobs:
 
             -
                 name: Setup Node
-                uses: actions/setup-node@v3
+                uses: actions/setup-node@v4
                 with:
                     node-version: "${{ matrix.node }}"
 
@@ -83,13 +78,17 @@ jobs:
                 run: (cd tests/Application && symfony server:start --port=8080 --dir=public --daemon)
 
             -
+                name: Validate composer.json
+                run: composer validate --ansi --strict
+
+            -
                 name: Get Composer cache directory
                 id: composer-cache
                 run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
             -
                 name: Cache Composer
-                uses: actions/cache@v3
+                uses: actions/cache@v4
                 with:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: ${{ runner.os }}-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json **/composer.lock') }}
@@ -126,7 +125,7 @@ jobs:
 
             -
                 name: Cache Yarn
-                uses: actions/cache@v3
+                uses: actions/cache@v4
                 with:
                     path: ${{ steps.yarn-cache.outputs.dir }}
                     key: ${{ runner.os }}-node-${{ matrix.node }}-yarn-${{ hashFiles('**/package.json **/yarn.lock') }}
@@ -157,10 +156,6 @@ jobs:
             -
                 name: Load fixtures in test application
                 run: (cd tests/Application && bin/console sylius:fixtures:load -n)
-
-            -
-                name: Validate composer.json
-                run: composer validate --ansi --strict
 
             -
                 name: Validate database schema
