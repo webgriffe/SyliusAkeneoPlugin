@@ -10,6 +10,8 @@ Feature: Importing products
     @cli
     Scenario: Importing single product model and its variants
         Given there is an attribute "size" on Akeneo of type "pim_catalog_simpleselect"
+        Given there is an option "M" for attribute "size" on Akeneo
+        Given there is an option "L" for attribute "size" on Akeneo
 
         And there is a family variant "accessories_size" on Akeneo for the family "accessories"
         And the family variant "accessories_size" of family "accessories" has the attribute "size" as axes of first level
@@ -18,10 +20,12 @@ Feature: Importing products
 
         And there is a product "BRAIDED_HAT_M" on Akeneo
         And the product "BRAIDED_HAT_M" has parent "MODEL_BRAIDED_HAT"
+        And the product "BRAIDED_HAT_M" has an attribute "size" with data "M"
         And the product "BRAIDED_HAT_M" has a price attribute with amount "33.99" and currency "USD"
 
         And there is a product "BRAIDED_HAT_L" on Akeneo
         And the product "BRAIDED_HAT_L" has parent "MODEL_BRAIDED_HAT"
+        And the product "BRAIDED_HAT_L" has an attribute "size" with data "L"
         And the product "BRAIDED_HAT_L" has a price attribute with amount "33.00" and currency "USD"
 
         And the store is also available in "it_IT"
@@ -34,6 +38,8 @@ Feature: Importing products
     @cli
     Scenario: Importing products with images should not leave temporary files in temporary files directory
         Given there is an attribute "size" on Akeneo of type "pim_catalog_simpleselect"
+        Given there is an option "M" for attribute "size" on Akeneo
+        Given there is an option "L" for attribute "size" on Akeneo
         Given there is an attribute "attachment" on Akeneo of type "pim_catalog_file"
 
         And there is a family variant "accessories_size" on Akeneo for the family "accessories"
@@ -43,12 +49,14 @@ Feature: Importing products
 
         And there is a product "BRAIDED_HAT_M" on Akeneo
         And the product "BRAIDED_HAT_M" has parent "MODEL_BRAIDED_HAT"
+        And the product "BRAIDED_HAT_M" has an attribute "size" with data "M"
         And the product "BRAIDED_HAT_M" has a price attribute with amount "33.99" and currency "USD"
         And the product "BRAIDED_HAT_M" has an attribute "attachment" with data "sample.pdf"
         And the product "BRAIDED_HAT_M" has an attribute "image" with data "star_wars_m.jpeg"
 
         And there is a product "BRAIDED_HAT_L" on Akeneo
         And the product "BRAIDED_HAT_L" has parent "MODEL_BRAIDED_HAT"
+        And the product "BRAIDED_HAT_L" has an attribute "size" with data "L"
         And the product "BRAIDED_HAT_L" has a price attribute with amount "33.00" and currency "USD"
         And the product "BRAIDED_HAT_L" has an attribute "attachment" with data "sample.pdf"
         And the product "BRAIDED_HAT_L" has an attribute "image" with data "star_wars_l.jpeg"

@@ -22,11 +22,11 @@ Feature: Reconcile products
     And there is a product "PRODUCT_1_VARIANT_2" updated at "2021-04-19" on Akeneo
     And there is a product "PRODUCT_2_VARIANT_2" updated at "2021-04-19" on Akeneo
     And the store has a product "product-1-variant-1"
-    And this product has "product-1-variant-2" variant priced at "$25"
+    And this product has "product-1-variant-2" variant priced at "$25.00"
     And the store has a product "product-2-variant-1"
-    And this product has "product-2-variant-2" variant priced at "$25"
+    And this product has "product-2-variant-2" variant priced at "$25.00"
     And the store has a product "product-3-variant-1"
-    And this product has "product-3-variant-2" variant priced at "$25"
+    And this product has "product-3-variant-2" variant priced at "$25.00"
     When I reconcile items
     Then the "product-1-variant-1" product should be enabled
     And the "product-1-variant-1" product variant should be enabled
