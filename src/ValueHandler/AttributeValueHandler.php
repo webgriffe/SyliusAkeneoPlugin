@@ -102,6 +102,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         $productChannelCodes = array_map(static fn (ChannelInterface $channel): ?string => $channel->getCode(), $product->getChannels()->toArray());
         $productChannelCodes = array_filter($productChannelCodes);
 
+        $updatedLocales = [];
         foreach ($value as $valueData) {
             if (!is_array($valueData)) {
                 throw new InvalidArgumentException(sprintf('Invalid Akeneo value data: expected an array, "%s" given.', gettype($valueData)));
@@ -119,9 +120,16 @@ final class AttributeValueHandler implements ValueHandlerInterface
             if ($valueLocaleCode !== null) {
                 $localeCodesToSet = in_array($valueLocaleCode, $availableLocalesCodes, true) ? [$valueLocaleCode] : [];
             }
+            $updatedLocales = array_merge($updatedLocales, $localeCodesToSet);
 
             foreach ($localeCodesToSet as $localeCode) {
                 $this->handleAttributeValue($attribute, $valueData['data'], $localeCode, $product);
+            }
+        }
+        // Remove attribute values for locales that are no more present in the Akeneo data
+        foreach ($availableLocalesCodes as $availableLocaleCode) {
+            if (!in_array($availableLocaleCode, $updatedLocales, true)) {
+                $this->handleAttributeValue($attribute, null, $availableLocaleCode, $product);
             }
         }
     }
