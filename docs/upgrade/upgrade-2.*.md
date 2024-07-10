@@ -5,9 +5,9 @@ nav_order: 0
 parent: Upgrade
 ---
 
-# Upgrade from `v2.5.0` to `v2.6.0`
+# Upgrade from `v2.7.0` to `v2.8.0`
 
-The v2.6.0 version introduces the Attribute importer.
+The v2.8.0 version introduces the Attribute importer.
 If you want to import attribute and options translations from Akeneo you have to add the `--importer="Attribute"` option to the command that imports once a hour:
 
 ```diff
