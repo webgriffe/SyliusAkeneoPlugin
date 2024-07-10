@@ -26,6 +26,7 @@ use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ProductAttributeHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait;
+use Webgriffe\SyliusAkeneoPlugin\SyliusProductAttributeHelperTrait;
 use Webmozart\Assert\Assert;
 
 /**
@@ -36,7 +37,8 @@ final class Importer implements ImporterInterface
 {
     use ProductOptionHelperTrait,
         ProductOptionValueHelperTrait,
-        ProductAttributeHelperTrait;
+        ProductAttributeHelperTrait,
+        SyliusProductAttributeHelperTrait;
 
     /**
      * @param RepositoryInterface<ProductAttributeInterface> $attributeRepository
@@ -98,6 +100,26 @@ final class Importer implements ImporterInterface
         return 'AttributeOptions';
     }
 
+    public function import(string $identifier): void
+    {
+        $attribute = $this->attributeRepository->findOneBy(['code' => $identifier]);
+        if (null !== $attribute && $attribute->getType() === SelectAttributeType::TYPE) {
+            $this->importAttributeConfiguration($identifier, $attribute);
+        }
+        $optionRepository = $this->optionRepository;
+        if (!$optionRepository instanceof ProductOptionRepositoryInterface) {
+            return;
+        }
+        $option = $optionRepository->findOneBy(['code' => $identifier]);
+        if (!$option instanceof ProductOptionInterface) {
+            return;
+        }
+        /** @var AkeneoAttribute $attributeResponse */
+        $attributeResponse = $this->apiClient->getAttributeApi()->get($identifier);
+
+        $this->importOptionValues($attributeResponse, $option);
+    }
+
     /**
      * As stated at https://api.akeneo.com/documentation/filter.html#by-update-date-3:
      *
@@ -124,24 +146,35 @@ final class Importer implements ImporterInterface
         );
     }
 
-    public function import(string $identifier): void
+    private function importAttributeConfiguration(string $attributeCode, ProductAttributeInterface $attribute): void
     {
-        $attribute = $this->attributeRepository->findOneBy(['code' => $identifier]);
-        if (null !== $attribute && $attribute->getType() === SelectAttributeType::TYPE) {
-            $this->importAttributeConfiguration($identifier, $attribute);
-        }
-        $optionRepository = $this->optionRepository;
-        if (!$optionRepository instanceof ProductOptionRepositoryInterface) {
-            return;
-        }
-        $option = $optionRepository->findOneBy(['code' => $identifier]);
-        if (!$option instanceof ProductOptionInterface) {
-            return;
-        }
-        /** @var AkeneoAttribute $attributeResponse */
-        $attributeResponse = $this->apiClient->getAttributeApi()->get($identifier);
+        /** @var array{choices: array<string, array<string, string>>, multiple: bool, min: ?int, max: ?int} $configuration */
+        $configuration = $attribute->getConfiguration();
+        $configuration['choices'] = $this->convertAkeneoAttributeOptionsIntoSyliusChoices(
+            $this->getSortedAkeneoAttributeOptionsByAttributeCode($attributeCode),
+        );
+        $attribute->setConfiguration($configuration);
 
-        $this->importOptionValues($attributeResponse, $option);
+        $this->attributeRepository->add($attribute);
+    }
+
+    /**
+     * @param array<array-key, AkeneoAttributeOption> $attributeOptions
+     *
+     * @return array<string, array<string, string>>
+     */
+    private function convertAkeneoAttributeOptionsIntoSyliusChoices(array $attributeOptions): array
+    {
+        $choices = [];
+        foreach ($attributeOptions as $attributeOption) {
+            $attributeOptionLabelsNotNull = array_filter(
+                $attributeOption['labels'],
+                static fn (?string $label): bool => $label !== null,
+            );
+            $choices[$attributeOption['code']] = $attributeOptionLabelsNotNull;
+        }
+
+        return $choices;
     }
 
     /**
@@ -179,6 +212,30 @@ final class Importer implements ImporterInterface
             }
             $this->importSelectProductOptionValueTranslations($attributeOption, $optionValue);
         }
+    }
+
+    /**
+     * @return array<array-key, AkeneoAttributeOption>
+     */
+    private function getSortedAkeneoAttributeOptionsByAttributeCode(string $attributeCode): array
+    {
+        $attributeOptionsOrdered = [];
+        /**
+         * @psalm-suppress TooManyTemplateParams
+         *
+         * @var ResourceCursorInterface<array-key, AkeneoAttributeOption> $attributeOptions
+         */
+        $attributeOptions = $this->apiClient->getAttributeOptionApi()->all($attributeCode);
+        /** @var AkeneoAttributeOption $attributeOption */
+        foreach ($attributeOptions as $attributeOption) {
+            $attributeOptionsOrdered[] = $attributeOption;
+        }
+        usort(
+            $attributeOptionsOrdered,
+            static fn (array $option1, array $option2): int => $option1['sort_order'] <=> $option2['sort_order'],
+        );
+
+        return $attributeOptionsOrdered;
     }
 
     /**

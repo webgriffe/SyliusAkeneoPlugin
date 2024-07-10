@@ -18,8 +18,8 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
-use Webgriffe\SyliusAkeneoPlugin\ProductAttributeHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
+use Webgriffe\SyliusAkeneoPlugin\SyliusProductAttributeHelperTrait;
 
 /**
  * @psalm-type AkeneoAttribute array{code: string, type: string, labels: array<string, ?string>}
@@ -34,7 +34,7 @@ final class Importer implements ImporterInterface
 
     public const METRIC_TYPE = 'pim_catalog_metric';
 
-    use ProductOptionHelperTrait, ProductAttributeHelperTrait;
+    use ProductOptionHelperTrait, SyliusProductAttributeHelperTrait;
 
     public const AKENEO_ENTITY = 'Attribute';
 
