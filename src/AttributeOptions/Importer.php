@@ -20,11 +20,13 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Sylius\Component\Resource\Translation\Provider\TranslationLocaleProviderInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Webgriffe\SyliusAkeneoPlugin\Attribute\Importer as AttributeImporter;
 use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ProductAttributeHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait;
 use Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait;
+use Webgriffe\SyliusAkeneoPlugin\SyliusProductAttributeHelperTrait;
 use Webmozart\Assert\Assert;
 
 /**
@@ -33,15 +35,10 @@ use Webmozart\Assert\Assert;
  */
 final class Importer implements ImporterInterface
 {
-    use ProductOptionHelperTrait, ProductOptionValueHelperTrait, ProductAttributeHelperTrait;
-
-    private const SIMPLESELECT_TYPE = 'pim_catalog_simpleselect';
-
-    private const MULTISELECT_TYPE = 'pim_catalog_multiselect';
-
-    private const BOOLEAN_TYPE = 'pim_catalog_boolean';
-
-    private const METRIC_TYPE = 'pim_catalog_metric';
+    use ProductOptionHelperTrait,
+        ProductOptionValueHelperTrait,
+        ProductAttributeHelperTrait,
+        SyliusProductAttributeHelperTrait;
 
     /**
      * @param RepositoryInterface<ProductAttributeInterface> $attributeRepository
@@ -120,8 +117,6 @@ final class Importer implements ImporterInterface
         /** @var AkeneoAttribute $attributeResponse */
         $attributeResponse = $this->apiClient->getAttributeApi()->get($identifier);
 
-        // TODO: Update also the position of the option? The problem is that this position is on family variant entity!
-        $this->importProductOptionTranslations($attributeResponse, $option);
         $this->importOptionValues($attributeResponse, $option);
     }
 
@@ -146,72 +141,8 @@ final class Importer implements ImporterInterface
         $akeneoAttributes = $this->apiClient->getAttributeApi()->all(50, ['search' => $searchBuilder->getFilters()]);
 
         return array_merge(
-            $this->filterBySyliusAttributeCodes($akeneoAttributes),
+            $this->filterBySyliusSelectAttributeCodes($akeneoAttributes),
             $this->filterSyliusOptionCodes($akeneoAttributes),
-        );
-    }
-
-    /**
-     * Return the list of Akeneo attribute codes whose code is used as a code for a Sylius attribute
-     *
-     * @psalm-suppress TooManyTemplateParams
-     *
-     * @param ResourceCursorInterface<array-key, AkeneoAttribute> $akeneoAttributes
-     *
-     * @return string[]
-     */
-    private function filterBySyliusAttributeCodes(ResourceCursorInterface $akeneoAttributes): array
-    {
-        $syliusSelectAttributes = $this->attributeRepository->findBy(['type' => SelectAttributeType::TYPE]);
-        $syliusSelectAttributes = array_filter(
-            array_map(
-                static fn (ProductAttributeInterface $attribute): ?string => $attribute->getCode(),
-                $syliusSelectAttributes,
-            ),
-        );
-        $attributeCodes = [];
-        /** @var AkeneoAttribute $akeneoAttribute */
-        foreach ($akeneoAttributes as $akeneoAttribute) {
-            if (!in_array($akeneoAttribute['code'], $syliusSelectAttributes, true)) {
-                continue;
-            }
-            if ($akeneoAttribute['type'] !== self::SIMPLESELECT_TYPE && $akeneoAttribute['type'] !== self::MULTISELECT_TYPE) {
-                continue;
-            }
-            $attributeCodes[] = $akeneoAttribute['code'];
-        }
-
-        return $attributeCodes;
-    }
-
-    /**
-     * Return the list of Akeneo attribute codes whose code is used as a code for a Sylius attribute
-     *
-     * @psalm-suppress TooManyTemplateParams
-     *
-     * @param ResourceCursorInterface<array-key, AkeneoAttribute> $akeneoAttributes
-     *
-     * @return string[]
-     */
-    private function filterSyliusOptionCodes(ResourceCursorInterface $akeneoAttributes): array
-    {
-        $productOptionRepository = $this->optionRepository;
-        if (!$productOptionRepository instanceof ProductOptionRepositoryInterface) {
-            return [];
-        }
-        $akeneoAttributeCodes = [];
-        /** @var AkeneoAttribute $akeneoAttribute */
-        foreach ($akeneoAttributes as $akeneoAttribute) {
-            if (!in_array($akeneoAttribute['type'], [self::SIMPLESELECT_TYPE, self::MULTISELECT_TYPE, self::BOOLEAN_TYPE, self::METRIC_TYPE], true)) {
-                continue;
-            }
-            $akeneoAttributeCodes[] = $akeneoAttribute['code'];
-        }
-        $syliusOptions = $productOptionRepository->findByCodes($akeneoAttributeCodes);
-
-        return array_map(
-            static fn (ProductOptionInterface $option): string => (string) $option->getCode(),
-            $syliusOptions,
         );
     }
 
@@ -220,15 +151,15 @@ final class Importer implements ImporterInterface
      */
     private function importOptionValues(array $akeneoAttribute, ProductOptionInterface $option): void
     {
-        if ($akeneoAttribute['type'] !== self::SIMPLESELECT_TYPE &&
-            $akeneoAttribute['type'] !== self::MULTISELECT_TYPE &&
-            $akeneoAttribute['type'] !== self::BOOLEAN_TYPE
+        if ($akeneoAttribute['type'] !== AttributeImporter::SIMPLESELECT_TYPE &&
+            $akeneoAttribute['type'] !== AttributeImporter::MULTISELECT_TYPE &&
+            $akeneoAttribute['type'] !== AttributeImporter::BOOLEAN_TYPE
         ) {
             return;
         }
         $attributeCode = $akeneoAttribute['code'];
 
-        if ($akeneoAttribute['type'] === self::BOOLEAN_TYPE) {
+        if ($akeneoAttribute['type'] === AttributeImporter::BOOLEAN_TYPE) {
             foreach ([true, false] as $booleanValue) {
                 $optionValueCode = $this->getSyliusProductOptionValueCode($attributeCode, (string) $booleanValue);
                 $productOptionValue = $this->getProductOptionValueFromOption($option, $optionValueCode);
@@ -337,5 +268,18 @@ final class Importer implements ImporterInterface
     private function getAkeneoPimClient(): AkeneoPimClientInterface
     {
         return $this->apiClient;
+    }
+
+    private function getProductOptionRepository(): ?ProductOptionRepositoryInterface
+    {
+        return $this->optionRepository;
+    }
+
+    /**
+     * @return RepositoryInterface<ProductAttributeInterface>
+     */
+    private function getProductAttributeRepository(): RepositoryInterface
+    {
+        return $this->attributeRepository;
     }
 }

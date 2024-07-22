@@ -9,6 +9,8 @@ use Akeneo\Pim\ApiClient\Pagination\ResourceCursorInterface;
 use Sylius\Component\Product\Model\ProductAttributeInterface;
 
 /**
+ * @TODO Rename to something more Akeneo-specific, like AkeneoAttributeHelperTrait
+ *
  * @psalm-type AkeneoAttributeOption array{_links: array, code: string, attribute: string, sort_order: int, labels: array<string, ?string>}
  */
 trait ProductAttributeHelperTrait
