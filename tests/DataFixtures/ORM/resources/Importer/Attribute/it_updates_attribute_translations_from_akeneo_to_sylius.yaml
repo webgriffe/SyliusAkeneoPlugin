@@ -1,0 +1,24 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductAttribute:
+    size:
+        code: 'size'
+        type: 'select'
+        storageType: 'json'
+        translations:
+            - '@size_en_US'
+            - '@size_it_IT'
+
+Sylius\Component\Product\Model\ProductAttributeTranslation:
+    size_en_US:
+        name: 'Format'
+        locale: 'en_US'
+        translatable: '@size'
+    size_it_IT:
+        name: 'Formato'
+        locale: 'it_IT'
+        translatable: '@size'

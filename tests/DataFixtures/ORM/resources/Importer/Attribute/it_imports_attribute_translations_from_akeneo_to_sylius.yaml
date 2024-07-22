@@ -1,0 +1,11 @@
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Product\Model\ProductAttribute:
+    attribute:
+        code: 'size'
+        type: 'select'
+        storageType: 'json'
