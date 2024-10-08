@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db;
 
+if (!interface_exists(\Sylius\Resource\Doctrine\Persistence\RepositoryInterface::class)) {
+    class_alias(\Sylius\Resource\Doctrine\Persistence\RepositoryInterface::class, \Sylius\Component\Resource\Repository\RepositoryInterface::class);
+}
 use Behat\Behat\Context\Context;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -12,7 +15,7 @@ use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Sylius\Component\Product\Model\ProductAssociationInterface;
 use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
 use Sylius\Component\Product\Repository\ProductAssociationTypeRepositoryInterface;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Resource\Doctrine\Persistence\RepositoryInterface;
 use Webmozart\Assert\Assert;
 
 final class ProductContext implements Context

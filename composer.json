@@ -100,7 +100,7 @@
             "security-checker security:check": "script"
         },
         "ecs": "ecs check",
-        "phpstan": "phpstan analyse -c phpstan.neon -l max src/",
+        "phpstan": "phpstan analyse",
         "psalm": "vendor/bin/psalm",
         "phpunit": "phpunit",
         "phpspec": "phpspec run",
