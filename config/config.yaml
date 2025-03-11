@@ -59,7 +59,18 @@ sylius_grid:
                     label: webgriffe_sylius_akeneo.ui.successful
                 message:
                     type: string
-                    label: webgriffe_sylius_akeneo.ui.message            
+                    label: webgriffe_sylius_akeneo.ui.message
+            actions:
+                main:
+                    import_product_variants:
+                        type: importProduct
+                        label: webgriffe_sylius_akeneo.ui.schedule_import
+                        options:
+                            link:
+                                route: webgriffe_sylius_akeneo_products_import
+                                parameters: []
+                            icon: cloud download
+                            color: violet
 
 framework:
     messenger:
