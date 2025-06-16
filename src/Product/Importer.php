@@ -20,7 +20,6 @@ use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Sylius\Component\Product\Factory\ProductFactoryInterface;
 use Sylius\Component\Product\Factory\ProductVariantFactoryInterface;
-use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Resource\Factory\FactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
@@ -168,7 +167,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     private function dispatchPreEvent(
         ProductInterface|ProductVariantInterface $productOrVariant,
         string $resourceName,
-        string $eventName
+        string $eventName,
     ): ResourceControllerEvent {
         $event = new ResourceControllerEvent($productOrVariant);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
@@ -180,7 +179,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     private function dispatchPostEvent(
         ProductInterface|ProductVariantInterface $productOrVariant,
         string $resourceName,
-        string $eventName
+        string $eventName,
     ): ResourceControllerEvent {
         $event = new ResourceControllerEvent($productOrVariant);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
