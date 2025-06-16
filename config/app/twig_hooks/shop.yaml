@@ -1,0 +1,20 @@
+sylius_twig_hooks:
+    hooks:
+        'sylius_shop.base#stylesheets':
+            custom_styles:
+                template: '@WebgriffeSyliusAkeneoPlugin/shop/shared/layout/base/styles.html.twig'
+                priority: -100
+
+        'sylius_shop.base#javascripts':
+            custom_scripts:
+                template: '@WebgriffeSyliusAkeneoPlugin/shop/shared/layout/base/scripts.html.twig'
+                priority: -100
+
+        'app_shop.greeting.dynamic':
+            content:
+                template: '@WebgriffeSyliusAkeneoPlugin/shop/greeting/dynamic/content.html.twig'
+                priority: 0
+        'app_shop.greeting.static':
+            content:
+                template: '@WebgriffeSyliusAkeneoPlugin/shop/greeting/static/content.html.twig'
+                priority: 0
