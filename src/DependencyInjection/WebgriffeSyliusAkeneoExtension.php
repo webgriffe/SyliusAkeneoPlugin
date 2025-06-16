@@ -62,7 +62,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'arguments' => [
                 '$slugify' => 'webgriffe_sylius_akeneo.slugify',
                 '$productTranslationFactory' => 'sylius.factory.product_translation',
-                '$translationLocaleProvider' => 'sylius.translation_locale_provider.admin',
+                '$translationLocaleProvider' => 'sylius.provider.translation_locale.admin',
                 '$productTranslationRepository' => 'sylius.repository.product_translation',
             ],
         ],
@@ -74,7 +74,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 '$productOptionValueFactory' => 'sylius.factory.product_option_value',
                 '$productOptionValueTranslationFactory' => 'sylius.factory.product_option_value_translation',
                 '$productOptionValueRepository' => 'sylius.repository.product_option_value',
-                '$translationLocaleProvider' => 'sylius.translation_locale_provider.admin',
+                '$translationLocaleProvider' => 'sylius.provider.translation_locale.admin',
                 '$translator' => 'translator',
             ],
         ],
@@ -84,7 +84,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
                 '$propertyAccessor' => 'property_accessor',
                 '$productTranslationFactory' => 'sylius.factory.product_translation',
                 '$productVariantTranslationFactory' => 'sylius.factory.product_variant_translation',
-                '$localeProvider' => 'sylius.translation_locale_provider.admin',
+                '$localeProvider' => 'sylius.provider.translation_locale.admin',
             ],
         ],
         'generic_attribute' => [
@@ -92,7 +92,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
             'arguments' => [
                 '$attributeRepository' => 'sylius.repository.product_attribute',
                 '$factory' => 'sylius.factory.product_attribute_value',
-                '$localeProvider' => 'sylius.translation_locale_provider.admin',
+                '$localeProvider' => 'sylius.provider.translation_locale.admin',
                 '$valueConverter' => 'webgriffe_sylius_akeneo.converter.value',
                 '$akeneoPimClient' => 'webgriffe_sylius_akeneo.api_client',
             ],

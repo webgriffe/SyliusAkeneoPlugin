@@ -17,7 +17,7 @@ return static function (ContainerConfigurator $containerConfigurator) {
             service('webgriffe_sylius_akeneo.command_bus'),
             service('translator'),
         ])
-        ->call('setContainer', [service(ContainerInterface::class)])
+        ->call('setContainer', [service('service_container')])
         ->tag('controller.service_arguments')
     ;
 
@@ -28,7 +28,7 @@ return static function (ContainerConfigurator $containerConfigurator) {
             param('webgriffe_sylius_akeneo.webhook.secret'),
             service('event_dispatcher'),
         ])
-        ->call('setContainer', [service(ContainerInterface::class)])
+        ->call('setContainer', [service('service_container')])
         ->tag('controller.service_arguments')
     ;
 };

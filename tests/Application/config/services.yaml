@@ -10,7 +10,7 @@ services:
         arguments:
             - '@sylius.factory.product_attribute'
             - '@sylius.repository.product_attribute'
-            - '@sylius.locale_provider.channel_based.inner'
+            - '@sylius.provider.locale.channel_based.inner'
             - '@sylius.factory.product_attribute_translation'
         tags:
             - { name: console.command }
@@ -22,6 +22,6 @@ services:
             - '@sylius.repository.taxon'
             - '@sylius.factory.taxon_translation'
             - '@sylius.generator.taxon_slug'
-            - '@sylius.locale_provider.channel_based.inner'
+            - '@sylius.provider.locale.channel_based.inner'
         tags:
             - { name: console.command }
