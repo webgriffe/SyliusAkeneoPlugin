@@ -6,6 +6,7 @@ namespace Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Ui\Admin;
 
 use Behat\Behat\Context\Context;
 use Behat\Mink\Element\NodeElement;
+use Sylius\Behat\Element\Admin\Product\AssociationsFormElementInterface;
 use Sylius\Behat\NotificationType;
 use Sylius\Behat\Page\Admin\Product\IndexPageInterface;
 use Sylius\Behat\Page\Admin\Product\UpdateSimpleProductPageInterface;
@@ -26,6 +27,7 @@ final class ManagingProductsContext implements Context
         private NotificationCheckerInterface $notificationChecker,
         private UpdateSimpleProductPageInterface $updateSimpleProductPage,
         private ProductRepositoryInterface $productRepository,
+        private AssociationsFormElementInterface $associationsFormElement,
     ) {
     }
 
@@ -64,8 +66,12 @@ final class ManagingProductsContext implements Context
         Assert::isInstanceOf($product, ProductInterface::class);
         $this->updateSimpleProductPage->open(['id' => $product->getId()]);
         foreach ($productsNames as $productName) {
+            $associatedProducts = $this->productRepository->findByName($productName, 'en_US');
+            Assert::count($associatedProducts, 1);
+            /** @var ProductInterface $associatedProduct */
+            $associatedProduct = array_values($associatedProducts)[0];
             Assert::true(
-                $this->updateSimpleProductPage->hasAssociatedProduct($productName, $productAssociationType),
+                $this->associationsFormElement->hasAssociatedProduct($associatedProduct, $productAssociationType),
                 sprintf(
                     'This product should have an association %s with product %s.',
                     $productAssociationType->getName(),
@@ -86,8 +92,12 @@ final class ManagingProductsContext implements Context
         $product = $this->productRepository->findOneByCode($code);
         Assert::isInstanceOf($product, ProductInterface::class);
         $this->updateSimpleProductPage->open(['id' => $product->getId()]);
+        $associatedProducts = $this->productRepository->findByName($productName, 'en_US');
+        Assert::count($associatedProducts, 1);
+        /** @var ProductInterface $associatedProduct */
+        $associatedProduct = array_values($associatedProducts)[0];
         Assert::false(
-            $this->updateSimpleProductPage->hasAssociatedProduct($productName, $productAssociationType),
+            $this->associationsFormElement->hasAssociatedProduct($associatedProduct, $productAssociationType),
             sprintf(
                 'This product should have an association %s with product %s.',
                 $productAssociationType->getName(),
