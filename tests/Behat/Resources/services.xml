@@ -46,6 +46,7 @@
             <argument type="service" id="sylius.behat.notification_checker.admin" />
             <argument type="service" id="sylius.behat.page.admin.product.update_simple" />
             <argument type="service" id="sylius.repository.product" />
+            <argument type="service" id="sylius.behat.element.admin.product.association_form" />
         </service>
 
         <service id="webgriffe_sylius_akeneo.behat.context.db.log" class="Tests\Webgriffe\SyliusAkeneoPlugin\Behat\Context\Db\ItemImportResultContext">

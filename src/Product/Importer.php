@@ -165,18 +165,24 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         return $product;
     }
 
-    private function dispatchPreEvent(ResourceInterface $product, string $resourceName, string $eventName): ResourceControllerEvent
-    {
-        $event = new ResourceControllerEvent($product);
+    private function dispatchPreEvent(
+        ProductInterface|ProductVariantInterface $productOrVariant,
+        string $resourceName,
+        string $eventName
+    ): ResourceControllerEvent {
+        $event = new ResourceControllerEvent($productOrVariant);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
         $this->eventDispatcher->dispatch($event, sprintf('sylius.%s.pre_%s', $resourceName, $eventName));
 
         return $event;
     }
 
-    private function dispatchPostEvent(ResourceInterface $product, string $resourceName, string $eventName): ResourceControllerEvent
-    {
-        $event = new ResourceControllerEvent($product);
+    private function dispatchPostEvent(
+        ProductInterface|ProductVariantInterface $productOrVariant,
+        string $resourceName,
+        string $eventName
+    ): ResourceControllerEvent {
+        $event = new ResourceControllerEvent($productOrVariant);
         $event->setArgument(self::EVENT_AKENEO_IMPORT, true);
         /** @psalm-suppress InvalidArgument */
         $this->eventDispatcher->dispatch($event, sprintf('sylius.%s.post_%s', $resourceName, $eventName));
