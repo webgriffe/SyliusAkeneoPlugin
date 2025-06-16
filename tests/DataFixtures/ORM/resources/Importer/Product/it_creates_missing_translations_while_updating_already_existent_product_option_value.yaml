@@ -6,20 +6,25 @@ Sylius\Component\Locale\Model\Locale:
 
 Sylius\Component\Product\Model\ProductOption:
     size:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
         code: "size"
+        translations:
+            - "@size_en_US"
+            - "@size_it_IT"
 
 Sylius\Component\Product\Model\ProductOptionTranslation:
     size_en_US:
-        translatable: "@size"
         locale: "en_US"
         name: "Size"
     size_it_IT:
-        translatable: "@size"
         locale: "it_IT"
         name: "Taglia"
 
 Sylius\Component\Product\Model\ProductOptionValue:
     size_m:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
         option: "@size"
         code: "size_m"
         translations:

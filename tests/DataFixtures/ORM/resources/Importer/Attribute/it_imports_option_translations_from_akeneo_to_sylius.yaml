@@ -6,4 +6,6 @@ Sylius\Component\Locale\Model\Locale:
 
 Sylius\Component\Product\Model\ProductOption:
     size:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
         code: 'size'

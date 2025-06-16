@@ -6,6 +6,8 @@ Sylius\Component\Locale\Model\Locale:
 
 Sylius\Component\Product\Model\ProductAttribute:
     attribute:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
         code: 'size'
         type: 'select'
         storageType: 'json'
