@@ -22,6 +22,8 @@ Sylius\Component\Core\Model\Product:
 
 Sylius\Component\Core\Model\ProductVariant:
     product-variant:
+        fallbackLocale: "en_US"
+        currentLocale: "en_US"
         code: "STAR_WARS_TSHIRT_M"
         product: "@product"
 
