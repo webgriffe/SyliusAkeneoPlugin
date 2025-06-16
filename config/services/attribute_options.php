@@ -15,7 +15,7 @@ return static function (ContainerConfigurator $containerConfigurator) {
             service('sylius.repository.product_attribute'),
             service('event_dispatcher'),
             service('sylius.repository.product_option'),
-            service('sylius.translation_locale_provider.admin'),
+            service('sylius.provider.translation_locale.admin'),
             service('sylius.factory.product_option_value_translation'),
             service('sylius.factory.product_option_value'),
             service('sylius.factory.product_option_translation'),
