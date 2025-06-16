@@ -80,7 +80,7 @@ Adjust your `tests/Application/.env.test.local` and then run the following comma
 - Behat (non-JS scenarios)
   
   ```bash
-  vendor/bin/behat --strict --tags="~@javascript && ~@todo && ~@cli"
+  vendor/bin/behat --strict --tags="~@javascript&&~@mink:chromedriver"
   ```
 
 - Behat (JS scenarios)
@@ -103,7 +103,7 @@ Adjust your `tests/Application/.env.test.local` and then run the following comma
     4. Run Behat:
 
         ```bash
-        vendor/bin/behat --strict --tags="@javascript"
+        vendor/bin/behat --strict --tags="@javascript,@mink:chromedriver"
         ```
 
 ### Opening Sylius with your plugin

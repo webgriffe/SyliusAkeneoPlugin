@@ -24,6 +24,8 @@ parameters:
         -
             message: '/Cannot call method trans\(\) on Symfony\\Contracts\\Translation\\TranslatorInterface\|null\./'
             path: src/Controller/ProductEnqueueController
+        -
+            identifier: missingType.iterableValue
 
     # Move alias here when global alias are supported also on Psalm: https://github.com/vimeo/psalm/discussions/5376
     typeAliases:
