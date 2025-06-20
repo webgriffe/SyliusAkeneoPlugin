@@ -10,16 +10,16 @@ use Sylius\Component\Locale\Provider\LocaleProviderInterface;
 use Sylius\Component\Product\Model\ProductAttributeTranslationInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webmozart\Assert\Assert;
 
+#[AsCommand(name: 'webgriffe:akeneo:attributes-import')]
 final class AttributesImportCommand extends Command
 {
-    protected static $defaultName = 'app:attributes-import';
-
     private array $productAttributesTypeMap = [
         'pim_catalog_identifier' => 'text',
         'pim_catalog_simpleselect' => 'select',

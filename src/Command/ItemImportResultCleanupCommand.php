@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
 use DateInterval;
 use DateTime;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,14 +15,12 @@ use Webgriffe\SyliusAkeneoPlugin\DateTimeBuilder;
 use Webgriffe\SyliusAkeneoPlugin\Entity\ItemImportResultInterface;
 use Webgriffe\SyliusAkeneoPlugin\Respository\ItemImportResultRepositoryInterface;
 
+#[AsCommand(name: 'webgriffe:akeneo:cleanup-item-import-results')]
 final class ItemImportResultCleanupCommand extends Command
 {
     private const DEFAULT_DAYS = 30;
 
     private const DAYS_ARGUMENT_NAME = 'days';
-
-    // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'webgriffe:akeneo:cleanup-item-import-results';
 
     public function __construct(private ItemImportResultRepositoryInterface $itemImportResultRepository)
     {

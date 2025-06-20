@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
 use DateTime;
 use InvalidArgumentException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,6 +20,7 @@ use Webgriffe\SyliusAkeneoPlugin\ImporterRegistryInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
 use Webmozart\Assert\Assert;
 
+#[AsCommand(name: 'webgriffe:akeneo:import')]
 final class ImportCommand extends Command
 {
     use LockableTrait;
@@ -30,8 +32,6 @@ final class ImportCommand extends Command
     private const ALL_OPTION_NAME = 'all';
 
     private const IMPORTER_OPTION_NAME = 'importer';
-
-    protected static $defaultName = 'webgriffe:akeneo:import';
 
     public function __construct(
         private DateTimeBuilderInterface $dateTimeBuilder,
