@@ -8,7 +8,7 @@ webgriffe_sylius_akeneo_item_import_result:
         section: admin
         path: akeneo_item_import_result
         except: ['update', 'create', 'show']
-        templates: "@SyliusAdmin\\Crud"
+        templates: "@SyliusAdmin\\shared/crud"
         redirect: update
         grid: webgriffe_sylius_akeneo_admin_item_import_result
         vars:
