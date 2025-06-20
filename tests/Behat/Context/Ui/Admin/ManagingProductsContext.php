@@ -55,53 +55,47 @@ final class ManagingProductsContext implements Context
     }
 
     /**
-     * @Then the product with code :code should have an association :productAssociationType with product :productName
+     * @Then the product with code :code should have an association :productAssociationType with product :productCode
      */
     public function theProductShouldHaveAnAssociationWithProducts(
         string $code,
         ProductAssociationTypeInterface $productAssociationType,
-        string ...$productsNames,
+        string $productCode,
     ): void {
         $product = $this->productRepository->findOneByCode($code);
         Assert::isInstanceOf($product, ProductInterface::class);
         $this->updateSimpleProductPage->open(['id' => $product->getId()]);
-        foreach ($productsNames as $productName) {
-            $associatedProducts = $this->productRepository->findByName($productName, 'en_US');
-            Assert::count($associatedProducts, 1);
-            /** @var ProductInterface $associatedProduct */
-            $associatedProduct = array_values($associatedProducts)[0];
-            Assert::true(
-                $this->associationsFormElement->hasAssociatedProduct($associatedProduct, $productAssociationType),
-                sprintf(
-                    'This product should have an association %s with product %s.',
-                    $productAssociationType->getName(),
-                    $productName,
-                ),
-            );
-        }
+        $associatedProduct = $this->productRepository->findOneByCode($productCode);
+        Assert::notNull($associatedProduct);
+        Assert::true(
+            $this->associationsFormElement->hasAssociatedProduct($associatedProduct, $productAssociationType),
+            sprintf(
+                'This product should have an association %s with product %s.',
+                $productAssociationType->getName(),
+                $productCode,
+            ),
+        );
     }
 
     /**
-     * @Then the product with code :code should not have an association :productAssociationType with product :productName
+     * @Then the product with code :code should not have an association :productAssociationType with product :productCode
      */
     public function theProductShouldNotHaveAnAssociationWithProduct(
         string $code,
         ProductAssociationTypeInterface $productAssociationType,
-        string $productName,
+        string $productCode,
     ): void {
         $product = $this->productRepository->findOneByCode($code);
         Assert::isInstanceOf($product, ProductInterface::class);
         $this->updateSimpleProductPage->open(['id' => $product->getId()]);
-        $associatedProducts = $this->productRepository->findByName($productName, 'en_US');
-        Assert::count($associatedProducts, 1);
-        /** @var ProductInterface $associatedProduct */
-        $associatedProduct = array_values($associatedProducts)[0];
+        $associatedProduct = $this->productRepository->findOneByCode($productCode);
+        Assert::notNull($associatedProduct);
         Assert::false(
             $this->associationsFormElement->hasAssociatedProduct($associatedProduct, $productAssociationType),
             sprintf(
                 'This product should have an association %s with product %s.',
                 $productAssociationType->getName(),
-                $productName,
+                $productCode,
             ),
         );
     }
