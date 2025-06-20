@@ -44,6 +44,7 @@ final class ImageValueHandler implements ValueHandlerInterface
     /**
      * @param mixed $subject
      */
+    #[\Override]
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductVariantInterface && $this->akeneoAttributeCode === $attribute;
@@ -52,6 +53,7 @@ final class ImageValueHandler implements ValueHandlerInterface
     /**
      * @param mixed $subject
      */
+    #[\Override]
     public function handle($subject, string $attribute, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {

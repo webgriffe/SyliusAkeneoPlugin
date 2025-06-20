@@ -49,10 +49,10 @@
         "symfony/flex": "^2.4",
         "symfony/http-client": "^6.4 || ^7.1",
         "symfony/intl": "^6.4 || ^7.1",
-        "symfony/webpack-encore-bundle": "^2.2",
         "symfony/web-profiler-bundle": "^6.4 || ^7.1",
+        "symfony/webpack-encore-bundle": "^2.2",
         "theofidry/alice-data-fixtures": "^1.1",
-        "vimeo/psalm": "^5.21"
+        "vimeo/psalm": "^6.12"
     },
     "config": {
         "sort-packages": true,

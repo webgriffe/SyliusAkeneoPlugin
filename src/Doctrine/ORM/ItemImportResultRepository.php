@@ -11,6 +11,7 @@ use Webmozart\Assert\Assert;
 
 final class ItemImportResultRepository extends EntityRepository implements ItemImportResultRepositoryInterface
 {
+    #[\Override]
     public function findToCleanup(DateTimeInterface $dateLimit): array
     {
         $result = $this->createQueryBuilder('i')

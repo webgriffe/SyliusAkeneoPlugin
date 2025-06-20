@@ -114,6 +114,7 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         ],
     ];
 
+    #[\Override]
     public function load(array $configs, ContainerBuilder $container): void
     {
         /** @var array{resources: array|mixed, api_client: array<array-key, ?string>, webhook: array{secret: ?string}, value_handlers: array} $config */
@@ -133,11 +134,13 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
         );
     }
 
+    #[\Override]
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration();
     }
 
+    #[\Override]
     public function process(ContainerBuilder $container): void
     {
         $this->addTaggedValueHandlersToResolver($container);

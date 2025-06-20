@@ -20,6 +20,7 @@ final class PriorityValueHandlersResolver implements ValueHandlersResolverInterf
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function resolve($subject, string $attribute, array $value): array
     {
         $supportedHandlers = [];

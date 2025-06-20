@@ -102,11 +102,13 @@ final class Importer implements ImporterInterface
         }
     }
 
+    #[\Override]
     public function getAkeneoEntity(): string
     {
         return 'AttributeOptions';
     }
 
+    #[\Override]
     public function import(string $identifier): void
     {
         $attribute = $this->attributeRepository->findOneBy(['code' => $identifier]);
@@ -134,6 +136,7 @@ final class Importer implements ImporterInterface
      *
      * So, the $sinceDate argument it's not used here.
      */
+    #[\Override]
     public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
         $searchBuilder = new SearchBuilder();
@@ -194,6 +197,7 @@ final class Importer implements ImporterInterface
      * This method should be called only if the productOptionRepository is injected, so we can assume
      * that this factory is injected too.
      */
+    #[\Override]
     private function getDefinedLocaleCodes(): array
     {
         $translationLocaleProvider = $this->translationLocaleProvider;
@@ -208,6 +212,7 @@ final class Importer implements ImporterInterface
      *
      * @return FactoryInterface<ProductOptionTranslationInterface>
      */
+    #[\Override]
     private function getProductOptionTranslationFactory(): FactoryInterface
     {
         $productOptionTranslationFactory = $this->productOptionTranslationFactory;
@@ -222,6 +227,7 @@ final class Importer implements ImporterInterface
      *
      * @return FactoryInterface<ProductOptionValueTranslationInterface>
      */
+    #[\Override]
     private function getProductOptionValueTranslationFactory(): FactoryInterface
     {
         $productOptionValueTranslationFactory = $this->productOptionValueTranslationFactory;
@@ -236,6 +242,7 @@ final class Importer implements ImporterInterface
      *
      * @return FactoryInterface<ProductOptionValueInterface>
      */
+    #[\Override]
     private function getProductOptionValueFactory(): FactoryInterface
     {
         $productOptionValueFactory = $this->productOptionValueFactory;
@@ -248,6 +255,7 @@ final class Importer implements ImporterInterface
      * This method should be called only if the productOptionRepository is injected, so we can assume
      * that this translator is injected too.
      */
+    #[\Override]
     private function getTranslator(): TranslatorInterface
     {
         $translator = $this->translator;
@@ -272,11 +280,13 @@ final class Importer implements ImporterInterface
         return $productOptionValue;
     }
 
+    #[\Override]
     private function getAkeneoPimClient(): AkeneoPimClientInterface
     {
         return $this->apiClient;
     }
 
+    #[\Override]
     private function getProductOptionRepository(): ?ProductOptionRepositoryInterface
     {
         return $this->optionRepository;
@@ -285,6 +295,7 @@ final class Importer implements ImporterInterface
     /**
      * @return RepositoryInterface<ProductAttributeInterface>
      */
+    #[\Override]
     private function getProductAttributeRepository(): RepositoryInterface
     {
         return $this->attributeRepository;

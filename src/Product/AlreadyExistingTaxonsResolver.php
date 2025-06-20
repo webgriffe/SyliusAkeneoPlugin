@@ -13,6 +13,7 @@ final class AlreadyExistingTaxonsResolver implements TaxonsResolverInterface
     {
     }
 
+    #[\Override]
     public function resolve(array $akeneoProduct): array
     {
         /** @var string[]|mixed $categories */

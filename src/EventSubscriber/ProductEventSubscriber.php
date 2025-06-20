@@ -11,6 +11,7 @@ use Webmozart\Assert\Assert;
 
 final class ProductEventSubscriber implements EventSubscriberInterface
 {
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [

@@ -41,6 +41,7 @@ final class ImportCommand extends Command
         parent::__construct();
     }
 
+    #[\Override]
     protected function configure(): void
     {
         $this->setDescription(
@@ -72,6 +73,7 @@ final class ImportCommand extends Command
         );
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $sinceOptionValue = $input->getOption(self::SINCE_OPTION_NAME);

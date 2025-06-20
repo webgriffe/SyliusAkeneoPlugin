@@ -22,6 +22,7 @@ final class Validator implements ValidatorInterface
     ) {
     }
 
+    #[\Override]
     public function validate(ProductVariantInterface $productVariant): void
     {
         /** @var ConstraintViolationList $errors */

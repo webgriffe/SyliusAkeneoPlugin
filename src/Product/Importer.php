@@ -53,11 +53,13 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     ) {
     }
 
+    #[\Override]
     public function getAkeneoEntity(): string
     {
         return self::AKENEO_ENTITY;
     }
 
+    #[\Override]
     public function import(string $identifier): void
     {
         $productVariantResponse = $this->apiClient->getProductApi()->get($identifier);
@@ -114,6 +116,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     }
 
     /** @psalm-return array<array-key, string> */
+    #[\Override]
     public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
         $searchBuilder = new SearchBuilder();
@@ -135,6 +138,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
     }
 
     /** @psalm-return array<array-key, string> */
+    #[\Override]
     public function getAllIdentifiers(): array
     {
         return $this->getIdentifiersModifiedSince((new DateTime())->setTimestamp(0));
@@ -266,6 +270,7 @@ final class Importer implements ImporterInterface, ReconcilerInterface
         return $attributesValues;
     }
 
+    #[\Override]
     public function reconcile(array $identifiersToReconcileWith): void
     {
         /** @var ProductVariantInterface[] $productVariantsToReconcile */

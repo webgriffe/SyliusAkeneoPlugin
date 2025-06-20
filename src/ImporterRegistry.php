@@ -9,6 +9,7 @@ final class ImporterRegistry implements ImporterRegistryInterface
     /** @var ImporterInterface[] */
     private array $registry = [];
 
+    #[\Override]
     public function add(ImporterInterface $importer): void
     {
         $this->registry[] = $importer;
@@ -17,6 +18,7 @@ final class ImporterRegistry implements ImporterRegistryInterface
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function all(): array
     {
         return $this->registry;

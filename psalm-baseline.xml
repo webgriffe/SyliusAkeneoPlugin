@@ -1,517 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.3.2@57b53ff26237074fdf5cbcb034f7da5172be4524">
-  <file src="src/ApiClient.php">
-    <MixedArgument occurrences="2">
-      <code>$items</code>
-      <code>$responseResult['_embedded']['items']</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="8">
-      <code>$responseResult['_embedded']['items']</code>
-      <code>$responseResult['_embedded']['items']</code>
-      <code>$responseResult['_links']['next']</code>
-      <code>$responseResult['access_token']</code>
-      <code>$responseResult['code']</code>
-      <code>$responseResult['code']</code>
-      <code>$responseResult['message']</code>
-      <code>$responseResult['message']</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="6">
-      <code>$items</code>
-      <code>$nextPageUrl</code>
-      <code>$responseResult</code>
-      <code>$responseResult</code>
-      <code>$responseResult</code>
-      <code>$this-&gt;token</code>
-    </MixedAssignment>
-    <MixedInferredReturnType occurrences="3">
-      <code>?array</code>
-      <code>array</code>
-      <code>array</code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="2">
-      <code>$items</code>
-      <code>$responseResult</code>
-    </MixedReturnStatement>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$token</code>
-    </PropertyNotSetInConstructor>
-    <UndefinedClass occurrences="3">
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-    </UndefinedClass>
-    <UndefinedDocblockClass occurrences="9">
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-      <code>\HttpException</code>
-    </UndefinedDocblockClass>
-  </file>
-  <file src="src/AttributeOptions/Importer.php">
-    <MixedArrayAccess occurrences="5">
-      <code>$akeneoAttribute['code']</code>
-      <code>$akeneoAttribute['code']</code>
-      <code>$akeneoAttribute['type']</code>
-      <code>$attributeOption['code']</code>
-      <code>$attributeOption['labels']</code>
-    </MixedArrayAccess>
-    <MixedArrayOffset occurrences="1">
-      <code>$choices[$attributeOption['code']]</code>
-    </MixedArrayOffset>
-    <MixedAssignment occurrences="4">
-      <code>$akeneoAttribute</code>
-      <code>$attributeOption</code>
-      <code>$choices[$attributeOption['code']]</code>
-      <code>$identifiers[]</code>
-    </MixedAssignment>
-    <MixedReturnTypeCoercion occurrences="2">
-      <code>$identifiers</code>
-      <code>array</code>
-    </MixedReturnTypeCoercion>
-  </file>
-  <file src="src/Command/ConsumeCommand.php">
-    <MixedArgument occurrences="7">
-      <code>$akeneoIdentifier</code>
-      <code>$akeneoIdentifier</code>
-      <code>$akeneoIdentifier</code>
-      <code>$queueItem</code>
-      <code>$queueItem-&gt;getAkeneoEntity()</code>
-      <code>$queueItem-&gt;getAkeneoEntity()</code>
-      <code>$queueItem-&gt;getAkeneoEntity()</code>
-    </MixedArgument>
-    <MixedAssignment occurrences="2">
-      <code>$akeneoIdentifier</code>
-      <code>$queueItem</code>
-    </MixedAssignment>
-    <MixedMethodCall occurrences="6">
-      <code>getAkeneoEntity</code>
-      <code>getAkeneoEntity</code>
-      <code>getAkeneoIdentifier</code>
-      <code>setErrorMessage</code>
-      <code>setErrorMessage</code>
-      <code>setImportedAt</code>
-    </MixedMethodCall>
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>ConsumeCommand</code>
-    </PropertyNotSetInConstructor>
-    <UndefinedInterfaceMethod occurrences="1">
-      <code>getAkeneoEntity</code>
-    </UndefinedInterfaceMethod>
-  </file>
-  <file src="src/Command/EnqueueCommand.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>EnqueueCommand</code>
-    </PropertyNotSetInConstructor>
-    <TypeDoesNotContainType occurrences="1">
-      <code>$sinceFilePath</code>
-    </TypeDoesNotContainType>
-  </file>
-  <file src="src/DependencyInjection/Configuration.php">
-    <MixedMethodCall occurrences="93">
-      <code>addDefaultsIfNotSet</code>
-      <code>addDefaultsIfNotSet</code>
-      <code>addDefaultsIfNotSet</code>
-      <code>addDefaultsIfNotSet</code>
-      <code>addDefaultsIfNotSet</code>
-      <code>arrayNode</code>
-      <code>arrayNode</code>
-      <code>arrayNode</code>
-      <code>arrayNode</code>
-      <code>arrayNode</code>
-      <code>arrayNode</code>
-      <code>arrayNode</code>
-      <code>arrayPrototype</code>
-      <code>booleanNode</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>cannotBeEmpty</code>
-      <code>children</code>
-      <code>children</code>
-      <code>children</code>
-      <code>children</code>
-      <code>children</code>
-      <code>children</code>
-      <code>defaultFalse</code>
-      <code>defaultNull</code>
-      <code>defaultNull</code>
-      <code>defaultNull</code>
-      <code>defaultNull</code>
-      <code>defaultNull</code>
-      <code>defaultValue</code>
-      <code>defaultValue</code>
-      <code>defaultValue</code>
-      <code>defaultValue</code>
-      <code>defaultValue</code>
-      <code>defaultValue</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>end</code>
-      <code>enumNode</code>
-      <code>integerNode</code>
-      <code>isRequired</code>
-      <code>isRequired</code>
-      <code>isRequired</code>
-      <code>isRequired</code>
-      <code>isRequired</code>
-      <code>isRequired</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>scalarNode</code>
-      <code>values</code>
-      <code>variableNode</code>
-      <code>variablePrototype</code>
-    </MixedMethodCall>
-    <PossiblyUndefinedMethod occurrences="1">
-      <code>children</code>
-    </PossiblyUndefinedMethod>
-  </file>
+<files psalm-version="6.12.0@cf420941d061a57050b6c468ef2c778faf40aee2">
   <file src="src/DependencyInjection/WebgriffeSyliusAkeneoExtension.php">
-    <MixedArgument occurrences="5">
-      <code>$config['api_client']</code>
-      <code>$config['value_handlers']['product'] ?? []</code>
-      <code>$options</code>
-      <code>self::$valueHandlersTypesDefinitions[$type]['arguments']</code>
-      <code>self::$valueHandlersTypesDefinitions[$type]['class']</code>
+    <MixedArgument>
+      <code><![CDATA[$config['value_handlers']['product'] ?? []]]></code>
     </MixedArgument>
-    <MixedArgumentTypeCoercion occurrences="3">
-      <code>$id</code>
-      <code>$id</code>
-      <code>$this-&gt;createValueHandlersDefinitionsAndPriorities($config['value_handlers']['product'] ?? [])</code>
-    </MixedArgumentTypeCoercion>
-    <MixedArrayAccess occurrences="6">
-      <code>$attributes['priority']</code>
-      <code>$valueHandler['options']</code>
-      <code>$valueHandler['priority']</code>
-      <code>$valueHandler['type']</code>
-      <code>self::$valueHandlersTypesDefinitions[$type]['arguments']</code>
-      <code>self::$valueHandlersTypesDefinitions[$type]['class']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$attributes['priority']]]></code>
+      <code><![CDATA[$valueHandler['options']]]></code>
+      <code><![CDATA[$valueHandler['priority']]]></code>
+      <code><![CDATA[$valueHandler['type']]]></code>
     </MixedArrayAccess>
-    <MixedArrayOffset occurrences="1">
-      <code>self::$valueHandlersTypesDefinitions[$type]</code>
-    </MixedArrayOffset>
-    <MixedAssignment occurrences="9">
-      <code>$attributes</code>
-      <code>$options</code>
-      <code>$priority</code>
-      <code>$priority</code>
-      <code>$tags</code>
-      <code>$tags</code>
-      <code>$type</code>
-      <code>$value</code>
-      <code>$valueHandler</code>
+    <MixedAssignment>
+      <code><![CDATA[$attributes]]></code>
+      <code><![CDATA[$priority]]></code>
+      <code><![CDATA[$priority]]></code>
+      <code><![CDATA[$valueHandler]]></code>
     </MixedAssignment>
-    <ParamNameMismatch occurrences="1">
-      <code>$config</code>
-    </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="1">
-      <code>$this-&gt;getConfiguration([], $container)</code>
-    </PossiblyNullArgument>
-  </file>
-  <file src="src/Doctrine/ORM/QueueItemRepository.php">
-    <MixedInferredReturnType occurrences="3">
-      <code>?QueueItemInterface</code>
-      <code>array</code>
-      <code>array</code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="3"/>
-  </file>
-  <file src="src/Entity/QueueItem.php">
-    <MissingConstructor occurrences="3">
-      <code>$akeneoEntity</code>
-      <code>$akeneoIdentifier</code>
-      <code>$createdAt</code>
-    </MissingConstructor>
   </file>
   <file src="src/PriorityValueHandlersResolver.php">
-    <MixedArgumentTypeCoercion occurrences="1"/>
-  </file>
-  <file src="src/Product/AllChannelsResolver.php">
-    <LessSpecificReturnStatement occurrences="1">
-      <code>$this-&gt;channelRepository-&gt;findBy(['enabled' =&gt; true])</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType occurrences="1">
-      <code>array</code>
-    </MoreSpecificReturnType>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[usort(
+            $this->valueHandlers,
+            static fn (array $a, array $b): int => $b['priority'] <=> $a['priority'],
+        )]]></code>
+    </MixedArgumentTypeCoercion>
   </file>
   <file src="src/Product/AlreadyExistingTaxonsResolver.php">
-    <MixedArgument occurrences="1">
-      <code>$categories</code>
-    </MixedArgument>
-    <MixedAssignment occurrences="2">
-      <code>$categories</code>
-      <code>$categoryCode</code>
+    <MixedAssignment>
+      <code><![CDATA[$categoryCode]]></code>
     </MixedAssignment>
   </file>
   <file src="src/Product/Importer.php">
-    <InvalidArgument occurrences="2">
-      <code>sprintf('sylius.product.post_%s', $eventName)</code>
-      <code>sprintf('sylius.product.pre_%s', $eventName)</code>
-    </InvalidArgument>
-    <MixedArgument occurrences="5">
-      <code>$attribute</code>
-      <code>$identifier</code>
-      <code>$parentCode</code>
-      <code>$parentCode</code>
-      <code>$value</code>
+    <MixedArgument>
+      <code><![CDATA[$parentCode]]></code>
+      <code><![CDATA[$parentCode]]></code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="1">
-      <code>$product['identifier']</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="6">
-      <code>$attribute</code>
-      <code>$identifier</code>
-      <code>$identifiers[]</code>
-      <code>$parentCode</code>
-      <code>$product</code>
-      <code>$value</code>
+    <MixedAssignment>
+      <code><![CDATA[$parentCode]]></code>
     </MixedAssignment>
-    <MixedReturnTypeCoercion occurrences="2">
-      <code>$identifiers</code>
-      <code>array</code>
-    </MixedReturnTypeCoercion>
-    <TooManyArguments occurrences="2">
-      <code>dispatch</code>
-      <code>dispatch</code>
-    </TooManyArguments>
   </file>
   <file src="src/Product/ProductOptionsResolver.php">
-    <MixedArgument occurrences="9">
-      <code>$akeneoProduct['identifier']</code>
-      <code>$akeneoProduct['identifier'] ?? '?'</code>
-      <code>$attributeCode</code>
-      <code>$familyCode</code>
-      <code>$familyVariantCode</code>
-      <code>$label</code>
-      <code>$label</code>
-      <code>$locale</code>
-      <code>$position</code>
+    <MixedArgument>
+      <code><![CDATA[$akeneoProduct['identifier']]]></code>
+      <code><![CDATA[$akeneoProduct['identifier'] ?? '?']]></code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="1">
-      <code>$familyVariantResponse['variant_attribute_sets'][0]</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="6">
-      <code>$attributeCode</code>
-      <code>$familyCode</code>
-      <code>$familyVariantCode</code>
-      <code>$label</code>
-      <code>$locale</code>
-      <code>$position</code>
-    </MixedAssignment>
   </file>
   <file src="src/Product/VariantStatusResolver.php">
-    <MixedInferredReturnType occurrences="1">
-      <code>bool</code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
-      <code>$akeneoProduct['enabled']</code>
+    <MixedReturnStatement>
+      <code><![CDATA[$akeneoProduct['enabled']]]></code>
     </MixedReturnStatement>
   </file>
   <file src="src/ProductAssociations/Importer.php">
-    <MixedArgument occurrences="5">
-      <code>$associationTypeCode</code>
-      <code>$productCode</code>
-      <code>$productModelsToAssociateIdentifiers</code>
-      <code>$productToAssociateIdentifier</code>
-      <code>$productsToAssociateIdentifiers</code>
+    <MixedArgument>
+      <code><![CDATA[$productCode]]></code>
+      <code><![CDATA[$productModelsToAssociateIdentifiers]]></code>
+      <code><![CDATA[$productToAssociateIdentifier]]></code>
+      <code><![CDATA[$productsToAssociateIdentifiers]]></code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="3">
-      <code>$associationInfo['product_models']</code>
-      <code>$associationInfo['products']</code>
-      <code>$product['identifier']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$associationInfo['product_models']]]></code>
+      <code><![CDATA[$associationInfo['products']]]></code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="10">
-      <code>$associationInfo</code>
-      <code>$associationTypeCode</code>
-      <code>$associations</code>
-      <code>$identifiers[]</code>
-      <code>$parentCode</code>
-      <code>$product</code>
-      <code>$productCode</code>
-      <code>$productModelsToAssociateIdentifiers</code>
-      <code>$productToAssociateIdentifier</code>
-      <code>$productsToAssociateIdentifiers</code>
+    <MixedAssignment>
+      <code><![CDATA[$associationInfo]]></code>
+      <code><![CDATA[$associationTypeCode]]></code>
+      <code><![CDATA[$associations]]></code>
+      <code><![CDATA[$parentCode]]></code>
+      <code><![CDATA[$productCode]]></code>
+      <code><![CDATA[$productModelsToAssociateIdentifiers]]></code>
+      <code><![CDATA[$productToAssociateIdentifier]]></code>
+      <code><![CDATA[$productsToAssociateIdentifiers]]></code>
     </MixedAssignment>
-    <MixedReturnTypeCoercion occurrences="2">
-      <code>$identifiers</code>
-      <code>array</code>
-    </MixedReturnTypeCoercion>
-  </file>
-  <file src="src/TemporaryFilesManager.php">
-    <MixedArgument occurrences="1">
-      <code>$tempFile-&gt;getPathname()</code>
-    </MixedArgument>
-    <MixedAssignment occurrences="1">
-      <code>$tempFile</code>
-    </MixedAssignment>
-    <MixedMethodCall occurrences="1">
-      <code>getPathname</code>
-    </MixedMethodCall>
   </file>
   <file src="src/ValueHandler/AttributeValueHandler.php">
-    <ArgumentTypeCoercion occurrences="3">
-      <code>$attribute</code>
-      <code>$attribute</code>
-      <code>$attribute</code>
-    </ArgumentTypeCoercion>
-    <MixedArgument occurrences="4">
-      <code>$attributeConfiguration['choices']</code>
-      <code>$valueData['data']</code>
-      <code>$valueData['data']</code>
-      <code>$valueData['locale']</code>
+    <MixedArgument>
+      <code><![CDATA[$valueData['data']]]></code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="4">
-      <code>$valueData['data']</code>
-      <code>$valueData['data']</code>
-      <code>$valueData['locale']</code>
-      <code>$valueData['locale']</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="1">
-      <code>$valueData</code>
-    </MixedAssignment>
-    <ParamNameMismatch occurrences="2">
-      <code>$attributeCode</code>
-      <code>$attributeCode</code>
+    <ParamNameMismatch>
+      <code><![CDATA[$attributeCode]]></code>
+      <code><![CDATA[$attributeCode]]></code>
     </ParamNameMismatch>
   </file>
   <file src="src/ValueHandler/ChannelPricingValueHandler.php">
-    <MixedArgument occurrences="1">
-      <code>$price * 100</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="3">
-      <code>$currencyPrice['amount']</code>
-      <code>$currencyPrice['currency']</code>
-      <code>$value[0]['data']</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="3">
-      <code>$currencyCode</code>
-      <code>$currencyPrice</code>
-      <code>$price</code>
-    </MixedAssignment>
-    <MixedOperand occurrences="1">
-      <code>$price</code>
-    </MixedOperand>
-  </file>
-  <file src="src/ValueHandler/GenericPropertyValueHandler.php">
-    <MixedArgument occurrences="1">
-      <code>$subject</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="1">
-      <code>$value[0]['data']</code>
-    </MixedArrayAccess>
+    <InvalidOperand>
+      <code><![CDATA[$price * 100]]></code>
+    </InvalidOperand>
   </file>
   <file src="src/ValueHandler/ImmutableSlugValueHandler.php">
-    <MixedArgument occurrences="1">
-      <code>$localeCode</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="2">
-      <code>$item['data']</code>
-      <code>$item['locale']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$item['data']]]></code>
+      <code><![CDATA[$item['locale']]]></code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="3">
-      <code>$item</code>
-      <code>$localeCode</code>
-      <code>$valueToSlugify</code>
+    <MixedAssignment>
+      <code><![CDATA[$item]]></code>
     </MixedAssignment>
-    <UndefinedInterfaceMethod occurrences="1">
-      <code>getId</code>
+    <UndefinedInterfaceMethod>
+      <code><![CDATA[getId]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="src/ValueHandler/ProductOptionValueHandler.php">
-    <MixedArgument occurrences="3">
-      <code>$label</code>
-      <code>$localeCode</code>
-      <code>$partialValueCode</code>
-    </MixedArgument>
-    <MixedArrayAccess occurrences="1">
-      <code>$akeneoValue[0]['data']</code>
+    <MixedArrayAccess>
+      <code><![CDATA[$akeneoValue[0]['data']]]></code>
     </MixedArrayAccess>
-    <MixedAssignment occurrences="3">
-      <code>$label</code>
-      <code>$localeCode</code>
-      <code>$partialValueCode</code>
-    </MixedAssignment>
-    <MixedOperand occurrences="1">
-      <code>$partialValueCode</code>
-    </MixedOperand>
-    <ParamNameMismatch occurrences="3">
-      <code>$akeneoValue</code>
-      <code>$optionCode</code>
-      <code>$productVariant</code>
+    <ParamNameMismatch>
+      <code><![CDATA[$akeneoValue]]></code>
+      <code><![CDATA[$optionCode]]></code>
+      <code><![CDATA[$productVariant]]></code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="6">
-      <code>$product-&gt;getCode()</code>
-      <code>$product-&gt;getCode()</code>
-      <code>$product-&gt;getCode()</code>
-      <code>$productVariant-&gt;getCode()</code>
-      <code>$productVariant-&gt;getCode()</code>
-      <code>$productVariant-&gt;getCode()</code>
+    <PossiblyNullArgument>
+      <code><![CDATA[$product->getCode()]]></code>
+      <code><![CDATA[$product->getCode()]]></code>
+      <code><![CDATA[$product->getCode()]]></code>
+      <code><![CDATA[$productVariant->getCode()]]></code>
+      <code><![CDATA[$productVariant->getCode()]]></code>
+      <code><![CDATA[$productVariant->getCode()]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="src/ValueHandler/TranslatablePropertyValueHandler.php">
-    <MixedArgument occurrences="3">
-      <code>$item</code>
-      <code>$localeCode</code>
-      <code>$variantTranslation-&gt;getLocale()</code>
+    <MixedArgument>
+      <code><![CDATA[$variantTranslation->getLocale()]]></code>
     </MixedArgument>
-    <MixedArrayAccess occurrences="2">
-      <code>$item['data']</code>
-      <code>$item['locale']</code>
-    </MixedArrayAccess>
-    <MixedAssignment occurrences="2">
-      <code>$item</code>
-      <code>$localeCode</code>
-    </MixedAssignment>
-    <MixedMethodCall occurrences="1">
-      <code>getLocale</code>
+    <MixedMethodCall>
+      <code><![CDATA[getLocale]]></code>
     </MixedMethodCall>
-    <PossiblyInvalidMethodCall occurrences="1">
-      <code>getLocale</code>
+    <PossiblyInvalidMethodCall>
+      <code><![CDATA[getLocale]]></code>
     </PossiblyInvalidMethodCall>
   </file>
 </files>

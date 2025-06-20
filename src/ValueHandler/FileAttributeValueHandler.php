@@ -32,6 +32,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
     ) {
     }
 
+    #[\Override]
     public function supports($subject, string $attribute, array $value): bool
     {
         if (!$subject instanceof ProductVariantInterface) {
@@ -65,6 +66,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
         return true;
     }
 
+    #[\Override]
     public function handle($subject, string $attribute, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {

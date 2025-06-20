@@ -23,6 +23,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
     /**
      * @param mixed $subject
      */
+    #[\Override]
     public function supports($subject, string $attribute, array $value): bool
     {
         foreach ($value as $valueData) {
@@ -42,6 +43,7 @@ final class MetricPropertyValueHandler implements ValueHandlerInterface
      * @param mixed $subject
      * @param array|array<array-key, array{scope: string, locale: string, data: array{amount: string, unit: string}, linked_data: array}> $value
      */
+    #[\Override]
     public function handle($subject, string $attribute, array $value): void
     {
         if (!$this->supports($subject, $attribute, $value)) {

@@ -17,6 +17,7 @@ final class TemporaryFilesManager implements TemporaryFilesManagerInterface
     ) {
     }
 
+    #[\Override]
     public function generateTemporaryFilePath(string $fileIdentifier): string
     {
         return $this->filesystem->tempnam(
@@ -25,6 +26,7 @@ final class TemporaryFilesManager implements TemporaryFilesManagerInterface
         );
     }
 
+    #[\Override]
     public function deleteAllTemporaryFiles(string $fileIdentifier): void
     {
         if (!$this->filesystem->exists($this->temporaryDirectory)) {

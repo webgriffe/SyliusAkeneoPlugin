@@ -16,6 +16,7 @@ final class UnitMeasurementValueConverter implements UnitMeasurementValueConvert
     {
     }
 
+    #[\Override]
     public function convert(string $amount, string $sourceUnitMeasurementCode, ?string $destinationUnitMeasurementCode): float
     {
         $unitMeasurementFamily = $this->getUnitMeasurementFamilyByUnitMeasurementCode($sourceUnitMeasurementCode);
