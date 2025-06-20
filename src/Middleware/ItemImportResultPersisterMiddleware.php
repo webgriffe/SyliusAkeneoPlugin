@@ -25,6 +25,7 @@ final class ItemImportResultPersisterMiddleware implements MiddlewareInterface
     ) {
     }
 
+    #[\Override]
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
         $message = $envelope->getMessage();

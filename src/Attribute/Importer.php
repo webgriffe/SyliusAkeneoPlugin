@@ -59,11 +59,13 @@ final class Importer implements ImporterInterface
     ) {
     }
 
+    #[\Override]
     public function getAkeneoEntity(): string
     {
         return self::AKENEO_ENTITY;
     }
 
+    #[\Override]
     public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
         $searchBuilder = new SearchBuilder();
@@ -83,6 +85,7 @@ final class Importer implements ImporterInterface
         );
     }
 
+    #[\Override]
     public function import(string $identifier): void
     {
         /** @var AkeneoAttribute $akeneoAttribute */
@@ -102,11 +105,13 @@ final class Importer implements ImporterInterface
     /**
      * @return FactoryInterface<ProductOptionTranslationInterface>
      */
+    #[\Override]
     private function getProductOptionTranslationFactory(): FactoryInterface
     {
         return $this->productOptionTranslationFactory;
     }
 
+    #[\Override]
     private function getProductOptionRepository(): ProductOptionRepositoryInterface
     {
         return $this->productOptionRepository;
@@ -115,6 +120,7 @@ final class Importer implements ImporterInterface
     /**
      * @return RepositoryInterface<ProductAttributeInterface>
      */
+    #[\Override]
     private function getProductAttributeRepository(): RepositoryInterface
     {
         return $this->productAttributeRepository;

@@ -18,6 +18,7 @@ final class ValueConverter implements ValueConverterInterface
     ) {
     }
 
+    #[\Override]
     public function convert(AttributeInterface $attribute, array|bool|int|string $value, string $localeCode): array|bool|int|string
     {
         if (is_array($value) && $attribute->getType() !== SelectAttributeType::TYPE) {

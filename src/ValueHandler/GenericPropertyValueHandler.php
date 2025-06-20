@@ -22,6 +22,7 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
     /**
      * @param mixed $subject
      */
+    #[\Override]
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductVariantInterface && $attribute === $this->akeneoAttributeCode;
@@ -30,6 +31,7 @@ final class GenericPropertyValueHandler implements ValueHandlerInterface
     /**
      * @param mixed $subject
      */
+    #[\Override]
     public function handle($subject, string $attribute, array $value): void
     {
         // todo: this value handler shares the same exact code of the metric property value handler

@@ -9,6 +9,7 @@ final class ReconcilerRegistry implements ReconcilerRegistryInterface
     /** @var ReconcilerInterface[] */
     private array $registry = [];
 
+    #[\Override]
     public function add(ReconcilerInterface $reconciliation): void
     {
         $this->registry[] = $reconciliation;
@@ -17,6 +18,7 @@ final class ReconcilerRegistry implements ReconcilerRegistryInterface
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function all(): array
     {
         return $this->registry;

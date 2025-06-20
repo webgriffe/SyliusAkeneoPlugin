@@ -30,31 +30,37 @@ class ItemImportResult implements ItemImportResultInterface
         $this->createdAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
     }
 
+    #[\Override]
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    #[\Override]
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
+    #[\Override]
     public function getAkeneoEntity(): string
     {
         return $this->akeneoEntity;
     }
 
+    #[\Override]
     public function getAkeneoIdentifier(): string
     {
         return $this->akeneoIdentifier;
     }
 
+    #[\Override]
     public function isSuccessful(): bool
     {
         return $this->successful;
     }
 
+    #[\Override]
     public function getMessage(): string
     {
         return $this->message;

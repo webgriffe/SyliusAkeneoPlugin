@@ -17,6 +17,7 @@ final class AllChannelsResolver implements ChannelsResolverInterface
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function resolve(array $akeneoProduct): array
     {
         $enabledChannels = $this->channelRepository->findBy(['enabled' => true]);

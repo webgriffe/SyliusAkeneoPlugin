@@ -42,11 +42,13 @@ final class Importer implements ImporterInterface
     ) {
     }
 
+    #[\Override]
     public function getAkeneoEntity(): string
     {
         return self::AKENEO_ENTITY;
     }
 
+    #[\Override]
     public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
         $searchBuilder = new SearchBuilder();
@@ -66,6 +68,7 @@ final class Importer implements ImporterInterface
         return $identifiers;
     }
 
+    #[\Override]
     public function import(string $identifier): void
     {
         $searchBuilder = new SearchBuilder();

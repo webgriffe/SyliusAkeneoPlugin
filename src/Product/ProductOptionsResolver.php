@@ -36,6 +36,7 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
     ) {
     }
 
+    #[\Override]
     public function resolve(array $akeneoProduct): array
     {
         /** @var string|null $parentCode */
@@ -121,11 +122,13 @@ final class ProductOptionsResolver implements ProductOptionsResolverInterface
     /**
      * @return FactoryInterface<ProductOptionTranslationInterface>
      */
+    #[\Override]
     private function getProductOptionTranslationFactory(): FactoryInterface
     {
         return $this->productOptionTranslationFactory;
     }
 
+    #[\Override]
     private function getProductOptionRepository(): ProductOptionRepositoryInterface
     {
         return $this->productOptionRepository;

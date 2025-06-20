@@ -56,6 +56,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     /**
      * @param mixed $subject
      */
+    #[\Override]
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductVariantInterface && $this->isVariantOption($subject, $attribute);
@@ -64,6 +65,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     /**
      * @param mixed $productVariant
      */
+    #[\Override]
     public function handle($productVariant, string $optionCode, array $akeneoValue): void
     {
         if (!$productVariant instanceof ProductVariantInterface) {
@@ -256,6 +258,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
         return false;
     }
 
+    #[\Override]
     private function getDefinedLocaleCodes(): array
     {
         return $this->translationLocaleProvider->getDefinedLocalesCodes();
@@ -264,6 +267,7 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     /**
      * @return FactoryInterface<ProductOptionValueTranslationInterface>
      */
+    #[\Override]
     private function getProductOptionValueTranslationFactory(): FactoryInterface
     {
         return $this->productOptionValueTranslationFactory;
@@ -272,11 +276,13 @@ final class ProductOptionValueHandler implements ValueHandlerInterface
     /**
      * @return FactoryInterface<ProductOptionValueInterface>
      */
+    #[\Override]
     private function getProductOptionValueFactory(): FactoryInterface
     {
         return $this->productOptionValueFactory;
     }
 
+    #[\Override]
     private function getTranslator(): TranslatorInterface
     {
         return $this->translator;

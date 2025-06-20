@@ -57,6 +57,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         }
     }
 
+    #[\Override]
     public function supports($subject, string $attributeCode, array $value): bool
     {
         if (!$subject instanceof ProductVariantInterface) {
@@ -71,6 +72,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         return $attribute !== null && $this->hasSupportedType($attribute);
     }
 
+    #[\Override]
     public function handle($subject, string $attributeCode, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {
@@ -192,6 +194,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
         return !$productOptions->isEmpty();
     }
 
+    #[\Override]
     private function getAkeneoPimClient(): AkeneoPimClientInterface
     {
         $akeneoPimClient = $this->akeneoPimClient;

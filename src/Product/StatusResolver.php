@@ -6,6 +6,7 @@ namespace Webgriffe\SyliusAkeneoPlugin\Product;
 
 final class StatusResolver implements StatusResolverInterface
 {
+    #[\Override]
     public function resolve(array $akeneoProduct): bool
     {
         if ($akeneoProduct['parent'] !== null) {

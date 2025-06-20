@@ -50,6 +50,7 @@ final class Importer implements ImporterInterface
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getAkeneoEntity(): string
     {
         return self::AKENEO_ENTITY;
@@ -58,6 +59,7 @@ final class Importer implements ImporterInterface
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function import(string $identifier): void
     {
         try {
@@ -135,6 +137,7 @@ final class Importer implements ImporterInterface
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function getIdentifiersModifiedSince(DateTime $sinceDate): array
     {
         $searchBuilder = new SearchBuilder();

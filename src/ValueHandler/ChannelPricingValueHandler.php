@@ -38,11 +38,13 @@ final class ChannelPricingValueHandler implements ValueHandlerInterface
     ) {
     }
 
+    #[\Override]
     public function supports($subject, string $attribute, array $value): bool
     {
         return $subject instanceof ProductVariantInterface && $attribute === $this->akeneoAttribute;
     }
 
+    #[\Override]
     public function handle($subject, string $attribute, array $value): void
     {
         if (!$subject instanceof ProductVariantInterface) {

@@ -9,6 +9,7 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 
 interface ItemImportResultInterface extends ResourceInterface
 {
+    #[\Override]
     public function getId(): ?int;
 
     public function getCreatedAt(): DateTimeInterface;
