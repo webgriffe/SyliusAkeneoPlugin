@@ -13,7 +13,7 @@
         "cocur/slugify": "^4.0",
         "guzzlehttp/guzzle": "^6.5 || ^7.6",
         "http-interop/http-factory-guzzle": "^1.0",
-        "sylius/sylius": "~2.0.0",
+        "sylius/sylius": "^2.1.2",
         "symfony/deprecation-contracts": "^3.5",
         "symfony/lock": "^6.4 || ^7.1"
     },
