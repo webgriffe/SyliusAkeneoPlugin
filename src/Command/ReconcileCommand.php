@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,6 +17,7 @@ use Webmozart\Assert\Assert;
 /**
  * @psalm-suppress PropertyNotSetInConstructor $lock
  */
+#[AsCommand(name: 'webgriffe:akeneo:reconcile')]
 final class ReconcileCommand extends Command
 {
     use LockableTrait;
@@ -25,8 +27,6 @@ final class ReconcileCommand extends Command
     public const FAILURE = 1;
 
     private const RECONCILER_OPTION_NAME = 'reconciler';
-
-    protected static $defaultName = 'webgriffe:akeneo:reconcile';
 
     /**
      * ReconcileCommand constructor.
