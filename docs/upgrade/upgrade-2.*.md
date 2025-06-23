@@ -5,6 +5,51 @@ nav_order: 0
 parent: Upgrade
 ---
 
+# Upgrade from `v2.8.0` to `v2.9.0`
+
+The v2.9.0 **adds support to Sylius 2** and now requires:
+* PHP `^8.2`
+* Sylius `^2.1.2`
+* Symfony `^6.4` or `^7.1`
+
+If you are using those versions you can just upgrade the plugin to `v2.9.0` and everything should work as expected.
+Otherwise, you have to upgrade your Sylius and Symfony versions first or use the `v2.8.0` version of the plugin.
+
+There are also the following code BC breaks, but they are all related to the new Symfony and Sylius versions:
+```
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait#getProductOptionValueTranslationFactory() changed from Sylius\Component\Resource\Factory\FactoryInterface to the non-covariant Sylius\Resource\Factory\FactoryInterface
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait#getProductOptionValueTranslationFactory() changed from Sylius\Component\Resource\Factory\FactoryInterface to Sylius\Resource\Factory\FactoryInterface
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait#getProductOptionValueFactory() changed from Sylius\Component\Resource\Factory\FactoryInterface to the non-covariant Sylius\Resource\Factory\FactoryInterface
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\ProductOptionValueHelperTrait#getProductOptionValueFactory() changed from Sylius\Component\Resource\Factory\FactoryInterface to Sylius\Resource\Factory\FactoryInterface
+[BC] These ancestors of Webgriffe\SyliusAkeneoPlugin\Respository\ItemImportResultRepositoryInterface have been removed: ["Sylius\\Component\\Resource\\Repository\\RepositoryInterface"]
+[BC] The number of required arguments for Symfony\Component\Console\Command\Command#setApplication() increased from 0 to 1
+[BC] Parameter suggestedValues was added to Method addArgument() of class Symfony\Component\Console\Command\Command
+[BC] Parameter suggestedValues was added to Method addOption() of class Symfony\Component\Console\Command\Command
+[BC] The number of required arguments for Symfony\Component\Console\Command\Command#setApplication() increased from 0 to 1
+[BC] Parameter suggestedValues was added to Method addArgument() of class Symfony\Component\Console\Command\Command
+[BC] Parameter suggestedValues was added to Method addOption() of class Symfony\Component\Console\Command\Command
+[BC] The number of required arguments for Symfony\Component\Console\Command\Command#setApplication() increased from 0 to 1
+[BC] Parameter suggestedValues was added to Method addArgument() of class Symfony\Component\Console\Command\Command
+[BC] Parameter suggestedValues was added to Method addOption() of class Symfony\Component\Console\Command\Command
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait#getProductOptionTranslationFactory() changed from Sylius\Component\Resource\Factory\FactoryInterface to the non-covariant Sylius\Resource\Factory\FactoryInterface
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\ProductOptionHelperTrait#getProductOptionTranslationFactory() changed from Sylius\Component\Resource\Factory\FactoryInterface to Sylius\Resource\Factory\FactoryInterface
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\SyliusProductAttributeHelperTrait#getProductAttributeRepository() changed from Sylius\Component\Resource\Repository\RepositoryInterface to the non-covariant Sylius\Resource\Doctrine\Persistence\RepositoryInterface
+[BC] The return type of Webgriffe\SyliusAkeneoPlugin\SyliusProductAttributeHelperTrait#getProductAttributeRepository() changed from Sylius\Component\Resource\Repository\RepositoryInterface to Sylius\Resource\Doctrine\Persistence\RepositoryInterface
+[BC] Method Doctrine\ORM\EntityRepository#createNamedQuery() was removed
+[BC] Method Doctrine\ORM\EntityRepository#createNativeNamedQuery() was removed
+[BC] Method Doctrine\ORM\EntityRepository#clear() was removed
+[BC] These ancestors of Webgriffe\SyliusAkeneoPlugin\Doctrine\ORM\ItemImportResultRepository have been removed: ["Sylius\\Component\\Resource\\Repository\\RepositoryInterface"]
+[BC] The parameter $alias of Doctrine\ORM\EntityRepository#createQueryBuilder() changed from no type to a non-contravariant string
+[BC] The parameter $indexBy of Doctrine\ORM\EntityRepository#createQueryBuilder() changed from no type to a non-contravariant string|null
+[BC] The parameter $alias of Doctrine\ORM\EntityRepository#createResultSetMappingBuilder() changed from no type to a non-contravariant string
+[BC] The parameter $lockMode of Doctrine\ORM\EntityRepository#find() changed from no type to a non-contravariant Doctrine\DBAL\LockMode|int|null
+[BC] The parameter $lockVersion of Doctrine\ORM\EntityRepository#find() changed from no type to a non-contravariant int|null
+[BC] The parameter $limit of Doctrine\ORM\EntityRepository#findBy() changed from no type to a non-contravariant int|null
+[BC] The parameter $offset of Doctrine\ORM\EntityRepository#findBy() changed from no type to a non-contravariant int|null
+[BC] The parameter $method of Doctrine\ORM\EntityRepository#__call() changed from no type to a non-contravariant string
+[BC] The parameter $arguments of Doctrine\ORM\EntityRepository#__call() changed from no type to a non-contravariant array
+```
+
 # Upgrade from `v2.7.0` to `v2.8.0`
 
 The v2.8.0 version introduces the Attribute importer.
