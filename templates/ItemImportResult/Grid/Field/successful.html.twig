@@ -1,11 +1,11 @@
 {% if data %}
-    <span class="ui green label">
-        <i class="check circle icon"></i>
+    <span class="badge bg-green-lt">
+        {{ ux_icon('tabler:circle-check') }}
         {{ 'sylius.ui.yes_label'|trans }}
     </span>
 {% else %}
-    <span class="ui red label">
-        <i class="times circle icon"></i>
+    <span class="badge bg-red-lt">
+        {{ ux_icon('tabler:circle-x') }}
         {{ 'sylius.ui.no_label'|trans }}
     </span>
 {% endif %}

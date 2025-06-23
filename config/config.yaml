@@ -1,21 +1,17 @@
 sylius_grid:
-    templates:
-        action:
-            importProduct: '@WebgriffeSyliusAkeneoPlugin\Product\Grid\Action\import.html.twig'
     grids:
         sylius_admin_product:
             actions:
                 item:
                     import:
-                        type: importProduct
+                        type: show
                         label: webgriffe_sylius_akeneo.ui.schedule_import
+                        icon: "tabler:cloud-download"
                         options:
                             link:
                                 route: webgriffe_sylius_akeneo_product_import
                                 parameters:
                                     productId: resource.id
-                            icon: cloud download
-                            color: violet
         webgriffe_sylius_akeneo_admin_item_import_result:
             driver:
                 name: doctrine/orm
