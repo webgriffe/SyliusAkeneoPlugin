@@ -38,8 +38,13 @@ final class ManagingProductsContext implements Context
     {
         /** @var NodeElement $actionsNodeProduct */
         $actionsNodeProduct = $this->indexPage->getActionsForResource(['code' => $product->getCode()]);
+        $linkButton = $actionsNodeProduct->find(
+            'css',
+            '[data-test-show-action="' . self::SCHEDULE_AKENEO_PIM_IMPORT . '"]',
+        );
+        Assert::notNull($linkButton);
 
-        $actionsNodeProduct->clickLink(self::SCHEDULE_AKENEO_PIM_IMPORT);
+        $linkButton->click();
     }
 
     /**
