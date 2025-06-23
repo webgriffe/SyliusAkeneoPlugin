@@ -450,7 +450,6 @@ final class ImporterTest extends KernelTestCase
         ]);
         InMemoryProductApi::addResource($startWarsTShirtLAkeneoProduct);
 
-        $this->markTestSkipped('See: https://github.com/Sylius/Sylius/discussions/18171');
         $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
         $this->importer->import('STAR_WARS_TSHIRT_L');
 
@@ -483,7 +482,6 @@ final class ImporterTest extends KernelTestCase
             'data' => 'star_wars_m.jpeg',
         ]];
 
-        $this->markTestSkipped('See: https://github.com/Sylius/Sylius/discussions/18171');
         $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
         $allVariants = $this->productVariantRepository->findAll();
@@ -515,7 +513,6 @@ final class ImporterTest extends KernelTestCase
             'data' => 'star_wars_m.jpeg',
         ]];
 
-        $this->markTestSkipped('See: https://github.com/Sylius/Sylius/discussions/18171');
         $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
         $allVariants = $this->productVariantRepository->findAll();
@@ -546,7 +543,6 @@ final class ImporterTest extends KernelTestCase
             'data' => 'star_wars_m.jpeg',
         ]];
 
-        $this->markTestSkipped('See: https://github.com/Sylius/Sylius/discussions/18171');
         $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
 
         $allVariants = $this->productVariantRepository->findAll();
@@ -610,7 +606,6 @@ final class ImporterTest extends KernelTestCase
         ]);
         InMemoryProductApi::addResource($startWarsTShirtLAkeneoProduct);
 
-        $this->markTestSkipped('See: https://github.com/Sylius/Sylius/discussions/18171');
         $this->importer->import('STAR_WARS_TSHIRT_L');
 
         $product = $this->productRepository->findOneByCode(self::STAR_WARS_TSHIRT_MODEL_CODE);
