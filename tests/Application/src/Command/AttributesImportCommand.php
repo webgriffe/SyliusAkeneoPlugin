@@ -17,7 +17,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Webmozart\Assert\Assert;
 
-#[AsCommand(name: 'webgriffe:akeneo:attributes-import')]
+#[AsCommand(name: 'app:attributes-import')]
 final class AttributesImportCommand extends Command
 {
     private array $productAttributesTypeMap = [
