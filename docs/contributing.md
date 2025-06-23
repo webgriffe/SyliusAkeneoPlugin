@@ -127,7 +127,8 @@ Adjust your `tests/Application/.env.test.local` and then run the following comma
 Install Akeneo PIM 
 
 ```shell
-composer create-project akeneo/pim-community-standard tests/PIM "7.0.*@stable" --ignore-platform-req=ext-apcu --ignore-platform-req=ext-imagick
+rm tests/PIM/.gitkeep
+composer create-project akeneo/pim-community-standard tests/PIM "7.0.*@stable"  --ignore-platform-req=php --ignore-platform-req=ext-apcu --ignore-platform-req=ext-imagick
 ```
 
 Launch installation with docker (the first time it will take a while... Consider having a coffee ;-)).
