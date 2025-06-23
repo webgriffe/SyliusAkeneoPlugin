@@ -39,6 +39,8 @@ final class ImporterTest extends KernelTestCase
 
     private const STAR_WARS_TSHIRT_M_PRODUCT_CODE = 'STAR_WARS_TSHIRT_M';
 
+    private const STRANGER_THINGS_TSHIRT_PRODUCT_CODE = 'STRANGER_THINGS_TSHIRT';
+
     private ImporterInterface $importer;
 
     private ProductRepositoryInterface $productRepository;
@@ -82,7 +84,7 @@ final class ImporterTest extends KernelTestCase
         InMemoryProductApi::clear();
 
         $this->tShirtFamily = Family::create('t-shirt', [
-            'attributes' => ['variation_image', 'supplier'],
+            'attributes' => ['variation_image', 'supplier', 'name'],
         ]);
         InMemoryFamilyApi::addResource($this->tShirtFamily);
 
@@ -100,6 +102,11 @@ final class ImporterTest extends KernelTestCase
             'labels' => ['en_US' => 'Size'],
         ]);
         InMemoryAttributeApi::addResource($this->sizeAttribute);
+        $nameAttribute = Attribute::create(
+            'name',
+            ['type' => AttributeType::TEXT, 'localizable' => true, 'labels' => ['en_US' => 'Name', 'it_IT' => 'Nome']],
+        );
+        InMemoryAttributeApi::addResource($nameAttribute);
 
         $sizeMAttributeOption = AttributeOption::create($this->sizeAttribute->code, 'm', 0, [
             'en_US' => 'M', 'it_IT' => 'M',
@@ -142,6 +149,36 @@ final class ImporterTest extends KernelTestCase
             ],
         ]);
         InMemoryProductApi::addResource($this->startWarsTShirtMAkeneoProduct);
+        $strangerThingsTShirt = Product::create(self::STRANGER_THINGS_TSHIRT_PRODUCT_CODE, [
+            'family' => $this->tShirtFamily->code,
+            'values' => [
+                'name' => [
+                    [
+                        'locale' => 'en_US',
+                        'scope' => null,
+                        'data' => 'Original Stranger Things T-Shirt',
+                    ],
+                    [
+                        'locale' => 'it_IT',
+                        'scope' => null,
+                        'data' => 'T-Shirt Stranger Things Originale',
+                    ],
+                ],
+                'price' => [
+                    [
+                    'locale' => null,
+                    'scope' => null,
+                    'data' => [
+                        [
+                            'amount' => 299.99,
+                            'currency' => 'USD',
+                        ],
+                    ],
+                    ],
+                ],
+            ],
+        ]);
+        InMemoryProductApi::addResource($strangerThingsTShirt);
 
         $ORMResourceFixturePath = DataFixture::path . '/ORM/resources/Importer/Product/' . $this->name() . '.yaml';
         if (file_exists($ORMResourceFixturePath)) {
@@ -876,5 +913,20 @@ final class ImporterTest extends KernelTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('This select attribute can only save existing attribute options. Attribute option codes [wool] for attribute "material" does not exist');
         $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_new_product_with_translated_name_and_slug(): void
+    {
+        $this->importer->import(self::STRANGER_THINGS_TSHIRT_PRODUCT_CODE);
+
+        $product = $this->productRepository->findOneByCode(self::STRANGER_THINGS_TSHIRT_PRODUCT_CODE);
+        $this->assertNotNull($product);
+        $this->assertEquals('Original Stranger Things T-Shirt', $product->getTranslation('en_US')->getName());
+        $this->assertEquals('original-stranger-things-t-shirt', $product->getTranslation('en_US')->getSlug());
+        $this->assertEquals('T-Shirt Stranger Things Originale', $product->getTranslation('it_IT')->getName());
+        $this->assertEquals('t-shirt-stranger-things-originale', $product->getTranslation('it_IT')->getSlug());
     }
 }

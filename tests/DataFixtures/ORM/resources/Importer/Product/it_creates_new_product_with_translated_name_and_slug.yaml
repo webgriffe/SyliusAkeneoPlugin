@@ -1,0 +1,21 @@
+Sylius\Component\Currency\Model\Currency:
+    USD:
+        code: 'USD'
+
+Sylius\Component\Locale\Model\Locale:
+    en_US:
+        code: "en_US"
+    it_IT:
+        code: "it_IT"
+
+Sylius\Component\Core\Model\Channel:
+    usa:
+        code: 'worldwide'
+        name: 'Worldwide'
+        enabled: true
+        description: 'Worldwide'
+        defaultLocale: '@en_US'
+        locales: [ '@en_US', '@it_IT' ]
+        baseCurrency: '@USD'
+        currencies: [ '@USD' ]
+        taxCalculationStrategy: 'order_items_based'
