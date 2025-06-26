@@ -112,63 +112,80 @@ Adjust your `tests/Application/.env.test.local` and then run the following comma
 
     ```bash
     (cd tests/Application && APP_ENV=test bin/console sylius:fixtures:load)
-    (cd tests/Application && APP_ENV=test bin/console server:run -d public)
+    APP_ENV=test symfony server:start --dir=tests/Application/public
     ```
 
 - Using `dev` environment:
   
     ```bash
     (cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)
-    (cd tests/Application && APP_ENV=dev bin/console server:run -d public)
+    APP_ENV=dev symfony server:start --dir=tests/Application/public
     ```
 
-## How install a local version of Akeneo PIM
+## How install a local version of Akeneo PIM and use it to test the plugin
 
-Install Akeneo PIM 
+### First time Akeneo PIM install
+
+If your `tests/PIM` directory is empty because you never installed Akeneo PIM in it, the first time you have to download
+and install it. To do so first run this command to download Akeneo:
+
 
 ```shell
 rm tests/PIM/.gitkeep
 composer create-project akeneo/pim-community-standard tests/PIM "7.0.*@stable"  --ignore-platform-req=php --ignore-platform-req=ext-apcu --ignore-platform-req=ext-imagick
 ```
-
-Launch installation with docker (the first time it will take a while... Consider having a coffee ;-)).
+Then launch Akeneo installation with docker (the first time it will take a while... Consider having a coffee ;-)):
 
 ```shell
-cd tests/PIM && make prod
+(cd tests/PIM && make prod)
 ```
 After all, we suggest to load a more fully loaded fixture than the minimal loaded by the prod env, launch the following command:
     
 ```shell
-docker-compose run -u www-data --rm php php bin/console pim:installer:db --catalog vendor/akeneo/pim-community-dev/src/Akeneo/Platform/Bundle/InstallerBundle/Resources/fixtures/icecat_demo_dev
+(cd tests/PIM && docker-compose run -u www-data --rm php php bin/console pim:installer:db --catalog vendor/akeneo/pim-community-dev/src/Akeneo/Platform/Bundle/InstallerBundle/Resources/fixtures/icecat_demo_dev)
 ```
 
-If you already have installed the PIM and you want just to start this launch the following commands:
+### Using Akeneo test installation
+
+If you already have installed the PIM and you want just to start it launch the following command:
 
 ```shell
-cd tests/PIM && make up
+(cd tests/PIM && make up)
 ```
 
 Now you can access to the PIM on http://localhost:8080/ with admin/admin as credentials.
 
-After login go to Exports and launch a CSV export of categories and attributes (use the demo CSV downloads).
+### Prepare Sylius installation to work with the Akeneo test installation
+
+In Akeneo, go to Exports and launch a CSV export of categories and attributes (use the demo CSV downloads).
 Remember to launch in a cli shell the following command to launch a messenger consumer:
 
 ```shell
-docker-compose run -u www-data --rm php php bin/console messenger:consume import_export_job
+(cd tests/PIM && docker-compose run -u www-data --rm php php bin/console messenger:consume import_export_job)
 ```
-Then import attributes on local Sylius installation by launching the command:
+You can terminate that consumer when those exports are completed.
+
+Then you have to import these attributes and categories (taxa) from Akeneo on the local Sylius installation.
+Start the local Sylius instance (refer [Opening Sylius with your plugin](#opening-sylius-with-your-plugin) paragraph to do so),
+then clean it by loading the provided `akeneo` fixtures suite:
+
+```shell
+(cd tests/Application && bin/console sylius:fixtures:load akeneo)
+```
+
+Then you can proceed with the import of attributes:
     
 ```shell
-bin/console app:attributes-import path/to/attribute.csv
+(cd tests/Application && bin/console app:attributes-import path/to/attribute.csv)
 ```
 
-Import categories on local Sylius installation by launching the command:
+And categories:
 
 ```shell
-bin/console app:taxa-import 
+(cd tests/Application && bin/console app:taxa-import path/to/category.csv) 
 ```
 
-Then create a new connection in Connect > Connection settings with type data destination and save the credentials in you .env.local.
+Then, in Akeneo, create a new connection in Connect > Connection settings with type data destination and save the credentials in your `tests/Application/.env.local` file:
 
 ```dotenv
 WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_BASE_URL=http://localhost:8080/
@@ -182,6 +199,6 @@ WEBGRIFFE_SYLIUS_AKENEO_PLUGIN_WEBHOOK_SECRET=WEBHOOK_SECRET
 Now, if you want you can import products from Akeneo to Sylius by launching the command:
 
 ```shell
-bin/console webgriffe:akeneo:import --all
-bin/console messenger:consume main
+(cd tests/Application && bin/console webgriffe:akeneo:import --all)
+(cd tests/Application && bin/console messenger:consume main -vvv)
 ```
