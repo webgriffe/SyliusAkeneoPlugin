@@ -62,87 +62,21 @@ sylius_fixtures:
                                     - 'CN'
                                     - 'GB'
 
-                sales_taxon:
+                master_taxon:
                     name: taxon
                     priority: 1000
                     options:
                         custom:
                             category:
-                                code: 'sales'
-                                name: 'Sales'
+                                code: 'master'
+                                name: 'Master catalog'
                                 translations:
                                     en_US:
-                                        name: 'Sales catalog'
+                                        name: 'Master catalog'
                                     de_DE:
-                                        name: 'Katalog Umsatz'
+                                        name: 'Hauptkatalog'
                                     fr_FR:
-                                        name: 'Catalogue des ventes'
-                                children:
-                                    -
-                                        code: 'home_appliances'
-                                        name: 'Home appliances'
-                                        translations:
-                                            en_US:
-                                                name: 'Home appliances'
-                                            de_DE:
-                                                name: 'Haushaltsgeräte'
-                                            fr_FR:
-                                                name: 'Appareils ménagers'
-                                        children:
-                                            -
-                                                code: 'tvs_projectors_sales'
-                                                name: 'TVs and projectors'
-                                                slug: 'tvs-and-projectors'
-                                                translations:
-                                                    en_US:
-                                                        name: 'TVs and projectors'
-                                                    fr_FR:
-                                                        name: 'Téléviseurs et projecteurs'
-                                                    de_DE:
-                                                        name: 'TVs und projectoren'
-                                            -
-                                                code: 'cameras_sales'
-                                                name: 'Cameras'
-                                                slug: 'cameras'
-                                                translations:
-                                                    en_US:
-                                                        name: 'Cameras'
-                                                    fr_FR:
-                                                        name: 'Caméras'
-                                                    de_DE:
-                                                        name: 'Cameras'
-                                            -
-                                                code: 'audio_video_sales'
-                                                name: 'Audio and Video'
-                                                slug: 'audio-and-video'
-                                                translations:
-                                                    en_US:
-                                                        name: 'Audio and Video'
-                                                    fr_FR:
-                                                        name: 'Audio et Video'
-                                                    de_DE:
-                                                        name: 'Audio und Video'
-                                            -
-                                                code: 'print_scan_sales'
-                                                name: 'Print and scan'
-                                                slug: 'print-and-scan'
-                                                translations:
-                                                    en_US:
-                                                        name: 'Print and scan'
-                                                    fr_FR:
-                                                        name: 'Imprimantes et scanners'
-                                                    de_DE:
-                                                        name: 'Drucken und Scannen'
-                                    -
-                                        code: 'brands'
-                                        name: 'Brands'
-                                        translations:
-                                            en_US:
-                                                name: 'Brands'
-                                            de_DE:
-                                                name: 'Marken'
-                                            fr_FR:
-                                                name: 'Marques'
+                                        name: 'Catalogue principal'
 
                 channel:
                     priority: 900
@@ -168,7 +102,7 @@ sylius_fixtures:
                                     street: 'Test St. 15'
                                     city: 'eCommerce Town'
                                     postcode: '00 33 22'
-                                menu_taxon: 'sales'
+                                menu_taxon: 'master'
                                 contact_phone_number: '+41 123 456 789'
                                 contact_email: 'contact@example.com'
 
@@ -243,7 +177,7 @@ sylius_fixtures:
                                 locale_code: '%locale%'
                                 first_name: 'John'
                                 last_name: 'Doe'
-                                avatar: '@SyliusCoreBundle/Resources/fixtures/adminAvatars/john.jpg'
+                                avatar: '@SyliusCoreBundle/Resources/fixtures/adminAvatars/john.webp'
 
                             -   email: 'api@example.com'
                                 username: 'api'
@@ -253,7 +187,7 @@ sylius_fixtures:
                                 first_name: 'Luke'
                                 last_name: 'Brushwood'
                                 api: true
-                                avatar: '@SyliusCoreBundle/Resources/fixtures/adminAvatars/luke.jpg'
+                                avatar: '@SyliusCoreBundle/Resources/fixtures/adminAvatars/luke.webp'
 
                 tax_category:
                     priority: 1000
