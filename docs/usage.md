@@ -476,4 +476,20 @@ This will:
 
 Import and Reconcile commands uses a [lock mechanism](https://symfony.com/doc/current/console/lockable_trait.html) which
 prevents running them if another instance of the same command is already running.
+
+### Dealing with Sylius products validation
+
+In the 2.0 version of this plugin, we introduced, with [this change](https://github.com/webgriffe/SyliusAkeneoPlugin/pull/169), Product and ProductVariant validation.
+So, **all the products will be validated as they would be when you create or update them from the Sylius admin panel**.
+This means that if your Akeneo products have some missing or invalid attribute values, the import will fail.
+For example, on Akeneo PIM, product codes can contain dots (.) but in Sylius, they are not allowed; so if you have a product with a code like `foo.bar` in Akeneo, the import will fail.
+In such situations you have to customize Sylius Product and ProductVariant validation (for example in this case to allow dots in product codes); refer to the Sylius documentation to do this.
+
+One of the Sylius validation constraint is the one that checks for the existence of prices for each channel.
+It could be that you don't have prices on Akeneo and, in such situation, all the import of new products from Akeneo will fail.
+To handle this issue you have the following options:
+
+1. If product prices are defined on an ERP, make sure that products are first imported from the ERP with prices and other basic information. Only after that you can import them from Akeneo.
+2. Customize the Sylius product validation to allow products without prices.
+
 {% endraw %}
