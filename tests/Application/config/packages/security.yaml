@@ -113,8 +113,6 @@ security:
     access_control:
         - { path: "%sylius.security.admin_regex%/forgotten-password", role: PUBLIC_ACCESS }
 
-        - { path: "%sylius.security.admin_regex%/forgotten-password", role: PUBLIC_ACCESS }
-
         - { path: "%sylius.security.admin_regex%/login", role: PUBLIC_ACCESS }
         - { path: "%sylius.security.shop_regex%/login", role: PUBLIC_ACCESS }
 

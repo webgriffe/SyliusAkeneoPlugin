@@ -66,6 +66,9 @@
     "extra": {
         "branch-alias": {
             "dev-master": "2.0-dev"
+        },
+        "symfony": {
+            "require": "^6.4"
         }
     },
     "autoload": {
