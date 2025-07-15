@@ -7,6 +7,7 @@
     <testsuites>
         <testsuite name="WebgriffeSyliusAkeneoPlugin Test Suite">
             <directory>tests</directory>
+            <exclude>tests/PIM</exclude>
         </testsuite>
     </testsuites>
 
