@@ -113,9 +113,13 @@ jobs:
 
             -
                 name: Install PHP dependencies
-                run: composer install --no-interaction --no-plugins
+                run: composer install --no-interaction
                 env:
                     SYMFONY_REQUIRE: ${{ matrix.symfony }}
+            
+            -
+                name: Clean Symfony Flex recipes application
+                run: git checkout . && git clean -fd
 
             -
                 name: Get Yarn cache directory
