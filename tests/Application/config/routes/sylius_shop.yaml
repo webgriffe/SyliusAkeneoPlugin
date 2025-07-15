@@ -23,4 +23,4 @@ sylius_shop_request_password_reset_token_redirect:
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
     defaults:
         route: sylius_shop_request_password_reset_token
-        permanent: false    
+        permanent: false

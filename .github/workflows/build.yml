@@ -113,9 +113,13 @@ jobs:
 
             -
                 name: Install PHP dependencies
-                run: composer install --no-interaction --no-plugins
+                run: composer install --no-interaction
                 env:
                     SYMFONY_REQUIRE: ${{ matrix.symfony }}
+            
+            -
+                name: Clean Symfony Flex recipes application
+                run: git checkout . && git clean -fd
 
             -
                 name: Get Yarn cache directory
@@ -145,7 +149,6 @@ jobs:
                 name: Prepare test application assets
                 run: |
                     (cd tests/Application && bin/console assets:install public -vvv)
-                    (cd tests/Application && bin/console sylius:install:assets -vvv)
                     (cd tests/Application && yarn build:prod)
 
             -
@@ -166,7 +169,7 @@ jobs:
 
             -
                 name: Run PHPStan
-                run: vendor/bin/phpstan analyse
+                run: vendor/bin/phpstan analyse -c phpstan.neon -l max src/
 
             -
                 name: Run Psalm
@@ -182,7 +185,7 @@ jobs:
 
             -
                 name: Run Behat
-                run: vendor/bin/behat --colors --strict -vvv --no-interaction || vendor/bin/behat --colors --strict -vvv --no-interaction --rerun
+                run: vendor/bin/behat --colors --strict -vvv --no-interaction -f progress  || vendor/bin/behat --colors --strict -vvv --no-interaction -f progress --rerun
 
             -
                 name: Upload Behat logs
