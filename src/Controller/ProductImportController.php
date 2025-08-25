@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\Controller;
 
+use Akeneo\Pim\ApiClient\AkeneoPimClient;
+use DateTime;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductInterface;
 use Sylius\Component\Product\Repository\ProductRepositoryInterface;
@@ -13,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webgriffe\SyliusAkeneoPlugin\Message\ItemImport;
+use Webgriffe\SyliusAkeneoPlugin\Product\Importer;
 use Webgriffe\SyliusAkeneoPlugin\Product\Importer as ProductImporter;
 use Webgriffe\SyliusAkeneoPlugin\ProductAssociations\Importer as ProductAssociationsImporter;
 use Webgriffe\SyliusAkeneoPlugin\ProductModel\Importer as ProductModelImporter;
@@ -24,7 +27,27 @@ final class ProductImportController extends AbstractController
         private ProductRepositoryInterface $productRepository,
         private MessageBusInterface $messageBus,
         private TranslatorInterface $translator,
+        private ?Importer $productImporter = null,
     ) {
+        if ($this->akeneoPimClient === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.5.0',
+                'Not passing an instance of %s to %s constructor is deprecated. It will be mandatory in version 2.0.0.',
+                AkeneoPimClient::class,
+                self::class,
+            );
+        }
+
+        if ($this->productImporter === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '1.5.0',
+                'Not passing an instance of %s to %s constructor is deprecated. It will be mandatory in version 2.0.0.',
+                AkeneoPimClient::class,
+                self::class,
+            );
+        }
     }
 
     public function importAction(int $productId): Response
@@ -62,6 +85,25 @@ final class ProductImportController extends AbstractController
                 $this->translator->trans('webgriffe_sylius_akeneo.ui.enqueued_success', ['{code}' => $productVariantCode]),
             );
         }
+
+        return $this->redirectToRoute('webgriffe_sylius_akeneo_admin_item_import_result_index');
+    }
+
+    public function importAllAction(): Response
+    {
+        $identifiers = $this->productImporter->getIdentifiersModifiedSince((new DateTime())->setTimestamp(0));
+
+        foreach ($identifiers as $identifier) {
+            $itemImport = new ItemImport(
+                Importer::AKENEO_ENTITY,
+                $identifier,
+            );
+            $this->messageBus->dispatch($itemImport);
+        }
+        $this->addFlash(
+            'success',
+            $this->translator->trans('webgriffe_sylius_akeneo.ui.products_enqueued_successfully'),
+        );
 
         return $this->redirectToRoute('webgriffe_sylius_akeneo_admin_item_import_result_index');
     }

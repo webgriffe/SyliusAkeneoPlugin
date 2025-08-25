@@ -18,3 +18,7 @@ webgriffe_sylius_akeneo_item_import_result:
             index:
                 icon: 'cloud download'
     type: sylius.resource
+
+webgriffe_sylius_akeneo_products_import:
+    controller: webgriffe_sylius_akeneo.controller.product_import_controller::importAllAction
+    path: products/import
