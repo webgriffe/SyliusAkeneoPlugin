@@ -50,28 +50,6 @@
       <code><![CDATA[$akeneoProduct['enabled']]]></code>
     </MixedReturnStatement>
   </file>
-  <file src="src/ProductAssociations/Importer.php">
-    <MixedArgument>
-      <code><![CDATA[$productCode]]></code>
-      <code><![CDATA[$productModelsToAssociateIdentifiers]]></code>
-      <code><![CDATA[$productToAssociateIdentifier]]></code>
-      <code><![CDATA[$productsToAssociateIdentifiers]]></code>
-    </MixedArgument>
-    <MixedArrayAccess>
-      <code><![CDATA[$associationInfo['product_models']]]></code>
-      <code><![CDATA[$associationInfo['products']]]></code>
-    </MixedArrayAccess>
-    <MixedAssignment>
-      <code><![CDATA[$associationInfo]]></code>
-      <code><![CDATA[$associationTypeCode]]></code>
-      <code><![CDATA[$associations]]></code>
-      <code><![CDATA[$parentCode]]></code>
-      <code><![CDATA[$productCode]]></code>
-      <code><![CDATA[$productModelsToAssociateIdentifiers]]></code>
-      <code><![CDATA[$productToAssociateIdentifier]]></code>
-      <code><![CDATA[$productsToAssociateIdentifiers]]></code>
-    </MixedAssignment>
-  </file>
   <file src="src/ValueHandler/AttributeValueHandler.php">
     <MixedArgument>
       <code><![CDATA[$valueData['data']]]></code>

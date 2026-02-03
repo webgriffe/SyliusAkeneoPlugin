@@ -17,7 +17,10 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use RuntimeException;
+use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
+use Sylius\Component\Core\Repository\ProductVariantRepositoryInterface;
 use Sylius\Component\Product\Model\ProductAssociationInterface;
 use Sylius\Component\Product\Model\ProductAssociationTypeInterface;
 use Sylius\Component\Product\Model\ProductInterface as BaseProductInterface;
@@ -44,21 +47,25 @@ final class Importer implements ImporterInterface
         private ProductAssociationTypeRepositoryInterface $productAssociationTypeRepository,
         private FactoryInterface $productAssociationFactory,
         private EventDispatcherInterface $eventDispatcher,
+        private ?ProductVariantRepositoryInterface $productVariantRepository = null,
     ) {
+        if ($this->productVariantRepository === null) {
+            trigger_deprecation(
+                'webgriffe/sylius-akeneo-plugin',
+                '2.10.0',
+                'Passing "%s" as 7th argument of "%s" constructor is deprecated and will be required in 3.0.',
+                null,
+                self::class,
+            );
+        }
     }
 
-    /**
-     * @inheritdoc
-     */
     #[\Override]
     public function getAkeneoEntity(): string
     {
         return self::AKENEO_ENTITY;
     }
 
-    /**
-     * @inheritdoc
-     */
     #[\Override]
     public function import(string $identifier): void
     {
@@ -72,6 +79,7 @@ final class Importer implements ImporterInterface
             throw $e;
         }
 
+        /** @var string|null $parentCode */
         $parentCode = $productVariantResponse['parent'];
         if ($parentCode !== null) {
             $productCode = $parentCode;
@@ -83,6 +91,7 @@ final class Importer implements ImporterInterface
         if ($product === null) {
             throw new RuntimeException(sprintf('Cannot find product "%s" on Sylius.', $productCode));
         }
+        /** @var array<string, array{products?: string[], product_models?: string[]}> $associations */
         $associations = $productVariantResponse['associations'];
         foreach ($associations as $associationTypeCode => $associationInfo) {
             /** @var ProductAssociationTypeInterface|null $productAssociationType */
@@ -94,12 +103,8 @@ final class Importer implements ImporterInterface
                 continue;
             }
 
-            $productsToAssociateIdentifiers = $associationInfo['products'] ?? [];
-            $productModelsToAssociateIdentifiers = $associationInfo['product_models'] ?? [];
-            $productAssociationIdentifiers = array_merge(
-                $productsToAssociateIdentifiers,
-                $productModelsToAssociateIdentifiers,
-            );
+            $productAssociationIdentifiers = $this->resolveAssociatedProductIdentifiers($associationInfo);
+
             /** @var Collection<int|string, BaseProductInterface> $productsToAssociate */
             $productsToAssociate = new ArrayCollection();
             foreach ($productAssociationIdentifiers as $productToAssociateIdentifier) {
@@ -156,6 +161,38 @@ final class Importer implements ImporterInterface
         }
 
         return $identifiers;
+    }
+
+    /**
+     * @param array{products?: string[], product_models?: string[]} $associationInfo
+     *
+     * @return string[] An array containing the resolved product code from product or variant identifiers
+     */
+    private function resolveAssociatedProductIdentifiers(array $associationInfo): array
+    {
+        $productsToAssociateIdentifiers = $associationInfo['products'] ?? [];
+        $productModelsToAssociateIdentifiers = $associationInfo['product_models'] ?? [];
+        $productVariantRepository = $this->productVariantRepository;
+        if ($productVariantRepository === null) {
+            return array_merge(
+                $productsToAssociateIdentifiers,
+                $productModelsToAssociateIdentifiers,
+            );
+        }
+
+        foreach ($productsToAssociateIdentifiers as $productToAssociateIdentifier) {
+            $productVariant = $productVariantRepository->findOneBy(['code' => $productToAssociateIdentifier]);
+            if (!$productVariant instanceof ProductVariantInterface) {
+                continue;
+            }
+            $product = $productVariant->getProduct();
+            if (!$product instanceof ProductInterface) {
+                continue;
+            }
+            $productModelsToAssociateIdentifiers[] = (string) $product->getCode();
+        }
+
+        return array_unique($productModelsToAssociateIdentifiers);
     }
 
     /**
