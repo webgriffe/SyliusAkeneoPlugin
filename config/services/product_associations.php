@@ -17,6 +17,7 @@ return static function (ContainerConfigurator $containerConfigurator) {
             service('sylius.repository.product_association_type'),
             service('sylius.factory.product_association'),
             service('event_dispatcher'),
+            service('sylius.repository.product_variant'),
         ])
         ->tag('webgriffe_sylius_akeneo.importer')
     ;
