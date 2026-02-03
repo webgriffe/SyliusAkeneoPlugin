@@ -1,0 +1,5 @@
+webgriffe_sylius_akeneo_admin:
+    resource: "@WebgriffeSyliusAkeneoPlugin/config/routes/admin.php"
+
+webgriffe_sylius_akeneo_webhook:
+    resource: "@WebgriffeSyliusAkeneoPlugin/config/routes/webhook.php"
