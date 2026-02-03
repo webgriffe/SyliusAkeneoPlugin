@@ -66,7 +66,7 @@ jobs:
 
             -
                 name: Install certificates
-                run: symfony server:ca:install
+                run: symfony server:ca:install || true
 
             -
                 name: Run Chrome Headless
