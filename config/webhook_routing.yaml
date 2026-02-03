@@ -1,4 +1,0 @@
-webgriffe_sylius_akeneo_webhook:
-    path: /akeneo/webhook
-    methods: [POST]
-    controller: webgriffe_sylius_akeneo.controller.webhook::postAction

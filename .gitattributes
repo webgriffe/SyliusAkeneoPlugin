@@ -1,0 +1,16 @@
+/.docker export-ignore
+/.editorconfig export-ignore
+/.gitattributes export-ignore
+/.github export-ignore
+/behat.yml.dist export-ignore
+/docker-compose.yml export-ignore
+/docs export-ignore
+/ecs.php export-ignore
+/etc export-ignore
+/Makefile export-ignore
+/node_modules export-ignore
+/phpspec.yml.dist export-ignore
+/phpstan.neon export-ignore
+/phpunit.xml.dist export-ignore
+/psalm.xml export-ignore
+/symfony.lock export-ignore

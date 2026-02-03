@@ -1,0 +1,219 @@
+sylius_fixtures:
+    suites:
+        akeneo:
+            listeners:
+                orm_purger: ~
+                images_purger: ~
+                logger: ~
+
+            fixtures:
+                locale:
+                    options:
+                        locales:
+                            - 'en_US'
+                            - 'de_DE'
+                            - 'fr_FR'
+                            - 'pl_PL'
+                            - 'es_ES'
+                            - 'es_MX'
+                            - 'pt_PT'
+                            - 'zh_CN'
+                currency:
+                    options:
+                        currencies:
+                            - 'EUR'
+                            - 'USD'
+                            - 'PLN'
+                            - 'CAD'
+                            - 'CNY'
+                            - 'NZD'
+                            - 'GBP'
+                            - 'AUD'
+                            - 'MXN'
+
+                geographical:
+                    options:
+                        countries:
+                            - 'US'
+                            - 'FR'
+                            - 'DE'
+                            - 'AU'
+                            - 'CA'
+                            - 'MX'
+                            - 'NZ'
+                            - 'PT'
+                            - 'ES'
+                            - 'CN'
+                            - 'GB'
+                            - 'PL'
+                            - 'IT'
+                        zones:
+                            US:
+                                name: 'United States of America'
+                                countries:
+                                    - 'US'
+                            EUROPE:
+                                name: 'Europe'
+                                countries:
+                                    - 'FR'
+                                    - 'DE'
+                                    - 'AU'
+                                    - 'PT'
+                                    - 'ES'
+                                    - 'PL'
+                                    - 'IT'
+                            WORLD:
+                                name: 'Rest of the World'
+                                countries:
+                                    - 'CA'
+                                    - 'MX'
+                                    - 'NZ'
+                                    - 'CN'
+                                    - 'GB'
+
+                menu_taxon:
+                    name: taxon
+                    options:
+                        custom:
+                            category:
+                                code: 'category'
+                                name: 'Category'
+                                translations:
+                                    en_US:
+                                        name: 'Category'
+                                    de_DE:
+                                        name: 'Hauptkatalog'
+                                    fr_FR:
+                                        name: 'Catégorie'
+
+                channel:
+                    options:
+                        custom:
+                            ecommerce:
+                                name: 'Ecommerce'
+                                code: 'ecommerce'
+                                locales:
+                                    - 'de_DE'
+                                    - 'en_US'
+                                    - 'fr_FR'
+                                currencies:
+                                    - 'EUR'
+                                    - 'USD'
+                                enabled: true
+                                hostname: '%env(resolve:SYLIUS_FIXTURES_HOSTNAME)%'
+                                theme_name: '%env(resolve:SYLIUS_FIXTURES_THEME_NAME)%'
+                                shop_billing_data:
+                                    company: 'Sylius'
+                                    tax_id: '0001112222'
+                                    country_code: 'US'
+                                    street: 'Test St. 15'
+                                    city: 'eCommerce Town'
+                                    postcode: '00 33 22'
+                                menu_taxon: 'category'
+                                contact_phone_number: '+41 123 456 789'
+                                contact_email: 'contact@example.com'
+
+                payment_method:
+                    options:
+                        custom:
+                            cash_on_delivery:
+                                code: 'cash_on_delivery'
+                                name: 'Cash on delivery'
+                                channels:
+                                    - 'ecommerce'
+                            bank_transfer:
+                                code: 'bank_transfer'
+                                name: 'Bank transfer'
+                                channels:
+                                    - 'ecommerce'
+                                enabled: true
+
+                shipping_method:
+                    options:
+                        custom:
+                            ups:
+                                code: 'ups'
+                                name: 'UPS'
+                                enabled: true
+                                channels:
+                                    - 'ecommerce'
+                            dhl_express:
+                                code: 'dhl_express'
+                                name: 'DHL Express'
+                                channels:
+                                    - 'ecommerce'
+                            fedex:
+                                code: 'fedex'
+                                name: 'FedEx'
+                                channels:
+                                    - 'ecommerce'
+
+                customer_group:
+                    options:
+                        custom:
+                            retail:
+                                code: 'retail'
+                                name: 'Retail'
+                            wholesale:
+                                code: 'wholesale'
+                                name: 'Wholesale'
+
+                shop_user:
+                    name: 'shop_user'
+                    options:
+                        random: 20
+                        custom:
+                            -   email: 'shop@example.com'
+                                first_name: 'John'
+                                last_name: 'Doe'
+                                password: 'sylius'
+
+                admin_user:
+                    name: 'admin_user'
+                    options:
+                        custom:
+                            -   email: 'sylius@example.com'
+                                username: 'sylius'
+                                password: 'sylius'
+                                enabled: true
+                                locale_code: '%locale%'
+                                first_name: 'John'
+                                last_name: 'Doe'
+                                avatar: '@SyliusCoreBundle/Resources/fixtures/adminAvatars/john.webp'
+
+                            -   email: 'api@example.com'
+                                username: 'api'
+                                password: 'sylius-api'
+                                enabled: true
+                                locale_code: '%locale%'
+                                first_name: 'Luke'
+                                last_name: 'Brushwood'
+                                api: true
+                                avatar: '@SyliusCoreBundle/Resources/fixtures/adminAvatars/luke.webp'
+
+                tax_category:
+                    options:
+                        custom:
+                            clothing:
+                                code: 'clothing'
+                                name: 'Clothing'
+                            other:
+                                code: 'other'
+                                name: 'Other'
+
+                tax_rate:
+                    options:
+                        custom:
+                            clothing_tax:
+                                code: 'clothing_sales_tax_7'
+                                name: 'Clothing Sales Tax 7%'
+                                zone: 'US'
+                                category: 'clothing'
+                                amount: 0.07
+
+                            default_sales_tax:
+                                code: 'sales_tax_20'
+                                name: 'Sales Tax 20%'
+                                zone: 'US'
+                                category: 'other'
+                                amount: 0.2
