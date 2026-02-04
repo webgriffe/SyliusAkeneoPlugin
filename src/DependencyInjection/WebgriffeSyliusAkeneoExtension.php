@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Webgriffe\SyliusAkeneoPlugin\DependencyInjection;
 
+use Sylius\Bundle\CoreBundle\DependencyInjection\PrependDoctrineMigrationsTrait;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\AttributeValueHandler;
@@ -23,8 +25,10 @@ use Webgriffe\SyliusAkeneoPlugin\ValueHandler\ProductOptionValueHandler;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandler\TranslatablePropertyValueHandler;
 use Webmozart\Assert\Assert;
 
-final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension implements CompilerPassInterface
+final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension implements CompilerPassInterface, PrependExtensionInterface
 {
+    use PrependDoctrineMigrationsTrait;
+
     private const PRODUCT_VALUE_HANDLER_TAG = 'webgriffe_sylius_akeneo.product.value_handler';
 
     private const IMPORTER_TAG = 'webgriffe_sylius_akeneo.importer';
@@ -265,5 +269,31 @@ final class WebgriffeSyliusAkeneoExtension extends AbstractResourceExtension imp
     private function registerWebhookParameters(array $webhook, ContainerBuilder $container): void
     {
         $container->setParameter('webgriffe_sylius_akeneo.webhook.secret', $webhook['secret']);
+    }
+
+    #[\Override]
+    public function prepend(ContainerBuilder $container): void
+    {
+        $this->prependDoctrineMigrations($container);
+    }
+
+    #[\Override]
+    protected function getMigrationsNamespace(): string
+    {
+        return 'Webgriffe\SyliusAkeneoPlugin\Migrations';
+    }
+
+    #[\Override]
+    protected function getMigrationsDirectory(): string
+    {
+        return '@WebgriffeSyliusAkeneoPlugin/src/Migrations';
+    }
+
+    #[\Override]
+    protected function getNamespacesOfMigrationsExecutedBefore(): array
+    {
+        return [
+            'Sylius\Bundle\CoreBundle\Migrations',
+        ];
     }
 }
