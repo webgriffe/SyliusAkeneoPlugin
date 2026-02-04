@@ -116,15 +116,4 @@
       <code><![CDATA[$productVariant->getCode()]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="src/ValueHandler/TranslatablePropertyValueHandler.php">
-    <MixedArgument>
-      <code><![CDATA[$variantTranslation->getLocale()]]></code>
-    </MixedArgument>
-    <MixedMethodCall>
-      <code><![CDATA[getLocale]]></code>
-    </MixedMethodCall>
-    <PossiblyInvalidMethodCall>
-      <code><![CDATA[getLocale]]></code>
-    </PossiblyInvalidMethodCall>
-  </file>
 </files>
