@@ -12,7 +12,7 @@ final class DateTimeBuilder implements DateTimeBuilderInterface
      * @throws \Exception
      */
     #[\Override]
-    public function build($time = 'now', \DateTimeZone $timezone = null): \DateTime
+    public function build($time = 'now', ?\DateTimeZone $timezone = null): \DateTime
     {
         return new \DateTime($time, $timezone);
     }

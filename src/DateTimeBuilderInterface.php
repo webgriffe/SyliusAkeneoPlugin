@@ -9,5 +9,5 @@ interface DateTimeBuilderInterface
     /**
      * @param string $time
      */
-    public function build($time = 'now', \DateTimeZone $timezone = null): \DateTime;
+    public function build($time = 'now', ?\DateTimeZone $timezone = null): \DateTime;
 }
