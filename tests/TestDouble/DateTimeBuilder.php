@@ -15,7 +15,7 @@ class DateTimeBuilder implements DateTimeBuilderInterface
      *
      * @throws \Exception
      */
-    public function build($time = 'now', \DateTimeZone $timezone = null): \DateTime
+    public function build($time = 'now', ?\DateTimeZone $timezone = null): \DateTime
     {
         if (self::$forcedNow) {
             $dateTime = new \DateTime(self::$forcedNow, $timezone);

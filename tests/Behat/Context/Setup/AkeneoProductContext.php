@@ -23,7 +23,7 @@ final class AkeneoProductContext implements Context
      * @Given there is a product :identifier on Akeneo
      * @Given there is a product :identifier updated at :date on Akeneo
      */
-    public function thereIsAProductUpdatedAtOnAkeneo(string $identifier, DateTime $date = null): void
+    public function thereIsAProductUpdatedAtOnAkeneo(string $identifier, ?DateTime $date = null): void
     {
         InMemoryProductApi::addResource(Product::create($identifier, ['updated' => $date]));
     }
