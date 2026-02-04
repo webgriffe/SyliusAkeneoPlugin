@@ -18,19 +18,18 @@ nav_order: 2
 3. Add basic plugin configuration by creating the `config/packages/webgriffe_sylius_akeneo_plugin.yaml` file with the following content:
     ```yaml
     imports:
-        - { resource: "@WebgriffeSyliusAkeneoPlugin/config/config.yaml" }
+        - { resource: "@WebgriffeSyliusAkeneoPlugin/config/config.php" }
     ```
 
 4. Import the routes needed for the plugin by adding the following to your `config/routes.yaml` file:
     ```yaml
     webgriffe_sylius_akeneo_plugin_admin:
-        resource: "@WebgriffeSyliusAkeneoPlugin/config/admin_routing.yaml"
+        resource: "@WebgriffeSyliusAkeneoPlugin/config/routes/admin.php"
         prefix: '/%sylius_admin.path_name%'
     ```
 
 5. If you use `Doctrine` you should run a diff of your Doctrine's schema and then run the migration generated:
     ```shell
-    bin/console doctrine:migrations:diff
     bin/console doctrine:migrations:migrate
     ```
 
