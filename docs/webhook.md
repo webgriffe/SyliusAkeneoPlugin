@@ -15,7 +15,7 @@ To use the webhook you need to:
 1. Import the routes needed for the plugin by adding the following to your `config/routes.yaml` file:
     ```yaml
     webgriffe_sylius_akeneo_plugin_webhook:
-        resource: "@WebgriffeSyliusAkeneoPlugin/config/webhook_routing.yaml"
+        resource: "@WebgriffeSyliusAkeneoPlugin/config/routes/webhook.php"
         prefix: ''
     ```
    The url of the webhook can be anything you want but it must be the same you will configure in Akeneo PIM. The

@@ -1,8 +1,13 @@
-# Upgrade plugin guide
+---
+title: Upgrade to 3.*
+layout: page
+nav_order: 0
+parent: Upgrade
+---
 
-## Upgrade from version 2.9.x to 3.x
+# Upgrade from `v2.9.x` to `v3.0`
 
-In this version, we have updated the plugin to be fully compatible with version 2 of Sylius.
+In this version, we have updated the plugin to be fully compatible with version 2 of Sylius and to use the Sylius test application for plugin development and testing.
 
 - The route `@WebgriffeSyliusAkeneoPlugin/config/admin_routing.yaml` has been renamed to `@WebgriffeSyliusAkeneoPlugin/config/routes/admin.php`.
 - The route `@WebgriffeeSyliusAkeneoPlugin/config/webhook_routing.yaml` has been renamed to `@WebgriffeSyliusAkeneoPlugin/config/routes/webhook.php`.
