@@ -31,6 +31,12 @@ jobs:
             APP_ENV: test
             BEHAT_BASE_URL: "https://127.0.0.1:8080/"
             DATABASE_URL: "mysql://root:root@127.0.0.1/sylius?serverVersion=${{ matrix.mysql }}"
+            SYLIUS_MESSENGER_TRANSPORT_MAIN_DSN: "sync://"
+            SYLIUS_MESSENGER_TRANSPORT_MAIN_FAILED_DSN: "sync://"
+            SYLIUS_MESSENGER_TRANSPORT_CATALOG_PROMOTION_REMOVAL_DSN: "sync://"
+            SYLIUS_MESSENGER_TRANSPORT_CATALOG_PROMOTION_REMOVAL_FAILED_DSN: "sync://"
+            SYLIUS_MESSENGER_TRANSPORT_PAYMENT_REQUEST_DSN: "sync://"
+            SYLIUS_MESSENGER_TRANSPORT_PAYMENT_REQUEST_FAILED_DSN: "sync://"
 
         steps:
             -
