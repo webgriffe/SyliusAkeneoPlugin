@@ -19,7 +19,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.db.log
 
             filters:
-                tags: "@importing_products && @cli"
+                tags: "@importing_products&&@cli"
 
         ui_importing_products:
             contexts:
@@ -39,7 +39,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.managing_products
 
             filters:
-                tags: "@importing_products && @ui"
+                tags: "@importing_products&&@ui"
 
         cli_importing_product_models:
             contexts:
@@ -59,7 +59,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
                 - webgriffe_sylius_akeneo.behat.context.db.log
             filters:
-                tags: "@importing_product_models && @cli"
+                tags: "@importing_product_models&&@cli"
 
         cli_importing_product_associations:
             contexts:
@@ -75,7 +75,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.cli.import_command
 
             filters:
-                tags: "@importing_product_associations && @cli"
+                tags: "@importing_product_associations&&@cli"
 
         cli_ui_importing_generic_items:
             contexts:
@@ -96,7 +96,7 @@ default:
                 - webgriffe_sylius_akeneo.behat.context.system.filesystem
 
             filters:
-                tags: "@importing_generic_items && @cli && @ui"
+                tags: "@importing_generic_items&&@cli&&@ui"
 
         cli_reconcile_products:
             contexts:
@@ -116,7 +116,7 @@ default:
 
                 - webgriffe_sylius_akeneo.behat.context.cli.reconcile_command
             filters:
-                tags: "@reconcile_products && @cli"
+                tags: "@reconcile_products&&@cli"
 
         ui_reviewing_import_history:
             contexts:
@@ -127,4 +127,4 @@ default:
                 
                 - webgriffe_sylius_akeneo.behat.context.ui.admin.browsing_item_import_results
             filters:
-                tags: "@browsing_import_history && @ui"
+                tags: "@browsing_import_history&&@ui"
