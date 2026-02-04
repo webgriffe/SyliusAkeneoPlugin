@@ -6,7 +6,7 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return static function (RoutingConfigurator $routes): void {
     $routes->add('webgriffe_sylius_akeneo_product_import', '/product/{productId}/import')
-        ->controller(['controller.product_import_controller', 'importAction'])
+        ->controller(['webgriffe_sylius_akeneo.controller.product_import_controller', 'importAction'])
         ->methods(['GET'])
     ;
 
