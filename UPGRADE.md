@@ -7,3 +7,5 @@ In this version, we have updated the plugin to be fully compatible with version 
 - The route `@WebgriffeSyliusAkeneoPlugin/config/admin_routing.yaml` has been renamed to `@WebgriffeSyliusAkeneoPlugin/config/routes/admin.php`.
 - The route `@WebgriffeeSyliusAkeneoPlugin/config/webhook_routing.yaml` has been renamed to `@WebgriffeSyliusAkeneoPlugin/config/routes/webhook.php`.
 - The route `@WebgriffeSyliusAkeneoPlugin/config/config.yaml` has been renamed to `@WebgriffeSyliusAkeneoPlugin/config/config.php`.
+- The template `@WebgriffeSyliusAkeneoPlugin/ItemImportResult/Grid/Field/successful.html.twig` has been renamed to `@WebgriffeSyliusAkeneoPlugin/admin/item_import_result/grid/field/successful.html.twig`.
+- The template `@WebgriffeSyliusAkeneoPlugin/Product/Grid/Action/import.html.twig` has been removed.
