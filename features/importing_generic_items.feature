@@ -35,7 +35,7 @@ Feature: Importing items
         When I browse products
         Then I should see 0 products in the list
 
-    @cli @ui @mink:chromedriver
+    @cli @ui @javascript
     Scenario: Importing all items regardless last modified date
         Given there is a product "1314976" updated at "2022-06-15" on Akeneo
         And there is a product "10597353" updated at "2022-07-23" on Akeneo
@@ -46,7 +46,7 @@ Feature: Importing items
         Then I should see 3 products in the list
         And the product with code "11164822" should have an association "Pack" with product "10597353"
 
-    @cli @ui @mink:chromedriver
+    @cli @ui @javascript
     Scenario: Importing all items for one importer only
         Given there is a product "1314976" updated at "2022-06-15" on Akeneo
         And there is a product "10597353" updated at "2022-07-23" on Akeneo
