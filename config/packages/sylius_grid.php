@@ -58,7 +58,7 @@ return static function (ContainerConfigurator $container): void {
                         'type' => 'twig',
                         'label' => 'webgriffe_sylius_akeneo.ui.successful',
                         'options' => [
-                            'template' => '@WebgriffeSyliusAkeneoPlugin\ItemImportResult\Grid\Field\successful.html.twig',
+                            'template' => '@WebgriffeSyliusAkeneoPlugin\admin\item_import_result\grid\field\successful.html.twig',
                         ],
                     ],
                     'message' => [
