@@ -49,57 +49,21 @@ final class Importer implements ImporterInterface
 
     /**
      * @param RepositoryInterface<ProductAttributeInterface> $attributeRepository
-     * @param ?FactoryInterface<ProductOptionValueTranslationInterface> $productOptionValueTranslationFactory
-     * @param ?FactoryInterface<ProductOptionValueInterface> $productOptionValueFactory
-     * @param ?FactoryInterface<ProductOptionTranslationInterface> $productOptionTranslationFactory
+     * @param FactoryInterface<ProductOptionValueTranslationInterface> $productOptionValueTranslationFactory
+     * @param FactoryInterface<ProductOptionValueInterface> $productOptionValueFactory
+     * @param FactoryInterface<ProductOptionTranslationInterface> $productOptionTranslationFactory
      */
     public function __construct(
         private AkeneoPimClientInterface $apiClient,
         private RepositoryInterface $attributeRepository,
         private EventDispatcherInterface $eventDispatcher,
-        private ?ProductOptionRepositoryInterface $optionRepository = null,
-        private ?TranslationLocaleProviderInterface $translationLocaleProvider = null,
-        private ?FactoryInterface $productOptionValueTranslationFactory = null,
-        private ?FactoryInterface $productOptionValueFactory = null,
-        private ?FactoryInterface $productOptionTranslationFactory = null,
-        private ?TranslatorInterface $translator = null,
+        private ProductOptionRepositoryInterface $optionRepository,
+        private TranslationLocaleProviderInterface $translationLocaleProvider,
+        private FactoryInterface $productOptionValueTranslationFactory,
+        private FactoryInterface $productOptionValueFactory,
+        private FactoryInterface $productOptionTranslationFactory,
+        private TranslatorInterface $translator,
     ) {
-        if ($this->optionRepository === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                'v2.2.0',
-                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
-                ProductOptionRepositoryInterface::class,
-                self::class,
-            );
-        }
-        if ($this->translationLocaleProvider === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                'v2.2.0',
-                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
-                TranslationLocaleProviderInterface::class,
-                self::class,
-            );
-        }
-        if ($this->productOptionValueTranslationFactory === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                'v2.2.0',
-                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
-                FactoryInterface::class,
-                self::class,
-            );
-        }
-        if ($this->translator === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                'v2.2.0',
-                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
-                TranslatorInterface::class,
-                self::class,
-            );
-        }
     }
 
     #[\Override]
@@ -287,7 +251,7 @@ final class Importer implements ImporterInterface
     }
 
     #[\Override]
-    private function getProductOptionRepository(): ?ProductOptionRepositoryInterface
+    private function getProductOptionRepository(): ProductOptionRepositoryInterface
     {
         return $this->optionRepository;
     }

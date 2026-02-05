@@ -44,17 +44,8 @@ final class AttributeValueHandler implements ValueHandlerInterface
         private FactoryInterface $factory,
         private TranslationLocaleProviderInterface $localeProvider,
         private ValueConverterInterface $valueConverter,
-        private ?AkeneoPimClientInterface $akeneoPimClient = null,
+        private AkeneoPimClientInterface $akeneoPimClient,
     ) {
-        if ($this->akeneoPimClient === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                'v2.6.0',
-                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
-                AkeneoPimClientInterface::class,
-                self::class,
-            );
-        }
     }
 
     #[\Override]
@@ -96,9 +87,7 @@ final class AttributeValueHandler implements ValueHandlerInterface
             );
         }
         // TODO: Find a way to update attribute options only when they change or when needed, not every time
-        if ($this->akeneoPimClient !== null &&
-            $attribute->getType() === SelectAttributeType::TYPE
-        ) {
+        if ($attribute->getType() === SelectAttributeType::TYPE) {
             $this->importAttributeConfiguration($attributeCode, $attribute);
         }
 
@@ -197,9 +186,6 @@ final class AttributeValueHandler implements ValueHandlerInterface
     #[\Override]
     private function getAkeneoPimClient(): AkeneoPimClientInterface
     {
-        $akeneoPimClient = $this->akeneoPimClient;
-        Assert::notNull($akeneoPimClient);
-
-        return $akeneoPimClient;
+        return $this->akeneoPimClient;
     }
 }
