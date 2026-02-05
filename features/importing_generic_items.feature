@@ -6,6 +6,7 @@ Feature: Importing items
 
     Background:
         Given I am logged in as an administrator
+        And the store has locale "en_US"
         And the store has a product association type "Pack" with a code "PACK"
 
     @cli @ui
