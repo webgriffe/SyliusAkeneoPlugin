@@ -92,17 +92,21 @@ For more information about the **Test Application** included in this plugin, ple
        ```bash
        google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
        ```
-
-    3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:
+       On MacOS you can use:
        ```bash
-       symfony server:ca:install
-       APP_ENV=test symfony server:start --port=8080 --daemon
+       APP_ENV=test symfony server:start --port=8080 & "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --disable-gpu --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' --crash-dumps-dir=/tmp https://127.0.0.1 & tee
        ```
 
-    4. Run Behat:
-       ```bash
-       vendor/bin/behat --strict --tags="@javascript,@mink:chromedriver"
-       ```
+   3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:
+      ```bash
+      symfony server:ca:install
+      APP_ENV=test symfony server:start --port=8080 --daemon
+      ```
+
+   4. Run Behat:
+      ```bash
+      vendor/bin/behat --strict --tags="@javascript,@mink:chromedriver"
+      ```
 
 ### Opening Sylius with your plugin
 
@@ -149,6 +153,12 @@ If you already have installed the PIM and you want just to start it launch the f
 ```
 
 Now you can access to the PIM on http://localhost:8080/ with admin/admin as credentials.
+
+If you want to stop the PIM you can run:
+
+```shell
+(cd tests/PIM && make stop)
+```
 
 ### Prepare Sylius installation to work with the Akeneo test installation
 
