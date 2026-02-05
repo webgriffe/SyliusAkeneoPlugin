@@ -2,23 +2,6 @@ sylius_fixtures:
     suites:
         akeneo:
             fixtures:
-#                product_review:
-#                    options:
-#                        random: 40
-#
-#                fulfilled_order:
-#                    name: order
-#                    options:
-#                        amount: 12
-#                        channel: 'ecommerce'
-#                        fulfilled: true
-#
-#                new_order:
-#                    name: order
-#                    options:
-#                        amount: 8
-#                        channel: 'ecommerce'
-
                 address:
                     options:
                         random: 10

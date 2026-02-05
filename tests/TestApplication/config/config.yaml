@@ -1,9 +1,8 @@
 imports:
     - { resource: "packages/webgriffe_sylius_akeneo_plugin.yaml" }
+    - { resource: "services/*.php" }
     - { resource: "services_test.php" }
     - { resource: 'fixtures/shop_configuration.yaml' }
-    - { resource: 'fixtures/attributes.yaml' }
-    - { resource: 'fixtures/products.yaml' }
     - { resource: 'fixtures/custom_fixtures.yaml' }
 
 parameters:

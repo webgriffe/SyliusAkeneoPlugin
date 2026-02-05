@@ -52,7 +52,7 @@ Then define the importer with the `webgriffe_sylius_akeneo.importer` tag:
 ```yaml
 # config/services.yaml
 
-app.custom.importer:
+app.importer.custom:
     class: App\Importer\CustomImporter
     tags:
         - { name: 'webgriffe_sylius_akeneo.importer' }

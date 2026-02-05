@@ -1,9 +1,0 @@
-sylius_fixtures:
-    suites:
-        akeneo:
-            fixtures:
-                
-#                10627329_product:
-#                    name: '10627329'
-#                    options:
-#                        code: '10627329'
