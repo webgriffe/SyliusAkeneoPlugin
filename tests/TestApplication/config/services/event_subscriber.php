@@ -10,9 +10,6 @@ return static function (ContainerConfigurator $container) {
     $services = $container->services();
 
     $services->set('app.command.attributes_import', IdentifiersModifiedSinceSearchBuilderBuiltEventSubscriber::class)
-        ->args([
-
-        ])
         ->tag('kernel.event_subscriber')
     ;
 };

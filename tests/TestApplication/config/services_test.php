@@ -10,7 +10,7 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\InMemoryAkeneoPimClient;
 use Tests\Webgriffe\SyliusAkeneoPlugin\TestDouble\DateTimeBuilder;
 
 return static function (ContainerConfigurator $container) {
-    if (str_starts_with($container->env(), 'test')) {
+    if (str_starts_with((string) $container->env(), 'test')) {
         $container->import('../../../vendor/sylius/sylius/src/Sylius/Behat/Resources/config/services.xml');
         $container->import('@WebgriffeSyliusAkeneoPlugin/tests/Behat/Resources/services.xml');
 

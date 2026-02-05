@@ -24,15 +24,13 @@ use Webmozart\Assert\Assert;
 #[AsCommand(name: 'app:taxa-import')]
 final class TaxaImportCommand extends Command
 {
-    protected static $defaultName = 'app:taxa-import';
-
     public function __construct(
         private TaxonFactoryInterface $taxonFactory,
         private TaxonRepositoryInterface $taxonRepository,
         private FactoryInterface $taxonTranslationFactory,
         private TaxonSlugGeneratorInterface $taxonSlugGenerator,
         private LocaleProviderInterface $localeProvider,
-        string $name = null,
+        ?string $name = null,
     ) {
         parent::__construct($name);
     }

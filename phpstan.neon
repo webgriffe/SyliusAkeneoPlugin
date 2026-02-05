@@ -4,14 +4,11 @@ parameters:
     paths:
         - src
         - tests/Behat
+        - tests/TestApplication
 
     excludePaths:
         # Makes PHPStan crash
         - 'src/DependencyInjection/Configuration.php'
-
-        # Test dependencies
-        - 'tests/Application/app/**.php'
-        - 'tests/Application/src/**.php'
 
     ignoreErrors:
         -
