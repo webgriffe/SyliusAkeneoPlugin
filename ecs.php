@@ -16,8 +16,11 @@ return static function (ECSConfig $ecsConfig): void {
     $ecsConfig->paths([
         'src',
         'tests/Behat',
+        'tests/DataFixtures',
+        'tests/Functional',
         'tests/InMemory',
         'tests/Integration',
+        'tests/TestApplication',
         'tests/TestDouble',
         'tests/Unit',
     ]);
