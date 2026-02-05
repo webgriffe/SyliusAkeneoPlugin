@@ -13,23 +13,11 @@ sylius_fixtures:
                             - 'en_US'
                             - 'de_DE'
                             - 'fr_FR'
-                            - 'pl_PL'
-                            - 'es_ES'
-                            - 'es_MX'
-                            - 'pt_PT'
-                            - 'zh_CN'
                 currency:
                     options:
                         currencies:
                             - 'EUR'
                             - 'USD'
-                            - 'PLN'
-                            - 'CAD'
-                            - 'CNY'
-                            - 'NZD'
-                            - 'GBP'
-                            - 'AUD'
-                            - 'MXN'
 
                 geographical:
                     options:
@@ -71,20 +59,20 @@ sylius_fixtures:
                                     - 'CN'
                                     - 'GB'
 
-                menu_taxon:
+                master_taxon:
                     name: taxon
                     options:
                         custom:
                             category:
-                                code: 'category'
-                                name: 'Category'
+                                code: 'master'
+                                name: 'Master catalog'
                                 translations:
                                     en_US:
-                                        name: 'Category'
+                                        name: 'Master catalog'
                                     de_DE:
                                         name: 'Hauptkatalog'
                                     fr_FR:
-                                        name: 'Catégorie'
+                                        name: 'Catalogue principal'
 
                 channel:
                     options:
@@ -96,6 +84,7 @@ sylius_fixtures:
                                     - 'de_DE'
                                     - 'en_US'
                                     - 'fr_FR'
+                                base_currency: 'EUR'
                                 currencies:
                                     - 'EUR'
                                     - 'USD'
@@ -109,7 +98,7 @@ sylius_fixtures:
                                     street: 'Test St. 15'
                                     city: 'eCommerce Town'
                                     postcode: '00 33 22'
-                                menu_taxon: 'category'
+                                menu_taxon: 'master'
                                 contact_phone_number: '+41 123 456 789'
                                 contact_email: 'contact@example.com'
 

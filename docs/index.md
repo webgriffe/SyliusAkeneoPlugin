@@ -7,9 +7,9 @@ nav_order: 0
 # Webgriffe Sylius Akeneo plugin
 
 > **Please note!!**<br />
-> This guide refers to the v2.0 version of the plugin.<br />
-> Click [here](upgrade/upgrade-2.0.html) to access the guide on how to upgrade your plugin to v2.0.<br />
-> Or click [here](https://github.com/webgriffe/SyliusAkeneoPlugin/tree/1.17.0) to access the guide for the current stable version.
+> This guide refers to the v3.0 version of the plugin.<br />
+> Click [here](upgrade/upgrade-3.*.html) to access the guide on how to upgrade your plugin to v3.0.<br />
+> Or click [here](https://github.com/webgriffe/SyliusAkeneoPlugin/tree/v2.9.0/docs) to access the guide for the 2.x version.
 
 ## What does this plugin do?
 
@@ -34,4 +34,4 @@ new features that this plugin could add. So, let's start! 🚀
 - [Webhook](webhook.html)
 - [Architecture & customization](architecture_and_customization.html)
 - [Contributing](contributing.html)
-- [Upgrade guide](upgrade.html)
+- [Upgrade guide](upgrade)

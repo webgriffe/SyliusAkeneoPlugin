@@ -145,7 +145,7 @@ final class ImportCommand extends Command
 
         $this->release();
 
-        return 0;
+        return self::SUCCESS;
     }
 
     private function getSinceDateByFile(string $filepath): DateTime

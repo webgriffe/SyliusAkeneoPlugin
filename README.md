@@ -1,6 +1,10 @@
 <p align="center">
     <a href="https://sylius.com" target="_blank">
-        <img src="https://demo.sylius.com/assets/shop/img/logo.png"  alt="Sylius logo"/>
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://media.sylius.com/sylius-logo-800-dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="https://media.sylius.com/sylius-logo-800.png">
+          <img alt="Sylius Logo." src="https://media.sylius.com/sylius-logo-800.png">
+        </picture>
     </a>
 </p>
 
@@ -9,8 +13,8 @@
     Plugin allowing to import data from Akeneo PIM to your Sylius store.
 </p>
 <p align="center">
-    <a href="https://github.com/webgriffe/SyliusAkeneoPlugin/actions">
-        <img src="https://github.com/webgriffe/SyliusAkeneoPlugin/workflows/Build/badge.svg" alt="Build Status" />
+    <a href="https://github.com/webgriffe/SyliusAkeneoPlugin/actions/workflows/build.yml">
+        <img src="https://github.com/webgriffe/SyliusAkeneoPlugin/actions/workflows/build.yml/badge.svg" alt="Build Status" />
     </a>
 </p>
 
