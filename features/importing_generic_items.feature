@@ -39,8 +39,11 @@ Feature: Importing items
     @cli @ui @javascript
     Scenario: Importing all items regardless last modified date
         Given there is a product "1314976" updated at "2022-06-15" on Akeneo
+        And the product "1314976" has an attribute "name" with data "Product 1314976"
         And there is a product "10597353" updated at "2022-07-23" on Akeneo
+        And the product "10597353" has an attribute "name" with data "Product 10597353"
         And there is a product "11164822" updated at "2022-08-01" on Akeneo
+        And the product "11164822" has an attribute "name" with data "Product 11164822"
         And the product "11164822" has an association with product "10597353" for association with code "PACK"
         When I import all from Akeneo
         And I browse products
