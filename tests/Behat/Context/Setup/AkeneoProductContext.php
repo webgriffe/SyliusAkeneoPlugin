@@ -25,18 +25,7 @@ final class AkeneoProductContext implements Context
      */
     public function thereIsAProductUpdatedAtOnAkeneo(string $identifier, ?DateTime $date = null): void
     {
-        InMemoryProductApi::addResource(Product::create($identifier, [
-            'values' => [
-                'name' => [
-                    [
-                        'locale' => null,
-                        'scope' => null,
-                        'data' => 'Product ' . $identifier,
-                    ],
-                ],
-            ],
-            'updated' => $date,
-        ]));
+        InMemoryProductApi::addResource(Product::create($identifier, ['updated' => $date]));
     }
 
     /**
