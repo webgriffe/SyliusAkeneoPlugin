@@ -67,17 +67,8 @@ final class WebhookController extends AbstractController
         private LoggerInterface $logger,
         private MessageBusInterface $messageBus,
         private string $secret,
-        private ?EventDispatcherInterface $eventDispatcher = null,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
-        if ($this->eventDispatcher === null) {
-            trigger_deprecation(
-                'webgriffe/sylius-akeneo-plugin',
-                'v2.5.0',
-                'Not passing a "%s" instance to "%s" constructor is deprecated and will not be possible anymore in the next major version.',
-                EventDispatcherInterface::class,
-                self::class,
-            );
-        }
     }
 
     /**
@@ -134,7 +125,7 @@ final class WebhookController extends AbstractController
                 /** @var AkeneoEventProduct $resource */
                 $resource = $akeneoEvent['data']['resource'];
                 $event = new AkeneoProductChangedEvent($resource, $akeneoEvent);
-                $this->eventDispatcher?->dispatch($event);
+                $this->eventDispatcher->dispatch($event);
                 if (!$event->isIgnorable()) {
                     $this->importProduct($resource['identifier']);
                 }
@@ -143,7 +134,7 @@ final class WebhookController extends AbstractController
                 /** @var AkeneoEventProductModel $resource */
                 $resource = $akeneoEvent['data']['resource'];
                 $event = new AkeneoProductModelChangedEvent($resource, $akeneoEvent);
-                $this->eventDispatcher?->dispatch($event);
+                $this->eventDispatcher->dispatch($event);
                 if (!$event->isIgnorable()) {
                     $this->importProductModel($resource['code']);
                 }
