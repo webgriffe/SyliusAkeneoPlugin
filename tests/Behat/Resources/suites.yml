@@ -84,6 +84,7 @@ default:
                 - sylius.behat.context.transform.date_time
                 - sylius.behat.context.transform.product_association_type
 
+                - sylius.behat.context.setup.locale
                 - sylius.behat.context.setup.admin_security
                 - sylius.behat.context.setup.product_association
                 - webgriffe_sylius_akeneo.behat.context.setup.akeneo_product
