@@ -24,14 +24,21 @@ final class ValueConverter implements ValueConverterInterface
         if (is_array($value) && $attribute->getType() !== SelectAttributeType::TYPE) {
             // Akeneo metrical attribute
             if ($attribute->getType() === TextAttributeType::TYPE) {
+                if (array_key_exists(0, $value)) {
+                    /** @var array<string, mixed> $value */
+                    $value = $value[0];
+                }
                 if (!array_key_exists('amount', $value)) {
                     throw new \LogicException('Amount key not found');
                 }
                 $floatAmount = (float) ($value['amount']);
-                if (!array_key_exists('unit', $value)) {
-                    throw new \LogicException('Unit key not found');
+                $unit = '';
+                if (array_key_exists('unit', $value)) {
+                    $unit = (string) $value['unit'];
                 }
-                $unit = (string) $value['unit'];
+                if (array_key_exists('currency', $value)) {
+                    $unit = (string) $value['currency'];
+                }
 
                 return $this->translator->trans('webgriffe_sylius_akeneo.ui.metric_amount_unit', ['unit' => $unit, 'amount' => $floatAmount], null, $localeCode);
             }
