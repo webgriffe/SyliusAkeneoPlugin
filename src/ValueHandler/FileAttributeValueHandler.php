@@ -104,7 +104,7 @@ final class FileAttributeValueHandler implements ValueHandlerInterface
             $this->filesystem->mkdir($destinationFolder);
         }
         $this->filesystem->rename($downloadedFile->getPathname(), $destinationFilepath, true);
-        $this->filesystem->chmod($destinationFilepath, 0755);
+        $this->filesystem->chmod($destinationFilepath, 0644);
     }
 
     private function getValue(array $value, ProductInterface $product): ?string

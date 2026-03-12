@@ -164,7 +164,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
-        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0755)->shouldHaveBeenCalled();
+        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0644)->shouldHaveBeenCalled();
     }
 
     public function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_null_scope(
@@ -204,7 +204,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0755)->shouldHaveBeenCalled();
-        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0755)->shouldHaveBeenCalled();
+        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0644)->shouldHaveBeenCalled();
     }
 
     public function it_skips_files_related_to_channels_that_are_not_associated_to_the_product_and_it_downloads_the_first_file_with_channel_scope(
@@ -244,7 +244,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
         $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
         $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
-        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0755)->shouldHaveBeenCalled();
+        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0644)->shouldHaveBeenCalled();
     }
 
     public function it_throws_when_data_doesnt_contain_scope_info(ProductVariantInterface $productVariant): void
