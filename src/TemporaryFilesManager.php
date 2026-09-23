@@ -40,12 +40,19 @@ final class TemporaryFilesManager implements TemporaryFilesManagerInterface
         }
     }
 
+    /**
+     * tempnam() drops everything up to the last directory separator of the prefix, so the identifier is sanitized.
+     * The hash of the original identifier keeps prefixes of identifiers differing only by special chars distinct.
+     */
     private function getFilePrefix(string $fileIdentifier): string
     {
+        $fileIdentifier = rtrim($fileIdentifier, '-');
+
         return sprintf(
-            '%s-%s-',
+            '%s-%s-%s-',
             rtrim($this->temporaryFilesPrefix, '-'),
-            rtrim($fileIdentifier, '-'),
+            (string) preg_replace('/[^A-Za-z0-9_]+/', '_', $fileIdentifier),
+            substr(hash('xxh3', $fileIdentifier), 0, 8),
         );
     }
 }

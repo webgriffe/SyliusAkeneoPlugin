@@ -46,15 +46,15 @@ final class TemporaryFilesManagerTest extends TestCase
     /** @test */
     public function it_deletes_all_temporary_files(): void
     {
-        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-temp1');
-        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-temp2');
-        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-temp3');
+        $temporaryFilePath1 = $this->temporaryFileManager->generateTemporaryFilePath('VARIANT_1');
+        $temporaryFilePath2 = $this->temporaryFileManager->generateTemporaryFilePath('VARIANT_1');
+        $temporaryFilePath3 = $this->temporaryFileManager->generateTemporaryFilePath('VARIANT_1');
 
         $this->temporaryFileManager->deleteAllTemporaryFiles('VARIANT_1');
 
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-temp1');
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-temp2');
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-temp3');
+        $this->assertFileDoesNotExist($temporaryFilePath1);
+        $this->assertFileDoesNotExist($temporaryFilePath2);
+        $this->assertFileDoesNotExist($temporaryFilePath3);
     }
 
     /** @test */
@@ -62,25 +62,25 @@ final class TemporaryFilesManagerTest extends TestCase
     {
         touch(vfsStream::url('root') . '/not-managed-temp_file');
         touch(vfsStream::url('root') . '/VARIANT_1-not_managed_temp_file');
-        touch(vfsStream::url('root') . '/akeneo-VARIANT_1-managed_temp_file');
+        $managedTemporaryFilePath = $this->temporaryFileManager->generateTemporaryFilePath('VARIANT_1');
 
         $this->temporaryFileManager->deleteAllTemporaryFiles('VARIANT_1');
 
         $this->assertFileExists(vfsStream::url('root') . '/not-managed-temp_file');
         $this->assertFileExists(vfsStream::url('root') . '/VARIANT_1-not_managed_temp_file');
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-VARIANT_1-managed_temp_file');
+        $this->assertFileDoesNotExist($managedTemporaryFilePath);
     }
 
     /** @test */
     public function it_does_not_delete_not_managed_temporary_files_with_same_product_code_prefix(): void
     {
-        touch(vfsStream::url('root') . '/akeneo-CSV1-fCZfOu');
-        touch(vfsStream::url('root') . '/akeneo-CSV1-A3-324234');
+        $temporaryFilePath = $this->temporaryFileManager->generateTemporaryFilePath('CSV1');
+        $otherProductTemporaryFilePath = $this->temporaryFileManager->generateTemporaryFilePath('CSV1-A3');
 
         $this->temporaryFileManager->deleteAllTemporaryFiles('CSV1');
 
-        $this->assertFileExists(vfsStream::url('root') . '/akeneo-CSV1-A3-324234');
-        $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-CSV1-fCZfOu');
+        $this->assertFileExists($otherProductTemporaryFilePath);
+        $this->assertFileDoesNotExist($temporaryFilePath);
     }
 
     /** @test */
@@ -116,14 +116,51 @@ final class TemporaryFilesManagerTest extends TestCase
         $this->assertSame([], $warnings);
     }
 
+    /** @test */
+    public function it_keeps_the_prefix_for_identifiers_with_slashes(): void
+    {
+        $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
+
+        $temporaryFilePath = $temporaryFileManager->generateTemporaryFilePath('ABT_APE-117/0433');
+
+        $this->assertSame($this->localTemporaryDirectory, dirname($temporaryFilePath));
+        $this->assertStringStartsWith('akeneo-', basename($temporaryFilePath));
+    }
+
+    /** @test */
+    public function it_deletes_temporary_files_generated_for_identifiers_with_slashes(): void
+    {
+        $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
+        $temporaryFilePath = $temporaryFileManager->generateTemporaryFilePath('ABT_APE-117/0433');
+
+        $temporaryFileManager->deleteAllTemporaryFiles('ABT_APE-117/0433');
+
+        $this->assertFileDoesNotExist($temporaryFilePath);
+    }
+
+    /** @test */
+    public function it_does_not_delete_temporary_files_of_identifiers_differing_only_by_special_chars(): void
+    {
+        $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
+        $slashTemporaryFilePath = $temporaryFileManager->generateTemporaryFilePath('ABT/0433');
+        $dashTemporaryFilePath = $temporaryFileManager->generateTemporaryFilePath('ABT-0433');
+
+        $temporaryFileManager->deleteAllTemporaryFiles('ABT-0433');
+
+        $this->assertFileExists($slashTemporaryFilePath);
+        $this->assertFileDoesNotExist($dashTemporaryFilePath);
+    }
+
     /**
      * Native tempnam() is only used on the local filesystem, while vfsStream goes through a different code path.
      */
     private function createTemporaryFilesManagerOnLocalFilesystem(): TemporaryFilesManager
     {
         $filesystem = new Filesystem();
-        $this->localTemporaryDirectory = sys_get_temp_dir() . '/' . uniqid('akeneo-plugin-test-', true);
-        $filesystem->mkdir($this->localTemporaryDirectory);
+        $localTemporaryDirectory = sys_get_temp_dir() . '/' . uniqid('akeneo-plugin-test-', true);
+        $filesystem->mkdir($localTemporaryDirectory);
+        // tempnam() returns resolved paths (e.g. /var is a symlink on macOS)
+        $this->localTemporaryDirectory = (string) realpath($localTemporaryDirectory);
 
         return new TemporaryFilesManager(
             $filesystem,
