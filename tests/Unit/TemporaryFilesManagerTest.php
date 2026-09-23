@@ -14,6 +14,8 @@ final class TemporaryFilesManagerTest extends TestCase
 {
     private TemporaryFilesManager $temporaryFileManager;
 
+    private ?string $localTemporaryDirectory = null;
+
     protected function setUp(): void
     {
         vfsStream::setup();
@@ -23,6 +25,13 @@ final class TemporaryFilesManagerTest extends TestCase
             vfsStream::url('root'),
             'akeneo-',
         );
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->localTemporaryDirectory !== null) {
+            (new Filesystem())->remove($this->localTemporaryDirectory);
+        }
     }
 
     /** @test */
@@ -72,5 +81,55 @@ final class TemporaryFilesManagerTest extends TestCase
 
         $this->assertFileExists(vfsStream::url('root') . '/akeneo-CSV1-A3-324234');
         $this->assertFileDoesNotExist(vfsStream::url('root') . '/akeneo-CSV1-fCZfOu');
+    }
+
+    /** @test */
+    public function it_deletes_temporary_files_generated_for_identifiers_with_regex_special_chars(): void
+    {
+        $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
+        $temporaryFilePath = $temporaryFileManager->generateTemporaryFilePath('VARIANT+1');
+
+        $temporaryFileManager->deleteAllTemporaryFiles('VARIANT+1');
+
+        $this->assertFileDoesNotExist($temporaryFilePath);
+    }
+
+    /** @test */
+    public function it_does_not_raise_warnings_when_deleting_temporary_files_for_identifiers_with_slashes(): void
+    {
+        $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
+        // The Finder only evaluates the name pattern against existing files
+        $temporaryFileManager->generateTemporaryFilePath('VARIANT_1');
+        $warnings = [];
+        set_error_handler(static function (int $errno, string $errstr) use (&$warnings): bool {
+            $warnings[] = $errstr;
+
+            return true;
+        });
+
+        try {
+            $temporaryFileManager->deleteAllTemporaryFiles('ABT_APE-117/0433');
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame([], $warnings);
+    }
+
+    /**
+     * Native tempnam() is only used on the local filesystem, while vfsStream goes through a different code path.
+     */
+    private function createTemporaryFilesManagerOnLocalFilesystem(): TemporaryFilesManager
+    {
+        $filesystem = new Filesystem();
+        $this->localTemporaryDirectory = sys_get_temp_dir() . '/' . uniqid('akeneo-plugin-test-', true);
+        $filesystem->mkdir($this->localTemporaryDirectory);
+
+        return new TemporaryFilesManager(
+            $filesystem,
+            new Finder(),
+            $this->localTemporaryDirectory,
+            'akeneo-',
+        );
     }
 }
