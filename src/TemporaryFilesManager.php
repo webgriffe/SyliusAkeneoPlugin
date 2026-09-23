@@ -33,7 +33,7 @@ final class TemporaryFilesManager implements TemporaryFilesManagerInterface
             return;
         }
         $tempFiles = $this->finder->in($this->temporaryDirectory)->depth('== 0')->files()->name(
-            '/^' . str_replace('*', '\*', $this->getFilePrefix($fileIdentifier)) . '[\w]+$/',
+            '/^' . preg_quote($this->getFilePrefix($fileIdentifier), '/') . '[\w]+$/',
         );
         foreach ($tempFiles as $tempFile) {
             $this->filesystem->remove($tempFile->getPathname());
