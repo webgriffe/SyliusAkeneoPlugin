@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager;
+use Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManagerInterface;
 
 final class TemporaryFilesManagerTest extends TestCase
 {
@@ -149,6 +150,32 @@ final class TemporaryFilesManagerTest extends TestCase
 
         $this->assertFileExists($slashTemporaryFilePath);
         $this->assertFileDoesNotExist($dashTemporaryFilePath);
+    }
+
+    /** @test */
+    public function it_deletes_temporary_files_generated_for_long_identifiers(): void
+    {
+        $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
+        $identifier = TemporaryFilesManagerInterface::PRODUCT_VARIANT_PREFIX . str_repeat('X', 50);
+        $temporaryFilePath = $temporaryFileManager->generateTemporaryFilePath($identifier);
+
+        $temporaryFileManager->deleteAllTemporaryFiles($identifier);
+
+        $this->assertFileDoesNotExist($temporaryFilePath);
+    }
+
+    /** @test */
+    public function it_does_not_delete_temporary_files_of_long_identifiers_sharing_the_same_beginning(): void
+    {
+        $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
+        $identifier = TemporaryFilesManagerInterface::PRODUCT_VARIANT_PREFIX . str_repeat('X', 50);
+        $temporaryFilePath = $temporaryFileManager->generateTemporaryFilePath($identifier . '_1');
+        $otherTemporaryFilePath = $temporaryFileManager->generateTemporaryFilePath($identifier . '_2');
+
+        $temporaryFileManager->deleteAllTemporaryFiles($identifier . '_1');
+
+        $this->assertFileDoesNotExist($temporaryFilePath);
+        $this->assertFileExists($otherTemporaryFilePath);
     }
 
     /**
