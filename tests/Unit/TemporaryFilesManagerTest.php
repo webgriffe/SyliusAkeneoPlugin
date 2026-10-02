@@ -85,6 +85,18 @@ final class TemporaryFilesManagerTest extends TestCase
     }
 
     /** @test */
+    public function it_deletes_temporary_files_with_dots_in_the_random_suffix(): void
+    {
+        // On non-local filesystems Symfony 6.4 generates the random suffix with uniqid(mt_rand(), true), e.g. "152179236abfacd1cd4be2.53698869"
+        $temporaryFilePath = $this->temporaryFileManager->generateTemporaryFilePath('VARIANT_1') . '.53698869';
+        touch($temporaryFilePath);
+
+        $this->temporaryFileManager->deleteAllTemporaryFiles('VARIANT_1');
+
+        $this->assertFileDoesNotExist($temporaryFilePath);
+    }
+
+    /** @test */
     public function it_deletes_temporary_files_generated_for_identifiers_with_regex_special_chars(): void
     {
         $temporaryFileManager = $this->createTemporaryFilesManagerOnLocalFilesystem();
