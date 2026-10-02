@@ -21,6 +21,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Webgriffe\SyliusAkeneoPlugin\Event\IdentifiersModifiedSinceSearchBuilderBuiltEvent;
+use Webgriffe\SyliusAkeneoPlugin\Event\ProductVariantPreValidateEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
 use Webgriffe\SyliusAkeneoPlugin\ReconcilerInterface;
 use Webgriffe\SyliusAkeneoPlugin\ValueHandlersResolverInterface;
@@ -97,6 +98,10 @@ final class Importer implements ImporterInterface, ReconcilerInterface
                 $valueHandler->handle($productVariant, $attribute, $value);
             }
         }
+
+        $this->eventDispatcher->dispatch(
+            new ProductVariantPreValidateEvent($productVariant, $product, $productVariantResponse),
+        );
 
         $this->validator->validate($productVariant);
 
