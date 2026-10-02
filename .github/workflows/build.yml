@@ -215,6 +215,7 @@ jobs:
             -   name: Install roave/backward-compatibility-check.
                 run: composer require --dev roave/backward-compatibility-check --no-plugins
 
+            # By default the latest tag of the whole repository is used, which belongs to another major on maintenance branches
             -   name: Run roave/backward-compatibility-check.
-                run: vendor/bin/roave-backward-compatibility-check --format=github-actions
+                run: vendor/bin/roave-backward-compatibility-check --format=github-actions --from="$(git describe --tags --abbrev=0 HEAD^)"
 
