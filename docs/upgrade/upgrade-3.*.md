@@ -5,6 +5,14 @@ nav_order: 0
 parent: Upgrade
 ---
 
+# Upgrade from `v3.0.1` to `v3.0.2`
+
+The `Webgriffe\SyliusAkeneoPlugin\TemporaryFilesManager` did not clean up the temporary files downloaded during the product import when the product variant code contained a `/`, a regex special char or was longer than about 40 chars. For codes containing a `/` it also raised a `preg_match(): Unknown modifier` warning on every import, which could make the log files grow considerably.
+
+To fix it, the naming of the temporary files has changed: the product variant code in the file name is now sanitized, shortened and followed by a short hash (e.g. `akeneo-product_variant_ABT_APE_117_0433-<hash>-<random>`).
+
+Temporary files created by previous versions that were never cleaned up are not removed by the plugin, so it's worth removing them manually once, while no import is running, from the temporary directory (the `webgriffe_sylius_akeneo.temporary_directory` parameter, which defaults to the system temporary directory). They are the files named `akeneo-product-variant-*` and, for product variant codes containing a `/`, the files named after the part of the code following the last `/` (e.g. `0433-<random>` for the code `ABT_APE-117/0433`).
+
 # Upgrade from `v2.9.x` to `v3.0`
 
 In this version, we have updated the plugin to be fully compatible with version 2 of Sylius and to use the Sylius test application for plugin development and testing.
