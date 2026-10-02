@@ -197,6 +197,16 @@ final class ImporterTest extends KernelTestCase
         );
     }
 
+    protected function tearDown(): void
+    {
+        // The importer is called directly, so the temporary files cleanup done by the ItemImportHandler never runs
+        $temporaryDirectory = self::getContainer()->getParameter('webgriffe_sylius_akeneo.temporary_directory');
+        $temporaryFilesPrefix = self::getContainer()->getParameter('webgriffe_sylius_akeneo.temporary_files_prefix');
+        $this->filesystem->remove(glob(rtrim($temporaryDirectory, '/') . '/' . $temporaryFilesPrefix . '*') ?: []);
+
+        parent::tearDown();
+    }
+
     /**
      * @test
      */
