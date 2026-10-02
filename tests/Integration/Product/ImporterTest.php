@@ -10,11 +10,13 @@ use InvalidArgumentException;
 use Sylius\Bundle\ChannelBundle\Doctrine\ORM\ChannelRepository;
 use Sylius\Bundle\CoreBundle\Doctrine\ORM\ProductVariantRepository;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ChannelPricingInterface;
 use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Product\Model\ProductOptionValueInterface;
+use Sylius\Resource\Factory\FactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Tests\Webgriffe\SyliusAkeneoPlugin\DataFixtures\DataFixture;
@@ -31,7 +33,9 @@ use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Family;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\FamilyVariant;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\Product;
 use Tests\Webgriffe\SyliusAkeneoPlugin\InMemory\Client\Api\Model\ProductModel;
+use Webgriffe\SyliusAkeneoPlugin\Event\ProductVariantPreValidateEvent;
 use Webgriffe\SyliusAkeneoPlugin\ImporterInterface;
+use Webgriffe\SyliusAkeneoPlugin\Product\Exception\ValidationException;
 
 final class ImporterTest extends KernelTestCase
 {
@@ -413,6 +417,73 @@ final class ImporterTest extends KernelTestCase
         $product = reset($products);
         $this->assertInstanceOf(ProductInterface::class, $product);
         $this->assertCount(3, $product->getChannels());
+    }
+
+    /**
+     * @test
+     */
+    public function it_fails_when_product_variant_has_no_price_for_its_channels(): void
+    {
+        $this->expectException(ValidationException::class);
+
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+    }
+
+    /**
+     * @test
+     */
+    public function it_allows_to_change_product_variant_before_validation_through_pre_validate_event(): void
+    {
+        /** @var FactoryInterface<ChannelPricingInterface> $channelPricingFactory */
+        $channelPricingFactory = self::getContainer()->get('sylius.factory.channel_pricing');
+        self::getContainer()->get('event_dispatcher')->addListener(
+            ProductVariantPreValidateEvent::class,
+            static function (ProductVariantPreValidateEvent $event) use ($channelPricingFactory): void {
+                $productVariant = $event->getProductVariant();
+                foreach ($event->getProduct()->getChannels() as $channel) {
+                    if ($productVariant->hasChannelPricingForChannel($channel)) {
+                        continue;
+                    }
+                    $channelPricing = $channelPricingFactory->createNew();
+                    $channelPricing->setChannelCode($channel->getCode());
+                    $channelPricing->setPrice(0);
+                    $productVariant->addChannelPricing($channelPricing);
+                }
+            },
+        );
+
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+
+        $variant = $this->productVariantRepository->findOneBy(['code' => self::STAR_WARS_TSHIRT_M_PRODUCT_CODE]);
+        $this->assertInstanceOf(ProductVariantInterface::class, $variant);
+        $this->assertCount(3, $variant->getChannelPricings());
+        foreach ($variant->getChannelPricings() as $channelPricing) {
+            $this->assertSame(0, $channelPricing->getPrice());
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function it_dispatches_pre_validate_event_with_imported_product_variant_and_akeneo_product(): void
+    {
+        $dispatchedEvents = [];
+        self::getContainer()->get('event_dispatcher')->addListener(
+            ProductVariantPreValidateEvent::class,
+            static function (ProductVariantPreValidateEvent $event) use (&$dispatchedEvents): void {
+                $dispatchedEvents[] = $event;
+            },
+        );
+
+        $this->importer->import(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE);
+
+        $this->assertCount(1, $dispatchedEvents);
+        $event = $dispatchedEvents[0];
+        $this->assertSame(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $event->getProductVariant()->getCode());
+        $this->assertSame($event->getProduct(), $event->getProductVariant()->getProduct());
+        $this->assertSame(self::STAR_WARS_TSHIRT_MODEL_CODE, $event->getProduct()->getCode());
+        $this->assertSame(self::STAR_WARS_TSHIRT_M_PRODUCT_CODE, $event->getAkeneoProduct()['identifier']);
+        $this->assertSame(self::STAR_WARS_TSHIRT_MODEL_CODE, $event->getAkeneoProduct()['parent']);
     }
 
     /**
