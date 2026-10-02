@@ -203,7 +203,7 @@ class FileAttributeValueHandlerSpec extends ObjectBehavior
 
         $productMediaFileApi->download('path/to/a/file.jpg')->shouldHaveBeenCalled();
         $filesystem->mkdir('public/media/attachment/product/path/to/a')->shouldHaveBeenCalled();
-        $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();        $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0755)->shouldHaveBeenCalled();
+        $filesystem->rename(Argument::type('string'), 'public/media/attachment/product/path/to/a/file.jpg', true)->shouldHaveBeenCalled();
         $filesystem->chmod('public/media/attachment/product/path/to/a/file.jpg', 0644)->shouldHaveBeenCalled();
     }
 
