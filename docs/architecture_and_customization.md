@@ -166,6 +166,59 @@ app.my_custom_value_handler:
         - { name: 'webgriffe_sylius_akeneo.product.value_handler', priority: 42 }
 ```
 
+#### Change product data before validation
+
+After all the value handlers have been applied, and just before the imported product variant and its product are
+validated, the Product importer dispatches the `Webgriffe\SyliusAkeneoPlugin\Event\ProductVariantPreValidateEvent`
+event. It gives access to the product variant, its product and the raw Akeneo product data, so you can define an event
+listener or subscriber to change product data that is not handled on Akeneo. For example, if you don't manage prices on
+Akeneo, you can set a default price for every channel of the product, otherwise the product variant would not pass the
+validation:
+
+```php
+// src/EventSubscriber/ProductVariantPreValidateEventSubscriber.php
+
+namespace App\EventSubscriber;
+
+use Sylius\Component\Core\Model\ChannelPricingInterface;
+use Sylius\Resource\Factory\FactoryInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Webgriffe\SyliusAkeneoPlugin\Event\ProductVariantPreValidateEvent;
+
+final class ProductVariantPreValidateEventSubscriber implements EventSubscriberInterface
+{
+    /**
+     * @param FactoryInterface<ChannelPricingInterface> $channelPricingFactory
+     */
+    public function __construct(private FactoryInterface $channelPricingFactory)
+    {
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            ProductVariantPreValidateEvent::class => 'onProductVariantPreValidate',
+        ];
+    }
+
+    public function onProductVariantPreValidate(ProductVariantPreValidateEvent $event): void
+    {
+        $productVariant = $event->getProductVariant();
+        foreach ($event->getProduct()->getChannels() as $channel) {
+            if ($productVariant->hasChannelPricingForChannel($channel)) {
+                continue;
+            }
+            $channelPricing = $this->channelPricingFactory->createNew();
+            $channelPricing->setChannelCode($channel->getCode());
+            $channelPricing->setPrice(0);
+            $productVariant->addChannelPricing($channelPricing);
+        }
+    }
+}
+```
+
+Be aware that this event is dispatched only by the Akeneo import, not when products are saved from the Sylius admin.
+
 ### Product models importer
 
 Another provided importer is the **product models
